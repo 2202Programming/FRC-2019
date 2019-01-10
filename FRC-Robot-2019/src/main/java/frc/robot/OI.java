@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import frc.robot.input.XboxController;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -46,7 +47,7 @@ public class OI {
   // Start the command when the button is released and let it run the command
   // until it is finished as determined by it's isFinished method.
   // button.whenReleased(new ExampleCommand());
-  private Joystick joystick0 = new Joystick(0);
+  private XboxController xboxController0 = new XboxController(0);
   private SpeedController frontLeft = new Spark(RobotMap.FL_MOTOR_PIN);
   private SpeedController backLeft = new Spark(RobotMap.BL_MOTOR_PIN);
 	private SpeedController frontRight = new Spark(RobotMap.FR_MOTOR_PIN);
@@ -56,8 +57,8 @@ public class OI {
 
   }
 
-  public Joystick getMainJoystick() {
-    return joystick0;
+  public XboxController getController0() {
+    return xboxController0;
   }
 
   public SpeedController getFrontLeft() {

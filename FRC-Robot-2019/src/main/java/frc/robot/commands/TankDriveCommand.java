@@ -28,7 +28,7 @@ public class TankDriveCommand extends Command {
   // Temporary until we get the XboxController wrapper for joystick
   @Override
   protected void execute() {
-    Robot.driveTrain.tankDrive(Robot.m_oi.getMainJoystick().getRawAxis(1), Robot.m_oi.getMainJoystick().getRawAxis(5));
+    Robot.driveTrain.tankDrive(Robot.m_oi.getController0().getRawAxis(1), Robot.m_oi.getController0().getRawAxis(5));
   }
 
   @Override
