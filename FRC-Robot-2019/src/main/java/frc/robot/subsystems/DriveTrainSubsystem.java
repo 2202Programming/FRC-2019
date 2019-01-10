@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.Robot;
+import frc.robot.commands.TankDriveCommand;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.SpeedController;
@@ -44,6 +45,7 @@ public class DriveTrainSubsystem extends Subsystem {
 
   @Override
   public void initDefaultCommand() {
+		setDefaultCommand(new TankDriveCommand());
   }
 
   /**
