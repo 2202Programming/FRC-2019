@@ -42,6 +42,6 @@ public class TankDriveCommand extends Command {
 
   @Override
   protected void interrupted() {
-    return'
+    return;
   }
 }
