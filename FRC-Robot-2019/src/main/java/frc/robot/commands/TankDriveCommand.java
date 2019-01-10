@@ -25,6 +25,7 @@ public class TankDriveCommand extends Command {
   // Called repeatedly when this Command is scheduled to run
   @Override
   protected void execute() {
+		Robot.driveTrain.tankDrive(Robot.m_oi.getMainJoystick());
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -36,11 +37,13 @@ public class TankDriveCommand extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    driveTrain.stop();
   }
 
   // Called when another command which requires one or more of the same
   // subsystems is scheduled to run
   @Override
   protected void interrupted() {
+    
   }
 }
