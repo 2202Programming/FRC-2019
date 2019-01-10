@@ -51,8 +51,6 @@ public class OI {
   private SpeedController backLeft = new Spark(2);
 	private SpeedController frontRight = new Spark(1);
   private SpeedController backRight = new Spark(0);
-  private SpeedControllerGroup leftSparks = new SpeedControllerGroup(frontLeft, backLeft);
-  private SpeedControllerGroup rightSparks = new SpeedControllerGroup(frontRight, backRight);
 
   public OI() {
 
@@ -62,11 +60,19 @@ public class OI {
     return joystick0;
   }
 
-  public SpeedControllerGroup getLeftSparks() {
-    return leftSparks;
-  }                   
+  public SpeedController getFrontLeft() {
+    return frontLeft;
+  }
+
+  public SpeedController getBackLeft() {
+    return backLeft;
+  }
   
-  public SpeedControllerGroup getRightSparks() {
-    return rightSparks;
+  public SpeedController getFrontRight() {
+    return frontRight;
+  }
+
+  public SpeedController getBackRight() {
+    return backRight;
   }
 }
