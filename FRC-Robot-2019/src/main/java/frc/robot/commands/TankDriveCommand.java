@@ -5,7 +5,7 @@ import frc.robot.Robot;
 import frc.robot.subsystems.DriveTrainSubsystem;
 
 /**
- * An example command.  You can replace me with your own command.
+ * An example command. You can replace me with your own command.
  */
 public class TankDriveCommand extends Command {
   private DriveTrainSubsystem driveTrain;
@@ -23,11 +23,12 @@ public class TankDriveCommand extends Command {
   }
 
   // Read Controller Input from two joysticks.
-  // Left joystick controls the left motors and the right joystick controls the right motors
+  // Left joystick controls the left motors and the right joystick controls the
+  // right motors
   // Temporary until we get the XboxController wrapper for joystick
   @Override
   protected void execute() {
-		Robot.driveTrain.tankDrive(Robot.m_oi.getMainJoystick().getRawAxis(1), Robot.m_oi.getMainJoystick().getRawAxis(5));
+    Robot.driveTrain.tankDrive(Robot.m_oi.getMainJoystick().getRawAxis(1), Robot.m_oi.getMainJoystick().getRawAxis(5));
   }
 
   @Override

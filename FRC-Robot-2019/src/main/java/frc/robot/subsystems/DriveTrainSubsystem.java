@@ -15,14 +15,10 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 public class DriveTrainSubsystem extends Subsystem {
 
   // Individual Motors
-  private SpeedController frontLeftMotor;
-  private SpeedController backLeftMotor;
-  private SpeedController frontRightMotor;
-  private SpeedController backRightMotor;
+  private SpeedController frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor;
 
   // Motor groups
-  private SpeedControllerGroup leftMotors;
-  private SpeedControllerGroup rightMotors;
+  private SpeedControllerGroup leftMotors, rightMotors;
 
   private DifferentialDrive drive;
 
@@ -45,32 +41,32 @@ public class DriveTrainSubsystem extends Subsystem {
 
   @Override
   public void initDefaultCommand() {
-		setDefaultCommand(new TankDriveCommand());
+    setDefaultCommand(new TankDriveCommand());
   }
 
   /**
-	 * Tank drive using a PS3 joystick.
-	 *
-	 * @param joy PS3 style joystick to use as the input for tank drive.
-	 */
-	public void tankDrive(Joystick joy) {
-		drive.tankDrive(joy.getY(), joy.getRawAxis(4));
-	}
+   * Tank drive using a PS3 joystick.
+   *
+   * @param joy PS3 style joystick to use as the input for tank drive.
+   */
+  public void tankDrive(Joystick joy) {
+    drive.tankDrive(joy.getY(), joy.getRawAxis(4));
+  }
 
-	/**
-	 * Tank drive using individual joystick axes.
-	 *
-	 * @param leftAxis Left sides value
-	 * @param rightAxis Right sides value
-	 */
-	public void tankDrive(double leftAxis, double rightAxis) {
-		drive.tankDrive(leftAxis, rightAxis);
-	}
+  /**
+   * Tank drive using individual joystick axes.
+   *
+   * @param leftAxis  Left sides value
+   * @param rightAxis Right sides value
+   */
+  public void tankDrive(double leftAxis, double rightAxis) {
+    drive.tankDrive(leftAxis, rightAxis);
+  }
 
-	/**
-	 * Stop the drivetrain from moving.
-	 */
-	public void stop() {
-		drive.stopMotor();
-	}
+  /**
+   * Stop the drivetrain from moving.
+   */
+  public void stop() {
+    drive.stopMotor();
+  }
 }
