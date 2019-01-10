@@ -47,10 +47,10 @@ public class OI {
   // until it is finished as determined by it's isFinished method.
   // button.whenReleased(new ExampleCommand());
   private Joystick joystick0 = new Joystick(0);
-  private SpeedController frontLeft = new Spark(3);
-  private SpeedController backLeft = new Spark(2);
-	private SpeedController frontRight = new Spark(1);
-  private SpeedController backRight = new Spark(0);
+  private SpeedController frontLeft = new Spark(RobotMap.FL_MOTOR_PIN);
+  private SpeedController backLeft = new Spark(RobotMap.BL_MOTOR_PIN);
+	private SpeedController frontRight = new Spark(RobotMap.FR_MOTOR_PIN);
+  private SpeedController backRight = new Spark(RobotMap.BR_MOTOR_PIN);
 
   public OI() {
 
