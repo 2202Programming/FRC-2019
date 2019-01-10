@@ -1,33 +1,47 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
-
 package frc.robot.subsystems;
 
+import frc.robot.Robot;
+import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 /**
- * An example subsystem.  You can replace me with your own Subsystem.
+ * The basic drive train subsystem for four motors
  */
 public class DriveTrainSubsystem extends Subsystem {
-  // Put methods for controlling this subsystem
-  // here. Call these from Commands.
 
+  // Individual Motors
+  private SpeedController frontLeftMotor;
+  private SpeedController backLeftMotor;
+  private SpeedController frontRightMotor;
+  private SpeedController backRightMotor;
+
+  // Motor groups
   private SpeedControllerGroup leftMotors;
   private SpeedControllerGroup rightMotors;
-  public  DriveTrainSubsystem() {
-    leftMotors = Robot.OI.getLeftSparks();
-    rightMotors = Robot.OI.getRightSparks();
+
+  private DifferentialDrive drive;
+
+  public DriveTrainSubsystem() {
+    frontLeftMotor = Robot.m_oi.getFrontLeft();
+    backLeftMotor = Robot.m_oi.getBackLeft();
+    frontRightMotor = Robot.m_oi.getFrontRight();
+    backRightMotor = Robot.m_oi.getBackRight();
+
+    addChild("Front Left CIM", (Sendable) frontLeftMotor);
+    addChild("Back Left CIM", (Sendable) backLeftMotor);
+    addChild("Front Right CIM", (Sendable) frontRightMotor);
+    addChild("Back Right CIM", (Sendable) backRightMotor);
+
+    leftMotors = new SpeedControllerGroup(frontLeftMotor, backLeftMotor);
+    rightMotors = new SpeedControllerGroup(frontRightMotor, backRightMotor);
+
+    drive = new DifferentialDrive(leftMotors, rightMotors);
   }
 
   @Override
   public void initDefaultCommand() {
-    // Set the default command for a subsystem here.
-    // setDefaultCommand(new MySpecialCommand());
   }
 }
