@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.Robot;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
@@ -44,4 +45,30 @@ public class DriveTrainSubsystem extends Subsystem {
   @Override
   public void initDefaultCommand() {
   }
+
+  /**
+	 * Tank drive using a PS3 joystick.
+	 *
+	 * @param joy PS3 style joystick to use as the input for tank drive.
+	 */
+	public void tankDrive(Joystick joy) {
+		drive.tankDrive(joy.getY(), joy.getRawAxis(4));
+	}
+
+	/**
+	 * Tank drive using individual joystick axes.
+	 *
+	 * @param leftAxis Left sides value
+	 * @param rightAxis Right sides value
+	 */
+	public void tankDrive(double leftAxis, double rightAxis) {
+		drive.tankDrive(leftAxis, rightAxis);
+	}
+
+	/**
+	 * Stop the drivetrain from moving.
+	 */
+	public void stop() {
+		drive.stopMotor();
+	}
 }
