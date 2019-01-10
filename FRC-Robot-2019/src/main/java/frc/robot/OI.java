@@ -7,6 +7,13 @@
 
 package frc.robot;
 
+import java.util.List;
+
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
+
 /**
  * This class is the glue that binds the controls on the physical operator
  * interface to the commands and command groups that allow control of the robot.
@@ -39,4 +46,27 @@ public class OI {
   // Start the command when the button is released and let it run the command
   // until it is finished as determined by it's isFinished method.
   // button.whenReleased(new ExampleCommand());
+  private Joystick joystick0 = new Joystick(0);
+  private SpeedController frontLeft = new Spark(3);
+  private SpeedController backLeft = new Spark(2);
+	private SpeedController frontRight = new Spark(1);
+  private SpeedController backRight = new Spark(0);
+  private SpeedControllerGroup leftSparks = new SpeedControllerGroup(frontLeft, backLeft);
+  private SpeedControllerGroup rightSparks = new SpeedControllerGroup(frontRight, backRight);
+
+  public OI() {
+
+  }
+
+  public Joystick getMainJoystick() {
+    return joystick0;
+  }
+
+  public SpeedControllerGroup getLeftSparks() {
+    return leftSparks;
+  }                   
+  
+  public SpeedControllerGroup getRightSparks() {
+    return rightSparks;
+  }
 }
