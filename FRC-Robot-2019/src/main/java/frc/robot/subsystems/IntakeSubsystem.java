@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import frc.robot.commands.TankDriveCommand;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.SpeedController;
@@ -18,7 +19,7 @@ public class IntakeSubsystem extends Subsystem {
     // Individual Motors
     private SpeedController IntakeLeftMotor = new Spark(RobotMap.LEFT_INTAKE_MOTOR_PIN);
     private SpeedController IntakeRightMotor = new Spark(RobotMap.RIGHT_INTAKE_MOTOR_PIN);
-  
+    private DigitalInput photoGate = new DigitalInput();
     public IntakeSubsystem() {
   
       addChild("Intake Left Spark", (Sendable) IntakeLeftMotor);
@@ -31,4 +32,7 @@ public class IntakeSubsystem extends Subsystem {
        //funstuffyebrocool!
     }
     
+    public void outtake(){
+
+    }
 }
