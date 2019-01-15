@@ -48,32 +48,9 @@ public class OI {
   // until it is finished as determined by it's isFinished method.
   // button.whenReleased(new ExampleCommand());
   private XboxController xboxController0 = new XboxController(0);
-  private SpeedController frontLeft = new Spark(RobotMap.FL_MOTOR_PIN);
-  private SpeedController backLeft = new Spark(RobotMap.BL_MOTOR_PIN);
-	private SpeedController frontRight = new Spark(RobotMap.FR_MOTOR_PIN);
-  private SpeedController backRight = new Spark(RobotMap.BR_MOTOR_PIN);
 
   public OI() {
 
   }
 
-  public XboxController getController0() {
-    return xboxController0;
-  }
-
-  public SpeedController getFrontLeft() {
-    return frontLeft;
-  }
-
-  public SpeedController getBackLeft() {
-    return backLeft;
-  }
-  
-  public SpeedController getFrontRight() {
-    return frontRight;
-  }
-
-  public SpeedController getBackRight() {
-    return backRight;
-  }
 }

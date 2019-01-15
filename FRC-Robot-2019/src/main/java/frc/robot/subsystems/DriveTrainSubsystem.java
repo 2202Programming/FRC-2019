@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import frc.robot.Robot;
 import frc.robot.commands.TankDriveCommand;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Sendable;
@@ -8,6 +7,8 @@ import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.Spark;
+import frc.robot.RobotMap;
 
 /**
  * The basic drive train subsystem for four motors
@@ -15,18 +16,16 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 public class DriveTrainSubsystem extends Subsystem {
 
   // Individual Motors
-  private SpeedController frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor;
-
+  private SpeedController frontLeftMotor = new Spark(RobotMap.FL_MOTOR_PIN);
+  private SpeedController backLeftMotor = new Spark(RobotMap.BL_MOTOR_PIN);
+	private SpeedController frontRightMotor = new Spark(RobotMap.FR_MOTOR_PIN);
+  private SpeedController backRightMotor = new Spark(RobotMap.BR_MOTOR_PIN);
   // Motor groups
   private SpeedControllerGroup leftMotors, rightMotors;
 
   private DifferentialDrive drive;
 
   public DriveTrainSubsystem() {
-    frontLeftMotor = Robot.m_oi.getFrontLeft();
-    backLeftMotor = Robot.m_oi.getBackLeft();
-    frontRightMotor = Robot.m_oi.getFrontRight();
-    backRightMotor = Robot.m_oi.getBackRight();
 
     addChild("Front Left CIM", (Sendable) frontLeftMotor);
     addChild("Back Left CIM", (Sendable) backLeftMotor);
