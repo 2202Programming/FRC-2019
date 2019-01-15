@@ -53,4 +53,8 @@ public class OI {
 
   }
 
+  public XboxController getController0() {
+    return xboxController0;
+  }
+
 }
