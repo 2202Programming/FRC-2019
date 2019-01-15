@@ -48,6 +48,8 @@ public class OI {
   // until it is finished as determined by it's isFinished method.
   // button.whenReleased(new ExampleCommand());
   private XboxController xboxController0 = new XboxController(0);
+  private XboxController xboxController1 = new XboxController(1);
+  private XboxController switchBoard = new XboxController(2);
 
   public OI() {
 
@@ -55,6 +57,14 @@ public class OI {
 
   public XboxController getController0() {
     return xboxController0;
+  }
+
+  public XboxController getController1() {
+    return xboxController1;
+  }
+
+  public XboxController getSwitchBoard() {
+    return switchBoard;
   }
 
 }
