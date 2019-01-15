@@ -1,0 +1,35 @@
+/*----------------------------------------------------------------------------*/
+/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
+/* Open Source Software - may be modified and shared by FRC teams. The code   */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
+/*----------------------------------------------------------------------------*/
+
+package frc.robot.subsystems;
+
+import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.command.Subsystem;
+
+/**
+ * A Lift subsystem.
+ */
+public class Lift extends Subsystem {
+  private Talon liftMotor;
+  private int setPosition;
+
+  public static final int PLACEHOLDER = 0;
+
+  public Lift() {
+    liftMotor = new Talon(PLACEHOLDER);
+    addChild("Lift Motor", liftMotor);
+    setPosition = 0;
+  }
+  // Put methods for controlling this subsystem
+  // here. Call these from Commands.
+
+  @Override
+  public void initDefaultCommand() {
+    // Set the default command for a subsystem here.
+    // setDefaultCommand(new MySpecialCommand());
+  }
+}
