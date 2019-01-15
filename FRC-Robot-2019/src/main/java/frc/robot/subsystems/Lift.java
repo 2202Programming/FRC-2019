@@ -8,24 +8,37 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.command.PIDSubsystem;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 /**
  * A Lift subsystem.
  */
-public class Lift extends Subsystem {
+public class Lift extends PIDSubsystem {
   private Talon liftMotor;
   private int setPosition;
 
   public static final int PLACEHOLDER = 0;
+  public static final double P = 0;
+  public static final double I = 0;
+  public static final double D = 0;
 
   public Lift() {
+    super("Lift", P, I, D);
     liftMotor = new Talon(PLACEHOLDER);
     addChild("Lift Motor", liftMotor);
     setPosition = 0;
   }
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
+  @Override
+  protected void usePIDOutput(double output) {
+    liftMotor.pidWrite(output);
+  }
+  @Override
+  protected double returnPIDInput() {
+      return 0;
+  }
 
   @Override
   public void initDefaultCommand() {
