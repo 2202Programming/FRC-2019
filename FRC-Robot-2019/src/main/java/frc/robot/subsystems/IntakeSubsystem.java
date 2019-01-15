@@ -17,13 +17,13 @@ import frc.robot.RobotMap;
 public class IntakeSubsystem extends Subsystem {
 
     // Individual Motors
-    private SpeedController IntakeLeftMotor = new Spark(RobotMap.LEFT_INTAKE_MOTOR_PIN);
-    private SpeedController IntakeRightMotor = new Spark(RobotMap.RIGHT_INTAKE_MOTOR_PIN);
-    private DigitalInput photoGate = new DigitalInput();
+    private SpeedController intakeLeftMotor = new Spark(RobotMap.LEFT_INTAKE_MOTOR_PIN);
+    private SpeedController intakeRightMotor = new Spark(RobotMap.RIGHT_INTAKE_MOTOR_PIN);
+    private DigitalInput photoGate = new DigitalInput(RobotMap.INTAKE_PHOTOGATE_CHANNEL);
     public IntakeSubsystem() {
   
-      addChild("Intake Left Spark", (Sendable) IntakeLeftMotor);
-      addChild("Intake Right Spark", (Sendable) IntakeRightMotor);
+      addChild("Intake Left Spark", (Sendable) intakeLeftMotor);
+      addChild("Intake Right Spark", (Sendable) intakeRightMotor);
 
     }
   
