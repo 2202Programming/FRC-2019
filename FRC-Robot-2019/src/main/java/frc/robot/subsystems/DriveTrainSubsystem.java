@@ -1,13 +1,15 @@
 package frc.robot.subsystems;
 
 import frc.robot.commands.TankDriveCommand;
+
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.Spark;
 import frc.robot.RobotMap;
 
 /**
@@ -16,10 +18,12 @@ import frc.robot.RobotMap;
 public class DriveTrainSubsystem extends Subsystem {
 
   // Individual Motors
-  private SpeedController frontLeftMotor = new Spark(RobotMap.FL_MOTOR_PIN);
-  private SpeedController backLeftMotor = new Spark(RobotMap.BL_MOTOR_PIN);
-	private SpeedController frontRightMotor = new Spark(RobotMap.FR_MOTOR_PIN);
-  private SpeedController backRightMotor = new Spark(RobotMap.BR_MOTOR_PIN);
+  private SpeedController frontLeftMotor = new WPI_TalonSRX(RobotMap.FL_TALON_CAN_ID);
+  private SpeedController middleLeftMotor = new WPI_TalonSRX(RobotMap.ML_TALON_CAN_ID);
+  private SpeedController backLeftMotor = new WPI_TalonSRX(RobotMap.BL_TALON_CAN_ID);
+  private SpeedController frontRightMotor = new WPI_TalonSRX(RobotMap.FR_TALON_CAN_ID);
+  private SpeedController middleRightMotor = new WPI_TalonSRX(RobotMap.MR_TALON_CAN_ID);
+  private SpeedController backRightMotor = new WPI_TalonSRX(RobotMap.BR_TALON_CAN_ID);
   // Motor groups
   private SpeedControllerGroup leftMotors, rightMotors;
 
@@ -32,8 +36,8 @@ public class DriveTrainSubsystem extends Subsystem {
     addChild("Front Right CIM", (Sendable) frontRightMotor);
     addChild("Back Right CIM", (Sendable) backRightMotor);
 
-    leftMotors = new SpeedControllerGroup(frontLeftMotor, backLeftMotor);
-    rightMotors = new SpeedControllerGroup(frontRightMotor, backRightMotor);
+    leftMotors = new SpeedControllerGroup(frontLeftMotor, middleLeftMotor, backLeftMotor);
+    rightMotors = new SpeedControllerGroup(frontRightMotor, middleRightMotor, backRightMotor);
 
     drive = new DifferentialDrive(leftMotors, rightMotors);
   }
