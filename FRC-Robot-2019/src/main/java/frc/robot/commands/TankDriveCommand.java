@@ -12,7 +12,7 @@ public class TankDriveCommand extends Command {
 
   public TankDriveCommand() {
     // Use requires() here to declare subsystem dependencies
-    requires(Robot.m_subsystem);
+    requires(Robot.driveTrain);
     driveTrain = Robot.driveTrain;
   }
 
@@ -28,7 +28,7 @@ public class TankDriveCommand extends Command {
   // Temporary until we get the XboxController wrapper for joystick
   @Override
   protected void execute() {
-    Robot.driveTrain.tankDrive(Robot.m_oi.getController0().getRawAxis(1), Robot.m_oi.getController0().getRawAxis(5));
+    Robot.driveTrain.tankDrive(Robot.m_oi.getController0().getLeftJoystickY(), Robot.m_oi.getController0().getRightJoystickY());
   }
 
   @Override
