@@ -18,4 +18,9 @@ public class RobotMap {
   public static final int BL_MOTOR_PIN = 2;
   public static final int FR_MOTOR_PIN = 1;
   public static final int BR_MOTOR_PIN = 0;
+  public static final int CLIMBER_MOTOR_PIN = 4;
+  public static final int LEFT_INTAKE_MOTOR_PIN = 5;
+  public static final int RIGHT_INTAKE_MOTOR_PIN = 6;
+
+  public static final int INTAKE_PHOTOGATE_CHANNEL = 4;
 }
