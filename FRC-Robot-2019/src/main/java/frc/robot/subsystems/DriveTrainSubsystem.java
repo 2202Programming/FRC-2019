@@ -32,8 +32,10 @@ public class DriveTrainSubsystem extends Subsystem {
   public DriveTrainSubsystem() {
 
     addChild("Front Left CIM", (Sendable) frontLeftMotor);
+    addChild("Middle Left CIM", (Sendable) middleLeftMotor);
     addChild("Back Left CIM", (Sendable) backLeftMotor);
     addChild("Front Right CIM", (Sendable) frontRightMotor);
+    addChild("Middle Right CIM", (Sendable) middleRightMotor);
     addChild("Back Right CIM", (Sendable) backRightMotor);
 
     leftMotors = new SpeedControllerGroup(frontLeftMotor, middleLeftMotor, backLeftMotor);
