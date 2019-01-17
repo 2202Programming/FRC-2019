@@ -14,10 +14,14 @@ package frc.robot;
  * floating around.
  */
 public class RobotMap {
-  public static final int FL_MOTOR_PIN = 3;
-  public static final int BL_MOTOR_PIN = 2;
-  public static final int FR_MOTOR_PIN = 1;
-  public static final int BR_MOTOR_PIN = 0;
+  public static final int FL_TALON_CAN_ID = 11;
+  public static final int ML_TALON_CAN_ID = 12;
+  public static final int BL_TALON_CAN_ID = 13;
+  public static final int FR_TALON_CAN_ID = 14;
+  public static final int MR_TALON_CAN_ID = 15;
+  public static final int BR_TALON_CAN_ID = 16;
+  public static final int GEARSHIFT_SOLENOID_CAN_ID = 2;
+
   public static final int CLIMBER_MOTOR_PIN = 4;
   public static final int LEFT_INTAKE_MOTOR_PIN = 5;
   public static final int RIGHT_INTAKE_MOTOR_PIN = 6;
