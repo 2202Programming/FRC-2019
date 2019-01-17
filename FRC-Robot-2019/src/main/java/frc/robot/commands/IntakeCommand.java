@@ -25,7 +25,7 @@ public class IntakeCommand extends Command{
 
   @Override
   protected boolean isFinished() {
-    return false;
+    return intake.getPhotoGate();
   }
 
  

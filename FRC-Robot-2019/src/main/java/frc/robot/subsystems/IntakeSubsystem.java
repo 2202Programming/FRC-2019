@@ -21,10 +21,8 @@ public class IntakeSubsystem extends Subsystem {
     private SpeedController intakeMotorRight = new Spark(RobotMap.RIGHT_INTAKE_MOTOR_PIN);
     private DigitalInput photoGate = new DigitalInput(RobotMap.INTAKE_PHOTOGATE_CHANNEL);
     public IntakeSubsystem() {
-  
       addChild("Intake Left Spark", (Sendable) intakeMotorLeft);
       addChild("Intake Right Spark", (Sendable) intakeMotorRight);
-
     }
   
     @Override
@@ -65,5 +63,9 @@ public class IntakeSubsystem extends Subsystem {
     public void stop() {
       intakeMotorLeft.set(0);
       intakeMotorRight.set(0);
+    }
+
+    public boolean getPhotoGate(){
+      return photoGate.get();
     }
 }
