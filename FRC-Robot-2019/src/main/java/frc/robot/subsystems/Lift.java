@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.command.PIDSubsystem;
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -16,7 +17,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  * A Lift subsystem.
  */
 public class Lift extends PIDSubsystem {
-  private TalonSRX liftMotor;
+  private WPI_TalonSRX liftMotor;
   private int setPosition;
 
   public static final int PLACEHOLDER = 0;
@@ -26,7 +27,7 @@ public class Lift extends PIDSubsystem {
 
   public Lift() {
     super("Lift", P, I, D);
-    liftMotor = new TalonSRX(PLACEHOLDER);
+    liftMotor = new WPI_TalonSRX(PLACEHOLDER);
     addChild("Lift Motor", liftMotor);
     setPosition = 0;
   }
