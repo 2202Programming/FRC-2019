@@ -3,10 +3,10 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 import frc.robot.subsystems.IntakeSubsystem;
 
-public class OuttakeCommand extends Command{
+public class IntakeCommand extends Command{
     private IntakeSubsystem intake;
 
-    public OuttakeCommand(){
+    public IntakeCommand(){
         requires(Robot.m_subsystem);
         intake = Robot.intake;
     }
@@ -19,7 +19,7 @@ public class OuttakeCommand extends Command{
 
   @Override
   protected void execute() {
-      Robot.intake.outtake();
+      Robot.intake.intake();
   }
 
 
@@ -39,7 +39,5 @@ public class OuttakeCommand extends Command{
   protected void interrupted() {
       return;
   }
-
-  
 }
 
