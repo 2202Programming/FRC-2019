@@ -9,7 +9,7 @@ public class GearShifterSubsystem extends Subsystem {
     private Solenoid gearShiftSolenoid = new Solenoid(RobotMap.GEARSHIFT_SOLENOID_CAN_ID);
 
     public GearShifterSubsystem() {
-        addChild("child", (Sendable) gearShiftSolenoid);
+        addChild("PCM", (Sendable) gearShiftSolenoid);
     }
 
     public void initDefaultCommand() {
