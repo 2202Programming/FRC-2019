@@ -28,8 +28,8 @@ import frc.robot.subsystems.GearShifterSubsystem;
 public class Robot extends TimedRobot {
   public static ExampleSubsystem m_subsystem = new ExampleSubsystem();
   public static OI m_oi;
-  public static DriveTrainSubsystem driveTrain;
-  public static GearShifterSubsystem gearShifter;
+  public static DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
+  public static GearShifterSubsystem gearShifter = new GearShifterSubsystem();
   public static Compressor gearshifterCompressor = new Compressor();
 
   Command m_autonomousCommand;
@@ -42,8 +42,6 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     m_oi = new OI();
-    driveTrain = new DriveTrainSubsystem();
-    gearShifter = new GearShifterSubsystem();
     gearshifterCompressor.start();
     m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
     // chooser.addOption("My Auto", new MyAutoCommand());
