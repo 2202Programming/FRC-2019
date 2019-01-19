@@ -16,4 +16,12 @@ public class GearShifterSubsystem extends Subsystem {
         
     }
 
+    public void shiftUp() {
+
+    }
+
+    public void shiftDown() {
+        
+    }
+
 }
