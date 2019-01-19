@@ -4,17 +4,33 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
 /**
- * An example command.  You can replace me with your own command.
+ * Command for climbing slow.
  */
 public class ClimbSlowCommand extends Command {
   public ClimbSlowCommand() {
     // Use requires() here to declare subsystem dependencies
     requires(Robot.climber);
   }
+
+  @Override
   protected void initialize() {
-      Robot.climber.climbSlow();
   }
+
+  @Override
+  protected void execute() {
+    Robot.climber.climbSlow();
+  }
+
+  @Override
   protected boolean isFinished() {
-    return true;
+    // placeholder
+    if (isTimedOut())
+      return true;
+    return false;
+  }
+
+  @Override
+  protected void end() {
+    Robot.climber.stopClimb();
   }
 }
