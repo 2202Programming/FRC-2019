@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -29,6 +30,7 @@ public class Robot extends TimedRobot {
   public static OI m_oi;
   public static DriveTrainSubsystem driveTrain;
   public static GearShifterSubsystem gearShifter;
+  public static Compressor gearshifterCompressor = new Compressor();
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -42,6 +44,7 @@ public class Robot extends TimedRobot {
     m_oi = new OI();
     driveTrain = new DriveTrainSubsystem();
     gearShifter = new GearShifterSubsystem();
+    gearshifterCompressor.start();
     m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
     // chooser.addOption("My Auto", new MyAutoCommand());
     SmartDashboard.putData("Auto mode", m_chooser);
