@@ -7,13 +7,12 @@
 
 package frc.robot;
 
-import java.util.List;
 
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Spark;
-import edu.wpi.first.wpilibj.SpeedController;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import frc.robot.input.XboxController;
+import edu.wpi.first.wpilibj.buttons.Button;
+import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import frc.robot.commands.DownShiftCommand;
+import frc.robot.commands.UpShiftCommand;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -52,7 +51,8 @@ public class OI {
   private XboxController switchBoard = new XboxController(2);
 
   public OI() {
-
+    new JoystickButton(xboxController0, 5).whenPressed(new DownShiftCommand());//5 LB
+    new JoystickButton(xboxController0, 6).whenPressed(new UpShiftCommand());//6 RB
   }
 
   public XboxController getController0() {
