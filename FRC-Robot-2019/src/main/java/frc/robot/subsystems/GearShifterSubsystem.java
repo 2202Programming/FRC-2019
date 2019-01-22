@@ -9,6 +9,12 @@ import frc.robot.RobotMap;
 public class GearShifterSubsystem extends Subsystem {
     private DoubleSolenoid gearShiftSolenoid = new DoubleSolenoid(RobotMap.GEARSHIFT_SOLENOID_CAN_ID, RobotMap.GEARSHIFTUP_SOLENOID_ID, RobotMap.GEARSHIFTDOWN_SOLENOID_ID);
 
+    private enum Gear {
+        LOW_GEAR, HIGH_GEAR
+    }
+
+    private Gear currentGear = Gear.LOW_GEAR;
+    
     public GearShifterSubsystem() {
         addChild("PCM", (Sendable) gearShiftSolenoid);
     }
@@ -18,11 +24,13 @@ public class GearShifterSubsystem extends Subsystem {
     }
 
     public void shiftUp() {
-        gearShiftSolenoid.set(DoubleSolenoid.Value.kForward);
+        if(currentGear == Gear.LOW_GEAR)
+            gearShiftSolenoid.set(DoubleSolenoid.Value.kForward);
     }
 
     public void shiftDown() {
-        gearShiftSolenoid.set(DoubleSolenoid.Value.kReverse);
+        if(currentGear == Gear.HIGH_GEAR)
+            gearShiftSolenoid.set(DoubleSolenoid.Value.kReverse);
     }
 
 }
