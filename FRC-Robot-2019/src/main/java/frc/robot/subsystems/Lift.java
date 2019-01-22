@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  */
 public class Lift extends PIDSubsystem {
   private WPI_TalonSRX liftMotor;
-  private int setPosition;
 
   public static final int PLACEHOLDER = 0;
   public static final double P = 0;
@@ -29,7 +28,6 @@ public class Lift extends PIDSubsystem {
     super("Lift", P, I, D);
     liftMotor = new WPI_TalonSRX(PLACEHOLDER);
     addChild("Lift Motor", liftMotor);
-    setPosition = 0;
   }
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
@@ -42,9 +40,22 @@ public class Lift extends PIDSubsystem {
       return 0;
   }
 
+  public void runUp() {
+    liftMotor.set(0.5);
+  }
+
+  public void runDown() {
+    liftMotor.set(-0.5);
+  }
+
+  public void stop() {
+    liftMotor.set(0);
+  }
   @Override
   public void initDefaultCommand() {
     // Set the default command for a subsystem here.
     // setDefaultCommand(new MySpecialCommand());
   }
+
+  
 }
