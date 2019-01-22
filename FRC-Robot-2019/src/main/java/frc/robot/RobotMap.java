@@ -30,4 +30,9 @@ public class RobotMap {
   public static final int RIGHT_INTAKE_MOTOR_PIN = 6;
 
   public static final int INTAKE_PHOTOGATE_CHANNEL = 4;
+
+  public static final int ENCODER_LEFT_PIN_1 = 1;
+  public static final int ENCODER_LEFT_PIN_2 = 2;
+  public static final int ENCODER_RIGHT_PIN_1 = 3;
+  public static final int ENCODER_RIGHT_PIN_2 = 4;
 }
