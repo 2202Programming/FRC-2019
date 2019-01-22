@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import frc.robot.commands.ArcadeDriveCommand;
 import frc.robot.commands.TankDriveCommand;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -46,7 +47,7 @@ public class DriveTrainSubsystem extends Subsystem {
 
   @Override
   public void initDefaultCommand() {
-    setDefaultCommand(new TankDriveCommand());
+    setDefaultCommand(new ArcadeDriveCommand());
   }
 
   /**
@@ -66,6 +67,18 @@ public class DriveTrainSubsystem extends Subsystem {
    */
   public void tankDrive(double leftAxis, double rightAxis) {
     drive.tankDrive(leftAxis, rightAxis);
+  }
+
+  /**
+   * Arcade drive using a single joystick
+   *
+   * @param xSpeed        The robot's speed along the X axis [-1.0..1.0]. Forward is positive.
+   * @param zRotation     The robot's rotation rate around the Z axis [-1.0..1.0]. Clockwise is
+   *                      positive.
+   * @param squareInputs If set, decreases the input sensitivity at low speeds.
+   */
+  public void ArcadeDrive(double xSpeed, double zRotation, boolean squaredInput) {
+    drive.arcadeDrive(xSpeed, zRotation, squaredInput);
   }
 
   /**
