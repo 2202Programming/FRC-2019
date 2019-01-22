@@ -13,6 +13,9 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import frc.robot.commands.ClimbFastCommand;
+import frc.robot.commands.ClimbSlowCommand;
 import frc.robot.input.XboxController;
 
 /**
@@ -50,7 +53,8 @@ public class OI {
   private XboxController xboxController0 = new XboxController(0);
 
   public OI() {
-
+    new JoystickButton(xboxController0, 5).whileHeld(new ClimbFastCommand());
+    new JoystickButton(xboxController0, 6).whileHeld(new ClimbSlowCommand());
   }
 
 }

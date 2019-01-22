@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.SpeedController;
 
@@ -11,7 +10,7 @@ import frc.robot.RobotMap;
 
 public class ClimberSubsystem extends Subsystem {
     private SpeedController climbMotor = new Spark(RobotMap.CLIMBER_MOTOR_PIN);
-	
+    
 	public ClimberSubsystem() {
         addChild("Climber Spark", (Sendable) climbMotor);
     }

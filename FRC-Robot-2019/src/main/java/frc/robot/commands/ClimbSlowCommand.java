@@ -1,5 +1,4 @@
 package frc.robot.commands;
-
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
@@ -7,6 +6,7 @@ import frc.robot.Robot;
  * Command for climbing slow.
  */
 public class ClimbSlowCommand extends Command {
+
   public ClimbSlowCommand() {
     // Use requires() here to declare subsystem dependencies
     requires(Robot.climber);
@@ -23,10 +23,7 @@ public class ClimbSlowCommand extends Command {
 
   @Override
   protected boolean isFinished() {
-    // placeholder
-    if (isTimedOut())
-      return true;
-    return false;
+    return true;
   }
 
   @Override

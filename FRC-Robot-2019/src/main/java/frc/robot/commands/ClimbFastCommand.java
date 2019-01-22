@@ -1,6 +1,4 @@
 package frc.robot.commands;
-
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
@@ -8,8 +6,7 @@ import frc.robot.Robot;
  * Command for climbing fast.
  */
 public class ClimbFastCommand extends Command {
-  private DigitalInput limitSwitch = new DigitalInput(3);
-
+  
   public ClimbFastCommand() {
     // Use requires() here to declare subsystem dependencies
     requires(Robot.climber);
@@ -17,7 +14,6 @@ public class ClimbFastCommand extends Command {
 
   @Override
   protected void initialize() {
-    
   }
 
   @Override
@@ -27,12 +23,7 @@ public class ClimbFastCommand extends Command {
 
   @Override
   protected boolean isFinished() {
-    // placeholder
-    if (limitSwitch.get())
-      return true;
-    if (isTimedOut())
-      return true;
-    return false;
+    return true;
   }
 
   @Override
