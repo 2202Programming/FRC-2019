@@ -8,7 +8,8 @@ public class UpShiftCommand extends InstantCommand {
         requires(Robot.gearShifter);
     }
 
-    public void initialize() {
+    @Override
+    protected void execute() {
         Robot.gearShifter.shiftUp();
     }
 }
