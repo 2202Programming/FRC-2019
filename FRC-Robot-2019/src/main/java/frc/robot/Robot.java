@@ -59,6 +59,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    logSmartDashboardSensors();
   }
 
   /**
@@ -136,5 +137,14 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
+  }
+
+  private void logSmartDashboardSensors() {
+    SmartDashboard.putString("Left Encoder Count", String.valueOf(driveTrain.getLeftEncoder().get()));
+    SmartDashboard.putString("Left Encoder Distance", String.valueOf(driveTrain.getLeftEncoder().getDistance()));
+    SmartDashboard.putString("Left Encoder Speed", String.valueOf(driveTrain.getLeftEncoder().getRate()));
+    SmartDashboard.putString("Left Encoder Count", String.valueOf(driveTrain.getLeftEncoder().get()));
+    SmartDashboard.putString("Left Encoder Distance", String.valueOf(driveTrain.getLeftEncoder().getDistance()));
+    SmartDashboard.putString("Left Encoder Rate", String.valueOf(driveTrain.getLeftEncoder().getRate()));
   }
 }
