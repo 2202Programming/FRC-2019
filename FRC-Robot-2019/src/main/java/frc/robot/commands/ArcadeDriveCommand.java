@@ -28,7 +28,7 @@ public class ArcadeDriveCommand extends Command {
   // Temporary until we get the XboxController wrapper for joystick
   @Override
   protected void execute() {
-    Robot.driveTrain.ArcadeDrive(Robot.m_oi.getController0().getLeftJoystickX(), Robot.m_oi.getController0().getLeftJoystickY(), true);
+    Robot.driveTrain.ArcadeDrive(Robot.m_oi.getController0().getLeftJoystickY(), Robot.m_oi.getController0().getLeftJoystickX(), true);
   }
 
   @Override
