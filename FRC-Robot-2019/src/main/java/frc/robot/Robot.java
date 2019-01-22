@@ -27,7 +27,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 public class Robot extends TimedRobot {
   public static ExampleSubsystem m_subsystem = new ExampleSubsystem();
   public static OI m_oi;
-  public static DriveTrainSubsystem driveTrain;
+  public static DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
   public static IntakeSubsystem intake = new IntakeSubsystem();
 
   Command m_autonomousCommand;
@@ -40,7 +40,6 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     m_oi = new OI();
-    driveTrain = new DriveTrainSubsystem();
 
     m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
     // chooser.addOption("My Auto", new MyAutoCommand());

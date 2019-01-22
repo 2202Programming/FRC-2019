@@ -12,7 +12,7 @@ public class TankDriveCommand extends Command {
 
   public TankDriveCommand() {
     // Use requires() here to declare subsystem dependencies
-    requires(Robot.m_subsystem);
+    requires(Robot.driveTrain);
     driveTrain = Robot.driveTrain;
   }
 
