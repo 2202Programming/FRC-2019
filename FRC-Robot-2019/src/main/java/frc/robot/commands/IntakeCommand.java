@@ -25,7 +25,7 @@ public class IntakeCommand extends Command{
 
   @Override
   protected boolean isFinished() {
-    return intake.getPhotoGate();
+    return intake.getPhotoGate() || Robot.m_oi.getController0().getRawButtonReleased(5);
   }
 
  

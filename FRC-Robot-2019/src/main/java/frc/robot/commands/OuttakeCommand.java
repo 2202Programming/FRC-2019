@@ -25,7 +25,7 @@ public class OuttakeCommand extends Command{
 
   @Override
   protected boolean isFinished() {
-    return false;
+    return Robot.m_oi.getController0().getRawButtonReleased(6);
   }
 
  
