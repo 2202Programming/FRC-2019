@@ -25,7 +25,7 @@ import frc.robot.subsystems.ClimberSubsystem;
 public class Robot extends TimedRobot {
   public static ClimberSubsystem climber = new ClimberSubsystem();
   public static OI m_oi;
-  public static DriveTrainSubsystem driveTrain;
+  public static DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -37,7 +37,6 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     m_oi = new OI();
-    driveTrain = new DriveTrainSubsystem();
     // chooser.addOption("My Auto", new MyAutoCommand());
     SmartDashboard.putData("Auto mode", m_chooser);
   }
