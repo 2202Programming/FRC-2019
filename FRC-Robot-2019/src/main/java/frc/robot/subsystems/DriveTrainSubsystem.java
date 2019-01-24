@@ -1,13 +1,16 @@
 package frc.robot.subsystems;
 
+import frc.robot.commands.ArcadeDriveCommand;
 import frc.robot.commands.TankDriveCommand;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.RobotMap;
@@ -24,6 +27,9 @@ public class DriveTrainSubsystem extends Subsystem {
   private SpeedController frontRightMotor = new WPI_TalonSRX(RobotMap.FR_TALON_CAN_ID);
   private SpeedController middleRightMotor = new WPI_TalonSRX(RobotMap.MR_TALON_CAN_ID);
   private SpeedController backRightMotor = new WPI_TalonSRX(RobotMap.BR_TALON_CAN_ID);
+  private Encoder leftEncoder = new Encoder(RobotMap.ENCODER_LEFT_PIN_1, RobotMap.ENCODER_LEFT_PIN_2, false, EncodingType.k4X);
+  private Encoder rightEncoder = new Encoder(RobotMap.ENCODER_RIGHT_PIN_1, RobotMap.ENCODER_RIGHT_PIN_2, false, EncodingType.k4X);
+
   // Motor groups
   private SpeedControllerGroup leftMotors, rightMotors;
 
@@ -32,9 +38,13 @@ public class DriveTrainSubsystem extends Subsystem {
   public DriveTrainSubsystem() {
 
     addChild("Front Left CIM", (Sendable) frontLeftMotor);
+    addChild("Middle Left CIM", (Sendable) middleLeftMotor);
     addChild("Back Left CIM", (Sendable) backLeftMotor);
     addChild("Front Right CIM", (Sendable) frontRightMotor);
+    addChild("Middle Right CIM", (Sendable) middleRightMotor);
     addChild("Back Right CIM", (Sendable) backRightMotor);
+    addChild("Left Encoder", (Sendable) leftEncoder);
+    addChild("Right Encoder", (Sendable) rightEncoder);
 
     leftMotors = new SpeedControllerGroup(frontLeftMotor, middleLeftMotor, backLeftMotor);
     rightMotors = new SpeedControllerGroup(frontRightMotor, middleRightMotor, backRightMotor);
@@ -44,7 +54,7 @@ public class DriveTrainSubsystem extends Subsystem {
 
   @Override
   public void initDefaultCommand() {
-    setDefaultCommand(new TankDriveCommand());
+    setDefaultCommand(new ArcadeDriveCommand());
   }
 
   /**
@@ -64,6 +74,34 @@ public class DriveTrainSubsystem extends Subsystem {
    */
   public void tankDrive(double leftAxis, double rightAxis) {
     drive.tankDrive(leftAxis, rightAxis);
+  }
+
+  /**
+   * Arcade drive using a single joystick
+   *
+   * @param xSpeed        The robot's speed along the X axis [-1.0..1.0]. Forward is positive.
+   * @param zRotation     The robot's rotation rate around the Z axis [-1.0..1.0]. Clockwise is
+   *                      positive.
+   * @param squareInputs If set, decreases the input sensitivity at low speeds.
+   */
+  public void ArcadeDrive(double xSpeed, double zRotation, boolean squaredInput) {
+    drive.arcadeDrive(xSpeed, zRotation, squaredInput);
+  }
+
+  /**
+   * Get the left encoder
+   * @return The left encoder object
+   */
+  public Encoder getLeftEncoder(){
+    return leftEncoder;
+  }
+
+  /**
+   * Get the right encoder
+   * @return The right encoder object
+   */
+  public Encoder getRightEncoderRate(){
+    return rightEncoder;
   }
 
   /**

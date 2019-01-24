@@ -7,12 +7,14 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.DriveTrainSubsystem;
+import frc.robot.subsystems.ExampleSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -23,7 +25,9 @@ import frc.robot.subsystems.DriveTrainSubsystem;
  */
 public class Robot extends TimedRobot {
   public static OI m_oi;
-  public static DriveTrainSubsystem driveTrain;
+  public static DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
+  public static GearShifterSubsystem gearShifter = new GearShifterSubsystem();
+  public static Compressor gearshifterCompressor = new Compressor();
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -35,7 +39,8 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     m_oi = new OI();
-    driveTrain = new DriveTrainSubsystem();
+    gearshifterCompressor.start();
+    m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
     // chooser.addOption("My Auto", new MyAutoCommand());
     SmartDashboard.putData("Auto mode", m_chooser);
   }
@@ -51,6 +56,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    logSmartDashboardSensors();
   }
 
   /**
@@ -128,5 +134,14 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
+  }
+
+  private void logSmartDashboardSensors() {
+    SmartDashboard.putString("Left Encoder Count", String.valueOf(driveTrain.getLeftEncoder().get()));
+    SmartDashboard.putString("Left Encoder Distance", String.valueOf(driveTrain.getLeftEncoder().getDistance()));
+    SmartDashboard.putString("Left Encoder Speed", String.valueOf(driveTrain.getLeftEncoder().getRate()));
+    SmartDashboard.putString("Left Encoder Count", String.valueOf(driveTrain.getLeftEncoder().get()));
+    SmartDashboard.putString("Left Encoder Distance", String.valueOf(driveTrain.getLeftEncoder().getDistance()));
+    SmartDashboard.putString("Left Encoder Rate", String.valueOf(driveTrain.getLeftEncoder().getRate()));
   }
 }

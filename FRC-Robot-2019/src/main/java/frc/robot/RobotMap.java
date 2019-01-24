@@ -21,10 +21,18 @@ public class RobotMap {
   public static final int MR_TALON_CAN_ID = 15;
   public static final int BR_TALON_CAN_ID = 16;
   public static final int GEARSHIFT_SOLENOID_CAN_ID = 2;
+  public static final int GEARSHIFTUP_SOLENOID_ID = 1;
+  public static final int GEARSHIFTDOWN_SOLENOID_ID = 3;
+
 
   public static final int CLIMBER_MOTOR_PIN = 4;
   public static final int LEFT_INTAKE_MOTOR_PIN = 5;
   public static final int RIGHT_INTAKE_MOTOR_PIN = 6;
 
   public static final int INTAKE_PHOTOGATE_CHANNEL = 4;
+
+  public static final int ENCODER_LEFT_PIN_1 = 1;
+  public static final int ENCODER_LEFT_PIN_2 = 2;
+  public static final int ENCODER_RIGHT_PIN_1 = 3;
+  public static final int ENCODER_RIGHT_PIN_2 = 4;
 }
