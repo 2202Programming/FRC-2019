@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveTrainSubsystem;
@@ -70,10 +71,10 @@ public class AutomaticGearShiftCommand extends Command {
    * @return The minimum throttle
    */
   private double getThrottle(boolean squareInputs) {
-    double xSpeed = limit(Robot.m_oi.getController0().getLeftJoystickY());
+    double xSpeed = limit(Robot.m_oi.getController0().getY(Hand.kLeft));
     xSpeed = applyDeadband(xSpeed, DEADZONE);
 
-    double zRotation = limit(Robot.m_oi.getController0().getLeftJoystickX());
+    double zRotation = limit(Robot.m_oi.getController0().getX(Hand.kLeft));
     zRotation = applyDeadband(zRotation, DEADZONE);
 
     // Square the inputs (while preserving the sign) to increase fine control
