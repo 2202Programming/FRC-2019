@@ -3,6 +3,9 @@ package frc.robot.subsystems;
 import frc.robot.commands.ArcadeDriveCommand;
 import frc.robot.commands.TankDriveCommand;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.DemandType;
+import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.Encoder;
@@ -21,12 +24,12 @@ import frc.robot.RobotMap;
 public class DriveTrainSubsystem extends Subsystem {
 
   // Individual Motors
-  private SpeedController frontLeftMotor = new WPI_TalonSRX(RobotMap.FL_TALON_CAN_ID);
-  private SpeedController middleLeftMotor = new WPI_TalonSRX(RobotMap.ML_TALON_CAN_ID);
-  private SpeedController backLeftMotor = new WPI_TalonSRX(RobotMap.BL_TALON_CAN_ID);
-  private SpeedController frontRightMotor = new WPI_TalonSRX(RobotMap.FR_TALON_CAN_ID);
-  private SpeedController middleRightMotor = new WPI_TalonSRX(RobotMap.MR_TALON_CAN_ID);
-  private SpeedController backRightMotor = new WPI_TalonSRX(RobotMap.BR_TALON_CAN_ID);
+  private WPI_TalonSRX frontLeftMotor = new WPI_TalonSRX(RobotMap.FL_TALON_CAN_ID);
+  private WPI_TalonSRX middleLeftMotor = new WPI_TalonSRX(RobotMap.ML_TALON_CAN_ID);
+  private WPI_TalonSRX backLeftMotor = new WPI_TalonSRX(RobotMap.BL_TALON_CAN_ID);
+  private WPI_TalonSRX frontRightMotor = new WPI_TalonSRX(RobotMap.FR_TALON_CAN_ID);
+  private WPI_TalonSRX middleRightMotor = new WPI_TalonSRX(RobotMap.MR_TALON_CAN_ID);
+  private WPI_TalonSRX backRightMotor = new WPI_TalonSRX(RobotMap.BR_TALON_CAN_ID);
   private Encoder leftEncoder = new Encoder(RobotMap.ENCODER_LEFT_PIN_1, RobotMap.ENCODER_LEFT_PIN_2, false, EncodingType.k4X);
   private Encoder rightEncoder = new Encoder(RobotMap.ENCODER_RIGHT_PIN_1, RobotMap.ENCODER_RIGHT_PIN_2, false, EncodingType.k4X);
 
@@ -86,6 +89,12 @@ public class DriveTrainSubsystem extends Subsystem {
    */
   public void ArcadeDrive(double xSpeed, double zRotation, boolean squaredInput) {
     drive.arcadeDrive(xSpeed, zRotation, squaredInput);
+  }
+
+  public void driveDistance(int distance) {
+    frontLeftMotor.follow(frontRightMotor, FollowerType.AuxOutput1);
+    frontRightMotor.set(ControlMode.MotionMagic, distance, DemandType.AuxPID, 0);
+    
   }
 
   /**
