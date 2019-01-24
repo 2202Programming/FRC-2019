@@ -42,7 +42,7 @@ public class AutomaticGearShiftCommand extends Command {
     //TODO: Use Navx to prevent gear shifting while turning
     Gear curGear = gearShifter.getCurGear();
     //The line below may break because the encoders belong to the DriveTrain subsystem
-    double curSpeed = (Math.abs(driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity()) + Math.abs(driveTrain.getRightEncoderTalon().getSelectedSensorPosition())) / 2.0;
+    double curSpeed = (Math.abs(driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity()) + Math.abs(driveTrain.getRightEncoderTalon().getSelectedSensorVelocity())) / 2.0;
     double shiftSpeed = getShiftSpeed(curGear, getThrottle(true));
     
     if(curGear == Gear.LOW_GEAR) {
