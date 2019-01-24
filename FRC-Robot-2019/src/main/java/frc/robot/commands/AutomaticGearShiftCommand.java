@@ -11,8 +11,8 @@ import frc.robot.subsystems.GearShifterSubsystem.Gear;
  */
 public class AutomaticGearShiftCommand extends Command {
   private final double MAXSPEED_IN_COUNTS_PER_SECOND = 10000; //TODO: Find real values for these constants
-  private final double UPSHIFT_SPEED_LOW = 0.4;
-  private final double UPSHIFT_SPEED_HIGH = 0.4;
+  private final double UPSHIFT_SPEED_LOW = 0.2;
+  private final double UPSHIFT_SPEED_HIGH = 0.2;
   private final double UPSHIFT_THROTTLE_LOW = 0.3;
   private final double UPSHIFT_THROTTLE_HIGH = 0.6;
   private final double DOWNSHIFT_SPEED_LOW = 0.1;
