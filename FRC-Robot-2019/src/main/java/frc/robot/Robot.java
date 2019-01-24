@@ -136,12 +136,10 @@ public class Robot extends TimedRobot {
   }
 
   private void logSmartDashboardSensors() {
-    SmartDashboard.putString("Left Encoder Count", String.valueOf(driveTrain.getLeftEncoder().get()));
-    SmartDashboard.putString("Left Encoder Distance", String.valueOf(driveTrain.getLeftEncoder().getDistance()));
-    SmartDashboard.putString("Left Encoder Speed", String.valueOf(driveTrain.getLeftEncoder().getRate()));
-    SmartDashboard.putString("Left Encoder Count", String.valueOf(driveTrain.getLeftEncoder().get()));
-    SmartDashboard.putString("Left Encoder Distance", String.valueOf(driveTrain.getLeftEncoder().getDistance()));
-    SmartDashboard.putString("Left Encoder Rate", String.valueOf(driveTrain.getLeftEncoder().getRate()));
+    SmartDashboard.putString("Left Encoder Count", String.valueOf(driveTrain.getLeftEncoderTalon().getSelectedSensorPosition()));
+    SmartDashboard.putString("Left Encoder Speed", String.valueOf(driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity()));
+    SmartDashboard.putString("Right Encoder Count", String.valueOf(driveTrain.getRightEncoderTalon().getSelectedSensorPosition()));
+    SmartDashboard.putString("Right Encoder Rate", String.valueOf(driveTrain.getRightEncoderTalon().getSelectedSensorPosition()));
     SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
   }
 }
