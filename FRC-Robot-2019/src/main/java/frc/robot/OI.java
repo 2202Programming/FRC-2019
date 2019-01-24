@@ -8,8 +8,8 @@
 package frc.robot;
 
 
-import frc.robot.input.XboxController;
-import edu.wpi.first.wpilibj.buttons.Button;
+import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.input.XboxControllerButtonCode;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.DownShiftCommand;
 import frc.robot.commands.UpShiftCommand;
@@ -51,8 +51,8 @@ public class OI {
   private XboxController switchBoard = new XboxController(2);
 
   public OI() {
-    new JoystickButton(xboxController0, 5).whenPressed(new DownShiftCommand());//5 LB
-    new JoystickButton(xboxController0, 6).whenPressed(new UpShiftCommand());//6 RB
+    new JoystickButton(xboxController0, XboxControllerButtonCode.LB.getCode()).whenPressed(new DownShiftCommand());
+    new JoystickButton(xboxController0, XboxControllerButtonCode.RB.getCode()).whenPressed(new UpShiftCommand());
   }
 
   public XboxController getController0() {
