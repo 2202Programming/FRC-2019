@@ -16,8 +16,8 @@ public class AutomaticGearShiftCommand extends Command {
   private final double UPSHIFT_SPEED_HIGH = 0.2;
   private final double UPSHIFT_THROTTLE_LOW = 0.3;
   private final double UPSHIFT_THROTTLE_HIGH = 0.6;
-  private final double DOWNSHIFT_SPEED_LOW = 0.3;
-  private final double DOWNSHIFT_SPEED_HIGH = 0.3;
+  private final double DOWNSHIFT_SPEED_LOW = 0.1;
+  private final double DOWNSHIFT_SPEED_HIGH = 0.1;
   private final double DOWNSHIFT_THROTTLE_LOW = 0.3;
   private final double DOWNSHIFT_THROTTLE_HIGH = 0.6;
   private final double DEADZONE = 0.02; 
