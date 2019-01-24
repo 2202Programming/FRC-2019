@@ -32,7 +32,7 @@ public class GearShifterSubsystem extends Subsystem {
     }
 
     public void shiftDown() {
-        if(curGear != Gear.HIGH_GEAR)
+        if(curGear != Gear.LOW_GEAR)
             gearShiftSolenoid.set(DoubleSolenoid.Value.kReverse);
         curGear = Gear.LOW_GEAR;
     }
