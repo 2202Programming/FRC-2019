@@ -47,10 +47,7 @@ public class DriveTrainSubsystem extends Subsystem {
     leftEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
     WPI_TalonSRX rightEncoder = (WPI_TalonSRX) frontRightMotor;
     rightEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
-
-    frontRightMotor.setInverted(true);
-    middleRightMotor.setInverted(true);
-    backRightMotor.setInverted(true);
+    rightEncoder.setSensorPhase(true);
 
     leftMotors = new SpeedControllerGroup(frontLeftMotor, middleLeftMotor, backLeftMotor);
     rightMotors = new SpeedControllerGroup(frontRightMotor, middleRightMotor, backRightMotor);
