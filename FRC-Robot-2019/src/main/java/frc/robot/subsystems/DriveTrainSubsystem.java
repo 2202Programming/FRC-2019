@@ -29,6 +29,9 @@ public class DriveTrainSubsystem extends Subsystem {
   private SpeedController frontRightMotor = new WPI_TalonSRX(RobotMap.FR_TALON_CAN_ID);
   private SpeedController middleRightMotor = new WPI_TalonSRX(RobotMap.MR_TALON_CAN_ID);
   private SpeedController backRightMotor = new WPI_TalonSRX(RobotMap.BR_TALON_CAN_ID);
+  private WPI_TalonSRX leftEncoder;
+  private WPI_TalonSRX rightEncoder;
+
 
   // Motor groups
   private SpeedControllerGroup leftMotors, rightMotors;
@@ -43,9 +46,10 @@ public class DriveTrainSubsystem extends Subsystem {
     addChild("Back Right CIM", (Sendable) backRightMotor);
     addChild("Front Left CIM", (Sendable) frontLeftMotor);
     
-    WPI_TalonSRX leftEncoder = (WPI_TalonSRX) frontLeftMotor;
+    leftEncoder = (WPI_TalonSRX) frontLeftMotor;
     leftEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
-    WPI_TalonSRX rightEncoder = (WPI_TalonSRX) frontRightMotor;
+    rightEncoder = (WPI_TalonSRX) frontRightMotor;
+
     rightEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
     rightEncoder.setSensorPhase(true);
 
@@ -57,6 +61,8 @@ public class DriveTrainSubsystem extends Subsystem {
 
   @Override
   public void initDefaultCommand() {
+    leftEncoder.setSelectedSensorPosition(0);
+    rightEncoder.setSelectedSensorPosition(0);
     setDefaultCommand(new ArcadeDriveCommand());
   }
 
@@ -96,7 +102,7 @@ public class DriveTrainSubsystem extends Subsystem {
    * @return The left encoder object
    */
   public TalonSRX getLeftEncoderTalon(){
-    return (WPI_TalonSRX) frontLeftMotor;
+    return leftEncoder;
   }
 
   /**
@@ -104,7 +110,7 @@ public class DriveTrainSubsystem extends Subsystem {
    * @return The right encoder object
    */
   public TalonSRX getRightEncoderTalon(){
-    return (WPI_TalonSRX) frontRightMotor;
+    return rightEncoder;
   }
 
   /**
