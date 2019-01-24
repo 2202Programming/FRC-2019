@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveTrainSubsystem;
@@ -28,7 +29,7 @@ public class TankDriveCommand extends Command {
   // Temporary until we get the XboxController wrapper for joystick
   @Override
   protected void execute() {
-    Robot.driveTrain.tankDrive(Robot.m_oi.getController0().getLeftJoystickY(), Robot.m_oi.getController0().getRightJoystickY());
+    Robot.driveTrain.tankDrive(Robot.m_oi.getController0().getY(Hand.kLeft), Robot.m_oi.getController0().getY(Hand.kRight));
   }
 
   @Override
