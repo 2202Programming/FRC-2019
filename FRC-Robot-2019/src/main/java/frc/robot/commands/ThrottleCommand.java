@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveTrainSubsystem;
@@ -41,9 +42,9 @@ public class ThrottleCommand extends Command {
   // Temporary until we get the XboxController wrapper for joystick
   @Override
   protected void execute() {
-    double throttle = Robot.m_oi.getController0().getLeftJoystickY() * (startValue + stepValue * cycleCount);
+    double throttle = Robot.m_oi.getController0().getY(Hand.kLeft) * (startValue + stepValue * cycleCount);
     cycleCount++;
-    Robot.driveTrain.ArcadeDrive(throttle, Robot.m_oi.getController0().getLeftJoystickX(), true);
+    Robot.driveTrain.ArcadeDrive(throttle, Robot.m_oi.getController0().getY(Hand.kLeft), true);
   }
 
   @Override
