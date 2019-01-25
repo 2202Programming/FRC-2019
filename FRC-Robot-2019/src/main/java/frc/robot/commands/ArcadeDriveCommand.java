@@ -41,9 +41,4 @@ public class ArcadeDriveCommand extends Command {
   protected void end() {
     driveTrain.stop();
   }
-
-  @Override
-  protected void interrupted() {
-    return;
-  }
 }
