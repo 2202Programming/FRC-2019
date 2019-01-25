@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveTrainSubsystem;
@@ -11,8 +12,8 @@ import frc.robot.subsystems.GearShifterSubsystem.Gear;
  */
 public class AutomaticGearShiftCommand extends Command {
   private final double MAXSPEED_IN_COUNTS_PER_SECOND = 10000; //TODO: Find real values for these constants
-  private final double UPSHIFT_SPEED_LOW = 0.4;
-  private final double UPSHIFT_SPEED_HIGH = 0.4;
+  private final double UPSHIFT_SPEED_LOW = 0.2;
+  private final double UPSHIFT_SPEED_HIGH = 0.2;
   private final double UPSHIFT_THROTTLE_LOW = 0.3;
   private final double UPSHIFT_THROTTLE_HIGH = 0.6;
   private final double DOWNSHIFT_SPEED_LOW = 0.1;
@@ -50,10 +51,9 @@ public class AutomaticGearShiftCommand extends Command {
         gearShifter.shiftUp();
       }
     } else {
-      //Comment out to test upshifting before downshifting
-      // if(curSpeed < shiftSpeed) {
-      //   gearShifter.shiftDown();
-      // }
+      if(curSpeed < shiftSpeed) {
+        gearShifter.shiftDown();
+      }
     }
   }
 
@@ -70,10 +70,10 @@ public class AutomaticGearShiftCommand extends Command {
    * @return The minimum throttle
    */
   private double getThrottle(boolean squareInputs) {
-    double xSpeed = limit(Robot.m_oi.getController0().getLeftJoystickY());
+    double xSpeed = limit(Robot.m_oi.getController0().getY(Hand.kLeft));
     xSpeed = applyDeadband(xSpeed, DEADZONE);
 
-    double zRotation = limit(Robot.m_oi.getController0().getLeftJoystickX());
+    double zRotation = limit(Robot.m_oi.getController0().getX(Hand.kLeft));
     zRotation = applyDeadband(zRotation, DEADZONE);
 
     // Square the inputs (while preserving the sign) to increase fine control
