@@ -56,9 +56,4 @@ public class ThrottleCommand extends Command {
   protected void end() {
     driveTrain.stop();
   }
-
-  @Override
-  protected void interrupted() {
-    return;
-  }
 }
