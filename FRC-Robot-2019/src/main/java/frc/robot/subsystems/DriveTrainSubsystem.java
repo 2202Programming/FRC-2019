@@ -1,18 +1,15 @@
 package frc.robot.subsystems;
 
 import frc.robot.commands.ArcadeDriveCommand;
-import frc.robot.commands.TankDriveCommand;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
-import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.RobotMap;
@@ -38,6 +35,8 @@ public class DriveTrainSubsystem extends Subsystem {
 
   private DifferentialDrive drive;
 
+  private short inversionConstant;
+
   public DriveTrainSubsystem() {
     addChild("Middle Left CIM", (Sendable) middleLeftMotor);
     addChild("Back Left CIM", (Sendable) backLeftMotor);
@@ -57,12 +56,14 @@ public class DriveTrainSubsystem extends Subsystem {
     rightMotors = new SpeedControllerGroup(frontRightMotor, middleRightMotor, backRightMotor);
 
     drive = new DifferentialDrive(leftMotors, rightMotors);
+    inversionConstant = 1;
   }
 
   @Override
   public void initDefaultCommand() {
     leftEncoder.setSelectedSensorPosition(0);
     rightEncoder.setSelectedSensorPosition(0);
+    inversionConstant = 1;
     setDefaultCommand(new ArcadeDriveCommand());
   }
 
@@ -82,7 +83,7 @@ public class DriveTrainSubsystem extends Subsystem {
    * @param rightAxis Right sides value
    */
   public void tankDrive(double leftAxis, double rightAxis) {
-    drive.tankDrive(leftAxis, rightAxis);
+    drive.tankDrive(inversionConstant * leftAxis, inversionConstant * rightAxis);
   }
 
   /**
@@ -94,7 +95,7 @@ public class DriveTrainSubsystem extends Subsystem {
    * @param squareInputs If set, decreases the input sensitivity at low speeds.
    */
   public void ArcadeDrive(double xSpeed, double zRotation, boolean squaredInput) {
-    drive.arcadeDrive(xSpeed, zRotation, squaredInput);
+    drive.arcadeDrive(inversionConstant * xSpeed, inversionConstant * zRotation, squaredInput);
   }
 
   /**
@@ -118,5 +119,19 @@ public class DriveTrainSubsystem extends Subsystem {
    */
   public void stop() {
     drive.stopMotor();
+  }
+
+  /**
+   * Inverts the driver controls
+   */
+  public void invertControls() {
+    inversionConstant *= -1;
+  }
+
+   /**
+   * Inverts the driver controls
+   */
+  public int getInversionConstant() {
+    return inversionConstant;
   }
 }
