@@ -99,6 +99,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.start();
     }
+    resetAllDashBoardSensors();
   }
 
   /**
@@ -107,6 +108,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     Scheduler.getInstance().run();
+    logSmartDashboardSensors();
   }
 
   @Override
@@ -118,6 +120,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    resetAllDashBoardSensors();
   }
 
   /**
@@ -145,5 +148,10 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(driveTrain);
     SmartDashboard.putData(gearShifter);
     SmartDashboard.putData(gearshifterCompressor);
+  }
+
+  private void resetAllDashBoardSensors() {
+    driveTrain.getLeftEncoderTalon().setSelectedSensorPosition(0);
+    driveTrain.getRightEncoderTalon().setSelectedSensorPosition(0);
   }
 }
