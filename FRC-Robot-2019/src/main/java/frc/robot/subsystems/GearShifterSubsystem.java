@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Sendable;
@@ -33,7 +32,7 @@ public class GearShifterSubsystem extends Subsystem {
     }
 
     public void shiftDown() {
-        if(curGear != Gear.HIGH_GEAR)
+        if(curGear != Gear.LOW_GEAR)
             gearShiftSolenoid.set(DoubleSolenoid.Value.kReverse);
         curGear = Gear.LOW_GEAR;
     }

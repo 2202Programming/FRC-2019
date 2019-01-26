@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveTrainSubsystem;
@@ -10,9 +11,9 @@ import frc.robot.subsystems.GearShifterSubsystem.Gear;
  * Automatically shifts the gears up and down
  */
 public class AutomaticGearShiftCommand extends Command {
-  private final double MAXSPEED_IN_INCHES_PER_SECOND = 15 * 12; //TODO: Find real values for these constants
-  private final double UPSHIFT_SPEED_LOW = 0.4;
-  private final double UPSHIFT_SPEED_HIGH = 0.4;
+  private final double MAXSPEED_IN_COUNTS_PER_SECOND = 10000; //TODO: Find real values for these constants
+  private final double UPSHIFT_SPEED_LOW = 0.2;
+  private final double UPSHIFT_SPEED_HIGH = 0.2;
   private final double UPSHIFT_THROTTLE_LOW = 0.3;
   private final double UPSHIFT_THROTTLE_HIGH = 0.6;
   private final double DOWNSHIFT_SPEED_LOW = 0.1;
@@ -42,7 +43,7 @@ public class AutomaticGearShiftCommand extends Command {
     //TODO: Use Navx to prevent gear shifting while turning
     Gear curGear = gearShifter.getCurGear();
     //The line below may break because the encoders belong to the DriveTrain subsystem
-    double curSpeed = (Math.abs(driveTrain.getLeftEncoder().getRate()) + Math.abs(driveTrain.getLeftEncoder().getRate())) / 2.0;
+    double curSpeed = (Math.abs(driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity()) + Math.abs(driveTrain.getRightEncoderTalon().getSelectedSensorVelocity())) / 2.0;
     double shiftSpeed = getShiftSpeed(curGear, getThrottle(true));
     
     if(curGear == Gear.LOW_GEAR) {
@@ -50,10 +51,9 @@ public class AutomaticGearShiftCommand extends Command {
         gearShifter.shiftUp();
       }
     } else {
-      //Comment out to test upshifting before downshifting
-      // if(curSpeed < shiftSpeed) {
-      //   gearShifter.shiftDown();
-      // }
+      if(curSpeed < shiftSpeed) {
+        gearShifter.shiftDown();
+      }
     }
   }
 
@@ -70,10 +70,10 @@ public class AutomaticGearShiftCommand extends Command {
    * @return The minimum throttle
    */
   private double getThrottle(boolean squareInputs) {
-    double xSpeed = limit(Robot.m_oi.getController0().getLeftJoystickY());
+    double xSpeed = limit(Robot.m_oi.getController0().getY(Hand.kLeft));
     xSpeed = applyDeadband(xSpeed, DEADZONE);
 
-    double zRotation = limit(Robot.m_oi.getController0().getLeftJoystickX());
+    double zRotation = limit(Robot.m_oi.getController0().getX(Hand.kLeft));
     zRotation = applyDeadband(zRotation, DEADZONE);
 
     // Square the inputs (while preserving the sign) to increase fine control
@@ -154,23 +154,23 @@ public class AutomaticGearShiftCommand extends Command {
   private double getShiftSpeed(Gear curGear, double curThrottle) {
     if(curGear == Gear.LOW_GEAR) {
       if(curThrottle < UPSHIFT_THROTTLE_LOW) {
-        return MAXSPEED_IN_INCHES_PER_SECOND * UPSHIFT_SPEED_LOW;
+        return MAXSPEED_IN_COUNTS_PER_SECOND * UPSHIFT_SPEED_LOW;
       } else if(curThrottle < UPSHIFT_SPEED_HIGH) {
         double slope = (UPSHIFT_SPEED_HIGH - UPSHIFT_SPEED_LOW) / (UPSHIFT_THROTTLE_HIGH - UPSHIFT_THROTTLE_LOW);
         double maxSpeedProportion = UPSHIFT_SPEED_LOW + slope * (curThrottle - UPSHIFT_THROTTLE_LOW);
-        return maxSpeedProportion * MAXSPEED_IN_INCHES_PER_SECOND;
+        return maxSpeedProportion * MAXSPEED_IN_COUNTS_PER_SECOND;
       } else {
-        return MAXSPEED_IN_INCHES_PER_SECOND * UPSHIFT_SPEED_HIGH;
+        return MAXSPEED_IN_COUNTS_PER_SECOND * UPSHIFT_SPEED_HIGH;
       }
     } else {
       if(curThrottle < DOWNSHIFT_THROTTLE_LOW) {
-        return MAXSPEED_IN_INCHES_PER_SECOND * DOWNSHIFT_SPEED_LOW;
+        return MAXSPEED_IN_COUNTS_PER_SECOND * DOWNSHIFT_SPEED_LOW;
       } else if(curThrottle < DOWNSHIFT_SPEED_HIGH) {
         double slope = (DOWNSHIFT_SPEED_HIGH - DOWNSHIFT_SPEED_LOW) / (DOWNSHIFT_THROTTLE_HIGH - DOWNSHIFT_THROTTLE_LOW);
         double maxSpeedProportion = DOWNSHIFT_SPEED_LOW + slope * (curThrottle - DOWNSHIFT_THROTTLE_LOW);
-        return maxSpeedProportion * MAXSPEED_IN_INCHES_PER_SECOND;
+        return maxSpeedProportion * MAXSPEED_IN_COUNTS_PER_SECOND;
       } else {
-        return MAXSPEED_IN_INCHES_PER_SECOND * DOWNSHIFT_SPEED_HIGH;
+        return MAXSPEED_IN_COUNTS_PER_SECOND * DOWNSHIFT_SPEED_HIGH;
       }
     }
   }

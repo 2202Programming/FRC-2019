@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.DriveTrainSubsystem;
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.GearShifterSubsystem;;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -40,7 +40,6 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     m_oi = new OI();
     gearshifterCompressor.start();
-    m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
     // chooser.addOption("My Auto", new MyAutoCommand());
     SmartDashboard.putData("Auto mode", m_chooser);
   }
@@ -137,11 +136,10 @@ public class Robot extends TimedRobot {
   }
 
   private void logSmartDashboardSensors() {
-    SmartDashboard.putString("Left Encoder Count", String.valueOf(driveTrain.getLeftEncoder().get()));
-    SmartDashboard.putString("Left Encoder Distance", String.valueOf(driveTrain.getLeftEncoder().getDistance()));
-    SmartDashboard.putString("Left Encoder Speed", String.valueOf(driveTrain.getLeftEncoder().getRate()));
-    SmartDashboard.putString("Left Encoder Count", String.valueOf(driveTrain.getLeftEncoder().get()));
-    SmartDashboard.putString("Left Encoder Distance", String.valueOf(driveTrain.getLeftEncoder().getDistance()));
-    SmartDashboard.putString("Left Encoder Rate", String.valueOf(driveTrain.getLeftEncoder().getRate()));
+    SmartDashboard.putString("Left Encoder Count", String.valueOf(driveTrain.getLeftEncoderTalon().getSelectedSensorPosition()));
+    SmartDashboard.putString("Left Encoder Rate", String.valueOf(driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity()));
+    SmartDashboard.putString("Right Encoder Count", String.valueOf(driveTrain.getRightEncoderTalon().getSelectedSensorPosition()));
+    SmartDashboard.putString("Right Encoder Rate", String.valueOf(driveTrain.getRightEncoderTalon().getSelectedSensorVelocity()));
+    SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
   }
 }

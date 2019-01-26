@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveTrainSubsystem;
@@ -28,7 +29,7 @@ public class ArcadeDriveCommand extends Command {
   // Temporary until we get the XboxController wrapper for joystick
   @Override
   protected void execute() {
-    Robot.driveTrain.ArcadeDrive(Robot.m_oi.getController0().getLeftJoystickY(), Robot.m_oi.getController0().getLeftJoystickX(), true);
+    Robot.driveTrain.ArcadeDrive(Robot.m_oi.getController0().getY(Hand.kLeft), Robot.m_oi.getController0().getX(Hand.kLeft), true);
   }
 
   @Override
@@ -39,10 +40,5 @@ public class ArcadeDriveCommand extends Command {
   @Override
   protected void end() {
     driveTrain.stop();
-  }
-
-  @Override
-  protected void interrupted() {
-    return;
   }
 }

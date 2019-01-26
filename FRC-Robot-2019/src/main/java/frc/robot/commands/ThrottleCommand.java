@@ -8,13 +8,26 @@ import frc.robot.subsystems.DriveTrainSubsystem;
 /**
  * An example command. You can replace me with your own command.
  */
-public class TankDriveCommand extends Command {
+public class ThrottleCommand extends Command {
+  private final double CYCLE_TIME_IN_SECONDS = 0.020;
   private DriveTrainSubsystem driveTrain;
+  private int cycleCount;
+  private int maxCycles;
+  private double stepValue;
+  private double startValue;
 
-  public TankDriveCommand() {
+  /**
+   * 
+   * @param rampTime Ramp up time in seconds
+   */
+  public ThrottleCommand(double rampTime, double startValue, double endValue) {
     // Use requires() here to declare subsystem dependencies
     requires(Robot.driveTrain);
     driveTrain = Robot.driveTrain;
+    cycleCount = 0;
+    maxCycles = (int) Math.ceil(rampTime / CYCLE_TIME_IN_SECONDS);
+    this.startValue = startValue;
+    stepValue = (endValue - startValue) / maxCycles;
   }
 
   // Called just before this Command runs the first time
@@ -26,15 +39,17 @@ public class TankDriveCommand extends Command {
   // Read Controller Input from two joysticks.
   // Left joystick controls the left motors and the right joystick controls the
   // right motors
-  // Temporary until we get the XboxController wrapper for joystick
   @Override
   protected void execute() {
-    Robot.driveTrain.tankDrive(Robot.m_oi.getController0().getY(Hand.kLeft), Robot.m_oi.getController0().getY(Hand.kRight));
+    double throttle = Robot.m_oi.getController0().getY(Hand.kLeft) * (startValue + stepValue * cycleCount);
+    cycleCount++;
+    double turnRate = Robot.m_oi.getController0().getX(Hand.kLeft) * (startValue + stepValue * cycleCount);
+    Robot.driveTrain.ArcadeDrive(throttle, turnRate, true);
   }
 
   @Override
   protected boolean isFinished() {
-    return false;
+    return cycleCount >= maxCycles;
   }
 
   @Override

@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import frc.robot.commands.ArcadeDriveCommand;
 import frc.robot.commands.TankDriveCommand;
 
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.Encoder;
@@ -27,8 +29,9 @@ public class DriveTrainSubsystem extends Subsystem {
   private SpeedController frontRightMotor = new WPI_TalonSRX(RobotMap.FR_TALON_CAN_ID);
   private SpeedController middleRightMotor = new WPI_TalonSRX(RobotMap.MR_TALON_CAN_ID);
   private SpeedController backRightMotor = new WPI_TalonSRX(RobotMap.BR_TALON_CAN_ID);
-  private Encoder leftEncoder = new Encoder(RobotMap.ENCODER_LEFT_PIN_1, RobotMap.ENCODER_LEFT_PIN_2, false, EncodingType.k4X);
-  private Encoder rightEncoder = new Encoder(RobotMap.ENCODER_RIGHT_PIN_1, RobotMap.ENCODER_RIGHT_PIN_2, false, EncodingType.k4X);
+  private WPI_TalonSRX leftEncoder;
+  private WPI_TalonSRX rightEncoder;
+
 
   // Motor groups
   private SpeedControllerGroup leftMotors, rightMotors;
@@ -36,15 +39,19 @@ public class DriveTrainSubsystem extends Subsystem {
   private DifferentialDrive drive;
 
   public DriveTrainSubsystem() {
-
-    addChild("Front Left CIM", (Sendable) frontLeftMotor);
     addChild("Middle Left CIM", (Sendable) middleLeftMotor);
     addChild("Back Left CIM", (Sendable) backLeftMotor);
     addChild("Front Right CIM", (Sendable) frontRightMotor);
     addChild("Middle Right CIM", (Sendable) middleRightMotor);
     addChild("Back Right CIM", (Sendable) backRightMotor);
-    addChild("Left Encoder", (Sendable) leftEncoder);
-    addChild("Right Encoder", (Sendable) rightEncoder);
+    addChild("Front Left CIM", (Sendable) frontLeftMotor);
+    
+    leftEncoder = (WPI_TalonSRX) frontLeftMotor;
+    leftEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
+    rightEncoder = (WPI_TalonSRX) frontRightMotor;
+
+    rightEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
+    rightEncoder.setSensorPhase(true);
 
     leftMotors = new SpeedControllerGroup(frontLeftMotor, middleLeftMotor, backLeftMotor);
     rightMotors = new SpeedControllerGroup(frontRightMotor, middleRightMotor, backRightMotor);
@@ -54,6 +61,8 @@ public class DriveTrainSubsystem extends Subsystem {
 
   @Override
   public void initDefaultCommand() {
+    leftEncoder.setSelectedSensorPosition(0);
+    rightEncoder.setSelectedSensorPosition(0);
     setDefaultCommand(new ArcadeDriveCommand());
   }
 
@@ -92,7 +101,7 @@ public class DriveTrainSubsystem extends Subsystem {
    * Get the left encoder
    * @return The left encoder object
    */
-  public Encoder getLeftEncoder(){
+  public TalonSRX getLeftEncoderTalon(){
     return leftEncoder;
   }
 
@@ -100,7 +109,7 @@ public class DriveTrainSubsystem extends Subsystem {
    * Get the right encoder
    * @return The right encoder object
    */
-  public Encoder getRightEncoderRate(){
+  public TalonSRX getRightEncoderTalon(){
     return rightEncoder;
   }
 
