@@ -13,6 +13,7 @@ import frc.robot.input.XboxControllerButtonCode;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.AutomaticUpShiftCommand;
 import frc.robot.commands.DownShiftCommand;
+import frc.robot.commands.ToggleAutomaticGearShiftingCommand;
 import frc.robot.commands.UpShiftCommand;
 
 /**
@@ -54,6 +55,7 @@ public class OI {
   public OI() {
     new JoystickButton(xboxController0, XboxControllerButtonCode.LB.getCode()).whenPressed(new DownShiftCommand());
     new JoystickButton(xboxController0, XboxControllerButtonCode.RB.getCode()).whenPressed(new AutomaticUpShiftCommand());
+    new JoystickButton(xboxController0, XboxControllerButtonCode.Y.getCode()).whenPressed(new ToggleAutomaticGearShiftingCommand());
   }
 
   public XboxController getController0() {
