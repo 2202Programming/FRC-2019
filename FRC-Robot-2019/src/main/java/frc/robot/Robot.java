@@ -26,7 +26,7 @@ import frc.robot.subsystems.GearShifterSubsystem;;
  * functions corresponding to each mode, as described in the TimedRobot
  * documentation. If you change the name of this class or the package after
  * creating this project, you must also update the build.gradle file in the
- * project.
+ * project.%
  */
 public class Robot extends TimedRobot {
   public static OI m_oi;
@@ -75,8 +75,8 @@ public class Robot extends TimedRobot {
     _talon.configPeakOutputReverse(-1, Constants.kTimeoutMs);
 
     /* Config the Velocity closed loop gains in slot0 */
-    _talon.config_kF(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kF, Constants.kTimeoutMs);
-    _talon.config_kP(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kP, Constants.kTimeoutMs);
+    _talon.config_kF(Constants.kPIDLoopIdx, 1023/2950.0, Constants.kTimeoutMs);
+    _talon.config_kP(Constants.kPIDLoopIdx, 0.0, Constants.kTimeoutMs);
     _talon.config_kI(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kI, Constants.kTimeoutMs);
     _talon.config_kD(Constants.kPIDLoopIdx, Constants.kGains_Velocit.kD, Constants.kTimeoutMs);
   }
@@ -186,7 +186,7 @@ public class Robot extends TimedRobot {
      * When button 1 is held, start and run Velocity Closed loop. Velocity Closed
      * Loop is controlled by joystick position x500 RPM, [-500, 500] RPM
      */
-    if (_joy.getRawButton(1)) {
+    if (_joy.getRawButton(2)) {
         /* Velocity Closed Loop */
 
         /**
