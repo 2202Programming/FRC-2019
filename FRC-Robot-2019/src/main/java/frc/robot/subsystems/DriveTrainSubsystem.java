@@ -64,7 +64,7 @@ public class DriveTrainSubsystem extends Subsystem {
     leftEncoder.setSelectedSensorPosition(0);
     rightEncoder.setSelectedSensorPosition(0);
     inversionConstant = 1;
-    setDefaultCommand(new ArcadeDriveCommand());
+    //setDefaultCommand(new ArcadeDriveCommand());
   }
 
   /**

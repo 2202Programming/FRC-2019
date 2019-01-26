@@ -30,8 +30,8 @@ import frc.robot.subsystems.GearShifterSubsystem;;
  */
 public class Robot extends TimedRobot {
   public static OI m_oi;
-  public static DriveTrainSubsystem driveTrain;
-  public static GearShifterSubsystem gearShifter;
+  public static DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
+  public static GearShifterSubsystem gearShifter = new GearShifterSubsystem();
 
    /* Hardware */
    TalonSRX _talon = new TalonSRX(11);

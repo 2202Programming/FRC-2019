@@ -24,7 +24,7 @@ public class GearShifterSubsystem extends Subsystem {
     public void initDefaultCommand() {
         curGear = Gear.HIGH_GEAR;
         shiftDown();
-        setDefaultCommand(new AutomaticGearShiftCommand());
+        //setDefaultCommand(new AutomaticGearShiftCommand());
     }
 
     public void shiftUp() {
