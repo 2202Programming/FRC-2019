@@ -141,5 +141,6 @@ public class Robot extends TimedRobot {
     SmartDashboard.putString("Right Encoder Count", String.valueOf(driveTrain.getRightEncoderTalon().getSelectedSensorPosition()));
     SmartDashboard.putString("Right Encoder Rate", String.valueOf(driveTrain.getRightEncoderTalon().getSelectedSensorVelocity()));
     SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
+    SmartDashboard.putData(Scheduler.getInstance());
   }
 }
