@@ -51,9 +51,9 @@ public class AutomaticGearShiftCommand extends Command {
       //   gearShifter.shiftUp();
       // }
     } else {
-      /*if(curSpeed < shiftSpeed) {
+      if(curSpeed < shiftSpeed) {
         gearShifter.shiftDown();
-      }*/
+      }
     }
   }
 

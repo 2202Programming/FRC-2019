@@ -10,9 +10,9 @@ public class AutomaticUpShiftCommand extends CommandGroup {
         requires(Robot.driveTrain);
 
         CommandGroup upShiftParallel = new CommandGroup();
-        upShiftParallel.addSequential(new WaitCommand(0.25));
+        upShiftParallel.addSequential(new WaitCommand(0.1));
         upShiftParallel.addSequential(new UpShiftCommand());
-        addSequential(new ThrottleCommand(1, 0.5, 1));
         addParallel(upShiftParallel);
+        addSequential(new ThrottleCommand(2, 0.5, 1));
     }
 }
