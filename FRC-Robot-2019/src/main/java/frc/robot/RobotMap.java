@@ -14,6 +14,10 @@ package frc.robot;
  * floating around.
  */
 public class RobotMap {
+  public static final double ENCODER_RIGHT_DISTANCE_PER_PULSE = 0.002396219298;
+  public static final double ENCODER_LEFT_DISTANCE_PER_PULSE = 0.002399087014;
+  public static final int ENCODER_COUNTS_PER_REVOLUTION = 8192; //Double check this
+
   public static final int FL_TALON_CAN_ID = 11;
   public static final int ML_TALON_CAN_ID = 12;
   public static final int BL_TALON_CAN_ID = 13;
