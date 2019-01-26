@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.subsystems.GearShifterSubsystem;
@@ -45,10 +46,10 @@ public class AutomaticGearShiftCommand extends Command {
     //The line below may break because the encoders belong to the DriveTrain subsystem
     double curSpeed = (Math.abs(driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity()) + Math.abs(driveTrain.getRightEncoderTalon().getSelectedSensorVelocity())) / 2.0;
     double shiftSpeed = getShiftSpeed(curGear, getThrottle(true));
-    
+
     if(curGear == Gear.LOW_GEAR) {
       if(curSpeed > shiftSpeed) {
-        new AutomaticGearShiftCommand().start();
+        new AutomaticUpShiftCommand().start();
       }
     } else {
       if(curSpeed < shiftSpeed) {
@@ -110,6 +111,8 @@ public class AutomaticGearShiftCommand extends Command {
 
     double leftThrottle = Math.abs(limit(leftMotorOutput) * MAX_OUTPUT);
     double rightThrottle = Math.abs(limit(rightMotorOutput) * MAX_OUTPUT * RIGHT_SIDE_INVERT_MULTIPLIER);
+    SmartDashboard.putNumber("Left Throttle", leftThrottle);
+    SmartDashboard.putNumber("rightThrottle", rightThrottle);
     return Math.min(leftThrottle, rightThrottle);
   }
 

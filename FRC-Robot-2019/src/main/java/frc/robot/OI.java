@@ -54,7 +54,7 @@ public class OI {
 
   public OI() {
     new JoystickButton(xboxController0, XboxControllerButtonCode.LB.getCode()).whenPressed(new DownShiftCommand());
-    new JoystickButton(xboxController0, XboxControllerButtonCode.RB.getCode()).whenPressed(new AutomaticUpShiftCommand());
+    new JoystickButton(xboxController0, XboxControllerButtonCode.RB.getCode()).whenPressed(new UpShiftCommand());
     new JoystickButton(xboxController0, XboxControllerButtonCode.Y.getCode()).whenPressed(new ToggleAutomaticGearShiftingCommand());
   }
 
