@@ -95,7 +95,7 @@ public class DriveTrainSubsystem extends Subsystem {
    * @param squareInputs If set, decreases the input sensitivity at low speeds.
    */
   public void ArcadeDrive(double xSpeed, double zRotation, boolean squaredInput) {
-    drive.arcadeDrive(inversionConstant * xSpeed, inversionConstant * zRotation, squaredInput);
+    drive.arcadeDrive(inversionConstant * xSpeed, -zRotation, squaredInput);
   }
 
   /**
