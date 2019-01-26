@@ -39,12 +39,12 @@ public class ThrottleCommand extends Command {
   // Read Controller Input from two joysticks.
   // Left joystick controls the left motors and the right joystick controls the
   // right motors
-  // Temporary until we get the XboxController wrapper for joystick
   @Override
   protected void execute() {
     double throttle = Robot.m_oi.getController0().getY(Hand.kLeft) * (startValue + stepValue * cycleCount);
     cycleCount++;
-    Robot.driveTrain.ArcadeDrive(throttle, Robot.m_oi.getController0().getY(Hand.kLeft), true);
+    double turnRate = Robot.m_oi.getController0().getX(Hand.kLeft) * (startValue + stepValue * cycleCount);
+    Robot.driveTrain.ArcadeDrive(throttle, turnRate, true);
   }
 
   @Override
