@@ -12,7 +12,7 @@ public class AutomaticUpShiftCommand extends CommandGroup {
         CommandGroup upShiftParallel = new CommandGroup();
         upShiftParallel.addSequential(new WaitCommand(0.25));
         upShiftParallel.addSequential(new UpShiftCommand());
-        addSequential(new ThrottleCommand(1, 1 / 3.68, 1));
-        //addParallel(upShiftParallel);
+        addSequential(new ThrottleCommand(1, 0.5, 1));
+        addParallel(upShiftParallel);
     }
 }
