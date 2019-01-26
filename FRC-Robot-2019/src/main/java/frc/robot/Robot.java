@@ -27,7 +27,6 @@ public class Robot extends TimedRobot {
   public static OI m_oi;
   public static DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
   public static GearShifterSubsystem gearShifter = new GearShifterSubsystem();
-  public static Compressor gearshifterCompressor = new Compressor();
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -39,7 +38,6 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     m_oi = new OI();
-    gearshifterCompressor.start();
     // chooser.addOption("My Auto", new MyAutoCommand());
     SmartDashboard.putData("Auto mode", m_chooser);
   }
@@ -147,7 +145,6 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(Scheduler.getInstance()); 
     SmartDashboard.putData(driveTrain);
     SmartDashboard.putData(gearShifter);
-    SmartDashboard.putData(gearshifterCompressor);
   }
 
   private void resetAllDashBoardSensors() {
