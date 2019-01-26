@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -28,6 +29,7 @@ public class Robot extends TimedRobot {
   public static DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
   public static GearShifterSubsystem gearShifter = new GearShifterSubsystem();
   public static Compressor gearshifterCompressor = new Compressor();
+  public static PowerDistributionPanel pdp = new PowerDistributionPanel(0);
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -141,5 +143,6 @@ public class Robot extends TimedRobot {
     SmartDashboard.putString("Right Encoder Count", String.valueOf(driveTrain.getRightEncoderTalon().getSelectedSensorPosition()));
     SmartDashboard.putString("Right Encoder Rate", String.valueOf(driveTrain.getRightEncoderTalon().getSelectedSensorVelocity()));
     SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
+    SmartDashboard.putString("Current Draw by Motors", String.valueOf(pdp.getCurrent(0)));
   }
 }
