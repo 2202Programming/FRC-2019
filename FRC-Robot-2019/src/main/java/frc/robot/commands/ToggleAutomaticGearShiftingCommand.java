@@ -1,7 +1,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.InstantCommand;
-import edu.wpi.first.wpilibj.command.WaitCommand;
 import frc.robot.Robot;
 import frc.robot.subsystems.GearShifterSubsystem;
 
@@ -16,7 +15,7 @@ public class ToggleAutomaticGearShiftingCommand extends InstantCommand {
     @Override
     protected void execute() {
         if(gearShifter.getDefaultCommandName() == "AutomaticGearShiftCommand") {
-            Robot.gearShifter.setDefaultCommand(new WaitCommand(1));
+            Robot.gearShifter.setDefaultCommand(null);
         } else {
             Robot.gearShifter.setDefaultCommand(new AutomaticGearShiftCommand());
         }

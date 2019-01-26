@@ -47,9 +47,9 @@ public class AutomaticGearShiftCommand extends Command {
     double shiftSpeed = getShiftSpeed(curGear, getThrottle(true));
     
     if(curGear == Gear.LOW_GEAR) {
-      // if(curSpeed > shiftSpeed) {
-      //   gearShifter.shiftUp();
-      // }
+      if(curSpeed > shiftSpeed) {
+        new AutomaticGearShiftCommand().start();
+      }
     } else {
       if(curSpeed < shiftSpeed) {
         gearShifter.shiftDown();
