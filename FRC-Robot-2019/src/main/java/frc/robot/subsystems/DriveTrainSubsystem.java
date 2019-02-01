@@ -164,9 +164,9 @@ public class DriveTrainSubsystem extends Subsystem {
   public double velLeft() {
     //lin vel = counts/sampletime * sampletime/sec * dist/counts
     //0.1 is assuming that the sample time is 100ms
-    return leftEncoder.getSelectedSensorVelocity()* 0.1 * posLeft();
+    return leftEncoder.getSelectedSensorVelocity()* 0.1 * RobotMap.ENCODER_LEFT_DISTANCE_PER_PULSE;
   }
   public double velRight() {
-    return rightEncoder.getSelectedSensorVelocity()* 0.1 * posRight();
+    return rightEncoder.getSelectedSensorVelocity()* 0.1 * RobotMap.ENCODER_RIGHT_DISTANCE_PER_PULSE;
   }
 }
