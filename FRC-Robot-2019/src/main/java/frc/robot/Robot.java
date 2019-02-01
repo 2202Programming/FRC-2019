@@ -15,7 +15,11 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.DriveTrainSubsystem;
-import frc.robot.subsystems.GearShifterSubsystem;;
+import frc.robot.subsystems.GearShifterSubsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -58,6 +62,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     logSmartDashboardSensors();
+    getLimelightValues();
   }
 
   /**
@@ -145,4 +150,23 @@ public class Robot extends TimedRobot {
     SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
     SmartDashboard.putString("Current Draw by Motors", String.valueOf(pdp.getCurrent(0)));
   }
+
+  private void getLimelightValues() {
+    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+    NetworkTableEntry tx = table.getEntry("tx");
+    NetworkTableEntry ty = table.getEntry("ty");
+    NetworkTableEntry ta = table.getEntry("ta");
+
+    //read values periodically
+    double x = tx.getDouble(0.0);
+    double y = ty.getDouble(0.0);
+    double area = ta.getDouble(0.0);
+
+    //post to smart dashboard periodically
+    SmartDashboard.putNumber("LimelightX", x);
+    SmartDashboard.putNumber("LimelightY", y);
+    SmartDashboard.putNumber("LimelightArea", area);
+
+  }
+
 }
