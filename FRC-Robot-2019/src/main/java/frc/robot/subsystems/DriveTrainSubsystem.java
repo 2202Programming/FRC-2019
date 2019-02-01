@@ -20,18 +20,17 @@ import frc.robot.RobotMap;
 public class DriveTrainSubsystem extends Subsystem {
 
   // Individual Motors
-  private SpeedController frontLeftMotor = new WPI_TalonSRX(RobotMap.FL_TALON_CAN_ID);
-  private SpeedController middleLeftMotor = new WPI_TalonSRX(RobotMap.ML_TALON_CAN_ID);
-  private SpeedController backLeftMotor = new WPI_TalonSRX(RobotMap.BL_TALON_CAN_ID);
-  private SpeedController frontRightMotor = new WPI_TalonSRX(RobotMap.FR_TALON_CAN_ID);
-  private SpeedController middleRightMotor = new WPI_TalonSRX(RobotMap.MR_TALON_CAN_ID);
-  private SpeedController backRightMotor = new WPI_TalonSRX(RobotMap.BR_TALON_CAN_ID);
+  private WPI_TalonSRX frontLeftMotor = new WPI_TalonSRX(RobotMap.FL_TALON_CAN_ID);
+  private WPI_TalonSRX middleLeftMotor = new WPI_TalonSRX(RobotMap.ML_TALON_CAN_ID);
+  private WPI_TalonSRX backLeftMotor = new WPI_TalonSRX(RobotMap.BL_TALON_CAN_ID);
+  private WPI_TalonSRX frontRightMotor = new WPI_TalonSRX(RobotMap.FR_TALON_CAN_ID);
+  private WPI_TalonSRX middleRightMotor = new WPI_TalonSRX(RobotMap.MR_TALON_CAN_ID);
+  private WPI_TalonSRX backRightMotor = new WPI_TalonSRX(RobotMap.BR_TALON_CAN_ID);
+  private SpeedController leftMotors;
+  private SpeedController rightMotors;
   private WPI_TalonSRX leftEncoder;
   private WPI_TalonSRX rightEncoder;
 
-
-  // Motor groups
-  private SpeedControllerGroup leftMotors, rightMotors;
 
   private DifferentialDrive drive;
 
@@ -52,11 +51,32 @@ public class DriveTrainSubsystem extends Subsystem {
     rightEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
     rightEncoder.setSensorPhase(true);
 
-    leftMotors = new SpeedControllerGroup(frontLeftMotor, middleLeftMotor, backLeftMotor);
-    rightMotors = new SpeedControllerGroup(frontRightMotor, middleRightMotor, backRightMotor);
+    middleLeftMotor.follow(frontLeftMotor);
+    backLeftMotor.follow(frontLeftMotor);
+
+    middleRightMotor.follow(frontRightMotor);
+    backRightMotor.follow(frontRightMotor);
+
+    limitTalon(frontLeftMotor);
+    limitTalon(middleLeftMotor);
+    limitTalon(backLeftMotor);
+    limitTalon(frontRightMotor);
+    limitTalon(middleRightMotor);
+    limitTalon(backRightMotor);
+    
+    leftMotors = frontLeftMotor;
+    rightMotors = frontRightMotor;
 
     drive = new DifferentialDrive(leftMotors, rightMotors);
     inversionConstant = 1;
+  }
+
+  private void limitTalon(WPI_TalonSRX talon){
+    talon.configPeakCurrentLimit(0, 10);
+    talon.configPeakCurrentDuration(0, 10);
+    talon.configContinuousCurrentLimit(30, 10);
+    talon.enableCurrentLimit(true);
+    talon.configOpenloopRamp(0.08, 10);
   }
 
   @Override
@@ -144,9 +164,9 @@ public class DriveTrainSubsystem extends Subsystem {
   public double velLeft() {
     //lin vel = counts/sampletime * sampletime/sec * dist/counts
     //0.1 is assuming that the sample time is 100ms
-    return leftEncoder.getSelectedSensorVelocity()* 0.1 * this.leftEncoder.posLeft();
+    return leftEncoder.getSelectedSensorVelocity()* 0.1 * posLeft();
   }
   public double velRight() {
-    return rightEncoder.getSelectedSensorVelocity()* 0.1 * this.rightEncoder.posRight();
+    return rightEncoder.getSelectedSensorVelocity()* 0.1 * posRight();
   }
 }
