@@ -13,6 +13,7 @@ import frc.robot.input.XboxControllerButtonCode;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.DownShiftCommand;
 import frc.robot.commands.InvertDriveControlsCommand;
+import frc.robot.commands.TankDriveCommand;
 import frc.robot.commands.ToggleAutomaticGearShiftingCommand;
 import frc.robot.commands.UpShiftCommand;
 
@@ -53,10 +54,11 @@ public class OI {
   private XboxController switchBoard = new XboxController(2);
 
   public OI() {
-    new JoystickButton(xboxController0, XboxControllerButtonCode.LB.getCode()).whenPressed(new DownShiftCommand());
-    new JoystickButton(xboxController0, XboxControllerButtonCode.RB.getCode()).whenPressed(new UpShiftCommand());
-    new JoystickButton(xboxController0, XboxControllerButtonCode.Y.getCode()).whenPressed(new ToggleAutomaticGearShiftingCommand());
+    new JoystickButton(xboxController0, XboxControllerButtonCode.A.getCode()).whenPressed(new DownShiftCommand());
+    new JoystickButton(xboxController0, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
+    new JoystickButton(xboxController0, XboxControllerButtonCode.B.getCode()).whenPressed(new ToggleAutomaticGearShiftingCommand());
     new JoystickButton(xboxController0, XboxControllerButtonCode.X.getCode()).whenPressed(new InvertDriveControlsCommand());
+    new JoystickButton(xboxController0, XboxControllerButtonCode.LB.getCode()).whileHeld(new TankDriveCommand());
 
   }
 
