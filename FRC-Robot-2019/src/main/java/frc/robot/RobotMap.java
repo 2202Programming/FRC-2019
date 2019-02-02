@@ -42,4 +42,8 @@ public class RobotMap {
   public static final int ARM_EXTENSION_ENCODER_PIN_0 = 8;
   public static final int ARM_EXTENSION_ENCODER_PIN_1 = 9;
   
+  //Cargo Trap
+  public static final int TRAP_ARMS_PCM_CH = 1;
+  public static final int CARGO_SENSOR_DIO_PORT = -1;
+  public static final int TRAP_RETRACT_PCM_CH = 2;
 }
