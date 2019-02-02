@@ -147,6 +147,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(Scheduler.getInstance()); 
     SmartDashboard.putData(driveTrain);
     SmartDashboard.putData(gearShifter);
+    //TODO: Create Lift instance field and then call LogLift();
   }
 
   private void resetAllDashBoardSensors() {

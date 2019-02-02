@@ -90,5 +90,11 @@ public class Lift extends PIDSubsystem {
     // setDefaultCommand(new MySpecialCommand());
   }
 
-  
+  /**
+   * Prints the speed and position of the Lift subsystem.
+   */
+  protected void logLift() {
+    System.out.println("Lift Motor Speed: " + liftMotor.get());
+    System.out.println("Lift Position: " + getPosition());
+  }
 }
