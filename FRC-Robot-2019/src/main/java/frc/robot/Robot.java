@@ -147,6 +147,9 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(Scheduler.getInstance()); 
     SmartDashboard.putData(driveTrain);
     SmartDashboard.putData(gearShifter);
+    SmartDashboard.putData(cargoTrap);
+    SmartDashboard.putData(arm);
+    SmartDashboard.putString("Inversion Status", driveTrain.getInversionStatus());
   }
 
   private void resetAllDashBoardSensors() {

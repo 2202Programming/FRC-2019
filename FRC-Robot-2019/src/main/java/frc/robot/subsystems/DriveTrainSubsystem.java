@@ -161,6 +161,14 @@ public class DriveTrainSubsystem extends Subsystem {
   public int getInversionConstant() {
     return inversionConstant;
   }
+
+  public String getInversionStatus(){
+    if(getInversionConstant()>0)
+      return "Normal";
+    else
+      return "Inverted";
+  }
+  
   public double posLeft() {
     //pos = encoderCount * dist/counts 
     return leftEncoder.getSelectedSensorPosition()  * RobotMap.ENCODER_LEFT_DISTANCE_PER_PULSE;
