@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.command.PIDSubsystem;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.RobotMap;
@@ -17,26 +18,27 @@ import frc.robot.RobotMap;
 /**
  * The basic drive train subsystem for four motors
  */
-public class DriveTrainSubsystem extends Subsystem {
+public class PIDDriveTrainSubsystem extends Subsystem {
 
   // Individual Motors
-  private WPI_TalonSRX frontLeftMotor = new WPI_TalonSRX(RobotMap.FL_TALON_CAN_ID);
-  private WPI_TalonSRX middleLeftMotor = new WPI_TalonSRX(RobotMap.ML_TALON_CAN_ID);
-  private WPI_TalonSRX backLeftMotor = new WPI_TalonSRX(RobotMap.BL_TALON_CAN_ID);
-  private WPI_TalonSRX frontRightMotor = new WPI_TalonSRX(RobotMap.FR_TALON_CAN_ID);
-  private WPI_TalonSRX middleRightMotor = new WPI_TalonSRX(RobotMap.MR_TALON_CAN_ID);
-  private WPI_TalonSRX backRightMotor = new WPI_TalonSRX(RobotMap.BR_TALON_CAN_ID);
-  private SpeedController leftMotors;
-  private SpeedController rightMotors;
+  private SpeedController frontLeftMotor = new WPI_TalonSRX(RobotMap.FL_TALON_CAN_ID);
+  private SpeedController middleLeftMotor = new WPI_TalonSRX(RobotMap.ML_TALON_CAN_ID);
+  private SpeedController backLeftMotor = new WPI_TalonSRX(RobotMap.BL_TALON_CAN_ID);
+  private SpeedController frontRightMotor = new WPI_TalonSRX(RobotMap.FR_TALON_CAN_ID);
+  private SpeedController middleRightMotor = new WPI_TalonSRX(RobotMap.MR_TALON_CAN_ID);
+  private SpeedController backRightMotor = new WPI_TalonSRX(RobotMap.BR_TALON_CAN_ID);
   private WPI_TalonSRX leftEncoder;
   private WPI_TalonSRX rightEncoder;
 
+
+  // Motor groups
+  private SpeedControllerGroup leftMotors, rightMotors;
 
   private DifferentialDrive drive;
 
   private short inversionConstant;
 
-  public DriveTrainSubsystem() {
+  public PIDDriveTrainSubsystem(double p, double i, double d, double f) {
     addChild("Middle Left CIM", (Sendable) middleLeftMotor);
     addChild("Back Left CIM", (Sendable) backLeftMotor);
     addChild("Front Right CIM", (Sendable) frontRightMotor);
@@ -51,32 +53,11 @@ public class DriveTrainSubsystem extends Subsystem {
     rightEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
     rightEncoder.setSensorPhase(true);
 
-    middleLeftMotor.follow(frontLeftMotor);
-    backLeftMotor.follow(frontLeftMotor);
-
-    middleRightMotor.follow(frontRightMotor);
-    backRightMotor.follow(frontRightMotor);
-
-    limitTalon(frontLeftMotor);
-    limitTalon(middleLeftMotor);
-    limitTalon(backLeftMotor);
-    limitTalon(frontRightMotor);
-    limitTalon(middleRightMotor);
-    limitTalon(backRightMotor);
-    
-    leftMotors = frontLeftMotor;
-    rightMotors = frontRightMotor;
+    leftMotors = new SpeedControllerGroup(frontLeftMotor, middleLeftMotor, backLeftMotor);
+    rightMotors = new SpeedControllerGroup(frontRightMotor, middleRightMotor, backRightMotor);
 
     drive = new DifferentialDrive(leftMotors, rightMotors);
     inversionConstant = 1;
-  }
-
-  private void limitTalon(WPI_TalonSRX talon){
-    talon.configPeakCurrentLimit(0, 10);
-    talon.configPeakCurrentDuration(0, 10);
-    talon.configContinuousCurrentLimit(30, 10);
-    talon.enableCurrentLimit(true);
-    talon.configOpenloopRamp(0.08, 10);
   }
 
   @Override
@@ -153,20 +134,5 @@ public class DriveTrainSubsystem extends Subsystem {
    */
   public int getInversionConstant() {
     return inversionConstant;
-  }
-  public double posLeft() {
-    //pos = encoderCount * dist/counts 
-    return leftEncoder.getSelectedSensorPosition()  * RobotMap.ENCODER_LEFT_DISTANCE_PER_PULSE;
-  }
-  public double posRight() {
-    return rightEncoder.getSelectedSensorPosition() * RobotMap.ENCODER_RIGHT_DISTANCE_PER_PULSE;
-  }
-  public double velLeft() {
-    //lin vel = counts/sampletime * sampletime/sec * dist/counts
-    //0.1 is assuming that the sample time is 100ms
-    return leftEncoder.getSelectedSensorVelocity()* 0.1 * RobotMap.ENCODER_LEFT_DISTANCE_PER_PULSE;
-  }
-  public double velRight() {
-    return rightEncoder.getSelectedSensorVelocity()* 0.1 * RobotMap.ENCODER_RIGHT_DISTANCE_PER_PULSE;
   }
 }

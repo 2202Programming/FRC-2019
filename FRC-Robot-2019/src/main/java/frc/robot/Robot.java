@@ -7,15 +7,16 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.DriveTrainSubsystem;
-import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.GearShifterSubsystem;;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -25,9 +26,9 @@ import frc.robot.subsystems.IntakeSubsystem;
  * project.
  */
 public class Robot extends TimedRobot {
-  public static ExampleSubsystem m_subsystem = new ExampleSubsystem();
   public static OI m_oi;
   public static DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
+  public static GearShifterSubsystem gearShifter = new GearShifterSubsystem();
   public static IntakeSubsystem intake = new IntakeSubsystem();
 
   Command m_autonomousCommand;
@@ -40,8 +41,6 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     m_oi = new OI();
-
-    m_chooser.setDefaultOption("Default Auto", new ExampleCommand());
     // chooser.addOption("My Auto", new MyAutoCommand());
     SmartDashboard.putData("Auto mode", m_chooser);
   }
@@ -57,6 +56,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    logSmartDashboardSensors();
   }
 
   /**
@@ -100,6 +100,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.start();
     }
+    resetAllDashBoardSensors();
   }
 
   /**
@@ -108,6 +109,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     Scheduler.getInstance().run();
+    logSmartDashboardSensors();
   }
 
   @Override
@@ -119,6 +121,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    resetAllDashBoardSensors();
   }
 
   /**
@@ -134,5 +137,21 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
+  }
+
+  private void logSmartDashboardSensors() {
+    SmartDashboard.putNumber("Left Encoder Count", driveTrain.getLeftEncoderTalon().getSelectedSensorPosition());
+    SmartDashboard.putNumber("Left Encoder Rate", driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity());
+    SmartDashboard.putNumber("Right Encoder Count", driveTrain.getRightEncoderTalon().getSelectedSensorPosition());
+    SmartDashboard.putNumber("Right Encoder Rate", driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
+    SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
+    SmartDashboard.putData(Scheduler.getInstance()); 
+    SmartDashboard.putData(driveTrain);
+    SmartDashboard.putData(gearShifter);
+  }
+
+  private void resetAllDashBoardSensors() {
+    driveTrain.getLeftEncoderTalon().setSelectedSensorPosition(0);
+    driveTrain.getRightEncoderTalon().setSelectedSensorPosition(0);
   }
 }
