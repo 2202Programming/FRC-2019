@@ -1,6 +1,7 @@
 package frc.robot.commands; 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
+import frc.robot.input.XboxControllerButtonCode;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class OuttakeCommand extends Command{
@@ -25,7 +26,7 @@ public class OuttakeCommand extends Command{
 
   @Override
   protected boolean isFinished() {
-    return Robot.m_oi.getController0().getRawButtonReleased(6);
+    return Robot.m_oi.getController1().getRawButtonReleased(XboxControllerButtonCode.RB.getCode());
   }
 
  
