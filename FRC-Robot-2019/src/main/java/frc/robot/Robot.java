@@ -7,12 +7,15 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.DriveTrainSubsystem;
+import frc.robot.subsystems.GearShifterSubsystem;;
 import frc.robot.subsystems.ClimberSubsystem;
 
 /**
@@ -26,6 +29,7 @@ public class Robot extends TimedRobot {
   public static ClimberSubsystem climber = new ClimberSubsystem();
   public static OI m_oi;
   public static DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
+  public static GearShifterSubsystem gearShifter = new GearShifterSubsystem();
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -52,6 +56,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    logSmartDashboardSensors();
   }
 
   /**
@@ -95,6 +100,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.start();
     }
+    resetAllDashBoardSensors();
   }
 
   /**
@@ -103,6 +109,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     Scheduler.getInstance().run();
+    logSmartDashboardSensors();
   }
 
   @Override
@@ -114,6 +121,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    resetAllDashBoardSensors();
   }
 
   /**
@@ -129,5 +137,21 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
+  }
+
+  private void logSmartDashboardSensors() {
+    SmartDashboard.putNumber("Left Encoder Count", driveTrain.getLeftEncoderTalon().getSelectedSensorPosition());
+    SmartDashboard.putNumber("Left Encoder Rate", driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity());
+    SmartDashboard.putNumber("Right Encoder Count", driveTrain.getRightEncoderTalon().getSelectedSensorPosition());
+    SmartDashboard.putNumber("Right Encoder Rate", driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
+    SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
+    SmartDashboard.putData(Scheduler.getInstance()); 
+    SmartDashboard.putData(driveTrain);
+    SmartDashboard.putData(gearShifter);
+  }
+
+  private void resetAllDashBoardSensors() {
+    driveTrain.getLeftEncoderTalon().setSelectedSensorPosition(0);
+    driveTrain.getRightEncoderTalon().setSelectedSensorPosition(0);
   }
 }
