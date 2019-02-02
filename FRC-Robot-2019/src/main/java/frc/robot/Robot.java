@@ -151,8 +151,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("LimelightX", limeLight.getX());
     SmartDashboard.putNumber("LimelightY", limeLight.getY());
     SmartDashboard.putNumber("LimelightArea", limeLight.getArea());
-    SmartDashboard.putNumber("LimeTarget", limeLight.hasTarget());
-    //SmartDashboard.putBoolean("LimeTargetBool", limeLight.booleanhasTarget());
+    SmartDashboard.putBoolean("LimeTargetBool", limeLight.hasTarget());
   }
 
   private void resetAllDashBoardSensors() {

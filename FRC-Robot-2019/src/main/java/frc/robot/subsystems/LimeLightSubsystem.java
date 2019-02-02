@@ -50,8 +50,9 @@ public class LimeLightSubsystem extends Subsystem {
         return area;
     }
 
-    public double hasTarget() {
-        return target;
+    public Boolean hasTarget() {
+        if (target < 1) return false;
+        else return true;
     }
 
 }
