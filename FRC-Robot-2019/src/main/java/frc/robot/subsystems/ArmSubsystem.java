@@ -46,7 +46,19 @@ public class ArmSubsystem extends Subsystem {
   public void rotateToPosition(double position) {
     armRotationMotor.set(ControlMode.Position, position);
   }
+
+  public void rotateForward() {
+    armRotationMotor.set(0.5);
+  }
+
+  public void rotateBackward() {
+    armRotationMotor.set(0.5);
+  }
   
+  public void stopRotation() {
+    armRotationMotor.set(0);
+  }
+
   public TalonSRX geRotationEncoder() {
     return rotationEncoder;
   }
