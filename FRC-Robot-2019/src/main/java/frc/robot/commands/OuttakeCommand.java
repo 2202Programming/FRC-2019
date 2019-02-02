@@ -7,7 +7,7 @@ public class OuttakeCommand extends Command{
     private IntakeSubsystem intake;
 
     public OuttakeCommand(){
-        requires(Robot.m_subsystem);
+        requires(Robot.intake);
         intake = Robot.intake;
     }
 
@@ -19,7 +19,7 @@ public class OuttakeCommand extends Command{
 
   @Override
   protected void execute() {
-      Robot.intake.outtake();
+      Robot.intake.stop();
   }
 
 

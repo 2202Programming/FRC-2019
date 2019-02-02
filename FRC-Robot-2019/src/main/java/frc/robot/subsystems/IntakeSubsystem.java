@@ -1,28 +1,28 @@
 package frc.robot.subsystems;
 
-import frc.robot.commands.TankDriveCommand;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.SpeedController;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.Spark;
 import frc.robot.RobotMap;
+import edu.wpi.first.wpilibj.Servo;
+import edu.wpi.first.wpilibj.Solenoid;
 
 /**
  * The basic intake subsystem
  */
 public class IntakeSubsystem extends Subsystem {
 
-    // Individual Motors
-    private SpeedController intakeMotorLeft = new Spark(RobotMap.LEFT_INTAKE_MOTOR_PIN);
-    private SpeedController intakeMotorRight = new Spark(RobotMap.RIGHT_INTAKE_MOTOR_PIN);
-    private DigitalInput photoGate = new DigitalInput(RobotMap.INTAKE_PHOTOGATE_CHANNEL);
+    private Servo wristRotation = new Servo(RobotMap.WRIST_SERVO_PWM_CH);
+    private DigitalInput cargoSwitch = new DigitalInput(RobotMap.CARGO_SENSOR_DIO_PORT);
+    private SpeedController vacuumPump = new Spark(RobotMap.VACUUM_SPARK_PIN);
+    private Solenoid release = new Solenoid(RobotMap.RELEASE_SOLENOID_ID);
+
     public IntakeSubsystem() {
-      addChild("Intake Left Spark", (Sendable) intakeMotorLeft);
-      addChild("Intake Right Spark", (Sendable) intakeMotorRight);
+      addChild("Wrist Rotation Servo", (Sendable) wristRotation);
+      addChild("Vacuum Pump", (Sendable) vacuumPump);
+      addChild("Cargo/Hatch Release", (Sendable) release);
     }
   
     @Override
@@ -30,42 +30,29 @@ public class IntakeSubsystem extends Subsystem {
        //funstuffyebrocool!
     }
 
-    public void runIntake(double speed) {
-      intakeMotorLeft.set(speed);
-      intakeMotorRight.set(-speed);
-    }
-  
-    public void intake() {
-      intakeMotorLeft.set(0.8);
-      intakeMotorRight.set(-0.6);
-    }
-  
-    public void outtake() {
-      intakeMotorLeft.set(-0.6);
-      intakeMotorRight.set(0.6);
-    }
-  
-    public void outtakeSlow() {
-      intakeMotorLeft.set(-0.3);
-      intakeMotorRight.set(0.3);
-    }
-  
-    public void rotate() {
-      intakeMotorLeft.set(0.3);
-      intakeMotorRight.set(0.3);
-    }
-  
-    public void holdBlock() {
-      intakeMotorLeft.set(0.2);
-      intakeMotorRight.set(-0.2);
-    }
-  
-    public void stop() {
-      intakeMotorLeft.set(0);
-      intakeMotorRight.set(0);
+    public void setWristPosition(double position)
+    {
+      wristRotation.set(position);
     }
 
-    public boolean getPhotoGate(){
-      return photoGate.get();
+    public void runPump(double speed) {
+      vacuumPump.set(speed);
+    }
+
+    public void run()
+    {
+      double placeHolderValue = .5;
+      release.set(true);
+      runPump(placeHolderValue);
+    }
+  
+    public void stop()
+    {
+      vacuumPump.set(0);
+      release.set(false);
+    }
+
+    public boolean getCargoSwitch(){
+      return cargoSwitch.get();
     }
 }

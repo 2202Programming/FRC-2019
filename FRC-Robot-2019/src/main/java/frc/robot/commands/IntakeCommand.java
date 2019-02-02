@@ -7,7 +7,7 @@ public class IntakeCommand extends Command{
     private IntakeSubsystem intake;
 
     public IntakeCommand(){
-        requires(Robot.m_subsystem);
+        requires(Robot.intake);
         intake = Robot.intake;
     }
 
@@ -19,13 +19,13 @@ public class IntakeCommand extends Command{
 
   @Override
   protected void execute() {
-      Robot.intake.intake();
+      Robot.intake.run();
   }
 
 
   @Override
   protected boolean isFinished() {
-    return intake.getPhotoGate() || Robot.m_oi.getController0().getRawButtonReleased(5);
+    return intake.getCargoSwitch() || Robot.m_oi.getController0().getRawButtonReleased(5);
   }
 
  
