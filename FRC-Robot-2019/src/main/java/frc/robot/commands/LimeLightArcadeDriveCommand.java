@@ -31,7 +31,7 @@ public class LimeLightArcadeDriveCommand extends Command {
   protected void initialize() {
     driveTrain.stop();
     controller.setInputRange(-25.0, 25.0);
-    controller.setOutputRange(0, 1);
+    controller.setOutputRange(-1, 1);
     controller.setPercentTolerance(2);
     controller.setContinuous(true);
     controller.enable();
@@ -43,7 +43,8 @@ public class LimeLightArcadeDriveCommand extends Command {
   // Temporary until we get the XboxController wrapper for joystick
   @Override
   protected void execute() {
-    Robot.driveTrain.ArcadeDrive(Robot.m_oi.getController0().getY(Hand.kLeft), controller.get(), true);
+    //We invert the PID controller value so the feedback loop is negative and not positive
+    Robot.driveTrain.ArcadeDrive(Robot.m_oi.getController0().getY(Hand.kLeft),-controller.get(), true);
     SmartDashboard.putData(controller);
   }
 
