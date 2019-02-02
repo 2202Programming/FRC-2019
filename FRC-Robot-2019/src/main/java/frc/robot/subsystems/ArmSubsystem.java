@@ -33,7 +33,7 @@ public class ArmSubsystem extends Subsystem {
     addChild("Arm Extension Motor", armExtensionMotor);
     addChild("Arm Rotation Limit Switch", rotationMinimumSwitch);
     addChild("Arm Extension Limit Switch", extensionMinimumSwitch);
-    
+
     rotationEncoder = (WPI_TalonSRX) armRotationMotor;
     rotationEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
 
@@ -57,6 +57,18 @@ public class ArmSubsystem extends Subsystem {
 
   public void extendToPosition(double position) {
     armExtensionMotor.set(ControlMode.Position, position);
+  }
+
+  public void extend() {
+    armExtensionMotor.set(0.5);
+  }
+
+  public void retract() {
+    armExtensionMotor.set(-0.5);
+  }
+
+  public void stop() {
+    armExtensionMotor.set(0);
   }
 
   public TalonSRX getExtensionEncoder() {
