@@ -32,8 +32,6 @@ public class Robot extends TimedRobot {
   public static OI m_oi;
   public static DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
   public static GearShifterSubsystem gearShifter = new GearShifterSubsystem();
-  public static Compressor gearshifterCompressor = new Compressor();
-  public static PowerDistributionPanel pdp = new PowerDistributionPanel(0);
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -45,7 +43,6 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     m_oi = new OI();
-    gearshifterCompressor.start();
     // chooser.addOption("My Auto", new MyAutoCommand());
     SmartDashboard.putData("Auto mode", m_chooser);
   }
@@ -106,6 +103,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.start();
     }
+    resetAllDashBoardSensors();
   }
 
   /**
@@ -114,6 +112,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     Scheduler.getInstance().run();
+    logSmartDashboardSensors();
   }
 
   @Override
@@ -125,6 +124,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    resetAllDashBoardSensors();
   }
 
   /**
@@ -143,12 +143,19 @@ public class Robot extends TimedRobot {
   }
 
   private void logSmartDashboardSensors() {
-    SmartDashboard.putString("Left Encoder Count", String.valueOf(driveTrain.getLeftEncoderTalon().getSelectedSensorPosition()));
-    SmartDashboard.putString("Left Encoder Rate", String.valueOf(driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity()));
-    SmartDashboard.putString("Right Encoder Count", String.valueOf(driveTrain.getRightEncoderTalon().getSelectedSensorPosition()));
-    SmartDashboard.putString("Right Encoder Rate", String.valueOf(driveTrain.getRightEncoderTalon().getSelectedSensorVelocity()));
+    SmartDashboard.putNumber("Left Encoder Count", driveTrain.getLeftEncoderTalon().getSelectedSensorPosition());
+    SmartDashboard.putNumber("Left Encoder Rate", driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity());
+    SmartDashboard.putNumber("Right Encoder Count", driveTrain.getRightEncoderTalon().getSelectedSensorPosition());
+    SmartDashboard.putNumber("Right Encoder Rate", driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
     SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
-    SmartDashboard.putString("Current Draw by Motors", String.valueOf(pdp.getCurrent(0)));
+    SmartDashboard.putData(Scheduler.getInstance()); 
+    SmartDashboard.putData(driveTrain);
+    SmartDashboard.putData(gearShifter);
+  }
+
+  private void resetAllDashBoardSensors() {
+    driveTrain.getLeftEncoderTalon().setSelectedSensorPosition(0);
+    driveTrain.getRightEncoderTalon().setSelectedSensorPosition(0);
   }
 
   private void getLimelightValues() {

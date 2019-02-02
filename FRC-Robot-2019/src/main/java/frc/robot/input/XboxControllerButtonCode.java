@@ -4,7 +4,7 @@ package frc.robot.input;
  * Class for a bunch of WPI button constants
  */
 public enum XboxControllerButtonCode {
-    A(0),
+    A(1),
 	B(2),
 	X(3),
 	Y(4),
