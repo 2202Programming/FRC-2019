@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -290,5 +291,28 @@ public class DriveTrainSubsystem extends Subsystem {
     } else {
       return 0.0;
     }
+  }
+
+  /**
+   * Logs all of the WPI_TalonSRX instance fields.
+   */
+  public void logTalons() {
+    logTalon(frontLeftMotor);
+    logTalon(frontRightMotor);
+    logTalon(middleLeftMotor);
+    logTalon(middleRightMotor);
+    logTalon(backLeftMotor);
+    logTalon(backRightMotor);
+    logTalon(leftEncoder);
+    logTalon(rightEncoder);
+    //TODO: if other WPI_TalonSRX instance fields are added, log them here
+  }
+
+  /**
+   * Logs a WPI_TalonSRX.
+   * @param talon the talon to be logged.
+   */
+  public void logTalon(WPI_TalonSRX talon) {
+    SmartDashboard.putNumber(talon.getName() + " Current", talon.getOutputCurrent());
   }
 }
