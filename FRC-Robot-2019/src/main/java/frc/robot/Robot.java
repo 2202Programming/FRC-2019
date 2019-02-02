@@ -16,7 +16,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.subsystems.GearShifterSubsystem;
+import frc.robot.subsystems.LimeLightSubsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import static org.junit.Assume.assumeNoException;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -32,6 +36,7 @@ public class Robot extends TimedRobot {
   public static OI m_oi;
   public static DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
   public static GearShifterSubsystem gearShifter = new GearShifterSubsystem();
+  public static LimeLightSubsystem limeLight = new LimeLightSubsystem();
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -59,6 +64,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     logSmartDashboardSensors();
+    limeLight.populateLimelight();
   }
 
   /**
@@ -150,6 +156,11 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(Scheduler.getInstance()); 
     SmartDashboard.putData(driveTrain);
     SmartDashboard.putData(gearShifter);
+    
+    SmartDashboard.putNumber("LimelightX", limeLight.getX());
+    SmartDashboard.putNumber("LimelightY", limeLight.getY());
+    SmartDashboard.putNumber("LimelightArea", limeLight.getArea());
+    SmartDashboard.putNumber("LimeTarget", limeLight.hasTarget());
   }
 
   private void resetAllDashBoardSensors() {
