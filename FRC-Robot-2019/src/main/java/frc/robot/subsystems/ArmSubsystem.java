@@ -67,7 +67,7 @@ public class ArmSubsystem extends Subsystem {
     armExtensionMotor.set(-0.5);
   }
 
-  public void stop() {
+  public void stopExtension() {
     armExtensionMotor.set(0);
   }
 
