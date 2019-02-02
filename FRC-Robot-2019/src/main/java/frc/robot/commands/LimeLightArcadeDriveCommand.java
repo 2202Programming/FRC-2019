@@ -1,8 +1,12 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
+import frc.robot.input.LimeLightXValueInput;
+import frc.robot.output.FakePIDOutput;
 import frc.robot.subsystems.DriveTrainSubsystem;
 
 /**
@@ -10,17 +14,27 @@ import frc.robot.subsystems.DriveTrainSubsystem;
  */
 public class LimeLightArcadeDriveCommand extends Command {
   private DriveTrainSubsystem driveTrain;
+  private final double P = 0.055;
+  private final double I = 0.0;
+  private final double D = 0.5;
+  private PIDController controller;
 
   public LimeLightArcadeDriveCommand() {
     // Use requires() here to declare subsystem dependencies
     requires(Robot.driveTrain);
     driveTrain = Robot.driveTrain;
+    controller = new PIDController(P, I, D, new LimeLightXValueInput(), new FakePIDOutput());
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
     driveTrain.stop();
+    controller.setInputRange(-25.0, 25.0);
+    controller.setOutputRange(0, 1);
+    controller.setPercentTolerance(2);
+    controller.setContinuous(true);
+    controller.enable();
   }
 
   // Read Controller Input from two joysticks.
@@ -29,7 +43,8 @@ public class LimeLightArcadeDriveCommand extends Command {
   // Temporary until we get the XboxController wrapper for joystick
   @Override
   protected void execute() {
-    Robot.driveTrain.ArcadeDrive(Robot.m_oi.getController0().getY(Hand.kLeft), Robot.m_oi.getController0().getX(Hand.kLeft), true);
+    Robot.driveTrain.ArcadeDrive(Robot.m_oi.getController0().getY(Hand.kLeft), controller.get(), true);
+    SmartDashboard.putData(controller);
   }
 
   @Override
@@ -39,6 +54,7 @@ public class LimeLightArcadeDriveCommand extends Command {
 
   @Override
   protected void end() {
+    controller.reset();
     driveTrain.stop();
   }
 }
