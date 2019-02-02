@@ -11,11 +11,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.input.XboxControllerButtonCode;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import frc.robot.commands.DownShiftCommand;
-import frc.robot.commands.InvertDriveControlsCommand;
-import frc.robot.commands.TankDriveCommand;
-import frc.robot.commands.ToggleAutomaticGearShiftingCommand;
-import frc.robot.commands.UpShiftCommand;
+import frc.robot.commands.*;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -54,12 +50,18 @@ public class OI {
   private XboxController switchBoard = new XboxController(2);
 
   public OI() {
+    //Drive Train Commands
     new JoystickButton(xboxController0, XboxControllerButtonCode.A.getCode()).whenPressed(new DownShiftCommand());
     new JoystickButton(xboxController0, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
     new JoystickButton(xboxController0, XboxControllerButtonCode.B.getCode()).whenPressed(new ToggleAutomaticGearShiftingCommand());
     new JoystickButton(xboxController0, XboxControllerButtonCode.X.getCode()).whenPressed(new InvertDriveControlsCommand());
     new JoystickButton(xboxController0, XboxControllerButtonCode.LB.getCode()).whileHeld(new TankDriveCommand());
-
+    
+    //Arm Commands
+    new JoystickButton(xboxController1, XboxControllerButtonCode.Y.getCode()).whileHeld(new ExtendArmCommand());
+    new JoystickButton(xboxController1, XboxControllerButtonCode.A.getCode()).whileHeld(new RetractArmCommand());
+    new JoystickButton(xboxController1, XboxControllerButtonCode.X.getCode()).whileHeld(new RotateArmForwardCommand());
+    new JoystickButton(xboxController1, XboxControllerButtonCode.B.getCode()).whileHeld(new RotateArmForwardCommand());
   }
 
   public XboxController getController0() {
