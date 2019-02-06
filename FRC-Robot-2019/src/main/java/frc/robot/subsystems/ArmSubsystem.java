@@ -14,6 +14,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap;
 
 /**
@@ -45,6 +46,14 @@ public class ArmSubsystem extends Subsystem {
 
   public void rotateToPosition(double position) {
     armRotationMotor.set(ControlMode.Position, position);
+  }
+
+  public TalonSRX getArmRotationEncoder() {
+    return rotationEncoder;
+  }
+
+  public TalonSRX getArmExtensionEncoder() {
+    return extensionEncoder;
   }
 
   public void rotateForward() {
@@ -97,5 +106,12 @@ public class ArmSubsystem extends Subsystem {
     // setDefaultCommand(new MySpecialCommand());
   }
 
-  
+  public void logTalons() {
+    logTalon(armRotationMotor);
+    logTalon(armExtensionMotor);
+  }
+
+  public void logTalon(WPI_TalonSRX talon) {
+    SmartDashboard.putNumber(talon.getName() + " Current", talon.getOutputCurrent());
+  }
 }
