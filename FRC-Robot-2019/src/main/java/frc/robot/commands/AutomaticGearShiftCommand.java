@@ -111,12 +111,11 @@ public class AutomaticGearShiftCommand extends Command {
 
     double leftThrottle = Math.abs(limit(leftMotorOutput) * MAX_OUTPUT);
     double rightThrottle = Math.abs(limit(rightMotorOutput) * MAX_OUTPUT * RIGHT_SIDE_INVERT_MULTIPLIER);
-    SmartDashboard.putNumber("Left Throttle", leftThrottle);
-    SmartDashboard.putNumber("rightThrottle", rightThrottle);
+    
     return Math.min(leftThrottle, rightThrottle);
   }
 
-    /**
+  /**
    * Limit motor values to the -1.0 to +1.0 range.
    */
   private double limit(double value) {

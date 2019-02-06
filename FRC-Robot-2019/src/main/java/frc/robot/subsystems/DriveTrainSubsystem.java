@@ -10,8 +10,10 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap;
 
 /**
@@ -36,6 +38,10 @@ public class DriveTrainSubsystem extends Subsystem {
 
   private short inversionConstant;
 
+  private final double DEADZONE = 0.02; 
+  private final double MAX_OUTPUT = 1.0;
+  private final double RIGHT_SIDE_INVERT_MULTIPLIER = -1.0;
+  
   public DriveTrainSubsystem() {
     addChild("Middle Left CIM", (Sendable) middleLeftMotor);
     addChild("Back Left CIM", (Sendable) backLeftMotor);
@@ -102,8 +108,9 @@ public class DriveTrainSubsystem extends Subsystem {
    * @param leftAxis  Left sides value
    * @param rightAxis Right sides value
    */
-  public void tankDrive(double leftAxis, double rightAxis) {
-    drive.tankDrive(inversionConstant * leftAxis, inversionConstant * rightAxis);
+  public void tankDrive(double leftAxis, double rightAxis, boolean squareInputs) {
+    drive.tankDrive(inversionConstant * leftAxis, inversionConstant * rightAxis, squareInputs);
+    logTankThrottles(leftAxis, rightAxis, squareInputs);
   }
 
   /**
@@ -114,8 +121,9 @@ public class DriveTrainSubsystem extends Subsystem {
    *                      positive.
    * @param squareInputs If set, decreases the input sensitivity at low speeds.
    */
-  public void ArcadeDrive(double xSpeed, double zRotation, boolean squaredInput) {
-    drive.arcadeDrive(inversionConstant * xSpeed, -zRotation, squaredInput);
+  public void ArcadeDrive(double xSpeed, double zRotation, boolean squareInputs) {
+    drive.arcadeDrive(inversionConstant * xSpeed, -zRotation, squareInputs);
+    logArcadeThrottles(xSpeed, zRotation, squareInputs);
   }
 
   /**
@@ -168,5 +176,143 @@ public class DriveTrainSubsystem extends Subsystem {
   }
   public double velRight() {
     return rightEncoder.getSelectedSensorVelocity()* 0.1 * RobotMap.ENCODER_RIGHT_DISTANCE_PER_PULSE;
+  }
+
+  /**
+   * Taken from DifferentialDrive tankDrive method
+   * Tank drive method for differential drive platform.
+   *
+   * @param leftSpeed     The robot left side's speed along the X axis [-1.0..1.0]. Forward is
+   *                      positive.
+   * @param rightSpeed    The robot right side's speed along the X axis [-1.0..1.0]. Forward is
+   *                      positive.
+   * @param squareInputs If set, decreases the input sensitivity at low speeds.
+   */
+  private void logTankThrottles(double leftSpeed, double rightSpeed, boolean squareInputs) {
+    leftSpeed = limit(leftSpeed);
+    leftSpeed = applyDeadband(leftSpeed, DEADZONE);
+
+    rightSpeed = limit(rightSpeed);
+    rightSpeed = applyDeadband(rightSpeed, DEADZONE);
+
+    // Square the inputs (while preserving the sign) to increase fine control
+    // while permitting full power.
+    if (squareInputs) {
+      leftSpeed = Math.copySign(leftSpeed * leftSpeed, leftSpeed);
+      rightSpeed = Math.copySign(rightSpeed * rightSpeed, rightSpeed);
+    }
+
+    double leftThrottle = leftSpeed * MAX_OUTPUT;
+    double rightThrottle = rightSpeed * MAX_OUTPUT * RIGHT_SIDE_INVERT_MULTIPLIER;
+
+    SmartDashboard.putNumber("Left Throttle", leftThrottle);
+    SmartDashboard.putNumber("Right Throttle", rightThrottle);
+  }
+
+  /**
+   * Taken from DifferentialDrive arcadeDrive method
+   * Gets the minimum throttle between the two sides of the robot
+   * 
+   * @param xSpeed        The robot's speed along the X axis [-1.0..1.0]. Forward is positive.
+   * @param zRotation     The robot's rotation rate around the Z axis [-1.0..1.0]. Clockwise is
+   *                      positive.
+   * @param squareInputs Whether you are using squared inputs
+   */
+  private void logArcadeThrottles(double xSpeed, double zRotation, boolean squareInputs) {
+    xSpeed = applyDeadband(xSpeed, DEADZONE);
+
+    zRotation = applyDeadband(zRotation, DEADZONE);
+
+    // Square the inputs (while preserving the sign) to increase fine control
+    // while permitting full power.
+    if (squareInputs) {
+      xSpeed = Math.copySign(xSpeed * xSpeed, xSpeed);
+      zRotation = Math.copySign(zRotation * zRotation, zRotation);
+    }
+
+    double leftMotorOutput;
+    double rightMotorOutput;
+
+    double maxInput = Math.copySign(Math.max(Math.abs(xSpeed), Math.abs(zRotation)), xSpeed);
+
+    if (xSpeed >= 0.0) {
+      // First quadrant, else second quadrant
+      if (zRotation >= 0.0) {
+        leftMotorOutput = maxInput;
+        rightMotorOutput = xSpeed - zRotation;
+      } else {
+        leftMotorOutput = xSpeed + zRotation;
+        rightMotorOutput = maxInput;
+      }
+    } else {
+      // Third quadrant, else fourth quadrant
+      if (zRotation >= 0.0) {
+        leftMotorOutput = xSpeed + zRotation;
+        rightMotorOutput = maxInput;
+      } else {
+        leftMotorOutput = maxInput;
+        rightMotorOutput = xSpeed - zRotation;
+      }
+    }
+
+    double leftThrottle = Math.abs(limit(leftMotorOutput) * MAX_OUTPUT);
+    double rightThrottle = Math.abs(limit(rightMotorOutput) * MAX_OUTPUT * RIGHT_SIDE_INVERT_MULTIPLIER);
+    SmartDashboard.putNumber("Left Throttle", leftThrottle);
+    SmartDashboard.putNumber("Right Throttle", rightThrottle);
+  }
+
+  /**
+   * Limit motor values to the -1.0 to +1.0 range.
+   */
+  private double limit(double value) {
+    if (value > 1.0) {
+      return 1.0;
+    }
+    if (value < -1.0) {
+      return -1.0;
+    }
+    return value;
+  }
+
+  /**
+   * Returns 0.0 if the given value is within the specified range around zero. The remaining range
+   * between the deadband and 1.0 is scaled from 0.0 to 1.0.
+   *
+   * @param value    value to clip
+   * @param deadband range around zero
+   */
+  private double applyDeadband(double value, double deadband) {
+    if (Math.abs(value) > deadband) {
+      if (value > 0.0) {
+        return (value - deadband) / (1.0 - deadband);
+      } else {
+        return (value + deadband) / (1.0 - deadband);
+      }
+    } else {
+      return 0.0;
+    }
+  }
+
+  /**
+   * Logs all of the WPI_TalonSRX instance fields.
+   */
+  public void logTalons() {
+    logTalon(frontLeftMotor);
+    logTalon(frontRightMotor);
+    logTalon(middleLeftMotor);
+    logTalon(middleRightMotor);
+    logTalon(backLeftMotor);
+    logTalon(backRightMotor);
+    logTalon(leftEncoder);
+    logTalon(rightEncoder);
+    //TODO: if other WPI_TalonSRX instance fields are added, log them here
+  }
+
+  /**
+   * Logs a WPI_TalonSRX.
+   * @param talon the talon to be logged.
+   */
+  public void logTalon(WPI_TalonSRX talon) {
+    SmartDashboard.putNumber(talon.getName() + " Current", talon.getOutputCurrent());
   }
 }
