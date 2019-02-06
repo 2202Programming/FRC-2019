@@ -23,7 +23,7 @@ public class RotateWristUpCommand extends Command{
 
   @Override
   protected boolean isFinished() {
-    return Robot.m_oi.getController1().getRawButtonReleased(XboxControllerButtonCode.LB.getCode());
+    return Robot.m_oi.getController1().getRawButtonReleased(XboxControllerButtonCode.START.getCode());
   }
 
  
