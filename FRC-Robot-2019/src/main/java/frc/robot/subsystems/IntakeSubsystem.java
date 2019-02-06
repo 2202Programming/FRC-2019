@@ -17,6 +17,7 @@ public class IntakeSubsystem extends Subsystem {
    * A servo that rotates the "wrist" of the arm of the robot.
    */
   private Servo wristRotation = new Servo(RobotMap.WRIST_SERVO_PWM_CH);
+  private double wristPosition = wristRotation.get();
 
   /**
    * A switch that detects whether or not the robot is holding any cargo.
@@ -51,7 +52,18 @@ public class IntakeSubsystem extends Subsystem {
    * @param position the position value of the wrist.
    */
   public void setWristPosition(double position) {
+    wristPosition = position;
     wristRotation.set(position);
+  }
+
+  public void runWristUp() {
+    wristPosition += 0.01;
+    wristRotation.set(wristPosition);
+  }
+
+  public void runWristDown() {
+    wristPosition -= 0.01;
+    wristRotation.set(wristPosition);
   }
 
   /**
