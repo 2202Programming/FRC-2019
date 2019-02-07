@@ -66,6 +66,10 @@ public class IntakeSubsystem extends Subsystem {
     wristRotation.set(wristPosition);
   }
 
+  public void stopWrist() {
+    wristRotation.set(wristPosition);
+  }
+
   /**
    * Sets the vacuum pump to the given speed. Speed values range from -1.0 to 1.0.
    * @param speed the speed value to set the vacuum pump.
