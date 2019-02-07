@@ -11,7 +11,7 @@ public class RotateWristUpCommand extends Command{
 
     @Override
     protected void initialize() {
-        Robot.intake.stop();
+        Robot.intake.stopWrist();
     }
 
 
@@ -29,7 +29,7 @@ public class RotateWristUpCommand extends Command{
  
   @Override
   protected void end() {
-      Robot.intake.stop();
+      Robot.intake.stopWrist();
   }
 
 

@@ -57,11 +57,11 @@ public class ArmSubsystem extends Subsystem {
   }
 
   public void rotateForward() {
-    armRotationMotor.set(0.4);
+    armRotationMotor.set(0.3);
   }
 
   public void rotateBackward() {
-    armRotationMotor.set(-0.4);
+    armRotationMotor.set(-0.3);
   }
   
   public void stopRotation() {
@@ -81,11 +81,11 @@ public class ArmSubsystem extends Subsystem {
   }
 
   public void extend() {
-    armExtensionMotor.set(0.5);
+    armExtensionMotor.set(0.3);
   }
 
   public void retract() {
-    armExtensionMotor.set(-0.5);
+    armExtensionMotor.set(-0.3);
   }
 
   public void stopExtension() {
