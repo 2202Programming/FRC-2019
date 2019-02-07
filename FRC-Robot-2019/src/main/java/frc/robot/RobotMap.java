@@ -63,4 +63,9 @@ public class RobotMap {
   public static final int FOOT_EXTEND_SPARK_PIN = 2;
   public static final int ROLLER_SPARK_PIN = 3;
   public static final int RATCHET_SELECTOR_ID = 5;
+
+  //LIDAR sensors
+  public static final int LEFT_FRONT_LIDAR = 1;
+  public static final int LEFT_FRONT_LIDAR = 2;
+  
 }

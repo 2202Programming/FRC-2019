@@ -2,28 +2,18 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.command.Subsystem;
-
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Sendable;
-import edu.wpi.first.wpilibj.SpeedController;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
-import edu.wpi.first.wpilibj.command.PIDSubsystem;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.RobotMap;
 import edu.wpi.first.hal.util.UncleanStatusException;
 
-/**
- * What this subsystem does
- */
+//Listens on USB Serial port for LIDAR distance data from the arduino
+
 public class SerialPortSubsystem extends Subsystem {
 
-//stuff it needs
-
-private int distance1;
-private int distance2;
+private int distance1; //Sensor #1
+private int distance2; //Sensor #2
 private String serialResults;
 private SerialPort arduinoSerial;
-private long distanceRefresh;
+private long distanceRefresh; //Track time between sensor readings
 private long hertz;
 
 
@@ -59,13 +49,12 @@ private long hertz;
     while (arduinoSerial.getBytesReceived()>0) {
       try {
         results = arduinoSerial.readString(1);
-      } catch (UncleanStatusException e) {
+      } catch (UncleanStatusException e) {     //Catch uncleanstatusexception and restart serial port 
         System.out.println("Serial Exception UncleanStatusException caught. Code:" + e.getStatus());
         arduinoSerial.reset();
         
       }
-      
-
+        //FORMAT is S[# of sensor, 1-4][Distance in mm]E
         //E is end of statement, otherwise add to running string
         if (!results.contentEquals("E")) {
         serialResults = serialResults + results;
@@ -93,18 +82,12 @@ private long hertz;
             }
           
             serialResults="";
-            distance = distance1-distance2;   
-            
+                       
             Long refreshTime = System.currentTimeMillis() - distanceRefresh;
             distanceRefresh = System.currentTimeMillis();
             
             hertz=0;
             if (refreshTime>0) hertz = 1000/refreshTime;
-                
-            
-            
-
-            //System.out.println("Sensor#1: " + distance1 + "mm, Sensor#2: " + distance2 + "mm, Diff=" + distance + "mm, Refresh:" + refresh + "Hz");
           }
         }
       }
