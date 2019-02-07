@@ -61,7 +61,14 @@ public class OI {
     new JoystickButton(xboxController1, XboxControllerButtonCode.Y.getCode()).whileHeld(new ExtendArmCommand());
     new JoystickButton(xboxController1, XboxControllerButtonCode.A.getCode()).whileHeld(new RetractArmCommand());
     new JoystickButton(xboxController1, XboxControllerButtonCode.X.getCode()).whileHeld(new RotateArmForwardCommand());
-    new JoystickButton(xboxController1, XboxControllerButtonCode.B.getCode()).whileHeld(new RotateArmForwardCommand());
+    new JoystickButton(xboxController1, XboxControllerButtonCode.B.getCode()).whileHeld(new RotateArmBackwardCommand());
+
+    //End Effector Commands
+    new JoystickButton(xboxController1, XboxControllerButtonCode.LB.getCode()).whenPressed(new IntakeCommand());
+    new JoystickButton(xboxController1, XboxControllerButtonCode.RB.getCode()).whenPressed(new OuttakeCommand());
+    new JoystickButton(xboxController1, XboxControllerButtonCode.START.getCode()).whenPressed(new RotateWristUpCommand());
+    new JoystickButton(xboxController1, XboxControllerButtonCode.BACK.getCode()).whenPressed(new RotateWristDownCommand());
+    
   }
 
   public XboxController getController0() {
