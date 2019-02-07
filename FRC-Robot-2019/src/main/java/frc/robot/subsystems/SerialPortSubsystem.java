@@ -34,7 +34,6 @@ private long hertz;
   @Override
   public void initDefaultCommand() {
       //set default command
-      processSerial();
   }
 
   public int getDistance(int sensor) {

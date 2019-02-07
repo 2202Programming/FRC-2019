@@ -9,12 +9,12 @@ import frc.robot.commands.AutoTrapCargoCommand;
 public class CargoTrapSubsystem extends Subsystem {
     public Solenoid trapArms = new Solenoid(RobotMap.TRAP_ARMS_PCM_ID);
     public Solenoid trapDeploy = new Solenoid(RobotMap.TRAP_RETRACT_PCM_ID);
-    public DigitalInput cargoDetector = new DigitalInput(RobotMap.CARGO_SENSOR_DIO_PORT);
+   // public DigitalInput cargoDetector = new DigitalInput(RobotMap.CARGO_SENSOR_DIO_PORT);
 
     public CargoTrapSubsystem() {
         addChild("Trap Arms Solenoid", trapArms);
         addChild("Trap Deployment Solenoid", trapDeploy);
-        addChild("Cargo Detector", cargoDetector);
+       // addChild("Cargo Detector", cargoDetector);
     }
 
     @Override
@@ -38,7 +38,9 @@ public class CargoTrapSubsystem extends Subsystem {
         trapDeploy.set(false);
     }
 
+   /*
     public boolean containsCargo() {
         return cargoDetector.get();
     }
+    */
 }
