@@ -16,6 +16,7 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CargoTrapSubsystem;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.SerialPortSubsystem;
 import frc.robot.subsystems.GearShifterSubsystem;
 
 /**
@@ -32,6 +33,7 @@ public class Robot extends TimedRobot {
   public static CargoTrapSubsystem cargoTrap = new CargoTrapSubsystem();
   public static ArmSubsystem arm = new ArmSubsystem();
   public static OI m_oi = new OI();
+  public static SerialPortSubsystem serialSubsystem = new SerialPortSubsystem();
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -151,6 +153,9 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(Scheduler.getInstance()); 
     SmartDashboard.putData(driveTrain);
     SmartDashboard.putData(gearShifter);
+    SmartDashboard.putNumber("Sensor #1 (mm)", serialSubsystem.getDistance(1));
+    SmartDashboard.putNumber("Sensor #2 (mm)", serialSubsystem.getDistance(2));
+
     //TODO: Create Lift instance field and then call LogLift();
   }
 
