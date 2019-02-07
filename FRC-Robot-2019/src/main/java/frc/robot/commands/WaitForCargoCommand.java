@@ -10,6 +10,7 @@ public class WaitForCargoCommand extends Command {
 
     @Override
     protected boolean isFinished() {
-        return Robot.cargoTrap.containsCargo();
+       // return Robot.cargoTrap.containsCargo();
+       return true;
     }
 }

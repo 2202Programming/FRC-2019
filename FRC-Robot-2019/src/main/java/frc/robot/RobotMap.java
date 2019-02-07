@@ -49,7 +49,7 @@ public class RobotMap {
   
   //Cargo Trap
   public static final int TRAP_ARMS_PCM_ID = 1;
-  public static final int CARGO_SENSOR_DIO_PORT = -1;
+  public static final int CARGO_SENSOR_DIO_PORT = 30;
   public static final int TRAP_RETRACT_PCM_ID = 2;
 
   //End Effector
