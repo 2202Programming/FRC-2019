@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap;
+import frc.robot.input.AngleFinder;
 
 /**
  * A Lift subsystem.
@@ -44,8 +45,13 @@ public class ArmSubsystem extends Subsystem {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
 
-  public void rotateToPosition(double position) {
-    armRotationMotor.set(ControlMode.Position, position);
+  /**
+   * Rotates the arm to a specific angle
+   * @param angle the angle to rotate the arm to
+   */
+  public void rotateToPosition(double angle) {
+    int encoderPosition = AngleFinder.angleToCounts(1.88, 2.005, angle, 1024);
+    armRotationMotor.set(ControlMode.Position, encoderPosition);
   }
 
   public TalonSRX getArmRotationEncoder() {
