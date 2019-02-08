@@ -19,6 +19,7 @@ public class RotateArmBackwardCommand extends Command {
     @Override
     protected void initialize() {
         Robot.arm.stopRotation();
+        
     }
     /**
      * Rotates the arm backwards.
@@ -40,6 +41,6 @@ public class RotateArmBackwardCommand extends Command {
      */
     @Override
     protected boolean isFinished() {
-        return Robot.m_oi.getController1().getRawButtonReleased(XboxControllerButtonCode.B.getCode()) || Robot.arm.rotationAtMin();
+        return Robot.m_oi.getController1().getRawButtonReleased(XboxControllerButtonCode.B.getCode());
     }
 }
