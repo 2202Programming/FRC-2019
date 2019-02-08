@@ -2,16 +2,13 @@ package frc.robot.input;
 
 public class AngleFinder
 {
-
-   public double calculateAngle(double CircumferenceRatio, int encoderCount)
+   public static int angleToCounts(double r1, double r2, double angle, int countsPerRevolution)
    {
-       return Math.toDegrees((2*Math.PI)/encoderCount);
+       return (int) (Math.toDegrees((2*Math.PI)/angle));
    }
 
-
-   //Not exact calculations
-   public int calculateCount(double r1, double r2, double angle)
+   public static double countsToAngle(double r1, double r2, int counts, int countsPerRevolution)
    {
-       return (int) ((2*Math.PI)/Math.toRadians(angle));
+       return  Math.round(2*Math.PI)/Math.toRadians(counts);
    }
 }
