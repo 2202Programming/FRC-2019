@@ -18,6 +18,7 @@ import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SerialPortSubsystem;
 import frc.robot.subsystems.GearShifterSubsystem;
+import frc.robot.RobotMap;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -154,8 +155,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(Scheduler.getInstance()); 
     SmartDashboard.putData(driveTrain);
     SmartDashboard.putData(gearShifter);
-    SmartDashboard.putNumber("Sensor #1 (mm)", serialSubsystem.getDistance(1));
-    SmartDashboard.putNumber("Sensor #2 (mm)", serialSubsystem.getDistance(2));
+    SmartDashboard.putNumber("Left Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.LEFT_FRONT_LIDAR));
+    SmartDashboard.putNumber("Right Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.RIGHT_FRONT_LIDAR));
 
     //TODO: Create Lift instance field and then call LogLift();
   }
