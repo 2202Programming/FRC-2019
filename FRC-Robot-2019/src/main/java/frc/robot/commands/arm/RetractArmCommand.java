@@ -1,9 +1,5 @@
-<<<<<<< Updated upstream:FRC-Robot-2019/src/main/java/frc/robot/commands/RetractArmCommand.java
-package frc.robot.commands;
 
-=======
 package frc.robot.commands.arm;
->>>>>>> Stashed changes:FRC-Robot-2019/src/main/java/frc/robot/commands/arm/RetractArmCommand.java
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 import frc.robot.input.XboxControllerButtonCode;
