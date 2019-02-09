@@ -1,11 +1,11 @@
-package frc.robot.commands; 
+package frc.robot.commands.intake; 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 import frc.robot.input.XboxControllerButtonCode;
 
-public class RotateWristUpCommand extends Command{
+public class RotateWristDownCommand extends Command{
 
-    public RotateWristUpCommand(){
+    public RotateWristDownCommand(){
         requires(Robot.intake);
     }
 
@@ -17,13 +17,13 @@ public class RotateWristUpCommand extends Command{
 
   @Override
   protected void execute() {
-      Robot.intake.runWristUp();
+      Robot.intake.runWristDown();
 
   }
 
   @Override
   protected boolean isFinished() {
-    return Robot.m_oi.getController1().getRawButtonReleased(XboxControllerButtonCode.START.getCode());
+    return Robot.m_oi.getController1().getRawButtonReleased(XboxControllerButtonCode.BACK.getCode());
   }
 
  

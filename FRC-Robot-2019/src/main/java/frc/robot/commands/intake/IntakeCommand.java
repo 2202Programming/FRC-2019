@@ -1,35 +1,38 @@
-package frc.robot.commands; 
+package frc.robot.commands.intake; 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 import frc.robot.input.XboxControllerButtonCode;
+import frc.robot.subsystems.IntakeSubsystem;
 
-public class RotateWristDownCommand extends Command{
+public class IntakeCommand extends Command{
+    private IntakeSubsystem intake;
 
-    public RotateWristDownCommand(){
+    public IntakeCommand(){
         requires(Robot.intake);
+        intake = Robot.intake;
     }
 
     @Override
     protected void initialize() {
-        Robot.intake.stopWrist();
+        intake.stop();
     }
 
 
   @Override
   protected void execute() {
-      Robot.intake.runWristDown();
-
+      Robot.intake.run();
   }
+
 
   @Override
   protected boolean isFinished() {
-    return Robot.m_oi.getController1().getRawButtonReleased(XboxControllerButtonCode.BACK.getCode());
+    return intake.getCargoSwitch() || Robot.m_oi.getController1().getRawButtonReleased(XboxControllerButtonCode.LB.getCode());
   }
 
  
   @Override
   protected void end() {
-      Robot.intake.stopWrist();
+      intake.stop();
   }
 
 
