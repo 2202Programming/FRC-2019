@@ -57,7 +57,7 @@ public class RobotMap {
   public static final int CARGO_SWITCH_MXP_CH = 11;
   public static final int VACUUM_SPARK_PIN = 1;
   public static final int RELEASE_SOLENOID_ID = 3;
-  public static final int GENATOR_ID = 4;
+  public static final int HOLD_SOLENOID_ID = 4;
 
   //Climber
   public static final int FOOT_EXTEND_SPARK_PIN = 2;
