@@ -58,6 +58,10 @@ public class ArmSubsystem extends Subsystem {
     return rotationEncoder;
   }
 
+  public double getAngle() {
+    return AngleFinder.countsToAngle(1.88, 2.05, rotationEncoder.getSelectedSensorPosition(), 1024);
+  }
+
   public TalonSRX getArmExtensionEncoder() {
     return extensionEncoder;
   }

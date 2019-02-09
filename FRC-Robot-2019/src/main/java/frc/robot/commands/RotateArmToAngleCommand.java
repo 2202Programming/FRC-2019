@@ -4,20 +4,19 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
 public class RotateArmToAngleCommand extends Command {
-    private double position;
+    private double angle;
 
-    public RotateArmToAngleCommand(double position) {
-        this.position = position;
+    public RotateArmToAngleCommand(double angle) {
+        this.angle = angle;
         requires(Robot.arm);
     }
 
     @Override
     protected void execute() {
-        Robot.arm.rotateToPosition(position);
+        Robot.arm.rotateToPosition(angle);
     }
 
-    @Override
     protected boolean isFinished() {
-        return false;
+        return Math.abs(Robot.arm.getAngle() - angle) < 1;
     }
 }
