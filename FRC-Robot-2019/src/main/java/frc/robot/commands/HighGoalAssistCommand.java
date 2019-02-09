@@ -1,7 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
-import frc.robot.commands.RotateArmToAngleCommand;
+import frc.robot.commands.arm.RotateArmToAngleCommand;
 
 public class HighGoalAssistCommand extends CommandGroup {
     public HighGoalAssistCommand() {
