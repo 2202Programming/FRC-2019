@@ -10,7 +10,6 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.TalonSRXPIDSetConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -32,7 +31,8 @@ public class ArmSubsystem extends Subsystem {
     addChild("Arm Rotation Motor", armRotationMotor);
     addChild("Arm Extension Motor", armExtensionMotor);
 
-    armRotationMotor.config_kP(0, 0.01, 30);
+    //armRotationMotor.config_kP(0, 0.3, 30);
+    //armRotationMotor.config_kF(0, 0.002, 30);
 
     rotationEncoder = (WPI_TalonSRX) armRotationMotor;
     rotationEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
@@ -53,7 +53,7 @@ public class ArmSubsystem extends Subsystem {
   }
 
   public double getAngle() {
-    return AngleFinder.countsToAngle(1.88, 2.05, rotationEncoder.getSelectedSensorPosition(), 1024/7);
+    return AngleFinder.countsToAngle(1.88, 2.05, rotationEncoder.getSelectedSensorPosition(), 1024*7);
   }
 
   public void rotateForward() {
@@ -80,6 +80,10 @@ public class ArmSubsystem extends Subsystem {
 
   public void extendToPosition(double position) {
     armExtensionMotor.set(ControlMode.Position, position);
+  }
+
+  public int getExtensionPosition() {
+    return rotationEncoder.getSelectedSensorPosition();
   }
 
   public void extend() {
