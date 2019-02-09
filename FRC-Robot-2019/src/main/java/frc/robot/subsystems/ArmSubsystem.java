@@ -10,9 +10,9 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRXPIDSetConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap;
@@ -26,15 +26,13 @@ public class ArmSubsystem extends Subsystem {
   private WPI_TalonSRX armExtensionMotor = new WPI_TalonSRX(RobotMap.ARM_EXTENSTION_TALON_CAN_ID);
   private WPI_TalonSRX rotationEncoder;
   private WPI_TalonSRX extensionEncoder;
-  private DigitalInput rotationMinimumSwitch = new DigitalInput(RobotMap.ARM_MIN_ROTATION_SENSOR_PIN);
-  private DigitalInput extensionMinimumSwitch = new DigitalInput(RobotMap.ARM_MIN_EXTENSION_SENSOR_PIN);
 
   public ArmSubsystem() {
     super("Arm");
     addChild("Arm Rotation Motor", armRotationMotor);
     addChild("Arm Extension Motor", armExtensionMotor);
-    addChild("Arm Rotation Limit Switch", rotationMinimumSwitch);
-    addChild("Arm Extension Limit Switch", extensionMinimumSwitch);
+
+    armRotationMotor.config_kP(0, 0.01, 30);
 
     rotationEncoder = (WPI_TalonSRX) armRotationMotor;
     rotationEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
@@ -51,19 +49,11 @@ public class ArmSubsystem extends Subsystem {
    */
   public void rotateToPosition(double angle) {
     int encoderPosition = AngleFinder.angleToCounts(1.88, 2.005, angle, 1024);
-    armRotationMotor.set(ControlMode.Position, encoderPosition);
-  }
-
-  public TalonSRX getArmRotationEncoder() {
-    return rotationEncoder;
+    armRotationMotor.set(ControlMode.Position, -encoderPosition);
   }
 
   public double getAngle() {
-    return AngleFinder.countsToAngle(1.88, 2.05, rotationEncoder.getSelectedSensorPosition(), 1024);
-  }
-
-  public TalonSRX getArmExtensionEncoder() {
-    return extensionEncoder;
+    return AngleFinder.countsToAngle(1.88, 2.05, rotationEncoder.getSelectedSensorPosition(), 1024/7);
   }
 
   public void rotateForward() {
@@ -78,13 +68,15 @@ public class ArmSubsystem extends Subsystem {
     armRotationMotor.set(0);
   }
 
-  public TalonSRX geRotationEncoder() {
+  public TalonSRX getRotationEncoder() {
     return rotationEncoder;
   }
 
+  /*
   public boolean rotationAtMin() {
     return rotationMinimumSwitch.get();
   }
+  */
 
   public void extendToPosition(double position) {
     armExtensionMotor.set(ControlMode.Position, position);
@@ -107,7 +99,11 @@ public class ArmSubsystem extends Subsystem {
   }
 
   public boolean extensionAtMin() {
-    return extensionMinimumSwitch.get();
+    return armExtensionMotor.getSensorCollection().isRevLimitSwitchClosed();
+  }
+
+  public boolean extensionAtMax() {
+    return armExtensionMotor.getSensorCollection().isFwdLimitSwitchClosed();
   }
 
   @Override

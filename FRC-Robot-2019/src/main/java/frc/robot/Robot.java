@@ -150,8 +150,11 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Right Encoder Count", driveTrain.getRightEncoderTalon().getSelectedSensorPosition());
     SmartDashboard.putNumber("Right Encoder Rate", driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
     SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
-    SmartDashboard.putNumber("Arm Rotation Count", arm.getArmRotationEncoder().getSelectedSensorPosition());
-    SmartDashboard.putNumber("Arm Extension Count", arm.getArmExtensionEncoder().getSelectedSensorPosition());
+    SmartDashboard.putNumber("Arm Rotation Count", arm.getRotationEncoder().getSelectedSensorPosition());
+    SmartDashboard.putNumber("Arm Extension Count", arm.getExtensionEncoder().getSelectedSensorPosition());
+    SmartDashboard.putBoolean("Arm Extension At Min", arm.extensionAtMin());
+    SmartDashboard.putBoolean("Arm Extension At Max", arm.extensionAtMax());
+    SmartDashboard.putNumber("Arm Angle", arm.getAngle());
     SmartDashboard.putData(Scheduler.getInstance()); 
     SmartDashboard.putData(driveTrain);
     SmartDashboard.putData(gearShifter);
