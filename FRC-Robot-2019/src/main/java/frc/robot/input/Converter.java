@@ -67,7 +67,7 @@ public class Converter {
      * @param counts The number of counts measured
      * @return The real displacement
      */
-    public static double countsToDistance(double ratio, double counts) {
+    public static double countsToDistance(double ratio, int counts) {
         return ratio * counts;
     }
 
@@ -80,5 +80,27 @@ public class Converter {
      */
     public static double countsToDistance(double r, int counts, int countsPerRevolution) {
         return (double) counts / countsPerRevolution * r;
+    }
+
+    /**
+     * Converts a real distance to encoder counts 
+     * @param ratio The ratio of encoder counts over the real displacement
+     * @param displacement The measured displacement
+     * @return The displacement in counts
+     */
+    public static int distanceToCounts(double ratio, double displacement) {
+        return (int) Math.round(displacement / ratio);
+    }
+
+    /**
+     * Converts displacement to encoder counts when on a pulley
+     * 
+     * @param r The radius of the pully in a real distance
+     * @param displacement The measured displacement
+     * @param countsPerRevolution The number of counts per revolution
+     * @return The real displacement
+     */
+    public static int distanceToCounts(double r, double displacement, int countsPerRevolution) {
+        return (int) Math.round(displacement * countsPerRevolution / r);
     }
 }
