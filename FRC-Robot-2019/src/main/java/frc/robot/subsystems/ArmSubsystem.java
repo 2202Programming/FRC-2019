@@ -16,7 +16,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap;
-import frc.robot.input.AngleFinder;
+import frc.robot.input.Converter;
 
 /**
  * A Lift subsystem.
@@ -48,12 +48,12 @@ public class ArmSubsystem extends Subsystem {
    * @param angle the angle to rotate the arm to
    */
   public void rotateToPosition(double angle) {
-    int encoderPosition = AngleFinder.angleToCounts(1.88, 2.005, angle, 1024);
+    int encoderPosition = Converter.angleToCounts(1.88, 2.005, angle, 1024);
     armRotationMotor.set(ControlMode.Position, -encoderPosition);
   }
 
   public double getAngle() {
-    return AngleFinder.countsToAngle(1.88, 2.05, rotationEncoder.getSelectedSensorPosition(), 1024/7);
+    return Converter.countsToAngle(1.88, 2.05, rotationEncoder.getSelectedSensorPosition(), 1024/7);
   }
 
   public void rotateForward() {
