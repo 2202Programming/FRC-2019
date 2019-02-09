@@ -12,6 +12,14 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.input.XboxControllerButtonCode;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.*;
+import frc.robot.commands.arm.ExtendArmCommand;
+import frc.robot.commands.arm.RetractArmCommand;
+import frc.robot.commands.arm.RotateArmForwardCommand;
+import frc.robot.commands.drive.InvertDriveControlsCommand;
+import frc.robot.commands.drive.TankDriveCommand;
+import frc.robot.commands.drive.shift.DownShiftCommand;
+import frc.robot.commands.drive.shift.ToggleAutomaticGearShiftingCommand;
+import frc.robot.commands.drive.shift.UpShiftCommand;
 
 /**
  * This class is the glue that binds the controls on the physical operator

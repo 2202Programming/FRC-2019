@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Sendable;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
-import frc.robot.commands.AutomaticGearShiftCommand;
+import frc.robot.commands.drive.shift.AutomaticGearShiftCommand;
 
 public class GearShifterSubsystem extends Subsystem {
     private DoubleSolenoid gearShiftSolenoid = new DoubleSolenoid(RobotMap.GEARSHIFT_SOLENOID_CAN_ID,
