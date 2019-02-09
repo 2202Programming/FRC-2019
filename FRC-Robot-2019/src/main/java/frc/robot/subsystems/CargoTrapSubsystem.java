@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.RobotMap;
-import frc.robot.commands.AutoTrapCargoCommand;
+import frc.robot.commands.cargo.AutoTrapCargoCommand;
 
 public class CargoTrapSubsystem extends Subsystem {
     public Solenoid trapArms = new Solenoid(RobotMap.TRAP_ARMS_PCM_ID);

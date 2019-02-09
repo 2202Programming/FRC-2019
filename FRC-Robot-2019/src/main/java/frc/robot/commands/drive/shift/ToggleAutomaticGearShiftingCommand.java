@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.drive.shift;
 
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import frc.robot.Robot;
