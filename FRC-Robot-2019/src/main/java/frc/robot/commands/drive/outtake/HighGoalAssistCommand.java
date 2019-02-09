@@ -1,6 +1,7 @@
 package frc.robot.commands.drive.outtake;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
+import frc.robot.commands.arm.ExtendArmToPositionCommand;
 import frc.robot.commands.arm.RotateArmToAngleCommand;
 
 public class HighGoalAssistCommand extends CommandGroup {
