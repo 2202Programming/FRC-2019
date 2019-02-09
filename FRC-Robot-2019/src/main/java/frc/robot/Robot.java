@@ -126,7 +126,8 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     resetAllDashBoardSensors();
-  }
+    intake.setWristPosition(0.5);
+    }
 
   /**
    * This function is called periodically during operator control.
@@ -156,6 +157,11 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Arm Extension At Max", arm.extensionAtMax());
     SmartDashboard.putNumber("Arm Angle", arm.getAngle());
     SmartDashboard.putNumber("Wrist Position", intake.getWristPosition());
+    SmartDashboard.putNumber("Wrist Angle", intake.getWristAngle());
+    intake.logWrist();
+    arm.logArmRotation();
+    arm.logArmExtnension();
+    
     SmartDashboard.putData(Scheduler.getInstance()); 
     SmartDashboard.putData(driveTrain);
     SmartDashboard.putData(gearShifter);
