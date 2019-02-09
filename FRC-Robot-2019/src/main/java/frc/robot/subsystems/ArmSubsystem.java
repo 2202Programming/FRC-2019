@@ -92,7 +92,11 @@ public class ArmSubsystem extends Subsystem {
   }
 
   public int getExtensionPosition() {
-    return rotationEncoder.getSelectedSensorPosition();
+    return extensionEncoder.getSelectedSensorPosition();
+  }
+
+  public double getDistanceExtended() {
+    return Converter.countsToDistance(0.94, getExtensionPosition(), 1024);
   }
 
   public void extend() {
