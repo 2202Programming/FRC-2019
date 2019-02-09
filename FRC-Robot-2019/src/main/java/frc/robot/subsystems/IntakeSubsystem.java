@@ -56,6 +56,10 @@ public class IntakeSubsystem extends Subsystem {
     wristRotation.set(position);
   }
 
+  public double getWristPosition() {
+    return wristRotation.get();
+  }
+
   public void runWristUp() {
     wristPosition += 0.01;
     wristRotation.set(wristPosition);

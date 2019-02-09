@@ -155,6 +155,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Arm Extension At Min", arm.extensionAtMin());
     SmartDashboard.putBoolean("Arm Extension At Max", arm.extensionAtMax());
     SmartDashboard.putNumber("Arm Angle", arm.getAngle());
+    SmartDashboard.putNumber("Wrist Position", intake.getWristPosition());
     SmartDashboard.putData(Scheduler.getInstance()); 
     SmartDashboard.putData(driveTrain);
     SmartDashboard.putData(gearShifter);
