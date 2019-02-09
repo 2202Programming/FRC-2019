@@ -28,7 +28,7 @@ public class AngleFinder {
      * @return The linear displacement in encoder counts
      */
     public static int angleToCounts(double ratio, double angle, int countsPerRevolution) {
-        return (int) Math.round(angle * countsPerRevolution / ratio);
+        return (int) Math.round(Math.toRadians(angle) * countsPerRevolution / ratio);
     }
 
     /**
@@ -47,7 +47,7 @@ public class AngleFinder {
     }
 
     /**
-     * Converts encoder counts to an angle in radians 
+     * Converts encoder counts to an angle in degrees 
      * 
      * Formula is θ = Counts / Counts Per Revolution * Ratio
      * 
@@ -55,9 +55,9 @@ public class AngleFinder {
      *                            displacement
      * @param counts              The number of counts measured
      * @param countsPerRevolution The number of counts per full revolution
-     * @return The angular displacement in radians
+     * @return The angular displacement in degrees
      */
     public static double countsToAngle(double ratio, int counts, int countsPerRevolution) {
-        return Math.round((double) counts / countsPerRevolution * ratio);
+        return Math.toDegrees((double) counts / countsPerRevolution * ratio);
     }
 }
