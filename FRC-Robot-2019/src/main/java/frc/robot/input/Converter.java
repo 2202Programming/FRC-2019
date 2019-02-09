@@ -1,10 +1,10 @@
 package frc.robot.input;
 
-public class AngleFinder {
+public class Converter {
     /**
      * Converts angular displacement to encoder counts
      * 
-     * @param r1                  The radius of the pulley the motor output is bound 
+     * @param r1                  The radius of the pulley the motor output is bound
      *                            to
      * @param r2                  The radius of the pully the output shaft is bound
      *                            to
@@ -17,7 +17,7 @@ public class AngleFinder {
     }
 
     /**
-     * Converts angular displacement to encoder counts 
+     * Converts angular displacement to encoder counts
      * 
      * Formula is Counts = θ * Counts Per Revolution / Ratio
      * 
@@ -47,7 +47,7 @@ public class AngleFinder {
     }
 
     /**
-     * Converts encoder counts to an angle in degrees 
+     * Converts encoder counts to an angle in degrees
      * 
      * Formula is θ = Counts / Counts Per Revolution * Ratio
      * 
@@ -59,5 +59,26 @@ public class AngleFinder {
      */
     public static double countsToAngle(double ratio, int counts, int countsPerRevolution) {
         return Math.toDegrees((double) counts / countsPerRevolution * ratio);
+    }
+
+    /**
+     * Converts encoder counts to a real displacement
+     * @param ratio The ratio of encoder counts over the real displacement
+     * @param counts The number of counts measured
+     * @return The real displacement
+     */
+    public static double countsToDistance(double ratio, double counts) {
+        return ratio * counts;
+    }
+
+    /**
+     * Converts encoder counts to a real displacement when on a pulley
+     * @param r The radius of the pully in a real distance
+     * @param counts The number of counts measured
+     * @param countsPerRevolution The number of counts per revolution
+     * @return The real displacement
+     */
+    public static double countsToDistance(double r, int counts, int countsPerRevolution) {
+        return (double) counts / countsPerRevolution * r;
     }
 }
