@@ -1,15 +1,15 @@
-package frc.robot.commands;
+package frc.robot.commands.cargo;
 
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import frc.robot.Robot;
 
-public class DeployCargoTrapCommand extends InstantCommand {
-    public DeployCargoTrapCommand() {
+public class CloseCargoTrapCommand extends InstantCommand {
+    public CloseCargoTrapCommand() {
         requires(Robot.cargoTrap);
     }
 
     @Override
     protected void execute() {
-        Robot.cargoTrap.deployTrap();
+        Robot.cargoTrap.closeTrapArms();
     }
 }

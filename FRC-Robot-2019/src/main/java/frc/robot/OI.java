@@ -12,6 +12,14 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.input.XboxControllerButtonCode;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.*;
+import frc.robot.commands.arm.ExtendArmCommand;
+import frc.robot.commands.arm.RetractArmCommand;
+import frc.robot.commands.arm.RotateArmForwardCommand;
+import frc.robot.commands.drive.InvertDriveControlsCommand;
+import frc.robot.commands.drive.TankDriveCommand;
+import frc.robot.commands.drive.shift.DownShiftCommand;
+import frc.robot.commands.drive.shift.ToggleAutomaticGearShiftingCommand;
+import frc.robot.commands.drive.shift.UpShiftCommand;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -60,8 +68,8 @@ public class OI {
     //Arm Commands
     new JoystickButton(xboxController1, XboxControllerButtonCode.Y.getCode()).whileHeld(new ExtendArmCommand());
     new JoystickButton(xboxController1, XboxControllerButtonCode.A.getCode()).whileHeld(new RetractArmCommand());
-    new JoystickButton(xboxController1, XboxControllerButtonCode.X.getCode()).whileHeld(new RotateArmForwardCommand());
-    new JoystickButton(xboxController1, XboxControllerButtonCode.B.getCode()).whileHeld(new RotateArmBackwardCommand());
+    new JoystickButton(xboxController1, XboxControllerButtonCode.X.getCode()).whenPressed(new RotateArmToAngleCommand(10));
+    new JoystickButton(xboxController1, XboxControllerButtonCode.B.getCode()).whenPressed(new RotateArmToAngleCommand(0));
 
     //End Effector Commands
     new JoystickButton(xboxController1, XboxControllerButtonCode.LB.getCode()).whenPressed(new IntakeCommand());
