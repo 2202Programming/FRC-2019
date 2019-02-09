@@ -19,7 +19,6 @@ import frc.robot.commands.drive.shift.*;
 import frc.robot.commands.intake.IntakeCommand;
 import frc.robot.commands.intake.RotateWristDownCommand;
 import frc.robot.commands.intake.RotateWristUpCommand;
-import frc.robot.commands.*;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -68,7 +67,7 @@ public class OI {
     //Arm Commands
     new JoystickButton(xboxController1, XboxControllerButtonCode.Y.getCode()).whileHeld(new ExtendArmCommand());
     new JoystickButton(xboxController1, XboxControllerButtonCode.A.getCode()).whileHeld(new RetractArmCommand());
-    new JoystickButton(xboxController1, XboxControllerButtonCode.X.getCode()).whenPressed(new RotateArmToAngleCommand(10));
+    new JoystickButton(xboxController1, XboxControllerButtonCode.X.getCode()).whenPressed(new RotateArmToAngleCommand(20));
     new JoystickButton(xboxController1, XboxControllerButtonCode.B.getCode()).whenPressed(new RotateArmToAngleCommand(0));
 
     //End Effector Commands
