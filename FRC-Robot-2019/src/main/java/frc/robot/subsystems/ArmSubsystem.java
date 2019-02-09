@@ -62,7 +62,7 @@ public class ArmSubsystem extends Subsystem {
   }
 
   public double getAngle() {
-    return Converter.countsToAngle(1.88, 2.05, rotationEncoder.getSelectedSensorPosition(), 1024/7);
+    return Converter.countsToAngle(1.88, 2.05, rotationEncoder.getSelectedSensorPosition(), 1024*7);
   }
 
   public void rotateForward() {
