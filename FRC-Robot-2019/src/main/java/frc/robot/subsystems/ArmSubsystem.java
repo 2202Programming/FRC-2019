@@ -13,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXPIDSetConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
+import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap;
@@ -50,6 +51,14 @@ public class ArmSubsystem extends Subsystem {
   public void rotateToPosition(double angle) {
     int encoderPosition = AngleFinder.angleToCounts(1.88, 2.005, angle, 1024);
     armRotationMotor.set(ControlMode.Position, -encoderPosition);
+  }
+
+  public void logArmRotation() {
+    SmartDashboard.putData((Sendable) armRotationMotor);
+  }
+
+  public void logArmExtnension() {
+    SmartDashboard.putData((Sendable) armExtensionMotor);
   }
 
   public double getAngle() {
