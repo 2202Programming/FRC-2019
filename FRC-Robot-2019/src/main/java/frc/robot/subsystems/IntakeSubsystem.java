@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Spark;
 import frc.robot.RobotMap;
 import edu.wpi.first.wpilibj.Servo;
@@ -56,6 +57,22 @@ public class IntakeSubsystem extends Subsystem {
     wristRotation.set(position);
   }
 
+  public void setWristAngle(double degrees) {
+      wristRotation.setAngle(degrees);
+  }
+
+  public void logWrist() {
+    SmartDashboard.putData((Sendable) wristRotation);
+  }
+
+  public double getWristPosition() {
+    return wristRotation.get();
+  }
+
+  public double getWristAngle() {
+    return wristRotation.getAngle();
+  }
+
   public void runWristUp() {
     wristPosition += 0.01;
     wristRotation.set(wristPosition);
@@ -63,6 +80,10 @@ public class IntakeSubsystem extends Subsystem {
 
   public void runWristDown() {
     wristPosition -= 0.01;
+    wristRotation.set(wristPosition);
+  }
+
+  public void stopWrist() {
     wristRotation.set(wristPosition);
   }
 

@@ -16,7 +16,9 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CargoTrapSubsystem;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.SerialPortSubsystem;
 import frc.robot.subsystems.GearShifterSubsystem;
+import frc.robot.RobotMap;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -32,6 +34,7 @@ public class Robot extends TimedRobot {
   public static CargoTrapSubsystem cargoTrap = new CargoTrapSubsystem();
   public static ArmSubsystem arm = new ArmSubsystem();
   public static OI m_oi = new OI();
+  public static SerialPortSubsystem serialSubsystem = new SerialPortSubsystem();
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -123,7 +126,8 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     resetAllDashBoardSensors();
-  }
+    intake.setWristPosition(0.5);
+    }
 
   /**
    * This function is called periodically during operator control.
@@ -131,6 +135,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
+    serialSubsystem.processSerial();
   }
 
   /**
@@ -146,11 +151,23 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Right Encoder Count", driveTrain.getRightEncoderTalon().getSelectedSensorPosition());
     SmartDashboard.putNumber("Right Encoder Rate", driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
     SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
-    SmartDashboard.putNumber("Arm Rotation Count", arm.getArmRotationEncoder().getSelectedSensorPosition());
-    SmartDashboard.putNumber("Arm Extension Count", arm.getArmExtensionEncoder().getSelectedSensorPosition());
+    SmartDashboard.putNumber("Arm Rotation Count", arm.getRotationEncoder().getSelectedSensorPosition());
+    SmartDashboard.putNumber("Arm Extension Count", arm.getExtensionEncoder().getSelectedSensorPosition());
+    SmartDashboard.putBoolean("Arm Extension At Min", arm.extensionAtMin());
+    SmartDashboard.putBoolean("Arm Extension At Max", arm.extensionAtMax());
+    SmartDashboard.putNumber("Arm Angle", arm.getAngle());
+    SmartDashboard.putNumber("Wrist Position", intake.getWristPosition());
+    SmartDashboard.putNumber("Wrist Angle", intake.getWristAngle());
+    intake.logWrist();
+    arm.logArmRotation();
+    arm.logArmExtnension();
+    
     SmartDashboard.putData(Scheduler.getInstance()); 
     SmartDashboard.putData(driveTrain);
     SmartDashboard.putData(gearShifter);
+    SmartDashboard.putNumber("Left Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.LEFT_FRONT_LIDAR));
+    SmartDashboard.putNumber("Right Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.RIGHT_FRONT_LIDAR));
+
     //TODO: Create Lift instance field and then call LogLift();
   }
 

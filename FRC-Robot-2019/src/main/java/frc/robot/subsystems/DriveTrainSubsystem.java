@@ -142,6 +142,20 @@ public class DriveTrainSubsystem extends Subsystem {
   }
 
   /**
+   * Reset the left encoder position
+   */
+  public void resetLeftEncoderTalon(){
+    leftEncoder.setSelectedSensorPosition(0);
+  }
+
+  /**
+   * Reset the right encoder position
+   */
+  public void resetRightEncoderTalon(){
+    rightEncoder.setSelectedSensorPosition(0);
+  }
+
+  /**
    * Stop the drivetrain from moving.
    */
   public void stop() {
