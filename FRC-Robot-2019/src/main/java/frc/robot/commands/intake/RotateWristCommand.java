@@ -8,7 +8,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 
 public class RotateWristCommand extends Command{
     IntakeSubsystem intake = Robot.intake;
-    XboxController ctrl = Robot.m_oi.getAssistentController();
+    XboxController ctrl = Robot.m_oi.getAssistantController();
 
     public RotateWristCommand(){
         requires(Robot.intake);

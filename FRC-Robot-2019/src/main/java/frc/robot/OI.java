@@ -52,7 +52,7 @@ public class OI {
   // until it is finished as determined by it's isFinished method.
   // button.whenReleased(new ExampleCommand());
   private XboxController driver = new XboxController(0);
-  private XboxController assistent = new XboxController(1);
+  private XboxController assistant = new XboxController(1);
   private XboxController switchBoard = new XboxController(2);
   
   @SuppressWarnings({"resource", })
@@ -65,15 +65,15 @@ public class OI {
     new JoystickButton(driver, XboxControllerButtonCode.LB.getCode()).whileHeld(new TankDriveCommand());
     
     //Arm Commands
-    new JoystickButton(assistent, XboxControllerButtonCode.Y.getCode()).whileHeld(new ExtendArmCommand());
-    new JoystickButton(assistent, XboxControllerButtonCode.A.getCode()).whileHeld(new RetractArmCommand());
-    new JoystickButton(assistent, XboxControllerButtonCode.X.getCode()).whenPressed(new RotateArmToAngleCommand(20));
-    new JoystickButton(assistent, XboxControllerButtonCode.B.getCode()).whenPressed(new RotateArmToAngleCommand(0));
+    new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode()).whileHeld(new ExtendArmCommand());
+    new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whileHeld(new RetractArmCommand());
+    new JoystickButton(assistant, XboxControllerButtonCode.X.getCode()).whenPressed(new RotateArmToAngleCommand(20));
+    new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new RotateArmToAngleCommand(0));
 
     //End Effector Commands
-    new JoystickButton(assistent, XboxControllerButtonCode.RB.getCode()).whenPressed(new OuttakeCommand());
-    new JoystickButton(assistent, XboxControllerButtonCode.START.getCode()).whenPressed(new RotateWristUpCommand());
-    new JoystickButton(assistent, XboxControllerButtonCode.BACK.getCode()).whenPressed(new RotateWristDownCommand());
+    new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode()).whenPressed(new OuttakeCommand());
+    new JoystickButton(assistant, XboxControllerButtonCode.START.getCode()).whenPressed(new RotateWristUpCommand());
+    new JoystickButton(assistant, XboxControllerButtonCode.BACK.getCode()).whenPressed(new RotateWristDownCommand());
     
   }
 
@@ -81,8 +81,8 @@ public class OI {
     return driver;
   }
 
-  public XboxController getAssistentController() {
-    return assistent;
+  public XboxController getAssistantController() {
+    return assistant;
   }
 
   public XboxController getSwitchBoard() {
