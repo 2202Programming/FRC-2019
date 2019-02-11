@@ -30,10 +30,10 @@ public class CargoTrapSubsystem extends Subsystem {
     static final DoubleSolenoid.Value kRetract = Value.kReverse;  
 
     // Physical Devices and Controls
-    DoubleSolenoid armsPiston = new DoubleSolenoid(
+    DoubleSolenoid armsPiston = new DoubleSolenoid(RobotMap.INTAKE_PCM_ID,
         RobotMap.TRAP_ARMS_OPEN_PCM, RobotMap.TRAP_ARMS_CLOSE_PCM);
                                            
-    DoubleSolenoid deployPiston = new DoubleSolenoid(
+    DoubleSolenoid deployPiston = new DoubleSolenoid(RobotMap.INTAKE_PCM_ID,
          RobotMap.TRAP_DEPLOY_PCM, RobotMap.TRAP_RETRACT_PCM);
 
     DigitalInput cargoSensor = new DigitalInput(RobotMap.TRAP_CARGO_SENSOR_DIO);
