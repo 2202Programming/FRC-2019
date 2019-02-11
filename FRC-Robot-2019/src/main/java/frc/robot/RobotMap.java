@@ -12,7 +12,7 @@ package frc.robot;
  * 2/10/2019 Derek L    DoubleSolenoids used; PWM & PCM conventions for Spark/Servos/Solenoids
  *                      Intake Release/Hold moved to PCM 5/6 to better organize wires
  *                      GearShift PCM 0-1
- * 
+ * 2/11/2019 Derek L    PDP must be 0.
  * 
  */
 public class RobotMap {
