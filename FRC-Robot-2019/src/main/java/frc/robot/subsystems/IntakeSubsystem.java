@@ -1,122 +1,268 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Spark;
 import frc.robot.RobotMap;
-import edu.wpi.first.wpilibj.Servo;
-import edu.wpi.first.wpilibj.Solenoid;
+//used for CustomServo
+import edu.wpi.first.hal.FRCNetComm.tResourceType;
+import edu.wpi.first.hal.HAL;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 /**
- * The basic intake subsystem
+ * Authors: Derek Laufenberg
+ *          Billy Huang
+ *          Alexander Ge
+ *         
+ * Changes:  
+ * 2/10/2019   DPL  Added notes, cleaned up code, created/fixed low level controls 
+ *                  to use for inside commands.
+ *                  Added constantant, improved nameing conventions.
+ *                  Use DoubleSolenoid.
+ *                  
+ * 
+ */
+/**
+ * The basic intake subsystem for Cargo and Hatch pickup.
+ * 
+ * Consists of of 550 motor driving a vacuum pump to draw air on a suction cup.
+ * The suction cup has a switch in it so it can dectect a cargo ball. The cargo ball
+ * deforms slightly to trigger the swtich.
+ * 
+ * A composite solenoid is used to turn on and off the vacuum line to the suction cup.
+ * These need to be controled with the pump motor.
+ * 
+ * A servo based "Wrist" is used to rotate the suction cup to make it easier to align
+ * with the hatch or cargo location.  
+ * 
  */
 public class IntakeSubsystem extends Subsystem {
-  /**
-   * A servo that rotates the "wrist" of the arm of the robot.
-   */
-  private Servo wristRotation = new Servo(RobotMap.WRIST_SERVO_PWM_CH);
-  private double wristPosition = wristRotation.get();
+  // Local Constants that define facts about the intake system
+  public final double WristMinDegrees = -100.0;      //pointing down, relative to the arm 
+  public final double WristMaxDegrees = +100.0;      //pointing up
+  public final double WristStraightDegrees = 0.0;    //points near straight out
+  public final double PumpSpeed = 1.0;               //motor units
+  
+  //### Servo range needs to be checked since the servo is modified with an external
+  //### pot that is part of the ServoCity gearing kit.
 
-  /**
-   * A switch that detects whether or not the robot is holding any cargo.
-   */
-  private DigitalInput cargoSwitch = new DigitalInput(RobotMap.CARGO_SENSOR_DIO_PORT);
+  // HS-805MG - timings from https://www.servocity.com/hs-805mg-servo
+  // specs are slightly wider than default which should give us full range of servo.
+  final double kServoMinPWM =0.553;    
+  final double kServoMaxPWM =2.455;
 
-  /**
-   * A vacuum pump that holds onto the cargo.
-   */
-  private SpeedController vacuumPump = new Spark(RobotMap.VACUUM_SPARK_PIN);
+  //### confirm this is the way the solenoid is wired
+  final DoubleSolenoid.Value kVacuum = Value.kForward;
+  final DoubleSolenoid.Value kRelease = Value.kReverse;
 
-  private Solenoid release = new Solenoid(RobotMap.RELEASE_SOLENOID_ID);
+  // Physical devices
+  CustomServo wristServo     = new CustomServo(
+                                              RobotMap.INTAKE_WRIST_SERVO_PWM, 
+                                              WristMinDegrees, WristMaxDegrees, 
+                                              kServoMinPWM, kServoMaxPWM);
+  DigitalInput cargoSwitch   = new DigitalInput(RobotMap.INTAKE_CARGO_SWITCH_MXP_CH);
+  SpeedController vacuumPump = new Spark(RobotMap.INTAKE_VACUUM_SPARK_PWM);
+  DoubleSolenoid  vacuumSol  = new DoubleSolenoid(
+                                              RobotMap.INTAKE_RELEASE_SOLENOID_PCM, 
+                                              RobotMap.INTAKE_HOLD_SOLENOID_PCM);
+  
+  // internal state tracking
+  boolean vacuumCmdOn;
+
+  void init() {
+    setAngle(WristMinDegrees);
+    vacuumOff();
+  }
 
   /**
    * Creates an intake subsystem.
    */
   public IntakeSubsystem() {
-    addChild("Wrist Rotation Servo", (Sendable) wristRotation);
+    init();
+    addChild("Wrist Servo", (Sendable) wristServo);
     addChild("Vacuum Pump", (Sendable) vacuumPump);
-    addChild("Cargo/Hatch Release", (Sendable) release);
+    addChild("CargoSwitch", cargoSwitch);
+    addChild("Cargo/Hatch Release", (Sendable) vacuumSol);
   }
 
   @Override
   public void initDefaultCommand() {
-    //funstuffyebrocool!
     //(No default command, apparently)
+    //### maybe self-level /with Arm angle...
   }
 
   /**
-   * Sets the position of the wrist (servo) to the given value.
-   * Servo values range from 0.0 to 1.0 corresponding to the range of full left to full right.
-   * @param position the position value of the wrist.
+   * Wrist Controls 
    */
-  public void setWristPosition(double position) {
-    wristPosition = position;
-    wristRotation.set(position);
-  }
-
-  public void setWristAngle(double degrees) {
-      wristRotation.setAngle(degrees);
-  }
-
-  public void logWrist() {
-    SmartDashboard.putData((Sendable) wristRotation);
-  }
-
-  public double getWristPosition() {
-    return wristRotation.get();
-  }
-
-  public double getWristAngle() {
-    return wristRotation.getAngle();
-  }
-
-  public void runWristUp() {
-    wristPosition += 0.01;
-    wristRotation.set(wristPosition);
-  }
-
-  public void runWristDown() {
-    wristPosition -= 0.01;
-    wristRotation.set(wristPosition);
-  }
-
-  public void stopWrist() {
-    wristRotation.set(wristPosition);
+  public void setAngle(double degrees) {
+    wristServo.setAngle(degrees);
   }
 
   /**
-   * Sets the vacuum pump to the given speed. Speed values range from -1.0 to 1.0.
-   * @param speed the speed value to set the vacuum pump.
+   * 
+   * @return  wrist angle (degrees)
    */
-  public void runPump(double speed) {
-    vacuumPump.set(speed);
+  public double getAngle(){
+    return wristServo.getAngle();
   }
 
   /**
-   * Runs the intake system. This will turn on the release solenoid and set the vacuum pump's speed to 0.5.
+   * Vacuum Controls
+   * 
    */
-  public void run() {
-    double pumpSpeed = .5;
-    release.set(true);
-    runPump(pumpSpeed);
+  public void vacuumOn()
+  {
+    vacuumPump.set(PumpSpeed);
+    vacuumSol.set(kVacuum);
+    vacuumCmdOn = true;
   }
+  
+  public void vacuumOff()
+  {
+    vacuumSol.set(kRelease);
+    vacuumPump.stopMotor();
+    vacuumCmdOn = false;
+  } 
 
-  /**
-   * Stops the intake subsystem, causing the vacuum pump to have a speed of 0 and turning the release solenoid off.
-   */
-  public void stop() {
-    vacuumPump.set(0);
-    release.set(false);
-  }
 
+   /**
+    * Status and Sensor Methods
+    */
+  
   /**
    * Gets the status of the cargo switch (whether or not the robot is holding cargo).
    * @return true if the robot is holding cargo; false otherwise.
    */
-  public boolean getCargoSwitch() {
+  public boolean hasCargo() {
     return cargoSwitch.get();
   }
+
+  // ### check the PDP for current level, we can tell if vacuum is obtained.
+  public double getPumpCurrent() {
+    return -999.999;
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder) {
+    builder.setSmartDashboardType("CustomServo");
+    builder.addDoubleProperty("Value", this::getAngle, this::setAngle);
+  }
+  
+  //### not sure how this works yet, prefer to log the whole sub-sys and just just a part of it.
+  public void log() {
+    SmartDashboard.putData(this);
+  }
+
+  /**
+   * The Servo used by the Wrist has been modified to extend the range. It also has
+   * a wider PWM setting than the standard FIRST Servo Class. So that code was modified to
+   * create a CustomServo that we can change the PWM controls on. 
+   * 
+   * We also change the Servo 0-180 to -100 to +100 which reflects the server travel and
+   * the Wrist axis with ~0.0 degrees being straight from arm.
+   * 
+   * The Servo class is further modified to only expose the methods that use the degree units.
+   * This is to save confusion as to what units should be used.  
+   * 
+   * PWM class tracks state on 0 to 1.0 range. 
+   * 
+   *  Update Notes
+   * 2/10/2019  DPL Created from wpilibj.Servo base code. Couldn't inherit from servo.
+   * 
+   */
+  private class CustomServo extends PWM {
+    private final double kMaxServoAngle;
+    private final double kMinServoAngle;
+    private final double kServoRange;
+
+    private final double kDefaultMaxServoPWM;
+    private final double kDefaultMinServoPWM;
+  
+    /**
+     * Constructor.<br>
+     *
+     * <p>By default {@value #kDefaultMaxServoPWM} ms is used as the maxPWM value<br> By default
+     * {@value #kDefaultMinServoPWM} ms is used as the minPWM value<br>
+     *
+     * @param channel The PWM channel to which the servo is attached. 0-9 are on-board, 10-19 are on
+     *                the MXP port
+     * 
+     * @param minDegrees  smallest angle of rotation in degrees
+     * 
+     * @param maxDegrees  largest angle of rotation in degrees
+     * 
+     * @param minPWMuS   servo timing min value .6 typical
+     * @param maxPWMuS   Servo timing max, 2.5 uS typical 
+     * 
+     */
+    public CustomServo(final int channel, 
+        final double minDegrees,   
+        final double maxDegrees, 
+        final double minPWMuS,     
+        final double maxPWMuS) 
+    {
+      super(channel);
+      kMaxServoAngle = maxDegrees;
+      kMinServoAngle = minDegrees;
+      kDefaultMaxServoPWM = maxPWMuS;
+      kDefaultMinServoPWM = minPWMuS;
+      //compute range once
+      kServoRange =  kMaxServoAngle - kMinServoAngle;
+
+      setBounds(kDefaultMaxServoPWM, 0, 0, 0, kDefaultMinServoPWM);
+      setPeriodMultiplier(PeriodMultiplier.k4X);
+  
+      HAL.report(tResourceType.kResourceType_Servo, getChannel());
+      setName("CustomServo", getChannel());
+    }
+    
+    /**
+     * Set the servo angle.
+     *
+     * <p>Assume that the servo angle is linear with respect to the PWM value (big assumption, need to
+     * test).
+     *
+     * <p>Servo angles that are out of the supported range of the servo simply "saturate" in that
+     * direction In other words, if the servo has a range of (X degrees to Y degrees) than angles of
+     * less than X result in an angle of X being set and angles of more than Y degrees result in an
+     * angle of Y being set.
+     *
+     * @param degrees The angle in degrees to set the servo.
+     */
+    public void setAngle(double degrees) {
+      if (degrees < kMinServoAngle) {
+        degrees = kMinServoAngle;
+      } else if (degrees > kMaxServoAngle) {
+        degrees = kMaxServoAngle;
+      }
+  
+      setPosition(((degrees - kMinServoAngle)) / kServoRange );
+    }
+  
+    /**
+     * Get the servo angle.
+     *
+     * <p>Assume that the servo angle is linear with respect to the PWM value (big assumption, need to
+     * test).
+     *
+     * @return The angle in degrees to which the servo is set.
+     */
+    public double getAngle() {
+      return getPosition() * kServoRange + kMinServoAngle;
+    }
+  
+    // DPL - use only the get/set angle for CustomServo
+    @Override
+    public void initSendable(SendableBuilder builder) {
+      builder.setSmartDashboardType("CustomServo");
+      builder.addDoubleProperty("Value", this::getAngle, this::setAngle);
+    }
+  }
+
 }

@@ -28,8 +28,9 @@ import frc.robot.RobotMap;
  * project.
  */
 public class Robot extends TimedRobot {
+  
   public static DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
-  public static GearShifterSubsystem gearShifter = new GearShifterSubsystem();
+  public static GearShifterSubsystem gearShifter = driveTrain.getGearShifter(); // new GearShifterSubsystem();
   public static IntakeSubsystem intake = new IntakeSubsystem();
   public static CargoTrapSubsystem cargoTrap = new CargoTrapSubsystem();
   public static ArmSubsystem arm = new ArmSubsystem();
@@ -126,7 +127,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     resetAllDashBoardSensors();
-    intake.setWristPosition(0.5);
+    intake.setAngle(0.0);
     }
 
   /**
@@ -157,9 +158,9 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Arm Extension At Max", arm.extensionAtMax());
     SmartDashboard.putNumber("Arm Angle", arm.getAngle());
     SmartDashboard.putNumber("Arm Extension Distance", arm.getDistanceExtended());
-    SmartDashboard.putNumber("Wrist Position", intake.getWristPosition());
-    SmartDashboard.putNumber("Wrist Angle", intake.getWristAngle());
-    intake.logWrist();
+
+    SmartDashboard.putNumber("Wrist Angle", intake.getAngle());
+    intake.log();   //DPL 2/10/19 review this with Billy/Xander
     arm.logArmRotation();
     arm.logArmExtnension();
     
@@ -168,8 +169,6 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(gearShifter);
     SmartDashboard.putNumber("Left Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.LEFT_FRONT_LIDAR));
     SmartDashboard.putNumber("Right Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.RIGHT_FRONT_LIDAR));
-
-    //TODO: Create Lift instance field and then call LogLift();
   }
 
   private void resetAllDashBoardSensors() {

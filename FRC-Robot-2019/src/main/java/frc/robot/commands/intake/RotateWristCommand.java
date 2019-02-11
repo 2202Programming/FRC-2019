@@ -1,41 +1,44 @@
 package frc.robot.commands.intake; 
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.input.XboxControllerButtonCode;
+//import frc.robot.input.XboxControllerButtonCode;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class RotateWristCommand extends Command{
-    private IntakeSubsystem intake;
+    IntakeSubsystem intake = Robot.intake;
+    XboxController ctrl = Robot.m_oi.getAssistentController();
 
     public RotateWristCommand(){
         requires(Robot.intake);
-        intake = Robot.intake;
     }
 
     @Override
     protected void initialize() {
-        intake.stop();
+        intake.vacuumOn();
     }
+
 
 
   @Override
   protected void execute() {
-      Robot.intake.run();
-      double placeHolderValue = .5;
-      Robot.intake.setWristPosition(placeHolderValue);
-
+      double cmd = ctrl.getY(Hand.kRight);
+      double degrees = cmd * intake.WristMaxDegrees;  //### assumes symetric up/down
+      intake.setAngle(degrees);
   }
 
 
   @Override
   protected boolean isFinished() {
-    return intake.getCargoSwitch() || Robot.m_oi.getController1().getRawButtonReleased(XboxControllerButtonCode.LB.getCode());
+    //return intake.getCargoSwitch() || ctrl.getRawButtonReleased(XboxControllerButtonCode.LB.getCode());
+    // keep doing this
+    return false;
   }
 
- 
   @Override
   protected void end() {
-      intake.stop();
+      // DPL - I think we just keep the vacuum on until some some other command takes place
   }
 
 

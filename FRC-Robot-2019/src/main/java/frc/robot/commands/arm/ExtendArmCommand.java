@@ -26,6 +26,6 @@ public class ExtendArmCommand extends Command {
 
     @Override
     protected boolean isFinished() {
-        return Robot.m_oi.getController1().getRawButtonReleased(XboxControllerButtonCode.Y.getCode());
+        return Robot.m_oi.getAssistentController().getRawButtonReleased(XboxControllerButtonCode.Y.getCode());
     }
 }

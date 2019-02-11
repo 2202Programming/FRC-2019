@@ -40,6 +40,6 @@ public class RetractArmCommand extends Command {
      */
     @Override
     protected boolean isFinished() {
-        return Robot.m_oi.getController1().getRawButtonReleased(XboxControllerButtonCode.A.getCode());
+        return Robot.m_oi.getAssistentController().getRawButtonReleased(XboxControllerButtonCode.A.getCode());
     }
 }

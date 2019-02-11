@@ -7,8 +7,8 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.SpeedController;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
-import edu.wpi.first.wpilibj.Talon;
+//import edu.wpi.first.wpilibj.SpeedControllerGroup;
+//import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,6 +19,14 @@ import frc.robot.commands.drive.ArcadeDriveCommand;
  * The basic drive train subsystem for four motors
  */
 public class DriveTrainSubsystem extends Subsystem {
+
+  //values in inches 
+  public final double ENCODER_RIGHT_DISTANCE_PER_PULSE = 0.002396219298;
+  public final double ENCODER_LEFT_DISTANCE_PER_PULSE = 0.002399087014;
+  public final int ENCODER_COUNTS_PER_REVOLUTION = 8192; //Double check this
+  public final double WHEEL_RADIUS = 3;
+ 
+  public final double kSamplePeriod = 0.1;  // 100mS in Talon
 
   // Individual Motors
   private WPI_TalonSRX frontLeftMotor = new WPI_TalonSRX(RobotMap.FL_TALON_CAN_ID);
@@ -32,6 +40,9 @@ public class DriveTrainSubsystem extends Subsystem {
   private WPI_TalonSRX leftEncoder;
   private WPI_TalonSRX rightEncoder;
 
+  //GearShifter 
+  public final double kShiftPoint = 3000.0;  // ### need units and validity on how we define this
+  GearShifterSubsystem gearShifter = new GearShifterSubsystem(kShiftPoint);
 
   private DifferentialDrive drive;
 
@@ -75,6 +86,9 @@ public class DriveTrainSubsystem extends Subsystem {
     drive = new DifferentialDrive(leftMotors, rightMotors);
     inversionConstant = 1;
   }
+
+  //Expose gearShifter so it can be used directly from Robot
+  public GearShifterSubsystem getGearShifter() {return this.gearShifter; }
 
   private void limitTalon(WPI_TalonSRX talon){
     talon.configPeakCurrentLimit(0, 10);
@@ -177,18 +191,18 @@ public class DriveTrainSubsystem extends Subsystem {
   }
   public double posLeft() {
     //pos = encoderCount * dist/counts 
-    return leftEncoder.getSelectedSensorPosition()  * RobotMap.ENCODER_LEFT_DISTANCE_PER_PULSE;
+    return leftEncoder.getSelectedSensorPosition() * ENCODER_LEFT_DISTANCE_PER_PULSE;
   }
   public double posRight() {
-    return rightEncoder.getSelectedSensorPosition() * RobotMap.ENCODER_RIGHT_DISTANCE_PER_PULSE;
+    return rightEncoder.getSelectedSensorPosition() * ENCODER_RIGHT_DISTANCE_PER_PULSE;
   }
   public double velLeft() {
     //lin vel = counts/sampletime * sampletime/sec * dist/counts
     //0.1 is assuming that the sample time is 100ms
-    return leftEncoder.getSelectedSensorVelocity()* 0.1 * RobotMap.ENCODER_LEFT_DISTANCE_PER_PULSE;
+    return (leftEncoder.getSelectedSensorVelocity() * kSamplePeriod  * ENCODER_LEFT_DISTANCE_PER_PULSE);
   }
   public double velRight() {
-    return rightEncoder.getSelectedSensorVelocity()* 0.1 * RobotMap.ENCODER_RIGHT_DISTANCE_PER_PULSE;
+    return (rightEncoder.getSelectedSensorVelocity()* kSamplePeriod * ENCODER_RIGHT_DISTANCE_PER_PULSE);
   }
 
   /**
@@ -318,7 +332,6 @@ public class DriveTrainSubsystem extends Subsystem {
     logTalon(backRightMotor);
     logTalon(leftEncoder);
     logTalon(rightEncoder);
-    //TODO: if other WPI_TalonSRX instance fields are added, log them here
   }
 
   /**
