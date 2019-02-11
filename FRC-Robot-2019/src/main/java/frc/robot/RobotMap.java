@@ -18,9 +18,9 @@ package frc.robot;
 public class RobotMap {
   
   //CAN ID for non-motor devices
-  public static final int CAN_PDP_ID  = 1;
-  public static final int CAN_PCM1_ID = 2;
-  public static final int CAN_PCM2_ID = 3;
+  public static final int CAN_PDP_ID  = 0;
+  public static final int CAN_PCM1_ID = 1;
+  public static final int CAN_PCM2_ID = 2;
 
   //Drive Train
   public static final int FL_TALON_CAN_ID = 11;
