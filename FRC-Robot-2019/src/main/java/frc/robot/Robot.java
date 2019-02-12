@@ -29,12 +29,12 @@ import frc.robot.RobotMap;
  */
 public class Robot extends TimedRobot {
   
+  public static OI m_oi = new OI();
   public static DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
   public static GearShifterSubsystem gearShifter = driveTrain.getGearShifter(); // new GearShifterSubsystem();
   public static IntakeSubsystem intake = new IntakeSubsystem();
   public static CargoTrapSubsystem cargoTrap = new CargoTrapSubsystem();
   public static ArmSubsystem arm = new ArmSubsystem();
-  public static OI m_oi = new OI();
   public static SerialPortSubsystem serialSubsystem = new SerialPortSubsystem();
 
   Command m_autonomousCommand;
