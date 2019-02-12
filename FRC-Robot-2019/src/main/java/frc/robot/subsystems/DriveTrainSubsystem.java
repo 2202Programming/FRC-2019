@@ -41,8 +41,7 @@ public class DriveTrainSubsystem extends Subsystem {
   private WPI_TalonSRX rightEncoder;
 
   //GearShifter 
-  public final double kShiftPoint = 3000.0;  // ### need units and validity on how we define this
-  GearShifterSubsystem gearShifter = new GearShifterSubsystem(kShiftPoint);
+  public final double kShiftPoint = 3000.0;  // Encoder velocity; Maximum shift down velocity
 
   private DifferentialDrive drive;
 
@@ -86,9 +85,6 @@ public class DriveTrainSubsystem extends Subsystem {
     drive = new DifferentialDrive(leftMotors, rightMotors);
     inversionConstant = 1;
   }
-
-  //Expose gearShifter so it can be used directly from Robot
-  public GearShifterSubsystem getGearShifter() {return this.gearShifter; }
 
   private void limitTalon(WPI_TalonSRX talon){
     talon.configPeakCurrentLimit(0, 10);

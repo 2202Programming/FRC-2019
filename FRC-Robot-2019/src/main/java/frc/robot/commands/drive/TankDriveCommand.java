@@ -11,18 +11,18 @@ import frc.robot.subsystems.DriveTrainSubsystem;
  */
 public class TankDriveCommand extends Command {
   private DriveTrainSubsystem driveTrain = Robot.driveTrain;
-  private XboxController ctrl = Robot.m_oi.getDriverController();
+  private XboxController ctrl;
 
   public TankDriveCommand() {
     // Use requires() here to declare subsystem dependencies
     requires(Robot.driveTrain);
-
   }
-
+  
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
     driveTrain.stop();
+    ctrl = Robot.m_oi.getDriverController();
   }
 
   // Read Controller Input from two joysticks.
