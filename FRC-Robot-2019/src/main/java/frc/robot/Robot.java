@@ -163,6 +163,7 @@ public class Robot extends TimedRobot {
     intake.log();   //DPL 2/10/19 review this with Billy/Xander
     arm.logArmRotation();
     arm.logArmExtnension();
+    arm.logTalons();
     
     SmartDashboard.putData(Scheduler.getInstance()); 
     SmartDashboard.putData(driveTrain);

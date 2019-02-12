@@ -30,7 +30,7 @@ public class ArmSubsystem extends Subsystem {
   private WPI_TalonSRX extensionEncoder;
   private final double PHI_MAX = 145.0; //In Degrees, Positive is foward
   private final double PHI_MIN = 32.0; //In Degrees
-  private final double COUNT_MAX = 10000.0; //In encoder counts ###bs number
+  private final double COUNT_MAX = -13600.0; //In encoder counts (Proto Bot)
   private double curAngle;
 
   public ArmSubsystem() {
@@ -145,6 +145,7 @@ public class ArmSubsystem extends Subsystem {
   public void logTalons() {
     logTalon(armRotationMotor);
     logTalon(armExtensionMotor);
+    //System.out.println("Encoder Count: " + rotationEncoder.getSelectedSensorPosition());
   }
 
   public void logTalon(WPI_TalonSRX talon) {
