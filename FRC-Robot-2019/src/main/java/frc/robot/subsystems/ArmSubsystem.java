@@ -7,6 +7,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.ResourceBundle.Control;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -26,6 +28,10 @@ public class ArmSubsystem extends Subsystem {
   private WPI_TalonSRX armExtensionMotor = new WPI_TalonSRX(RobotMap.ARM_EXTENSTION_TALON_CAN_ID);
   private WPI_TalonSRX rotationEncoder;
   private WPI_TalonSRX extensionEncoder;
+  private final double PHI_MAX = 145.0; //In Degrees, Positive is foward
+  private final double PHI_MIN = 32.0; //In Degrees
+  private final double COUNT_MAX = 10000.0; //In encoder counts ###bs number
+  private double curAngle;
 
   public ArmSubsystem() {
     super("Arm");
@@ -40,6 +46,8 @@ public class ArmSubsystem extends Subsystem {
 
     extensionEncoder = (WPI_TalonSRX) armExtensionMotor;
     extensionEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
+    extensionEncoder.setSelectedSensorPosition(0);
+    curAngle = PHI_MAX;
   }
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
@@ -48,9 +56,14 @@ public class ArmSubsystem extends Subsystem {
    * Rotates the arm to a specific angle
    * @param angle the angle to rotate the arm to
    */
-  public void rotateToPosition(double angle) {
-    int encoderPosition = Converter.angleToCounts(1.88, 2.005, angle, 1024);
-    armRotationMotor.set(ControlMode.Position, -encoderPosition);
+  public void setPosition(double angle) {
+    double encoderPosition = convertAngleToCounts(angle);
+    armRotationMotor.set(ControlMode.Position, encoderPosition);
+  }
+
+  private double convertAngleToCounts(double angle) {
+    double counts = (PHI_MAX - angle) * COUNT_MAX / (PHI_MAX - PHI_MIN);
+    return counts;
   }
 
   public void logArmRotation() {
@@ -62,15 +75,15 @@ public class ArmSubsystem extends Subsystem {
   }
 
   public double getAngle() {
-    return Converter.countsToAngle(1.88, 2.05, rotationEncoder.getSelectedSensorPosition(), 1024*7);
+    return PHI_MAX + Converter.countsToAngle(1.88, 2.05, rotationEncoder.getSelectedSensorPosition(), 1024*7);
   }
 
   public void rotateForward() {
-    armRotationMotor.set(0.3);
+    armRotationMotor.set(ControlMode.PercentOutput, 0.3);
   }
 
   public void rotateBackward() {
-    armRotationMotor.set(-0.3);
+    armRotationMotor.set(ControlMode.PercentOutput, -0.3);
   }
   
   public void stopRotation() {

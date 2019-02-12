@@ -18,7 +18,7 @@ public class RotateCommandGroup extends Command {
 
     @Override
     protected void execute() {
-        arm.rotateToPosition(arm.getAngle() + angle);
+        arm.setPosition(arm.getAngle() + angle);
         arm.extendToPosition(x / Math.cos(Math.toRadians(angle)));
     }
 

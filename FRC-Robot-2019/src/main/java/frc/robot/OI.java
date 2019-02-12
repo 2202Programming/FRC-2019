@@ -7,7 +7,6 @@
 
 package frc.robot;
 
-
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.input.XboxControllerButtonCode;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
@@ -54,27 +53,27 @@ public class OI {
   private XboxController driver = new XboxController(0);
   private XboxController assistant = new XboxController(1);
   private XboxController switchBoard = new XboxController(2);
-  
-  @SuppressWarnings({"resource", })
+
+  @SuppressWarnings({ "resource", })
   public OI() {
-    //Drive Train Commands
+    // Drive Train Commands
     new JoystickButton(driver, XboxControllerButtonCode.A.getCode()).whenPressed(new DownShiftCommand());
     new JoystickButton(driver, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
     new JoystickButton(driver, XboxControllerButtonCode.B.getCode()).whenPressed(new ToggleAutomaticGearShiftingCommand());
     new JoystickButton(driver, XboxControllerButtonCode.X.getCode()).whenPressed(new InvertDriveControlsCommand());
     new JoystickButton(driver, XboxControllerButtonCode.LB.getCode()).whileHeld(new TankDriveCommand());
-    
-    //Arm Commands
+
+    // Arm Commands
     new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode()).whileHeld(new ExtendArmCommand());
     new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whileHeld(new RetractArmCommand());
     new JoystickButton(assistant, XboxControllerButtonCode.X.getCode()).whenPressed(new RotateArmToAngleCommand(20));
     new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new RotateArmToAngleCommand(0));
 
-    //End Effector Commands
+    // End Effector Commands
     new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode()).whenPressed(new OuttakeCommand());
     new JoystickButton(assistant, XboxControllerButtonCode.START.getCode()).whenPressed(new RotateWristUpCommand());
     new JoystickButton(assistant, XboxControllerButtonCode.BACK.getCode()).whenPressed(new RotateWristDownCommand());
-    
+
   }
 
   public XboxController getDriverController() {
