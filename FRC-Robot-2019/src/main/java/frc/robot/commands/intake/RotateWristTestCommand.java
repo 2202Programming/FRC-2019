@@ -11,9 +11,9 @@ import frc.robot.Robot;
  * @author Kevin Li
  */
 public class RotateWristTestCommand extends Command {
-  XboxController ctrl = Robot.m_oi.getAssistantController();
-  double[] positions = {-30, 0, 30, 0};
-  int currentIndex = 0;
+  private XboxController ctrl = Robot.m_oi.getAssistantController();
+  private double[] positions = {-30, 0, 30, 0};
+  private int currentIndex = 0;
 
   public RotateWristTestCommand() {
     requires(Robot.intake);
