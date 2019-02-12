@@ -1,41 +1,37 @@
 package frc.robot.commands.intake; 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.input.XboxControllerButtonCode;
-import frc.robot.subsystems.IntakeSubsystem;
 
 public class RotateWristCommand extends Command{
-    private IntakeSubsystem intake;
+    private double angle;
 
-    public RotateWristCommand(){
+    public RotateWristCommand(double angle){
         requires(Robot.intake);
-        intake = Robot.intake;
+        this.angle = angle;
     }
 
     @Override
     protected void initialize() {
-        intake.stop();
+        Robot.intake.stop();
     }
 
 
   @Override
   protected void execute() {
-      Robot.intake.run();
-      double placeHolderValue = .5;
-      Robot.intake.setWristPosition(placeHolderValue);
+      Robot.intake.setWristAngle(angle);
 
   }
 
 
   @Override
   protected boolean isFinished() {
-    return intake.getCargoSwitch() || Robot.m_oi.getController1().getRawButtonReleased(XboxControllerButtonCode.LB.getCode());
+    return Math.abs(Robot.intake.getWristAngle() - angle) < 1;
   }
 
  
   @Override
   protected void end() {
-      intake.stop();
+      Robot.intake.stop();
   }
 
 
