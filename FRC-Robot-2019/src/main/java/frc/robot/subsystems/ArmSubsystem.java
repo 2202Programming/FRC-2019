@@ -31,8 +31,7 @@ public class ArmSubsystem extends Subsystem {
   private final double PHI_MAX = 145.0; //In Degrees, Positive is foward
   private final double PHI_MIN = 32.0; //In Degrees
   private final double COUNT_MAX = -13600.0; //In encoder counts (Proto Bot)
-  private double curAngle;
-
+  
   public ArmSubsystem() {
     super("Arm");
     addChild("Arm Rotation Motor", armRotationMotor);
@@ -43,11 +42,12 @@ public class ArmSubsystem extends Subsystem {
 
     rotationEncoder = (WPI_TalonSRX) armRotationMotor;
     rotationEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
+    rotationEncoder.setSelectedSensorPosition(0);
 
     extensionEncoder = (WPI_TalonSRX) armExtensionMotor;
     extensionEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     extensionEncoder.setSelectedSensorPosition(0);
-    curAngle = PHI_MAX;
+    
   }
   // Put methods for controlling this subsystem
   // here. Call these from Commands.

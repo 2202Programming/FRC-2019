@@ -19,6 +19,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SerialPortSubsystem;
 import frc.robot.subsystems.GearShifterSubsystem;
 import frc.robot.RobotMap;
+import frc.robot.commands.intake.TestWristRateCommand;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -28,7 +29,10 @@ import frc.robot.RobotMap;
  * project.
  */
 public class Robot extends TimedRobot {
+  //common constants for robot
+  public static double dT = 0.02;  // Robots sample period (seconds)  
   
+  //physical devices and subsystems
   public static DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
   public static GearShifterSubsystem gearShifter = new GearShifterSubsystem(driveTrain.kShiftPoint);
   public static IntakeSubsystem intake = new IntakeSubsystem();
@@ -128,6 +132,10 @@ public class Robot extends TimedRobot {
     }
     resetAllDashBoardSensors();
     intake.setAngle(0.0);
+
+    Command testRateCmd = new TestWristRateCommand();
+    testRateCmd.start();  //schedule it
+
     }
 
   /**
