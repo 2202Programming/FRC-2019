@@ -14,19 +14,18 @@ public class KeepIntakeParallelToGroundCommand extends Command{
 
     @Override
     protected void execute() {
-        Robot.intake.setWristAngle(parallelAngle);
+        Robot.intake.setAngle(parallelAngle);
     }
 
 
   @Override
   protected boolean isFinished() {
-    return Math.abs(Robot.intake.getWristAngle() - parallelAngle) < 1;
+    return Math.abs(Robot.intake.getAngle() - parallelAngle) < 1;
   }
 
  
   @Override
   protected void end() {
-      Robot.intake.stop();
   }
 
 
