@@ -3,42 +3,37 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-//import frc.robot.input.XboxControllerButtonCode;
-import frc.robot.subsystems.IntakeSubsystem;
 
 public class RotateWristCommand extends Command{
-    IntakeSubsystem intake = Robot.intake;
-    XboxController ctrl = Robot.m_oi.getAssistantController();
+    private double angle;
 
-    public RotateWristCommand(){
+    public RotateWristCommand(double angle){
         requires(Robot.intake);
+        this.angle = angle;
     }
 
     @Override
     protected void initialize() {
-        intake.vacuumOn();
+        Robot.intake.stop();
     }
 
 
 
   @Override
   protected void execute() {
-      double cmd = ctrl.getY(Hand.kRight);
-      double degrees = cmd * intake.WristMaxDegrees;  //### assumes symetric up/down
-      intake.setAngle(degrees);
+      Robot.intake.setWristAngle(angle);
+
   }
 
 
   @Override
   protected boolean isFinished() {
-    //return intake.getCargoSwitch() || ctrl.getRawButtonReleased(XboxControllerButtonCode.LB.getCode());
-    // keep doing this
-    return false;
+    return Math.abs(Robot.intake.getWristAngle() - angle) < 1;
   }
 
   @Override
   protected void end() {
-      // DPL - I think we just keep the vacuum on until some some other command takes place
+      Robot.intake.stop();
   }
 
 
