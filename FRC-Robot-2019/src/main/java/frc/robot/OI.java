@@ -11,12 +11,11 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.input.XboxControllerButtonCode;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.arm.*;
-//import frc.robot.commands.cargo.*;
 import frc.robot.commands.drive.*;
 import frc.robot.commands.drive.outtake.OuttakeCommand;
 import frc.robot.commands.drive.shift.*;
-import frc.robot.commands.intake.RotateWristDownCommand;
-import frc.robot.commands.intake.RotateWristUpCommand;
+//import frc.robot.commands.intake.RotateWristDownCommand;
+//import frc.robot.commands.intake.RotateWristUpCommand;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -71,8 +70,8 @@ public class OI {
 
     // End Effector Commands
     new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode()).whenPressed(new OuttakeCommand());
-    new JoystickButton(assistant, XboxControllerButtonCode.START.getCode()).whenPressed(new RotateWristUpCommand());
-    new JoystickButton(assistant, XboxControllerButtonCode.BACK.getCode()).whenPressed(new RotateWristDownCommand());
+    //new JoystickButton(assistant, XboxControllerButtonCode.START.getCode()).whenPressed(new RotateWristUpCommand());
+    //new JoystickButton(assistant, XboxControllerButtonCode.BACK.getCode()).whenPressed(new RotateWristDownCommand());
 
   }
 

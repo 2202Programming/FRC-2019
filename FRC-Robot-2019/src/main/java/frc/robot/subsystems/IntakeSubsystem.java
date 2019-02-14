@@ -85,10 +85,10 @@ public class IntakeSubsystem extends Subsystem {
    */
   public IntakeSubsystem() {
     init();
-    addChild("Wrist Servo", (Sendable) wristServo);
-    addChild("Vacuum Pump", (Sendable) vacuumPump);
-    addChild("CargoSwitch", cargoSwitch);
-    addChild("Cargo/Hatch Release", (Sendable) vacuumSol);
+    addChild("In:Wrist", (Sendable) wristServo);
+    addChild("In:VacPump", (Sendable) vacuumPump);
+    addChild("In:CargoSw", cargoSwitch);
+    addChild("In:VacSol", (Sendable) vacuumSol);
   }
 
   @Override

@@ -2,13 +2,10 @@ package frc.robot.commands.util;
 
 import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
-import java.lang.Math;
-//import edu.wpi.first.wpilibj.command.Command;
-//import edu.wpi.first.wpilibj.command.Subsystem;
+
 import frc.robot.Robot;
 
-
-public class RateCommand  {
+public class RateController  {
     double dT = Robot.dT;  //sample period seconds - use robots
 
     // expo only works on normalize inputs
@@ -19,7 +16,7 @@ public class RateCommand  {
     double dx_min;         // min dx/dt (device units)/second
     double dx_max;         // max dx/dt (device units)/second
   
-    // dead zone is in normalized input units -1.0 to 1.0
+    // dead zone is in normalized units -1.0 to 1.0
     // The zone doesn't have to be symetric.
     // min is the left hand side, typically -1 to 0 range
     // max is right hand side, typically 0 to +1 range
@@ -30,15 +27,16 @@ public class RateCommand  {
     double dz_min_scale;   // correct full scale gain for deadzone
     double dz_max_scale;   // correction for full scale
 
-    DoubleSupplier cmdFunct; 
+    DoubleSupplier cmdFunct;    // function get the input command -1 to 1 units
     DoubleConsumer devSetter;   // function to read subsystem being controlled
     DoubleSupplier devGetter;   // function to write subsystem being controlled
 
-    double x_max; // max position of device in device units
-    double x_min; // min position of device in device units
-    double X;   //dev units
+    double x_max; // max command value for device (device units)
+    double x_min; // min command value for device (device units)
+    double X;     // current commanded value (device units)
 
-    public RateCommand(
+    public RateController
+  (
           //Subsystem system,
           DoubleSupplier _cmdFunct, 
           DoubleSupplier getter, 
@@ -89,7 +87,9 @@ public class RateCommand  {
     this.devSetter.accept(X);
   }
 
-  
+  //return the internal state that we are commanding to the device
+  // in device units.
+  public double X() {return X; }
 
   public double setExpo(double a) {
       if (a > 1.0) a = 1.0;

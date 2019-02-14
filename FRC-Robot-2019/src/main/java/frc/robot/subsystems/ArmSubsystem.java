@@ -28,7 +28,11 @@ public class ArmSubsystem extends Subsystem {
   private WPI_TalonSRX extensionEncoder;
   
   public final double EXTEND_MIN = 0.0;  //inches
-  public final double EXTEND_MAX = 10.0; //
+  public final double EXTEND_MAX = 38.0; // 
+  private final double EXTEND_COUNT_MAX =  26400;
+  private final double kCounts_per_in = EXTEND_COUNT_MAX / EXTEND_MAX;
+  //private final double kIn_per_count = 1.0 / kCounts_per_in;
+ 
 
   public final double PHI_MAX = 145.0; //In Degrees, Positive is foward
   public final double PHI_MIN = 32.0;  //In Degrees
@@ -36,8 +40,9 @@ public class ArmSubsystem extends Subsystem {
   
   public ArmSubsystem() {
     super("Arm");
-    addChild("Arm Rotation Motor", armRotationMotor);
-    addChild("Arm Extension Motor", armExtensionMotor);
+    addChild("Arm Rot M", armRotationMotor);
+    addChild("Arm Ext M", armExtensionMotor);
+    addChild("Arm Ext Enc", extensionEncoder);
 
     //armRotationMotor.config_kP(0, 0.3, 30);
     //armRotationMotor.config_kF(0, 0.002, 30);
@@ -46,6 +51,9 @@ public class ArmSubsystem extends Subsystem {
     rotationEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     rotationEncoder.setSelectedSensorPosition(0);
 
+    //dpl this didn't work - rotationEncoder.setInverted(true);
+
+    // Assumes extension at zero on power up.
     extensionEncoder = (WPI_TalonSRX) armExtensionMotor;
     extensionEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     extensionEncoder.setSelectedSensorPosition(0);
@@ -69,7 +77,7 @@ public class ArmSubsystem extends Subsystem {
   }
   
   public double getAngle() {
-    return PHI_MAX + Converter.countsToAngle(1.88, 2.05, rotationEncoder.getSelectedSensorPosition(), 1024*7);
+    return PHI_MAX - Converter.countsToAngle(1.88, 2.05, rotationEncoder.getSelectedSensorPosition(), 1024*7);
   }
 
   public void log() {
@@ -83,13 +91,15 @@ public class ArmSubsystem extends Subsystem {
   }
 
   public void setExtension(double extendInch) {
-    armExtensionMotor.set(ControlMode.Position, extendInch);
+    double c = extendInch * kCounts_per_in;
+    armExtensionMotor.set(ControlMode.Position, c);
   }
 
   // inches
   public double getExtension() {
     int counts =  extensionEncoder.getSelectedSensorPosition();
-    return Converter.countsToDistance(0.94, counts, 1024);
+    return counts * kCounts_per_in;
+    //return Converter.countsToDistance(0.94, counts, 1024);
   }
 
 
@@ -114,7 +124,7 @@ public class ArmSubsystem extends Subsystem {
   public void logTalons() {
     logTalon(armRotationMotor);
     logTalon(armExtensionMotor);
-    //System.out.println("Encoder Count: " + rotationEncoder.getSelectedSensorPosition());
+    System.out.println("Encoder Count: " + rotationEncoder.getSelectedSensorPosition());
   }
 
   private void logTalon(WPI_TalonSRX talon) {

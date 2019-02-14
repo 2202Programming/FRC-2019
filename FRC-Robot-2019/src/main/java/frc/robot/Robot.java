@@ -9,7 +9,6 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -46,6 +45,10 @@ public class Robot extends TimedRobot {
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
 
+  // TESTING 
+  TestWristRateCommand testWristCmd; 
+  TestArmRateCmd testArmCmd; 
+
   /**
    * This function is run when the robot is first started up and should be used
    * for any initialization code.
@@ -54,6 +57,10 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // chooser.addOption("My Auto", new MyAutoCommand());
     SmartDashboard.putData("Auto mode", m_chooser);
+
+    //TESTING
+    testWristCmd = new TestWristRateCommand();
+    testArmCmd = new TestArmRateCmd();
   }
 
   /**
@@ -135,8 +142,6 @@ public class Robot extends TimedRobot {
     resetAllDashBoardSensors();
     intake.setAngle(0.0);
 
-    Command testWristCmd = new TestWristRateCommand();
-    CommandGroup testArmCmd = new TestArmRateCmd();
     testWristCmd.start();  //schedule it
     testArmCmd.start();
     }
@@ -163,14 +168,17 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Right Encoder Count", driveTrain.getRightEncoderTalon().getSelectedSensorPosition());
     SmartDashboard.putNumber("Right Encoder Rate", driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
     SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
-    SmartDashboard.putNumber("Arm Rotation Count", arm.getRotationEncoder().getSelectedSensorPosition());
-    SmartDashboard.putNumber("Arm Extension Count", arm.getExtensionEncoder().getSelectedSensorPosition());
-    SmartDashboard.putBoolean("Arm Extension At Min", arm.extensionAtMin());
-    SmartDashboard.putBoolean("Arm Extension At Max", arm.extensionAtMax());
-    SmartDashboard.putNumber("Arm Angle", arm.getAngle());
-    SmartDashboard.putNumber("Arm Extension Distance", arm.getExtension());
 
-    SmartDashboard.putNumber("Wrist Angle", intake.getAngle());
+    SmartDashboard.putNumber("Arm:Phi(raw)", arm.getRotationEncoder().getSelectedSensorPosition());
+    SmartDashboard.putNumber("Arm:Ext(raw)", arm.getExtensionEncoder().getSelectedSensorPosition());
+    SmartDashboard.putBoolean("Arm:Ext@Min", arm.extensionAtMin());
+    SmartDashboard.putBoolean("Arm:Ext@Max", arm.extensionAtMax());
+    SmartDashboard.putNumber("Arm:Phi(deg)", arm.getAngle());
+    SmartDashboard.putNumber("Arm:Ext(in)", arm.getExtension());
+    
+    testArmCmd.log();
+
+    SmartDashboard.putNumber("Wrist(deg)", intake.getAngle());
     intake.log();   //DPL 2/10/19 review this with Billy/Xander
     arm.log();
     arm.logTalons();
