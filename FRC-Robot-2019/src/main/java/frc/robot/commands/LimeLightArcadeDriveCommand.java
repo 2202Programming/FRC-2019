@@ -44,7 +44,7 @@ public class LimeLightArcadeDriveCommand extends Command {
   @Override
   protected void execute() {
     //We invert the PID controller value so the feedback loop is negative and not positive
-    Robot.driveTrain.ArcadeDrive(Robot.m_oi.getController0().getY(Hand.kLeft),-controller.get(), true);
+    Robot.driveTrain.ArcadeDrive(Robot.m_oi.getDriverController().getY(Hand.kLeft),-controller.get(), true);
     SmartDashboard.putData(controller);
   }
 
