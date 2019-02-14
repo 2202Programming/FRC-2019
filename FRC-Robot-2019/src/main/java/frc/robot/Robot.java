@@ -19,7 +19,6 @@ import frc.robot.subsystems.GearShifterSubsystem;
 import frc.robot.subsystems.LimeLightSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SerialPortSubsystem;
-import frc.robot.subsystems.GearShifterSubsystem;
 import frc.robot.RobotMap;
 
 /**
