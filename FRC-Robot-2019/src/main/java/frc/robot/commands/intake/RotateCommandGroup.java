@@ -1,28 +1,17 @@
 package frc.robot.commands.intake;
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.Robot;
+import frc.robot.commands.arm.ExtendArmToPositionCommand;
+import frc.robot.commands.arm.RotateArmToAngleCommand;
 import frc.robot.subsystems.ArmSubsystem;
 
-public class RotateCommandGroup extends Command {
-    private double angle;
-    private double x;
-    private ArmSubsystem arm;
+public class RotateCommandGroup extends CommandGroup {
 
     public RotateCommandGroup(double x, double angle) {
-        this.angle = angle;
-        this.x = x;
         requires(Robot.arm);
-        arm = Robot.arm;
-    }
-
-    @Override
-    protected void execute() {
-        arm.setPosition(arm.getAngle() + angle);
-        arm.extendToPosition(x / Math.cos(Math.toRadians(angle)));
-    }
-
-    protected boolean isFinished() {
-        return Math.abs(Robot.arm.getAngle() - angle) < 1;
+        ArmSubsystem arm = Robot.arm;
+        addParallel(new RotateArmToAngleCommand(arm.getAngle() + angle));
+        addParallel(new ExtendArmToPositionCommand(x / Math.cos(Math.toRadians(angle))));
     }
 }
