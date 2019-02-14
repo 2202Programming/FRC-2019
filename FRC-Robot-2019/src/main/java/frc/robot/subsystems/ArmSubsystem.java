@@ -7,8 +7,6 @@
 
 package frc.robot.subsystems;
 
-import java.util.ResourceBundle.Control;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -28,8 +26,12 @@ public class ArmSubsystem extends Subsystem {
   private WPI_TalonSRX armExtensionMotor = new WPI_TalonSRX(RobotMap.ARM_EXTENSTION_TALON_CAN_ID);
   private WPI_TalonSRX rotationEncoder;
   private WPI_TalonSRX extensionEncoder;
-  private final double PHI_MAX = 145.0; //In Degrees, Positive is foward
-  private final double PHI_MIN = 32.0; //In Degrees
+  
+  public final double EXTEND_MIN = 0.0;  //inches
+  public final double EXTEND_MAX = 10.0; //
+
+  public final double PHI_MAX = 145.0; //In Degrees, Positive is foward
+  public final double PHI_MIN = 32.0;  //In Degrees
   private final double COUNT_MAX = -13600.0; //In encoder counts (Proto Bot)
   
   public ArmSubsystem() {
@@ -56,7 +58,7 @@ public class ArmSubsystem extends Subsystem {
    * Rotates the arm to a specific angle
    * @param angle the angle to rotate the arm to
    */
-  public void setPosition(double angle) {
+  public void setAngle(double angle) {
     double encoderPosition = convertAngleToCounts(angle);
     armRotationMotor.set(ControlMode.Position, encoderPosition);
   }
@@ -65,64 +67,31 @@ public class ArmSubsystem extends Subsystem {
     double counts = (PHI_MAX - angle) * COUNT_MAX / (PHI_MAX - PHI_MIN);
     return counts;
   }
-
-  public void logArmRotation() {
-    SmartDashboard.putData((Sendable) armRotationMotor);
-  }
-
-  public void logArmExtnension() {
-    SmartDashboard.putData((Sendable) armExtensionMotor);
-  }
-
+  
   public double getAngle() {
     return PHI_MAX + Converter.countsToAngle(1.88, 2.05, rotationEncoder.getSelectedSensorPosition(), 1024*7);
   }
 
-  public void rotateForward() {
-    armRotationMotor.set(ControlMode.PercentOutput, 0.3);
+  public void log() {
+    SmartDashboard.putData((Sendable) armRotationMotor);
+    SmartDashboard.putData((Sendable) armExtensionMotor);
   }
 
-  public void rotateBackward() {
-    armRotationMotor.set(ControlMode.PercentOutput, -0.3);
-  }
-  
-  public void stopRotation() {
-    armRotationMotor.set(0);
-  }
 
   public TalonSRX getRotationEncoder() {
     return rotationEncoder;
   }
 
-  /*
-  public boolean rotationAtMin() {
-    return rotationMinimumSwitch.get();
-  }
-  */
-
-  public void extendToPosition(double position) {
-    armExtensionMotor.set(ControlMode.Position, position);
+  public void setExtension(double extendInch) {
+    armExtensionMotor.set(ControlMode.Position, extendInch);
   }
 
-  public int getExtensionPosition() {
-    return extensionEncoder.getSelectedSensorPosition();
+  // inches
+  public double getExtension() {
+    int counts =  extensionEncoder.getSelectedSensorPosition();
+    return Converter.countsToDistance(0.94, counts, 1024);
   }
 
-  public double getDistanceExtended() {
-    return Converter.countsToDistance(0.94, getExtensionPosition(), 1024);
-  }
-
-  public void extend() {
-    armExtensionMotor.set(0.3);
-  }
-
-  public void retract() {
-    armExtensionMotor.set(-0.3);
-  }
-
-  public void stopExtension() {
-    armExtensionMotor.set(0);
-  }
 
   public TalonSRX getExtensionEncoder() {
     return extensionEncoder;
@@ -148,7 +117,7 @@ public class ArmSubsystem extends Subsystem {
     //System.out.println("Encoder Count: " + rotationEncoder.getSelectedSensorPosition());
   }
 
-  public void logTalon(WPI_TalonSRX talon) {
+  private void logTalon(WPI_TalonSRX talon) {
     SmartDashboard.putNumber(talon.getName() + " Current", talon.getOutputCurrent());
   }
 }

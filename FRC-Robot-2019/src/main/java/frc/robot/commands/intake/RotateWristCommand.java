@@ -19,8 +19,6 @@ public class RotateWristCommand extends Command{
         intake.vacuumOn();
     }
 
-
-
   @Override
   protected void execute() {
       double cmd = ctrl.getY(Hand.kRight);

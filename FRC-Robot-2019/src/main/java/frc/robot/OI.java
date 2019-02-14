@@ -64,8 +64,8 @@ public class OI {
     new JoystickButton(driver, XboxControllerButtonCode.LB.getCode()).whileHeld(new TankDriveCommand());
 
     // Arm Commands
-    new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode()).whileHeld(new ExtendArmCommand());
-    new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whileHeld(new RetractArmCommand());
+    //new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode()).whileHeld(new ExtendArmCommand());
+    //new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whileHeld(new RetractArmCommand());
     new JoystickButton(assistant, XboxControllerButtonCode.X.getCode()).whenPressed(new RotateArmToAngleCommand(20));
     new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new RotateArmToAngleCommand(0));
 

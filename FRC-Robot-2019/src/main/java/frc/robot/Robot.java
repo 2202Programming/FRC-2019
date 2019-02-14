@@ -9,6 +9,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,6 +20,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SerialPortSubsystem;
 import frc.robot.subsystems.GearShifterSubsystem;
 import frc.robot.RobotMap;
+import frc.robot.commands.arm.TestArmRateCmd;
 import frc.robot.commands.intake.TestWristRateCommand;
 
 /**
@@ -133,9 +135,10 @@ public class Robot extends TimedRobot {
     resetAllDashBoardSensors();
     intake.setAngle(0.0);
 
-    Command testRateCmd = new TestWristRateCommand();
-    testRateCmd.start();  //schedule it
-
+    Command testWristCmd = new TestWristRateCommand();
+    CommandGroup testArmCmd = new TestArmRateCmd();
+    testWristCmd.start();  //schedule it
+    testArmCmd.start();
     }
 
   /**
@@ -165,12 +168,11 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Arm Extension At Min", arm.extensionAtMin());
     SmartDashboard.putBoolean("Arm Extension At Max", arm.extensionAtMax());
     SmartDashboard.putNumber("Arm Angle", arm.getAngle());
-    SmartDashboard.putNumber("Arm Extension Distance", arm.getDistanceExtended());
+    SmartDashboard.putNumber("Arm Extension Distance", arm.getExtension());
 
     SmartDashboard.putNumber("Wrist Angle", intake.getAngle());
     intake.log();   //DPL 2/10/19 review this with Billy/Xander
-    arm.logArmRotation();
-    arm.logArmExtnension();
+    arm.log();
     arm.logTalons();
     
     SmartDashboard.putData(Scheduler.getInstance()); 
