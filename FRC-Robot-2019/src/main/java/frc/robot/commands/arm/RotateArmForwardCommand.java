@@ -26,6 +26,6 @@ public class RotateArmForwardCommand extends Command {
 
     @Override
     protected boolean isFinished() {
-        return Robot.m_oi.getController1().getRawButtonReleased(XboxControllerButtonCode.X.getCode());
+        return Robot.m_oi.getAssistantController().getRawButtonReleased(XboxControllerButtonCode.X.getCode());
     }
 }

@@ -42,8 +42,8 @@ public class ThrottleCommand extends Command {
   // right motors
   @Override
   protected void execute() {
-    double throttle = Robot.m_oi.getController0().getY(Hand.kLeft) * (startValue + stepValue * cycleCount);
-    double turnRate = Robot.m_oi.getController0().getX(Hand.kRight) * (startValue + stepValue * cycleCount);
+    double throttle = Robot.m_oi.getDriverController().getY(Hand.kLeft) * (startValue + stepValue * cycleCount);
+    double turnRate = Robot.m_oi.getDriverController().getX(Hand.kRight) * (startValue + stepValue * cycleCount);
     cycleCount++;
     Robot.driveTrain.ArcadeDrive(throttle, turnRate, true);
   }

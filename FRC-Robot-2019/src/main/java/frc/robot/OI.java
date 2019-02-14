@@ -7,12 +7,12 @@
 
 package frc.robot;
 
-
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.input.XboxControllerButtonCode;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import frc.robot.commands.LimeLightArcadeDriveCommand;
 import frc.robot.commands.arm.*;
-import frc.robot.commands.cargo.*;
+//import frc.robot.commands.cargo.*;
 import frc.robot.commands.drive.*;
 import frc.robot.commands.drive.outtake.OuttakeCommand;
 import frc.robot.commands.drive.shift.*;
@@ -50,38 +50,36 @@ public class OI {
   // Start the command when the button is released and let it run the command
   // until it is finished as determined by it's isFinished method.
   // button.whenReleased(new ExampleCommand());
-  private XboxController xboxController0 = new XboxController(0);
-  private XboxController xboxController1 = new XboxController(1);
+  private XboxController driver = new XboxController(0);
+  private XboxController assistant = new XboxController(1);
   private XboxController switchBoard = new XboxController(2);
 
+  @SuppressWarnings({ "resource", })
   public OI() {
-    //Drive Train Commands
-    new JoystickButton(xboxController0, XboxControllerButtonCode.A.getCode()).whenPressed(new DownShiftCommand());
-    new JoystickButton(xboxController0, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
-    new JoystickButton(xboxController0, XboxControllerButtonCode.B.getCode()).whenPressed(new ToggleAutomaticGearShiftingCommand());
-    new JoystickButton(xboxController0, XboxControllerButtonCode.X.getCode()).whenPressed(new InvertDriveControlsCommand());
-    new JoystickButton(xboxController0, XboxControllerButtonCode.LB.getCode()).whileHeld(new TankDriveCommand());
-    
+    // Drive Train Commands
+    new JoystickButton(driver, XboxControllerButtonCode.A.getCode()).whenPressed(new DownShiftCommand());
+    new JoystickButton(driver, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
+    new JoystickButton(driver, XboxControllerButtonCode.B.getCode()).whenPressed(new ToggleAutomaticGearShiftingCommand());
+    new JoystickButton(driver, XboxControllerButtonCode.X.getCode()).whenPressed(new InvertDriveControlsCommand());
+    new JoystickButton(driver, XboxControllerButtonCode.LB.getCode()).whileHeld(new TankDriveCommand());
+
     //Arm Commands
-    new JoystickButton(xboxController1, XboxControllerButtonCode.Y.getCode()).whileHeld(new ExtendArmCommand());
-    new JoystickButton(xboxController1, XboxControllerButtonCode.A.getCode()).whileHeld(new RetractArmCommand());
-    new JoystickButton(xboxController1, XboxControllerButtonCode.X.getCode()).whenPressed(new RotateArmToAngleCommand(20));
-    new JoystickButton(xboxController1, XboxControllerButtonCode.B.getCode()).whenPressed(new RotateArmToAngleCommand(0));
+    new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode()).whileHeld(new ExtendArmCommand());
+    new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whileHeld(new RetractArmCommand());
+    new JoystickButton(assistant, XboxControllerButtonCode.X.getCode()).whenPressed(new RotateArmToAngleCommand(90));
+    new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new RotateArmToAngleCommand(120));
 
-    //End Effector Commands
-    new JoystickButton(xboxController1, XboxControllerButtonCode.LB.getCode()).whenPressed(new IntakeCommand());
-    new JoystickButton(xboxController1, XboxControllerButtonCode.RB.getCode()).whenPressed(new OuttakeCommand());
-    new JoystickButton(xboxController1, XboxControllerButtonCode.START.getCode()).whenPressed(new RotateWristCommand(15));
-    new JoystickButton(xboxController1, XboxControllerButtonCode.BACK.getCode()).whenPressed(new RotateWristCommand(-15));
-    
+    new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode()).whenPressed(new OuttakeCommand());
+    new JoystickButton(assistant, XboxControllerButtonCode.START.getCode()).whenPressed(new RotateWristCommand(15));
+    new JoystickButton(assistant, XboxControllerButtonCode.BACK.getCode()).whenPressed(new RotateWristCommand(-15));
   }
 
-  public XboxController getController0() {
-    return xboxController0;
+  public XboxController getDriverController() {
+    return driver;
   }
 
-  public XboxController getController1() {
-    return xboxController1;
+  public XboxController getAssistantController() {
+    return assistant;
   }
 
   public XboxController getSwitchBoard() {

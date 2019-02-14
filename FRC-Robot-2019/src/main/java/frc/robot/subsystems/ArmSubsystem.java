@@ -7,6 +7,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.ResourceBundle.Control;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -26,20 +28,28 @@ public class ArmSubsystem extends Subsystem {
   private WPI_TalonSRX armExtensionMotor = new WPI_TalonSRX(RobotMap.ARM_EXTENSTION_TALON_CAN_ID);
   private WPI_TalonSRX rotationEncoder;
   private WPI_TalonSRX extensionEncoder;
+  private final double PHI_MAX = 145.0; //In Degrees, Positive is foward
+  private final double PHI_MIN = 32.0; //In Degrees
+  private final double COUNT_MAX = -13600.0; //In encoder counts (Proto Bot)
+  private double curAngle;
 
   public ArmSubsystem() {
     super("Arm");
     addChild("Arm Rotation Motor", armRotationMotor);
     addChild("Arm Extension Motor", armExtensionMotor);
 
-    //armRotationMotor.config_kP(0, 0.3, 30);
+    armRotationMotor.config_kP(0, 0.17, 30);
     //armRotationMotor.config_kF(0, 0.002, 30);
+
+    armExtensionMotor.config_kP(0, 0.1, 30);
 
     rotationEncoder = (WPI_TalonSRX) armRotationMotor;
     rotationEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
 
     extensionEncoder = (WPI_TalonSRX) armExtensionMotor;
     extensionEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
+    extensionEncoder.setSelectedSensorPosition(0);
+    curAngle = PHI_MAX;
   }
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
@@ -48,9 +58,14 @@ public class ArmSubsystem extends Subsystem {
    * Rotates the arm to a specific angle
    * @param angle the angle to rotate the arm to
    */
-  public void rotateToPosition(double angle) {
-    int encoderPosition = Converter.angleToCounts(1.88, 2.005, angle, 1024);
-    armRotationMotor.set(ControlMode.Position, -encoderPosition);
+  public void setPosition(double angle) {
+    double encoderPosition = convertAngleToCounts(angle);
+    armRotationMotor.set(ControlMode.Position, encoderPosition);
+  }
+
+  private double convertAngleToCounts(double angle) {
+    double counts = (PHI_MAX - angle) * COUNT_MAX / (PHI_MAX - PHI_MIN);
+    return counts;
   }
 
   public void logArmRotation() {
@@ -62,15 +77,15 @@ public class ArmSubsystem extends Subsystem {
   }
 
   public double getAngle() {
-    return Converter.countsToAngle(1.88, 2.05, rotationEncoder.getSelectedSensorPosition(), 1024*7);
+    return PHI_MAX + Converter.countsToAngle(1.88, 2.05, rotationEncoder.getSelectedSensorPosition(), 1024*7);
   }
 
   public void rotateForward() {
-    armRotationMotor.set(0.3);
+    armRotationMotor.set(ControlMode.PercentOutput, 0.3);
   }
 
   public void rotateBackward() {
-    armRotationMotor.set(-0.3);
+    armRotationMotor.set(ControlMode.PercentOutput, -0.3);
   }
   
   public void stopRotation() {
@@ -87,7 +102,8 @@ public class ArmSubsystem extends Subsystem {
   }
   */
 
-  public void extendToPosition(double position) {
+  public void extendToPosition(double distance) {
+    int position = Converter.distanceToCounts(1.88, distance, 1024);
     armExtensionMotor.set(ControlMode.Position, position);
   }
 
@@ -96,7 +112,7 @@ public class ArmSubsystem extends Subsystem {
   }
 
   public double getDistanceExtended() {
-    return Converter.countsToDistance(0.94, getExtensionPosition(), 1024);
+    return Converter.countsToDistance(1.88, getExtensionPosition(), 1024);
   }
 
   public void extend() {
@@ -132,6 +148,7 @@ public class ArmSubsystem extends Subsystem {
   public void logTalons() {
     logTalon(armRotationMotor);
     logTalon(armExtensionMotor);
+    //System.out.println("Encoder Count: " + rotationEncoder.getSelectedSensorPosition());
   }
 
   public void logTalon(WPI_TalonSRX talon) {

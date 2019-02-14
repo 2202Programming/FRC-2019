@@ -1,4 +1,6 @@
 package frc.robot.commands.intake; 
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
@@ -12,26 +14,24 @@ public class RotateWristCommand extends Command{
 
     @Override
     protected void initialize() {
-        Robot.intake.stop();
     }
+
 
 
   @Override
   protected void execute() {
-      Robot.intake.setWristAngle(angle);
+      Robot.intake.setAngle(angle);
 
   }
 
 
   @Override
   protected boolean isFinished() {
-    return Math.abs(Robot.intake.getWristAngle() - angle) < 1;
+    return Math.abs(Robot.intake.getAngle() - angle) < 1;
   }
 
- 
   @Override
   protected void end() {
-      Robot.intake.stop();
   }
 
 

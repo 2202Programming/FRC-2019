@@ -30,7 +30,7 @@ public class ArcadeDriveCommand extends Command {
   @Override
   protected void execute() {
     //Robot.driveTrain.ArcadeDrive(0.90, 0, true);
-    Robot.driveTrain.ArcadeDrive(Robot.m_oi.getController0().getY(Hand.kLeft), Robot.m_oi.getController0().getX(Hand.kRight), true);
+    Robot.driveTrain.ArcadeDrive(Robot.m_oi.getDriverController().getY(Hand.kLeft), Robot.m_oi.getDriverController().getX(Hand.kRight), true);
   }
 
   @Override
