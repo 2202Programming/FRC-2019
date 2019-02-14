@@ -38,8 +38,10 @@ public class ArmSubsystem extends Subsystem {
     addChild("Arm Rotation Motor", armRotationMotor);
     addChild("Arm Extension Motor", armExtensionMotor);
 
-    //armRotationMotor.config_kP(0, 0.3, 30);
+    armRotationMotor.config_kP(0, 0.17, 30);
     //armRotationMotor.config_kF(0, 0.002, 30);
+
+    armExtensionMotor.config_kP(0, 0.1, 30);
 
     rotationEncoder = (WPI_TalonSRX) armRotationMotor;
     rotationEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
@@ -100,7 +102,8 @@ public class ArmSubsystem extends Subsystem {
   }
   */
 
-  public void extendToPosition(double position) {
+  public void extendToPosition(double distance) {
+    int position = Converter.distanceToCounts(1.88, distance, 1024);
     armExtensionMotor.set(ControlMode.Position, position);
   }
 
@@ -109,7 +112,7 @@ public class ArmSubsystem extends Subsystem {
   }
 
   public double getDistanceExtended() {
-    return Converter.countsToDistance(0.94, getExtensionPosition(), 1024);
+    return Converter.countsToDistance(1.88, getExtensionPosition(), 1024);
   }
 
   public void extend() {
