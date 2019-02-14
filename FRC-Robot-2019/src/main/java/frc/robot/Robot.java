@@ -15,9 +15,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CargoTrapSubsystem;
 import frc.robot.subsystems.DriveTrainSubsystem;
+import frc.robot.subsystems.GearShifterSubsystem;
+import frc.robot.subsystems.LimeLightSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SerialPortSubsystem;
-import frc.robot.subsystems.GearShifterSubsystem;
 import frc.robot.RobotMap;
 
 /**
@@ -30,7 +31,8 @@ import frc.robot.RobotMap;
 public class Robot extends TimedRobot {
   
   public static DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
-  public static GearShifterSubsystem gearShifter = new GearShifterSubsystem(driveTrain.kShiftPoint);
+  public static GearShifterSubsystem gearShifter = new GearShifterSubsystem();
+  public static LimeLightSubsystem limeLight = new LimeLightSubsystem();
   public static IntakeSubsystem intake = new IntakeSubsystem();
   public static CargoTrapSubsystem cargoTrap = new CargoTrapSubsystem();
   public static ArmSubsystem arm = new ArmSubsystem();
@@ -62,6 +64,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     logSmartDashboardSensors();
+    limeLight.populateLimelight();
   }
 
   /**
@@ -168,6 +171,11 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(Scheduler.getInstance()); 
     SmartDashboard.putData(driveTrain);
     SmartDashboard.putData(gearShifter);
+    
+    SmartDashboard.putNumber("LimelightX", limeLight.getX());
+    SmartDashboard.putNumber("LimelightY", limeLight.getY());
+    SmartDashboard.putNumber("LimelightArea", limeLight.getArea());
+    SmartDashboard.putBoolean("LimeTarget", limeLight.hasTarget());
     SmartDashboard.putNumber("Left Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.LEFT_FRONT_LIDAR));
     SmartDashboard.putNumber("Right Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.RIGHT_FRONT_LIDAR));
   }
@@ -176,4 +184,5 @@ public class Robot extends TimedRobot {
     driveTrain.getLeftEncoderTalon().setSelectedSensorPosition(0);
     driveTrain.getRightEncoderTalon().setSelectedSensorPosition(0);
   }
+
 }
