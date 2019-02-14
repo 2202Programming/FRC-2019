@@ -12,9 +12,15 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.CargoTrapSubsystem;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.subsystems.GearShifterSubsystem;
 import frc.robot.subsystems.LimeLightSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.SerialPortSubsystem;
+import frc.robot.subsystems.GearShifterSubsystem;
+import frc.robot.RobotMap;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -24,10 +30,14 @@ import frc.robot.subsystems.LimeLightSubsystem;
  * project.
  */
 public class Robot extends TimedRobot {
-  public static OI m_oi;
   public static DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
   public static GearShifterSubsystem gearShifter = new GearShifterSubsystem();
   public static LimeLightSubsystem limeLight = new LimeLightSubsystem();
+  public static IntakeSubsystem intake = new IntakeSubsystem();
+  public static CargoTrapSubsystem cargoTrap = new CargoTrapSubsystem();
+  public static ArmSubsystem arm = new ArmSubsystem();
+  public static OI m_oi = new OI();
+  public static SerialPortSubsystem serialSubsystem = new SerialPortSubsystem();
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -38,7 +48,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    m_oi = new OI();
     // chooser.addOption("My Auto", new MyAutoCommand());
     SmartDashboard.putData("Auto mode", m_chooser);
   }
@@ -121,7 +130,8 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     resetAllDashBoardSensors();
-  }
+    intake.setWristPosition(0.5);
+    }
 
   /**
    * This function is called periodically during operator control.
@@ -129,6 +139,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
+    serialSubsystem.processSerial();
   }
 
   /**
@@ -144,6 +155,18 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Right Encoder Count", driveTrain.getRightEncoderTalon().getSelectedSensorPosition());
     SmartDashboard.putNumber("Right Encoder Rate", driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
     SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
+    SmartDashboard.putNumber("Arm Rotation Count", arm.getRotationEncoder().getSelectedSensorPosition());
+    SmartDashboard.putNumber("Arm Extension Count", arm.getExtensionEncoder().getSelectedSensorPosition());
+    SmartDashboard.putBoolean("Arm Extension At Min", arm.extensionAtMin());
+    SmartDashboard.putBoolean("Arm Extension At Max", arm.extensionAtMax());
+    SmartDashboard.putNumber("Arm Angle", arm.getAngle());
+    SmartDashboard.putNumber("Arm Extension Distance", arm.getDistanceExtended());
+    SmartDashboard.putNumber("Wrist Position", intake.getWristPosition());
+    SmartDashboard.putNumber("Wrist Angle", intake.getWristAngle());
+    intake.logWrist();
+    arm.logArmRotation();
+    arm.logArmExtnension();
+    
     SmartDashboard.putData(Scheduler.getInstance()); 
     SmartDashboard.putData(driveTrain);
     SmartDashboard.putData(gearShifter);
@@ -152,6 +175,10 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("LimelightY", limeLight.getY());
     SmartDashboard.putNumber("LimelightArea", limeLight.getArea());
     SmartDashboard.putBoolean("LimeTarget", limeLight.hasTarget());
+    SmartDashboard.putNumber("Left Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.LEFT_FRONT_LIDAR));
+    SmartDashboard.putNumber("Right Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.RIGHT_FRONT_LIDAR));
+
+    //TODO: Create Lift instance field and then call LogLift();
   }
 
   private void resetAllDashBoardSensors() {

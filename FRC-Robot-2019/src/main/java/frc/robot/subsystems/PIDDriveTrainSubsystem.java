@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import frc.robot.commands.ArcadeDriveCommand;
-
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -14,6 +12,7 @@ import edu.wpi.first.wpilibj.command.PIDSubsystem;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.RobotMap;
+import frc.robot.commands.drive.ArcadeDriveCommand;
 
 /**
  * The basic drive train subsystem for four motors

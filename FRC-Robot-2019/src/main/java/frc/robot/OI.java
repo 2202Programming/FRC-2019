@@ -17,6 +17,12 @@ import frc.robot.commands.LimeLightArcadeDriveCommand;
 import frc.robot.commands.TankDriveCommand;
 import frc.robot.commands.ToggleAutomaticGearShiftingCommand;
 import frc.robot.commands.UpShiftCommand;
+import frc.robot.commands.arm.*;
+import frc.robot.commands.cargo.*;
+import frc.robot.commands.drive.*;
+import frc.robot.commands.drive.outtake.OuttakeCommand;
+import frc.robot.commands.drive.shift.*;
+import frc.robot.commands.intake.*;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -55,12 +61,22 @@ public class OI {
   private XboxController switchBoard = new XboxController(2);
 
   public OI() {
-    new JoystickButton(xboxController0, XboxControllerButtonCode.A.getCode()).whenPressed(new DownShiftCommand());
-    new JoystickButton(xboxController0, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
-    new JoystickButton(xboxController0, XboxControllerButtonCode.B.getCode()).whenPressed(new ToggleAutomaticGearShiftingCommand());
-    new JoystickButton(xboxController0, XboxControllerButtonCode.X.getCode()).whenPressed(new InvertDriveControlsCommand());
+    //Drive Train Commands
     new JoystickButton(xboxController0, XboxControllerButtonCode.LB.getCode()).whileHeld(new TankDriveCommand());
     new JoystickButton(xboxController0, XboxControllerButtonCode.RB.getCode()).whileHeld(new LimeLightArcadeDriveCommand());
+    
+    //Arm Commands
+    new JoystickButton(xboxController1, XboxControllerButtonCode.Y.getCode()).whileHeld(new ExtendArmCommand());
+    new JoystickButton(xboxController1, XboxControllerButtonCode.A.getCode()).whileHeld(new RetractArmCommand());
+    new JoystickButton(xboxController1, XboxControllerButtonCode.X.getCode()).whenPressed(new RotateArmToAngleCommand(20));
+    new JoystickButton(xboxController1, XboxControllerButtonCode.B.getCode()).whenPressed(new RotateArmToAngleCommand(0));
+
+    //End Effector Commands
+    new JoystickButton(xboxController1, XboxControllerButtonCode.LB.getCode()).whenPressed(new IntakeCommand());
+    new JoystickButton(xboxController1, XboxControllerButtonCode.RB.getCode()).whenPressed(new OuttakeCommand());
+    new JoystickButton(xboxController1, XboxControllerButtonCode.START.getCode()).whenPressed(new RotateWristCommand(15));
+    new JoystickButton(xboxController1, XboxControllerButtonCode.BACK.getCode()).whenPressed(new RotateWristCommand(-15));
+    
   }
 
   public XboxController getController0() {

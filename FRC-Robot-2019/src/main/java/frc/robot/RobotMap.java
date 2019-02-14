@@ -49,7 +49,7 @@ public class RobotMap {
   
   //Cargo Trap
   public static final int TRAP_ARMS_PCM_ID = 1;
-  public static final int CARGO_SENSOR_DIO_PORT = -1;
+  public static final int CARGO_SENSOR_DIO_PORT = 30;
   public static final int TRAP_RETRACT_PCM_ID = 2;
 
   //End Effector
@@ -57,10 +57,15 @@ public class RobotMap {
   public static final int CARGO_SWITCH_MXP_CH = 11;
   public static final int VACUUM_SPARK_PIN = 1;
   public static final int RELEASE_SOLENOID_ID = 3;
-  public static final int GENATOR_ID = 4;
+  public static final int HOLD_SOLENOID_ID = 4;
 
   //Climber
   public static final int FOOT_EXTEND_SPARK_PIN = 2;
   public static final int ROLLER_SPARK_PIN = 3;
   public static final int RATCHET_SELECTOR_ID = 5;
+
+  //LIDAR sensors
+  public static final int LEFT_FRONT_LIDAR = 1;
+  public static final int RIGHT_FRONT_LIDAR = 2;
+  
 }
