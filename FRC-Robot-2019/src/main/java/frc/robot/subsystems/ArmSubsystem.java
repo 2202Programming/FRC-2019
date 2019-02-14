@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap;
 import frc.robot.input.Converter;
+import frc.robot.triggers.MotorOverPowerShutdown;
 
 /**
  * A Lift subsystem.
@@ -28,15 +29,14 @@ public class ArmSubsystem extends Subsystem {
   private WPI_TalonSRX extensionEncoder;
   
   public final double EXTEND_MIN = 0.0;  //inches
-  public final double EXTEND_MAX = 38.0; // 
-  private final double EXTEND_COUNT_MAX =  26400;
+  public final double EXTEND_MAX = 38.0; //inches - measured
+  private final double EXTEND_COUNT_MAX =  26400; //measured
   private final double kCounts_per_in = EXTEND_COUNT_MAX / EXTEND_MAX;
   //private final double kIn_per_count = 1.0 / kCounts_per_in;
  
-
-  public final double PHI_MAX = 145.0; //In Degrees, Positive is foward
-  public final double PHI_MIN = 32.0;  //In Degrees
-  private final double COUNT_MAX = -13600.0; //In encoder counts (Proto Bot)
+  public final double PHI_MAX = 145.0;   //degrees, Positive is foward
+  public final double PHI_MIN = 32.0;    //degrees
+  private final double COUNT_MAX = -13600.0; //encoder counts (Proto Bot - measured)
   
   public ArmSubsystem() {
     super("Arm");
@@ -58,6 +58,10 @@ public class ArmSubsystem extends Subsystem {
     extensionEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     extensionEncoder.setSelectedSensorPosition(0);
     
+    //safety triggers
+    MotorOverPowerShutdown opsExt = new MotorOverPowerShutdown(this.armExtensionMotor, 200.0, 0.5);
+    
+
   }
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
