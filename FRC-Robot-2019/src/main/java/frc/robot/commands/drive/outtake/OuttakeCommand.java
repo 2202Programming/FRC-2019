@@ -1,46 +1,25 @@
-package frc.robot.commands.drive.outtake; 
-import edu.wpi.first.wpilibj.command.Command;
+package frc.robot.commands.drive.outtake;
+
+import edu.wpi.first.wpilibj.command.InstantCommand;
 import frc.robot.Robot;
-import frc.robot.input.XboxControllerButtonCode;
+//import frc.robot.input.XboxControllerButtonCode;
 import frc.robot.subsystems.IntakeSubsystem;
 
-public class OuttakeCommand extends Command{
+public class OuttakeCommand extends InstantCommand {
     private IntakeSubsystem intake;
 
-    public OuttakeCommand(){
+    public OuttakeCommand() {
         requires(Robot.intake);
         intake = Robot.intake;
     }
 
     @Override
     protected void initialize() {
-        intake.stop();
+        intake.vacuumOff();    
     }
 
-
-  @Override
-  protected void execute() {
-      Robot.intake.stop();
-  }
-
-
-  @Override
-  protected boolean isFinished() {
-    return Robot.m_oi.getController1().getRawButtonReleased(XboxControllerButtonCode.RB.getCode());
-  }
-
- 
-  @Override
-  protected void end() {
-      intake.stop();
-  }
-
-
-  @Override
-  protected void interrupted() {
-      return;
-  }
-
-  
+    @Override
+    protected void interrupted() {
+        intake.vacuumOff();
+    }
 }
-

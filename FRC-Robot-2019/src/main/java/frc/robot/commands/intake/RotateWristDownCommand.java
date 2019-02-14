@@ -1,41 +1,40 @@
 package frc.robot.commands.intake; 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.input.XboxControllerButtonCode;
+//import frc.robot.input.XboxControllerButtonCode;
+import frc.robot.subsystems.IntakeSubsystem;
 
+
+/**
+ * Simple command that rotates wrist down to fixed spot for testing
+ */
 public class RotateWristDownCommand extends Command{
 
+    IntakeSubsystem intake = Robot.intake;
+
     public RotateWristDownCommand(){
-        requires(Robot.intake);
+        requires(intake);
     }
 
     @Override
     protected void initialize() {
-        Robot.intake.stopWrist();
+        Robot.intake.setAngle(intake.WristMinDegrees);
     }
 
-
   @Override
-  protected void execute() {
-      Robot.intake.runWristDown();
-
-  }
+  protected void execute() { }
+      
 
   @Override
   protected boolean isFinished() {
-    return Robot.m_oi.getController1().getRawButtonReleased(XboxControllerButtonCode.BACK.getCode());
+      // Servo will just goto the command, could do a wait in the exec??? ###
+    return true;
   }
-
  
   @Override
-  protected void end() {
-      Robot.intake.stopWrist();
-  }
-
+  protected void end() {  } 
 
   @Override
-  protected void interrupted() {
-      return;
-  }
+  protected void interrupted() {  }
 }
 

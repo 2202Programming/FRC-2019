@@ -13,7 +13,6 @@ public class RotateArmToAngleCommand extends Command {
 
     @Override
     protected void execute() {
-        Robot.arm.rotateToPosition(angle);
     }
 
     protected boolean isFinished() {
