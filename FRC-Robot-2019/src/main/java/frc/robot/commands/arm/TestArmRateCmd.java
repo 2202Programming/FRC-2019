@@ -27,7 +27,7 @@ public class TestArmRateCmd extends CommandGroup {
         extenderRC = new RateController(this::getExtenderCmd, 
             Robot.arm::getExtension, Robot.arm::setExtension, 
             0.0, //Robot.arm.EXTEND_MIN, // inches,
-            10.0, //Robot.arm.EXTEND_MAX, // inches
+            15.0, //Robot.arm.EXTEND_MAX, // inches
             5.0, // dx_min in/sec (magnitude)
             5.0, // dx_max in/sec
            -0.05, // dz_min (normalized units)
