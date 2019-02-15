@@ -4,15 +4,16 @@ import frc.robot.PositionEnum;
 
 public class MoveToHeightCommand extends CommandGroup {
     private double height;
-    private final double groundProjection = 30.0;
     private final double armInitialLength = 10;
-    private final double pivotHeight = 42; //TODO: Factor in height of pivot point
+    private final double pivotHeight = 42;
 
-    public MoveToHeightCommand(PositionEnum position){
+    public MoveToHeightCommand(PositionEnum position, double groundProjection){
         height = position.getValue();
 
+        double calculationHeight = height - pivotHeight;
+
         addParallel(new ExtendArmToPositionCommand(
-            armInitialLength - Math.sqrt(height * height + groundProjection * groundProjection)));
-        addParallel(new RotateArmToAngleCommand(Math.toDegrees(Math.atan(height / groundProjection))));
+            armInitialLength - Math.sqrt(calculationHeight * calculationHeight + groundProjection * groundProjection)));
+        addParallel(new RotateArmToAngleCommand(Math.toDegrees(Math.atan(calculationHeight / groundProjection))));
     }
 }
