@@ -1,4 +1,4 @@
-package frc.robot.commands.drive.outtake;
+package frc.robot.commands.arm;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.commands.arm.ExtendArmToPositionCommand;

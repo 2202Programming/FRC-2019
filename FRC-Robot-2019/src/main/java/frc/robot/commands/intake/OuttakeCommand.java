@@ -1,4 +1,4 @@
-package frc.robot.commands.drive.outtake;
+package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import frc.robot.Robot;

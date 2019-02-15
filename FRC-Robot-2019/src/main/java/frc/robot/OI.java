@@ -14,7 +14,6 @@ import frc.robot.commands.LimeLightArcadeDriveCommand;
 import frc.robot.commands.arm.*;
 //import frc.robot.commands.cargo.*;
 import frc.robot.commands.drive.*;
-import frc.robot.commands.drive.outtake.OuttakeCommand;
 import frc.robot.commands.drive.shift.*;
 import frc.robot.commands.intake.*;
 
@@ -64,8 +63,8 @@ public class OI {
     new JoystickButton(driver, XboxControllerButtonCode.LB.getCode()).whileHeld(new TankDriveCommand());
 
     //Arm Commands
-    new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode()).whileHeld(new ExtendArmCommand());
-    new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whileHeld(new RetractArmCommand());
+    new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode()).whileHeld(new ExtendArmToPositionCommand(15));
+    new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whileHeld(new ExtendArmToPositionCommand(5));
     new JoystickButton(assistant, XboxControllerButtonCode.X.getCode()).whenPressed(new RotateArmToAngleCommand(90));
     new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new RotateArmToAngleCommand(120));
 
