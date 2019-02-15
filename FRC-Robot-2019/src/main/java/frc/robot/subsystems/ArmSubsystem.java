@@ -31,6 +31,10 @@ public class ArmSubsystem extends Subsystem {
   private final double PHI_MAX = 145.0; //In Degrees, Positive is foward
   private final double PHI_MIN = 32.0; //In Degrees
   private final double COUNT_MAX = -13600.0; //In encoder counts (Proto Bot)
+  public final double ARM_HEIGHT = 30.0; //In Inches
+  public final double MIN_ARM_LENGTH = -0.0; //TODO: Find real value in inches
+  public final double MAX_ARM_LENGTH = -0.0; //TODO: Find real value in inches
+  public final double MAX_PROJECTION = 30.0; //TODO: Find real value in inches
   private double curAngle;
 
   public ArmSubsystem() {
