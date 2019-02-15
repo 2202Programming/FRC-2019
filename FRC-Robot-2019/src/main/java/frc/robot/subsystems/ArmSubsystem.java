@@ -58,7 +58,7 @@ public class ArmSubsystem extends Subsystem {
    * Rotates the arm to a specific angle
    * @param angle the angle to rotate the arm to
    */
-  public void setPosition(double angle) {
+  public void setAngle(double angle) {
     double encoderPosition = convertAngleToCounts(angle);
     armRotationMotor.set(ControlMode.Position, encoderPosition);
   }
@@ -95,7 +95,7 @@ public class ArmSubsystem extends Subsystem {
   public TalonSRX getRotationEncoder() {
     return rotationEncoder;
   }
-
+  
   /*
   public boolean rotationAtMin() {
     return rotationMinimumSwitch.get();
@@ -105,7 +105,7 @@ public class ArmSubsystem extends Subsystem {
   public void extendToPosition(double distance) {
     int position = Converter.distanceToCounts(1.88, distance, 1024);
     armExtensionMotor.set(ControlMode.Position, position);
-  }
+  } 
 
   public int getExtensionPosition() {
     return extensionEncoder.getSelectedSensorPosition();
