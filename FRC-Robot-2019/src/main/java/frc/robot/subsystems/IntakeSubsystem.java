@@ -93,8 +93,7 @@ public class IntakeSubsystem extends Subsystem {
 
   @Override
   public void initDefaultCommand() {
-    //(No default command, apparently)
-    //### maybe self-level /with Arm angle...
+    setDefaultCommand(new KeepIntakeParallelToGroundCommand());
   }
 
   /**

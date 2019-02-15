@@ -11,5 +11,6 @@ public class MoveToPositionsCommandGroup extends CommandGroup {
         this.positions = positions;
         positionValue = positions.getValue();
         addParallel(new RotateCommandGroup(XPLACEHOLDER, positions.getValue()));
+        addParallel(new KeepIntakeParallelToGroundCommand());
     }
 }
