@@ -1,7 +1,7 @@
 package frc.robot.commands.arm;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
-import frc.robot.PositionEnum;
+import frc.robot.input.PositionEnum;
 import frc.robot.commands.intake.RotateCommandGroup;
 public class MoveToPositionsCommandGroup extends CommandGroup {
     private PositionEnum positions;

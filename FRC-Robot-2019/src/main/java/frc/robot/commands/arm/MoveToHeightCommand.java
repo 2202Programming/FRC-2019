@@ -1,6 +1,6 @@
 package frc.robot.commands.arm;
 import edu.wpi.first.wpilibj.command.CommandGroup;
-import frc.robot.PositionEnum;
+import frc.robot.input.PositionEnum;
 
 public class MoveToHeightCommand extends CommandGroup {
     private double height;
