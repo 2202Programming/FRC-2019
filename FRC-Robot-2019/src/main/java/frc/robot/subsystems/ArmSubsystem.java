@@ -42,7 +42,7 @@ public class ArmSubsystem extends Subsystem {
     super("Arm");
     addChild("Arm Rot M", armRotationMotor);
     addChild("Arm Ext M", armExtensionMotor);
-    addChild("Arm Ext Enc", extensionEncoder);
+    //addChild("Arm Ext Enc", extensionEncoder);
 
     //armRotationMotor.config_kP(0, 0.3, 30);
     //armRotationMotor.config_kF(0, 0.002, 30);
