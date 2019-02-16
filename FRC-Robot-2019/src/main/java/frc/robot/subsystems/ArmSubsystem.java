@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap;
+import frc.robot.commands.arm.ArmZero;
 import frc.robot.commands.arm.TeleopArmControlCommand;
 import frc.robot.input.Converter;
 //import frc.robot.triggers.MotorOverPowerShutdown;
@@ -27,8 +28,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
   private WPI_TalonSRX armExtensionMotor = new WPI_TalonSRX(RobotMap.ARM_EXTENSTION_TALON_CAN_ID);
   private WPI_TalonSRX rotationEncoder;
   private WPI_TalonSRX extensionEncoder;
-  private final double PHI_MAX = 145.0; //In Degrees, Positive is foward
-  private final double PHI_MIN = 32.0; //In Degrees
+  public final double PHI_MAX = 145.0; //In Degrees, Positive is foward
+  public final double PHI_MIN = 32.0; //In Degrees
   private final double COUNT_MAX = -13600.0; //In encoder counts (Proto Bot)
   public final double ARM_HEIGHT = 29.75; //In Inches
   public final double MIN_ARM_LENGTH = 30; //TODO: Find real value in inches
@@ -42,10 +43,6 @@ public class ArmSubsystem extends ExtendedSubSystem {
   private final double EXTEND_COUNT_MAX = 26400; // measured
   private final double kCounts_per_in = EXTEND_COUNT_MAX / EXTEND_MAX;
   private final double kIn_per_count = 1.0 / kCounts_per_in;
-
-  public final double PHI_MAX = 145.0; // degrees, Positive is foward
-  public final double PHI_MIN = 32.0; // degrees
-  private final double COUNT_MAX = -13600.0; // encoder counts (Proto Bot - measured)
 
   //talon controls
   final int PIDIdx = 0; //using pid 0 on talon
