@@ -24,9 +24,7 @@ public class CommandManager {
     Command heightSelectCmd;
     Command captRelCmd;
 
-    // Command Sets 
-    CommandGroup zeroRobot;
-
+    
     // Modes of behavior 
     public enum Modes {
         Construction(0),       // system still coming up... not operational
@@ -53,9 +51,17 @@ public class CommandManager {
         Cargo,         // driven by sensor
         Hatch,         // hard to tell, current on vacuum?
     }
+    // Command Sets  
+    CommandGroup zeroRobotGrp;
+    CommandGroup huntingHatchGrp;
+    CommandGroup huntingCargoGrp;
+    CommandGroup huntingHFloorGrp;
+
+    
 
     // Target States - think of this as desired command vector
     Modes  currentMode;       // what we think are doing now
+    CommandGroup currentGrp; 
     Modes  prevMode;
     double griperHeight;      // (inches) composite of arm/extender/wrist/cup
     
@@ -86,15 +92,32 @@ public class CommandManager {
 
 
         // Construct our major modes
-        zeroRobot = CmdFactoryZeroRobot();
+        zeroRobotGrp = CmdFactoryZeroRobot();
+        
+
     }
 
     //handle the state transitions
     public void setMode(Modes mode) {
-        prevMode = currentMode;
-        currentMode = mode;
-        
+       
         //TODO: need to do the work here to swithc modes..
+
+        switch (mode) {
+            case HuntingFloor:
+            case HuntingCargo:
+            case HuntingHatch:
+            break;
+
+
+            default:
+        }
+         prevMode = currentMode;
+        currentMode = mode;
+    }
+
+     void installGroup(CommandGroup grp)
+    {
+    
     }
 
     public boolean isHunting() {
@@ -131,6 +154,9 @@ public class CommandManager {
         return (phi -180.0);
     }
 
+    // expose desired cup height to commands, set griperheight via state machine.
+    Double cupHeight() {  return griperHeight; }
+
     // Command Factories that build command sets for each mode of operation
     // These are largely interruptable so we can switch as state changes
     private CommandGroup CmdFactoryZeroRobot() {
@@ -147,7 +173,6 @@ public class CommandManager {
     private CommandGroup CmdFactoryHuntHatch() {
         CommandGroup grp = new CommandGroup("HuntHatch");
         // ArmToHeight(getH)
-        // WristTrackArm(0.0)  0.0 degree offset
         grp.addParallel( new WristTrackFunction(this::wristTrackParallel));
 
         return grp;
@@ -155,14 +180,14 @@ public class CommandManager {
     private CommandGroup CmdFactoryHuntCargo() {
         CommandGroup grp = new CommandGroup("HuntCargo");
         //ArmToHeight(getH)
-        grp.addParallel( new WristTrackFunction(this::wristTrackPerp));
+        grp.addParallel(new WristTrackFunction(this::wristTrackPerp));
 
         return grp;
     }
     private CommandGroup CmdFactoryHuntHatchFloor() {
         CommandGroup grp = new CommandGroup("HuntHatchFloor");
         //ArmToHeight(getH)
-        //WristTrackArm(getWa)
+        grp.addParallel(new WristTrackFunction(this::wristTrackPerp));
         return grp;
     }
     private CommandGroup CmdFactoryHuntGameStart() {
@@ -176,11 +201,13 @@ public class CommandManager {
     }
     private CommandGroup CmdFactoryDeliverHatch() {
         CommandGroup grp = new CommandGroup("DeliverHatch");
+        grp.addParallel(new WristTrackFunction(this::wristTrackParallel));
         return grp;
     }
 
     private CommandGroup CmdFactoryDeliverCargo() {
         CommandGroup grp = new CommandGroup("DeliverCargo");
+        grp.addParallel(new WristTrackFunction(this::wristTrackParallel));
         return grp;
     }
 
