@@ -21,6 +21,8 @@ import frc.robot.subsystems.GearShifterSubsystem;
 import frc.robot.RobotMap;
 import frc.robot.commands.arm.TestArmRateCmd;
 import frc.robot.commands.intake.TestWristRateCommand;
+import frc.robot.commands.CommandManager;
+import frc.robot.commands.CommandManager.Modes;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -31,7 +33,7 @@ import frc.robot.commands.intake.TestWristRateCommand;
  */
 public class Robot extends TimedRobot {
   //common constants for robot
-  public static double dT = 0.02;  // Robots sample period (seconds)  
+  public static double dT = kDefaultPeriod;  // Robots sample period (seconds)  
   
   //physical devices and subsystems
   public static DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
@@ -44,8 +46,10 @@ public class Robot extends TimedRobot {
 
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
+  
+  CommandManager m_cmdMgr;  
 
-  // TESTING 
+  // TESTING Started in TestInit
   TestWristRateCommand testWristCmd; 
   TestArmRateCmd testArmCmd; 
 
@@ -57,8 +61,10 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // chooser.addOption("My Auto", new MyAutoCommand());
     SmartDashboard.putData("Auto mode", m_chooser);
+    m_cmdMgr = new CommandManager();
+    m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's functions
 
-    //TESTING
+    //TESTING Commands, only get scheduled if we enter Test mode
     testWristCmd = new TestWristRateCommand();
     testArmCmd = new TestArmRateCmd();
   }
@@ -140,11 +146,8 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     resetAllDashBoardSensors();
-    intake.setAngle(0.0);
-
-    testWristCmd.start();  //schedule it
-    testArmCmd.start();
-    }
+    m_cmdMgr.setMode(Modes.HuntingHatch);   
+  }
 
   /**
    * This function is called periodically during operator control.
@@ -155,6 +158,12 @@ public class Robot extends TimedRobot {
     serialSubsystem.processSerial();
   }
 
+   @Override
+   public void testInit() {
+     super.testInit();
+     testArmCmd.start();
+     testWristCmd.start();
+   }
   /**
    * This function is called periodically during test mode.
    */

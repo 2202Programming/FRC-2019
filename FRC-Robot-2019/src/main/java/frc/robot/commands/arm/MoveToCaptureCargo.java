@@ -22,7 +22,7 @@ public class MoveToCaptureCargo extends Command {
     private final double projectionMax = projectionInitialLength + 30;
 
     //Make an h' to more easily construct a triangle
-    private final double calculationHeight;
+    private final double calculationHeight =99999;  //just to complie
 
     //Projection of the arm on the ground
     private double xProjection;
