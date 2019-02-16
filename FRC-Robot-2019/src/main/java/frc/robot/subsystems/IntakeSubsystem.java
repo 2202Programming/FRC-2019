@@ -63,6 +63,8 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   final double kServoMinPWM = 0.553;
   final double kServoMaxPWM = 2.455;
 
+  Subsystem intakeVacuum;
+
   // ### confirm this is the way the solenoid is wired
   final DoubleSolenoid.Value kVacuum = Value.kForward;
   final DoubleSolenoid.Value kRelease = Value.kReverse;
@@ -74,6 +76,7 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   SpeedController vacuumPump = new Spark(RobotMap.INTAKE_VACUUM_SPARK_PWM);
   DoubleSolenoid vacuumSol = new DoubleSolenoid(RobotMap.INTAKE_PCM_ID, RobotMap.INTAKE_RELEASE_SOLENOID_PCM,
       RobotMap.INTAKE_HOLD_SOLENOID_PCM);
+
 
   // internal state tracking
   boolean vacuumCmdOn;
@@ -94,7 +97,10 @@ public class IntakeSubsystem extends ExtendedSubSystem {
     addChild("In:CargoSw", cargoSwitch);
     addChild("In:VacSol", (Sendable) vacuumSol);
 
-
+    intakeVacuum = new Subsystem("Intake:Vac"){
+      @Override
+      protected void initDefaultCommand() {}  //none 
+    };
   }
 
   @Override
@@ -118,7 +124,6 @@ public class IntakeSubsystem extends ExtendedSubSystem {
 
   /**
    * Vacuum Controls
-   * 
    */
   public void vacuumOn() {
     vacuumPump.set(PumpSpeed);
