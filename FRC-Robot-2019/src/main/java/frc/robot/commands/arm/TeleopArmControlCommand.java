@@ -39,7 +39,8 @@ public class TeleopArmControlCommand extends Command {
         updatePositionVector();
         double heightAbovePivot = height_cmd - arm.ARM_PIVOT_HEIGHT;
         double curAngle = -Math.toDegrees(Math.atan(heightAbovePivot / projection_cmd)) + 90;
-        double extensionLength = limit(0, arm.EXTEND_MAX, Math.sqrt(heightAbovePivot * heightAbovePivot + projection_cmd * projection_cmd) - arm.ARM_BASE_LENGTH - arm.WRIST_LENGTH);
+        //double extensionLength = limit(0, arm.EXTEND_MAX, Math.sqrt(heightAbovePivot * heightAbovePivot + projection_cmd * projection_cmd) - arm.ARM_BASE_LENGTH - arm.WRIST_LENGTH);
+        double extensionLength = limit(0, arm.EXTEND_MAX, (projection_cmd / Math.cos(Math.toRadians(90 - arm.getAngle()))) - arm.ARM_BASE_LENGTH - arm.WRIST_LENGTH);
         
         SmartDashboard.putNumber("Current Height : ", height_cmd);
         SmartDashboard.putNumber("Current Projection: ", projection_cmd);
@@ -61,11 +62,8 @@ public class TeleopArmControlCommand extends Command {
             double changeInHeight = Math.abs(in.getY(Hand.kLeft)) < 0.05? 0: -in.getY(Hand.kLeft);
             double changeInProjection = Math.abs(in.getY(Hand.kRight)) < 0.05? 0: -in.getY(Hand.kRight);
 
-            System.out.println("Height Change: " + changeInHeight);
-            System.out.println("Projection Change: " + changeInProjection);
-
             // TODO: Limit these values so they don't break physical constraints
-            height_cmd = limit(9.5, 60, height_cmd + changeInHeight);
+            height_cmd = limit(12, 70, height_cmd + changeInHeight);
             projection_cmd = limit(arm.MIN_PROJECTION, arm.MAX_PROJECTION, projection_cmd + changeInProjection);
         }
     }
