@@ -4,8 +4,8 @@ import frc.robot.PositionEnum;
 
 public class MoveToHeightCommand extends CommandGroup {
     private double height;
-    private final double armInitialLength = 10;
-    private final double pivotHeight = 42;
+    private final double armInitialLength = 18; //Length of the arm from pivot point without extension in inches
+    private final double pivotHeight = 29.75; //Height of point of rotation for the arm in inches
 
     public MoveToHeightCommand(PositionEnum position, double groundProjection){
         height = position.getValue();
