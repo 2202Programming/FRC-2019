@@ -29,20 +29,23 @@ public class TeleopArmControlCommand extends Command {
         // TODO: Find the real intial values
         curProjection = 16;
         curHeight = 13;
+        arm.resetExtensionEncoder();
+        arm.resetRotationEncoder();
     }
 
     @Override
     protected void execute() {
+        updatePositionVector();
         double armHeight = curHeight - arm.ARM_HEIGHT;
-        double curAngle = Math.toDegrees(Math.atan(armHeight / curProjection));
-        double extensionLength = Math.sqrt(armHeight * armHeight + curProjection * curProjection);
+        double curAngle = -Math.toDegrees(Math.atan(armHeight / curProjection)) + 90;
+        double extensionLength = Math.sqrt(armHeight * armHeight + curProjection * curProjection) - arm.MIN_ARM_LENGTH;
         
         System.out.println("Current Height : " + curHeight);
         System.out.println("Currnet Projection: " + curProjection);
         System.out.println("Arm Angle: " + curAngle);
         System.out.println("Extension Length: " + extensionLength);
 
-        //arm.setAngle(curAngle);
+        arm.setAngle(curAngle);
         //arm.extendToPosition(extensionLength);
     }
 
@@ -54,11 +57,14 @@ public class TeleopArmControlCommand extends Command {
             // Go To Higher State
         } else {
             // TODO: Bind to real controls and add rate limiting
-            double changeInHeight = in.getY(Hand.kLeft);
-            double changeInProjection = in.getY(Hand.kRight);
+            double changeInHeight = -in.getY(Hand.kLeft);
+            double changeInProjection = -in.getY(Hand.kRight);
+
+            System.out.println(changeInHeight);
+            System.out.println(changeInProjection);
 
             // TODO: Limit these values so they don't break physical constraints
-            curHeight += changeInHeight;
+            curHeight = limit(13, 60, curHeight + changeInHeight);
             curProjection = limit(arm.MIN_PROJECTION, arm.MAX_PROJECTION, curProjection + changeInProjection);
         }
     }

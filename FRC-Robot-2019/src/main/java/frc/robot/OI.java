@@ -16,8 +16,7 @@ import frc.robot.commands.drive.*;
 
 import frc.robot.commands.intake.OuttakeCommand;
 import frc.robot.commands.drive.shift.*;
-//import frc.robot.commands.intake.RotateWristDownCommand;
-//import frc.robot.commands.intake.RotateWristUpCommand;
+import frc.robot.commands.intake.*;
 
 
 /**
@@ -70,7 +69,6 @@ public class OI {
     //new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whileHeld(new RetractArmCommand());
     //new JoystickButton(assistant, XboxControllerButtonCode.X.getCode()).whenPressed(new TestRotateArmToAngleCommand(20));
     //new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new TestRotateArmToAngleCommand(0));
-
 
     //Intake Commands
     new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode()).whenPressed(new OuttakeCommand());

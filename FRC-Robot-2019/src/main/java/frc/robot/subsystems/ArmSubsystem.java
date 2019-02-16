@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap;
 
 import frc.robot.commands.arm.ArmZero;
-
+import frc.robot.commands.arm.TeleopArmControlCommand;
 import frc.robot.input.Converter;
 //import frc.robot.triggers.MotorOverPowerShutdown;
 
@@ -29,6 +29,17 @@ public class ArmSubsystem extends ExtendedSubSystem {
   private WPI_TalonSRX armExtensionMotor = new WPI_TalonSRX(RobotMap.ARM_EXTENSTION_TALON_CAN_ID);
   private WPI_TalonSRX rotationEncoder;
   private WPI_TalonSRX extensionEncoder;
+
+  public final double PHI_MAX = 145.0; //In Degrees, Positive is foward
+  public final double PHI_MIN = 32.0; //In Degrees
+  private final double COUNT_MAX = -13600.0; //In encoder counts (Proto Bot)
+  public final double ARM_HEIGHT = 29.75; //In Inches
+  public final double MIN_ARM_LENGTH = 30; //TODO: Find real value in inches
+  public final double MAX_ARM_LENGTH = 68.0; //TODO: Find real value in inches
+  public final double MIN_PROJECTION = 15.0; //TODO: Find real value in inches
+  public final double MAX_PROJECTION = 45.0; //TODO: Find real value in inches
+  private double curAngle;
+
   // Extender phyiscal numbers
   public final double EXTEND_MIN = 0.0; // inches
   public final double EXTEND_MAX = 38.0; // inches - measured protobot
@@ -39,10 +50,6 @@ public class ArmSubsystem extends ExtendedSubSystem {
   private final double kCounts_per_in = EXTEND_COUNT_MAX / EXTEND_MAX;
   private final double kIn_per_count = 1.0 / kCounts_per_in;
 
-  public final double PHI_MAX = 145.0; // degrees, Positive is foward
-  public final double PHI_MIN = 32.0; // degrees
-  private final double COUNT_MAX = -13600.0; // encoder counts (Proto Bot - measured)
-
   //talon controls
   final int PIDIdx = 0; //using pid 0 on talon
   final int TO = 30;    //timeout 30ms
@@ -52,9 +59,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
     addChild("Arm Rot M", armRotationMotor);
     addChild("Arm Ext M", armExtensionMotor);
 
-
-    // armRotationMotor.config_kP(0, 0.3, 30);
-    // armRotationMotor.config_kF(0, 0.002, 30);
+    armRotationMotor.config_kP(0, 0.00015, 30);
+    //armRotationMotor.config_kF(0, 0.002, 30);
 
     armExtensionMotor.config_kP(0, 0.1, 30);
 
@@ -168,6 +174,14 @@ public class ArmSubsystem extends ExtendedSubSystem {
     setDefaultCommand(new TeleopArmControlCommand());
   }
 
+  public void resetRotationEncoder() {
+    rotationEncoder.setSelectedSensorPosition(0);
+  }
+
+  public void resetExtensionEncoder() {
+    extensionEncoder.setSelectedSensorPosition(0);
+  }
+
   @Override
   public Command zeroSubsystem() {
     return new ArmZero();
@@ -186,6 +200,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   }
 private void logTalon(WPI_TalonSRX talon) {
     SmartDashboard.putNumber(talon.getName() + " Current", talon.getOutputCurrent());
+    SmartDashboard.putNumber(talon.getName() + " Percent Output", talon.getMotorOutputPercent());
   }
 
 }
