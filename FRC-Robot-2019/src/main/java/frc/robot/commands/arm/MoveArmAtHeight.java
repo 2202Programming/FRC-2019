@@ -15,6 +15,8 @@ public class MoveArmAtHeight extends Command {
     private final double projectionInitialLength = 16;   //TODO:FIX this to take account for which side arm is on
     // there will be two limit - forward side and rear side.  - Derek/Shawn  
 
+    DoubleSupplier getHeight;
+
     //Maximum projection based on 
     private final double projectionMax = projectionInitialLength + Robot.kProjectConstraint;
 

@@ -103,8 +103,9 @@ public class CommandManager {
         //TODO: need to do the work here to swithc modes..
 
         switch (mode) {
-            case 
+            case HuntingFloor:
             case HuntingCargo:
+            case HuntingHatch:
             break;
 
 
@@ -114,9 +115,9 @@ public class CommandManager {
         currentMode = mode;
     }
 
-    void void installGroup(CommandGroup grp)
+     void installGroup(CommandGroup grp)
     {
-        
+    
     }
 
     public boolean isHunting() {
@@ -152,6 +153,9 @@ public class CommandManager {
         double phi = Robot.arm.getAngle();
         return (phi -180.0);
     }
+
+    // expose desired cup height to commands, set griperheight via state machine.
+    Double cupHeight() {  return griperHeight; }
 
     // Command Factories that build command sets for each mode of operation
     // These are largely interruptable so we can switch as state changes
