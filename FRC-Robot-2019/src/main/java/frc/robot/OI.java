@@ -69,7 +69,7 @@ public class OI {
     new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new RotateArmToAngleCommand(120));
 
     //Intake Commands
-    new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode()).whenPressed(new OuttakeCommand());
+   // new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode()).whenPressed(new OuttakeCommand());
     new JoystickButton(assistant, XboxControllerButtonCode.START.getCode()).whenPressed(new RotateWristCommand(15));
     new JoystickButton(assistant, XboxControllerButtonCode.BACK.getCode()).whenPressed(new RotateWristCommand(-15));
 
