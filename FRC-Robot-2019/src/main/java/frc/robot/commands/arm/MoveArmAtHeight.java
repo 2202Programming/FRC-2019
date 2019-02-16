@@ -1,4 +1,6 @@
 package frc.robot.commands.arm;
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
@@ -24,16 +26,20 @@ public class MoveArmAtHeight extends Command {
 
     private boolean belowX;
 
-    public MoveArmAtHeight(double height){
+    public MoveArmAtHeight(DoubleSupplier heightFunct){
         requires(Robot.arm);
+        double height = heightFunct.getAsDouble();
+
         belowX = height < pivotHeight;
         if (!belowX) calculationHeight = height - pivotHeight;
         else calculationHeight = pivotHeight - height;
+        xProjection = projectionInitialLength;
     }
 
     protected void execute() {
+        double projChange = Robot.m_oi.getAssistantController().getY();
         //TODO: Mapping joystick properly to change in projection
-        xProjection = projectionInitialLength + Robot.m_oi.getAssistantController().getY();
+        xProjection += projChange;
 
         if (xProjection > projectionMax) xProjection = projectionMax;
 
@@ -47,7 +53,6 @@ public class MoveArmAtHeight extends Command {
 
         /*Alternative extension calculation
         xProjection / Math.cos(Robot.arm.getAngle()) - armInitialLength */
-        
     }
 
     protected boolean isFinished() {
