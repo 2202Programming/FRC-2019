@@ -21,9 +21,13 @@ public class MoveArmAtHeight extends Command {
     //Projection of the arm on the ground
     private double xProjection;
 
+    private boolean belowX;
+
     public MoveArmAtHeight(double height){
         requires(Robot.arm);
-        calculationHeight = height - pivotHeight;
+        belowX = height < pivotHeight;
+        if (!belowX) calculationHeight = height - pivotHeight;
+        else calculationHeight = pivotHeight - height;
     }
 
     protected void execute() {
@@ -33,7 +37,8 @@ public class MoveArmAtHeight extends Command {
         if (xProjection > projectionMax) xProjection = projectionMax;
 
         //Rotate to maintain height as projection changes
-        Robot.arm.setAngle(Math.toDegrees(Math.atan(calculationHeight / xProjection)));
+        if (!belowX) Robot.arm.setAngle(Math.toDegrees(Math.atan(calculationHeight / xProjection)));
+        else Robot.arm.setAngle(90 + Math.toDegrees(Math.atan(calculationHeight / xProjection)));
 
         //Extend to allow for change in projection
         Robot.arm.setExtension(
