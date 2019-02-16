@@ -68,7 +68,7 @@ public class CommandManager {
     public CommandManager() {
         currentMode = Modes.Construction;
         XboxController aCtlr = Robot.m_oi.getAssistantController();
-        XboxController dCtlr = Robot.m_oi.getDriverController();
+        //XboxController dCtlr = Robot.m_oi.getDriverController();
         
         //setup buttons
         huntSelect = new JoystickButton(aCtlr, XboxControllerButtonCode.LB.getCode());
@@ -136,14 +136,22 @@ public class CommandManager {
 
     private CommandGroup CmdFactoryHuntHatch() {
         CommandGroup grp = new CommandGroup("HuntHatch");
+        // ArmToHeight(getH)
+        // WristTrackArm(0.0)  0.0 degree offset
+
         return grp;
     }
     private CommandGroup CmdFactoryHuntCargo() {
         CommandGroup grp = new CommandGroup("HuntCargo");
+        //ArmToHeight(getH)
+        //WristTrackArm(())
+
         return grp;
     }
     private CommandGroup CmdFactoryHuntHatchFloor() {
         CommandGroup grp = new CommandGroup("HuntHatchFloor");
+        //ArmToHeight(getH)
+        //WristTrackArm(getWa)
         return grp;
     }
     private CommandGroup CmdFactoryHuntGameStart() {

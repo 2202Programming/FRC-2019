@@ -93,7 +93,6 @@ public class IntakeSubsystem extends ExtendedSubSystem {
     addChild("In:CargoSw", cargoSwitch);
     addChild("In:VacSol", (Sendable) vacuumSol);
 
-    
 
   }
 
