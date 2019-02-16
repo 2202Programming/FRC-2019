@@ -171,11 +171,11 @@ public class Robot extends TimedRobot {
   }
 
   private void logSmartDashboardSensors() {
-    SmartDashboard.putNumber("Left Encoder Count", driveTrain.getLeftEncoderTalon().getSelectedSensorPosition());
-    SmartDashboard.putNumber("Left Encoder Rate", driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity());
-    SmartDashboard.putNumber("Right Encoder Count", driveTrain.getRightEncoderTalon().getSelectedSensorPosition());
-    SmartDashboard.putNumber("Right Encoder Rate", driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
-    SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
+    // SmartDashboard.putNumber("Left Encoder Count", driveTrain.getLeftEncoderTalon().getSelectedSensorPosition());
+    // SmartDashboard.putNumber("Left Encoder Rate", driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity());
+    // SmartDashboard.putNumber("Right Encoder Count", driveTrain.getRightEncoderTalon().getSelectedSensorPosition());
+    // SmartDashboard.putNumber("Right Encoder Rate", driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
+    // SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
 
     SmartDashboard.putNumber("Arm:Phi(raw)", arm.getRotationEncoder().getSelectedSensorPosition());
     SmartDashboard.putNumber("Arm:Ext(raw)", arm.getExtensionEncoder().getSelectedSensorPosition());
@@ -192,15 +192,15 @@ public class Robot extends TimedRobot {
     arm.logTalons();
     
     SmartDashboard.putData(Scheduler.getInstance()); 
-    SmartDashboard.putData(driveTrain);
-    SmartDashboard.putData(gearShifter);
+    //SmartDashboard.putData(driveTrain);
+    //SmartDashboard.putData(gearShifter);
     
-    SmartDashboard.putNumber("LimelightX", limeLight.getX());
-    SmartDashboard.putNumber("LimelightY", limeLight.getY());
-    SmartDashboard.putNumber("LimelightArea", limeLight.getArea());
-    SmartDashboard.putBoolean("LimeTarget", limeLight.hasTarget());
-    SmartDashboard.putNumber("Left Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.LEFT_FRONT_LIDAR));
-    SmartDashboard.putNumber("Right Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.RIGHT_FRONT_LIDAR));
+    // SmartDashboard.putNumber("LimelightX", limeLight.getX());
+    // SmartDashboard.putNumber("LimelightY", limeLight.getY());
+    // SmartDashboard.putNumber("LimelightArea", limeLight.getArea());
+    // SmartDashboard.putBoolean("LimeTarget", limeLight.hasTarget());
+    // SmartDashboard.putNumber("Left Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.LEFT_FRONT_LIDAR));
+    // SmartDashboard.putNumber("Right Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.RIGHT_FRONT_LIDAR));
   }
 
   private void resetAllDashBoardSensors() {

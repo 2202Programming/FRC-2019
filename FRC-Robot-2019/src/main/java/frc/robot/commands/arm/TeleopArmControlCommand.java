@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.input.PositionEnum;
 import frc.robot.subsystems.ArmSubsystem;
@@ -11,8 +12,8 @@ import frc.robot.subsystems.ArmSubsystem;
 public class TeleopArmControlCommand extends Command {
     private ArmSubsystem arm;
     private XboxController in;
-    private double curHeight;
-    private double curProjection;
+    private double height_cmd;
+    private double projection_cmd;
     private PositionEnum[] orderedPositions = { PositionEnum.CargoLow, PositionEnum.CargoMid, PositionEnum.CargoHigh,
             PositionEnum.HatchLow, PositionEnum.HatchMid, PositionEnum.HatchHigh };
 
@@ -20,15 +21,15 @@ public class TeleopArmControlCommand extends Command {
         requires(Robot.arm);
         arm = Robot.arm;
         in = Robot.m_oi.getAssistantController();
-        curProjection = 0;
-        curHeight = 0;
+        projection_cmd = 0;
+        height_cmd = 0;
     }
 
     @Override
     protected void initialize() {
         // TODO: Find the real intial values
-        curProjection = 16;
-        curHeight = 13;
+        projection_cmd = 16;
+        height_cmd = 13;
         arm.resetExtensionEncoder();
         arm.resetRotationEncoder();
     }
@@ -36,17 +37,17 @@ public class TeleopArmControlCommand extends Command {
     @Override
     protected void execute() {
         updatePositionVector();
-        double armHeight = curHeight - arm.ARM_HEIGHT;
-        double curAngle = -Math.toDegrees(Math.atan(armHeight / curProjection)) + 90;
-        double extensionLength = Math.sqrt(armHeight * armHeight + curProjection * curProjection) - arm.MIN_ARM_LENGTH;
+        double heightAbovePivot = height_cmd - arm.ARM_PIVOT_HEIGHT;
+        double curAngle = -Math.toDegrees(Math.atan(heightAbovePivot / projection_cmd)) + 90;
+        double extensionLength = limit(0, arm.EXTEND_MAX, Math.sqrt(heightAbovePivot * heightAbovePivot + projection_cmd * projection_cmd) - arm.MIN_ARM_LENGTH);
         
-        System.out.println("Current Height : " + curHeight);
-        System.out.println("Currnet Projection: " + curProjection);
-        System.out.println("Arm Angle: " + curAngle);
-        System.out.println("Extension Length: " + extensionLength);
+        SmartDashboard.putNumber("Current Height : ", height_cmd);
+        SmartDashboard.putNumber("Current Projection: ", projection_cmd);
+        SmartDashboard.putNumber("Arm Angle: ", curAngle);
+        SmartDashboard.putNumber("Extension Length: ", extensionLength);
 
-        arm.setAngle(curAngle);
-        //arm.extendToPosition(extensionLength);
+        //arm.setAngle(curAngle);
+        arm.setExtension(extensionLength);
     }
 
     private void updatePositionVector() {
@@ -57,15 +58,15 @@ public class TeleopArmControlCommand extends Command {
             // Go To Higher State
         } else {
             // TODO: Bind to real controls and add rate limiting
-            double changeInHeight = -in.getY(Hand.kLeft);
-            double changeInProjection = -in.getY(Hand.kRight);
+            double changeInHeight = Math.abs(in.getY(Hand.kLeft)) < 0.05? 0: -in.getY(Hand.kLeft);
+            double changeInProjection = Math.abs(in.getY(Hand.kRight)) < 0.05? 0: -in.getY(Hand.kRight);
 
-            System.out.println(changeInHeight);
-            System.out.println(changeInProjection);
+            System.out.println("Height Change: " + changeInHeight);
+            System.out.println("Projection Change: " + changeInProjection);
 
             // TODO: Limit these values so they don't break physical constraints
-            curHeight = limit(13, 60, curHeight + changeInHeight);
-            curProjection = limit(arm.MIN_PROJECTION, arm.MAX_PROJECTION, curProjection + changeInProjection);
+            height_cmd = limit(13, 60, height_cmd + changeInHeight);
+            projection_cmd = limit(arm.MIN_PROJECTION, arm.MAX_PROJECTION, projection_cmd + changeInProjection);
         }
     }
 
