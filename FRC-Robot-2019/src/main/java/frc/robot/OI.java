@@ -12,10 +12,13 @@ import frc.robot.input.XboxControllerButtonCode;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.LimeLightArcadeDriveCommand;
 import frc.robot.commands.arm.*;
-//import frc.robot.commands.cargo.*;
 import frc.robot.commands.drive.*;
+
+import frc.robot.commands.intake.OuttakeCommand;
 import frc.robot.commands.drive.shift.*;
-import frc.robot.commands.intake.*;
+//import frc.robot.commands.intake.RotateWristDownCommand;
+//import frc.robot.commands.intake.RotateWristUpCommand;
+
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -62,16 +65,17 @@ public class OI {
     new JoystickButton(driver, XboxControllerButtonCode.X.getCode()).whenPressed(new InvertDriveControlsCommand());
     new JoystickButton(driver, XboxControllerButtonCode.LB.getCode()).whileHeld(new TankDriveCommand());
 
-    //Arm Commands
-    new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode()).whileHeld(new ExtendArmToPositionCommand(15));
-    new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whileHeld(new ExtendArmToPositionCommand(5));
-    new JoystickButton(assistant, XboxControllerButtonCode.X.getCode()).whenPressed(new RotateArmToAngleCommand(90));
-    new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new RotateArmToAngleCommand(120));
+    // Arm Commands
+    //new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode()).whileHeld(new ExtendArmCommand());
+    //new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whileHeld(new RetractArmCommand());
+    //new JoystickButton(assistant, XboxControllerButtonCode.X.getCode()).whenPressed(new TestRotateArmToAngleCommand(20));
+    //new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new TestRotateArmToAngleCommand(0));
+
 
     //Intake Commands
     new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode()).whenPressed(new OuttakeCommand());
-    new JoystickButton(assistant, XboxControllerButtonCode.START.getCode()).whenPressed(new RotateWristCommand(15));
-    new JoystickButton(assistant, XboxControllerButtonCode.BACK.getCode()).whenPressed(new RotateWristCommand(-15));
+    //new JoystickButton(assistant, XboxControllerButtonCode.START.getCode()).whenPressed(new RotateWristUpCommand());
+    //new JoystickButton(assistant, XboxControllerButtonCode.BACK.getCode()).whenPressed(new RotateWristDownCommand());
 
     //Driver assist commands (macros)
     
