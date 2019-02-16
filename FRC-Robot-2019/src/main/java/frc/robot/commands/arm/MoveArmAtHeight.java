@@ -1,4 +1,6 @@
 package frc.robot.commands.arm;
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
@@ -24,8 +26,10 @@ public class MoveArmAtHeight extends Command {
 
     private boolean belowX;
 
-    public MoveArmAtHeight(double height){
+    public MoveArmAtHeight(DoubleSupplier heightFunct){
         requires(Robot.arm);
+        double height = heightFunct.getAsDouble();
+        
         belowX = height < pivotHeight;
         if (!belowX) calculationHeight = height - pivotHeight;
         else calculationHeight = pivotHeight - height;

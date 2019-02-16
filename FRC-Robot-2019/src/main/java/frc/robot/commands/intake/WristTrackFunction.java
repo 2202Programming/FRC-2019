@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
 public class WristTrackFunction extends Command{
-    DoubleSupplier  angleFunct;
+    DoubleSupplier angleFunct;
 
     public WristTrackFunction(DoubleSupplier angleFunct){
         requires(Robot.intake);
