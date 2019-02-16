@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap;
+import frc.robot.commands.arm.TeleopArmControlCommand;
 import frc.robot.input.Converter;
 
 /**
@@ -31,10 +32,11 @@ public class ArmSubsystem extends Subsystem {
   private final double PHI_MAX = 145.0; //In Degrees, Positive is foward
   private final double PHI_MIN = 32.0; //In Degrees
   private final double COUNT_MAX = -13600.0; //In encoder counts (Proto Bot)
-  public final double ARM_HEIGHT = 30.0; //In Inches
-  public final double MIN_ARM_LENGTH = -0.0; //TODO: Find real value in inches
-  public final double MAX_ARM_LENGTH = -0.0; //TODO: Find real value in inches
-  public final double MAX_PROJECTION = 30.0; //TODO: Find real value in inches
+  public final double ARM_HEIGHT = 29.75; //In Inches
+  public final double MIN_ARM_LENGTH = 30; //TODO: Find real value in inches
+  public final double MAX_ARM_LENGTH = 68.0; //TODO: Find real value in inches
+  public final double MIN_PROJECTION = 15.0; //TODO: Find real value in inches
+  public final double MAX_PROJECTION = 45.0; //TODO: Find real value in inches
   private double curAngle;
 
   public ArmSubsystem() {
@@ -145,8 +147,7 @@ public class ArmSubsystem extends Subsystem {
 
   @Override
   public void initDefaultCommand() {
-    // Set the default command for a subsystem here.
-    // setDefaultCommand(new MySpecialCommand());
+    setDefaultCommand(new TeleopArmControlCommand());
   }
 
   public void logTalons() {

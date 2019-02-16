@@ -27,8 +27,8 @@ public class TeleopArmControlCommand extends Command {
     @Override
     protected void initialize() {
         // TODO: Find the real intial values
-        curProjection = 0;
-        curHeight = 0;
+        curProjection = 16;
+        curHeight = 13;
     }
 
     @Override
@@ -36,9 +36,14 @@ public class TeleopArmControlCommand extends Command {
         double armHeight = curHeight - arm.ARM_HEIGHT;
         double curAngle = Math.toDegrees(Math.atan(armHeight / curProjection));
         double extensionLength = Math.sqrt(armHeight * armHeight + curProjection * curProjection);
+        
+        System.out.println("Current Height : " + curHeight);
+        System.out.println("Currnet Projection: " + curProjection);
+        System.out.println("Arm Angle: " + curAngle);
+        System.out.println("Extension Length: " + extensionLength);
 
-        arm.setAngle(curAngle);
-        arm.extendToPosition(extensionLength);
+        //arm.setAngle(curAngle);
+        //arm.extendToPosition(extensionLength);
     }
 
     private void updatePositionVector() {
@@ -54,7 +59,7 @@ public class TeleopArmControlCommand extends Command {
 
             // TODO: Limit these values so they don't break physical constraints
             curHeight += changeInHeight;
-            curProjection += changeInProjection;
+            curProjection = limit(arm.MIN_PROJECTION, arm.MAX_PROJECTION, curProjection + changeInProjection);
         }
     }
 
