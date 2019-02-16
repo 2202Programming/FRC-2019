@@ -26,9 +26,14 @@ public class MoveArmAtHeight extends Command {
 
     public MoveArmAtHeight(double height){
         requires(Robot.arm);
-        belowX = height < pivotHeight;
-        if (!belowX) calculationHeight = height - pivotHeight;
-        else calculationHeight = pivotHeight - height;
+        // belowX = height < pivotHeight;
+        // if (!belowX) calculationHeight = height - pivotHeight;
+        // else calculationHeight = pivotHeight - height;
+        if(Double.compare(height, pivotHeight) <= 0) {
+            calculationHeight = height;
+        } else {
+            calculationHeight = height - pivotHeight;
+        }
     }
 
     protected void execute() {
