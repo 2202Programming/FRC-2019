@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.Robot;
+import frc.robot.commands.intake.WristTrackFunction;
 
 /**
  * One class, singleton, to rule them all.  Coordinates major modes of operation.
@@ -120,6 +121,15 @@ public class CommandManager {
         delHeightIdx = (idx > DeliveryCargoHeights.length) ?  0 : idx;
     }
 
+    Double wristTrackParallel( ){
+        double phi = Robot.arm.getAngle();
+        return (phi -90.0);
+    }
+
+    Double wristTrackPerp() {
+        double phi = Robot.arm.getAngle();
+        return (phi -180.0);
+    }
 
     // Command Factories that build command sets for each mode of operation
     // These are largely interruptable so we can switch as state changes
@@ -138,13 +148,14 @@ public class CommandManager {
         CommandGroup grp = new CommandGroup("HuntHatch");
         // ArmToHeight(getH)
         // WristTrackArm(0.0)  0.0 degree offset
+        grp.addParallel( new WristTrackFunction(this::wristTrackParallel));
 
         return grp;
     }
     private CommandGroup CmdFactoryHuntCargo() {
         CommandGroup grp = new CommandGroup("HuntCargo");
         //ArmToHeight(getH)
-        //WristTrackArm(())
+        grp.addParallel( new WristTrackFunction(this::wristTrackPerp));
 
         return grp;
     }

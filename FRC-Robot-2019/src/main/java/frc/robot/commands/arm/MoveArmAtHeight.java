@@ -4,16 +4,17 @@ import frc.robot.Robot;
 
 public class MoveArmAtHeight extends Command {
     //Length of the arm from pivot point without extension in inches
-    private final double armInitialLength = 30;
+    private final double armInitialLength = Robot.arm.EXTEND_MIN + Robot.arm.ARM_BASE_LENGTH;
     //Height of point of rotation for the arm in inches
-    private final double pivotHeight = 29.75;
+    private final double pivotHeight = Robot.arm.ARM_PIVOT_HEIGHT;
     
     /*TODO: Legit length
     Starting projection of arm (starts at edge of bumper) in inches */
-    private final double projectionInitialLength = 16;
+    private final double projectionInitialLength = 16;   //TODO:FIX this to take account for which side arm is on
+    // there will be two limit - forward side and rear side.  - Derek/Shawn  
 
     //Maximum projection based on 
-    private final double projectionMax = projectionInitialLength + 30;
+    private final double projectionMax = projectionInitialLength + Robot.kProjectConstraint;
 
     //Make an h' to more easily construct a triangle
     private final double calculationHeight;
