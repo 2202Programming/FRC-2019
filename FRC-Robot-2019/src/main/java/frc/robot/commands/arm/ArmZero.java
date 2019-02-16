@@ -15,15 +15,17 @@ public class ArmZero extends Command {
   ArmSubsystem arm = Robot.arm;
 
   /**
-   * Add your docs here.
+   * Creates an ArmZero command. This command zeros the arm's encoder.
    */
   public ArmZero() {
     requires(arm);
   }
 
+  /**
+   * Zeros the arm's encoders - arm and extension are at starting point
+   */
   @Override
   protected void initialize() {
-    // Zero the arm's encoders - arm and extension are at starting point
     arm.zeroArm();
   }
 
