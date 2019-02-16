@@ -35,13 +35,13 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public final double MAX_ARM_LENGTH = 68.0; //TODO: Find real value in inches
   public final double MIN_PROJECTION = 15.0; //TODO: Find real value in inches
   public final double MAX_PROJECTION = 45.0; //TODO: Find real value in inches
-  private double curAngle;
 
   // Extender phyiscal numbers
   public final double EXTEND_MIN = 0.0; // inches
   public final double EXTEND_MAX = 38.0; // inches - measured protobot
   public final double ARM_BASE_LENGTH = 18.0; //inches -measured protobot (from pivot center) dpl 2/16/19
   public final double ARM_PIVOT_HEIGHT = 32.0; //inches - measured protobot
+  public final double WRIST_LENGTH = 7.75; //inches -measured protobot
   
   private final double EXTEND_COUNT_MAX = 26400; // measured
   private final double kCounts_per_in = EXTEND_COUNT_MAX / EXTEND_MAX;
@@ -56,7 +56,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
     addChild("Arm Rot M", armRotationMotor);
     addChild("Arm Ext M", armExtensionMotor);
 
-    armRotationMotor.config_kP(0, 0.8, 30);
+    armRotationMotor.config_kP(0, 1.0, 30);
 
     armExtensionMotor.config_kP(0, 1.2, 30);
 
