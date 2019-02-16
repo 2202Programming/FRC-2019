@@ -7,16 +7,35 @@ public class MoveArmAtHeight extends Command {
     private final double armInitialLength = 18;
     //Height of point of rotation for the arm in inches
     private final double pivotHeight = 29.75;
-    //TODO: Legit length
-    //Starting projection of arm (starts at edge of bumper) in inches
+    /*TODO: Legit length
+    Starting projection of arm (starts at edge of bumper) in inches */
     private final double projectionInitialLength = 16;
 
     //Make an h' to more easily construct a triangle
-    private double calculationHeight;
+    private final double calculationHeight;
+
+    //Projection of the arm on the ground
+    private double xProjection;
 
     public MoveArmAtHeight(double height){
         requires(Robot.arm);
-        calculationHeight = height - pivotHeight; 
+        calculationHeight = height - pivotHeight;
+    }
+
+    protected void execute() {
+        //TODO: Mapping joystick properly to change in projection
+        xProjection = projectionInitialLength + Robot.m_oi.getAssistantController().getY();
+
+        //Rotate to maintain height as projection changes
+        Robot.arm.setAngle(Math.toDegrees(Math.atan(calculationHeight / xProjection)));
+
+        //Extend to allow for change in projection
+        Robot.arm.setExtension(
+            Math.sqrt(calculationHeight * calculationHeight + xProjection * xProjection) - armInitialLength);
+
+        /*Alternative extension calculation
+        xProjection / Math.cos(Robot.arm.getAngle()) - armInitialLength */
+        
     }
 
     protected boolean isFinished() {
