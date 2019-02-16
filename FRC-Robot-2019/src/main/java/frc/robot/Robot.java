@@ -26,10 +26,6 @@ public class Robot extends TimedRobot {
   
   public static DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
   public static GearShifterSubsystem gearShifter = new GearShifterSubsystem(driveTrain.kShiftPoint);
-  public static LimeLightSubsystem limeLight = new LimeLightSubsystem();
-  public static IntakeSubsystem intake = new IntakeSubsystem();
-  public static CargoTrapSubsystem cargoTrap = new CargoTrapSubsystem();
-  public static ArmSubsystem arm = new ArmSubsystem();
   public static SerialPortSubsystem serialSubsystem;
   public static OI m_oi = new OI(); //OI Depends on the subsystems and must be last
 
@@ -125,7 +121,6 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     resetAllDashBoardSensors();
-    intake.setAngle(0.0);
     }
 
   /**
@@ -134,8 +129,6 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
-    if (serialSubsystem.isSerialEnabled())
-    serialSubsystem.processSerial();
   }
 
   /**
@@ -151,30 +144,10 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Right Encoder Count", driveTrain.getRightEncoderTalon().getSelectedSensorPosition());
     SmartDashboard.putNumber("Right Encoder Rate", driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
     SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
-    SmartDashboard.putNumber("Arm Rotation Count", arm.getRotationEncoder().getSelectedSensorPosition());
-    SmartDashboard.putNumber("Arm Extension Count", arm.getExtensionEncoder().getSelectedSensorPosition());
-    SmartDashboard.putBoolean("Arm Extension At Min", arm.extensionAtMin());
-    SmartDashboard.putBoolean("Arm Extension At Max", arm.extensionAtMax());
-    SmartDashboard.putNumber("Arm Angle", arm.getAngle());
-    SmartDashboard.putNumber("Arm Extension Distance", arm.getDistanceExtended());
 
-    SmartDashboard.putNumber("Wrist Angle", intake.getAngle());
-    intake.log();   //DPL 2/10/19 review this with Billy/Xander
-    arm.logArmRotation();
-    arm.logArmExtnension();
-    arm.logTalons();
-    
     SmartDashboard.putData(Scheduler.getInstance()); 
     SmartDashboard.putData(driveTrain);
     SmartDashboard.putData(gearShifter);
-    
-    SmartDashboard.putNumber("LimelightX", limeLight.getX());
-    SmartDashboard.putNumber("LimelightY", limeLight.getY());
-    SmartDashboard.putNumber("LimelightArea", limeLight.getArea());
-    SmartDashboard.putBoolean("LimeTarget", limeLight.hasTarget());
-    if (serialSubsystem.isSerialEnabled()) {
-    SmartDashboard.putNumber("Left Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.LEFT_FRONT_LIDAR));
-    SmartDashboard.putNumber("Right Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.RIGHT_FRONT_LIDAR));
     }
   }
 
