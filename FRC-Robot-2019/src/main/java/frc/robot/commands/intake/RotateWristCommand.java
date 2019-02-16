@@ -6,36 +6,31 @@ import frc.robot.Robot;
 import frc.robot.subsystems.IntakeSubsystem;
 
 public class RotateWristCommand extends Command{
-    IntakeSubsystem intake = Robot.intake;
-    XboxController ctrl = Robot.m_oi.getAssistantController();
+    private double angle;
 
-    public RotateWristCommand(){
+    public RotateWristCommand(double angle){
         requires(Robot.intake);
+        this.angle = angle;
     }
 
     @Override
     protected void initialize() {
-        intake.vacuumOn();
     }
 
   @Override
   protected void execute() {
-      double cmd = ctrl.getY(Hand.kRight);
-      double degrees = cmd * intake.WristMaxDegrees;  //### assumes symetric up/down
-      intake.setAngle(degrees);
+      Robot.intake.setAngle(angle);
+
   }
 
 
   @Override
   protected boolean isFinished() {
-    //return intake.getCargoSwitch() || ctrl.getRawButtonReleased(XboxControllerButtonCode.LB.getCode());
-    // keep doing this
-    return false;
+    return Math.abs(Robot.intake.getAngle() - angle) < 1;
   }
 
   @Override
   protected void end() {
-      // DPL - I think we just keep the vacuum on until some some other command takes place
   }
 
 
