@@ -7,7 +7,7 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.command.CommandGroup;
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 /**
@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 
 
   // require subsystems to provide a zero command
-  public abstract CommandGroup zeroSubsystem();
+  public abstract Command zeroSubsystem();
 
   // ensure every subsystem has a log call
   public void log() { }

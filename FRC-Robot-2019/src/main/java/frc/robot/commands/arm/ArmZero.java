@@ -12,39 +12,23 @@ import frc.robot.Robot;
 import frc.robot.subsystems.ArmSubsystem;
 
 public class ArmZero extends Command {
-    ArmSubsystem a = Robot.arm;
+  ArmSubsystem arm = Robot.arm;
+
   /**
    * Add your docs here.
    */
   public ArmZero() {
-    // Add Commands here:
-    // e.g. addSequential(new Command1());
-    // addSequential(new Command2());
-    // these will run in order.
-
-    // To run multiple commands at the same time,
-    // use addParallel()
-    // e.g. addParallel(new Command1());
-    // addSequential(new Command2());
-    // Command1 and Command2 will run in parallel.
-
-    // A command group will require all of the subsystems that each member
-    // would require.
-    // e.g. if Command1 requires chassis, and Command2 requires arm,
-    // a CommandGroup containing them would require both the chassis and the
-    // arm.
-    requires(a);
-    
-
+    requires(arm);
   }
 
-@Override
-protected void initialize() {
-  // Zero the arm's encoders
-  
-}
+  @Override
+  protected void initialize() {
+    // Zero the arm's encoders - arm and extension are at starting point
+    arm.zeroArm();
+  }
 
-@Override
-protected boolean isFinished() {return true;}
-
+  @Override
+  protected boolean isFinished() {
+    return true;
+  }
 }

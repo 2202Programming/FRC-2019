@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.buttons.Trigger;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import edu.wpi.first.wpilibj.buttons.InternalButton;
 
 public class MotorOverPowerShutdown extends Trigger implements PIDSource {
     final int TAP_MAX = 25;   // this is 0.5 seconds normally

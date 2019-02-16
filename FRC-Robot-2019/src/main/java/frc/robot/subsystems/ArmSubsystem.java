@@ -4,7 +4,6 @@
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
-
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -13,13 +12,12 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.Sendable;
-import edu.wpi.first.wpilibj.command.CommandGroup;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap;
 import frc.robot.commands.arm.ArmZero;
 import frc.robot.input.Converter;
-import frc.robot.triggers.MotorOverPowerShutdown;
+//import frc.robot.triggers.MotorOverPowerShutdown;
 
 /**
  * A Lift subsystem.
@@ -39,6 +37,10 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public final double PHI_MAX = 145.0; // degrees, Positive is foward
   public final double PHI_MIN = 32.0; // degrees
   private final double COUNT_MAX = -13600.0; // encoder counts (Proto Bot - measured)
+
+  //talon controls
+  final int PIDIdx = 0; //using pid 0 on talon
+  final int TO = 30;    //timeout 30ms
 
   public ArmSubsystem() {
     super("Arm");
@@ -67,6 +69,17 @@ public class ArmSubsystem extends ExtendedSubSystem {
   }
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
+
+  //used by commands at power up
+  public void zeroArm()
+  {
+
+    armExtensionMotor.setSelectedSensorPosition(0);
+    armExtensionMotor.setIntegralAccumulator(0, PIDIdx, TO);
+
+    armRotationMotor.setSelectedSensorPosition(0);
+    armRotationMotor.setIntegralAccumulator(0.0, PIDIdx, TO);
+  }
 
   /**
    * Rotates the arm to a specific angle
@@ -117,12 +130,10 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
   @Override
   public void initDefaultCommand() {
-    // Set the default command for a subsystem here.
-    // setDefaultCommand(new MySpecialCommand());
   }
 
   @Override
-  public CommandGroup zeroSubsystem() {
+  public Command zeroSubsystem() {
     return new ArmZero();
   }
 

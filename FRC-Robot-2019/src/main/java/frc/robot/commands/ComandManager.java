@@ -15,7 +15,7 @@ public class ComandManager {
     //OI - operator inputs 
     Button HuntSelect;       //used in hunting modes
     Button HeightSelect;     //used in delivery modes
-    Button Release;          //used in delivery modes to go back to hunting
+    Button CaptireRelease;   //used in delivery modes to go back to hunting
 
     // Command Sets 
     CommandGroup zeroRobot;
