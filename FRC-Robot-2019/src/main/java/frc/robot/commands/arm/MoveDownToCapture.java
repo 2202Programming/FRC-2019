@@ -34,8 +34,6 @@ public class MoveDownToCapture extends Command {
     }
 
     protected void execute() {
-        curCalcHeight = Math.sqrt((Robot.arm.getExtension() + armInitialLength) * (Robot.arm.getExtension() + armInitialLength) - curProjection * curProjection);
-
         //Move to the endHeight while maintaining curProjection
         Robot.arm.setAngle(90 + Math.toDegrees(Math.atan(endHeight / curProjection)));
         //Add 90 bc calc goes below x axis
