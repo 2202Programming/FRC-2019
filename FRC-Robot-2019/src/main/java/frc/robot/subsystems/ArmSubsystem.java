@@ -27,9 +27,12 @@ public class ArmSubsystem extends ExtendedSubSystem {
   private WPI_TalonSRX armExtensionMotor = new WPI_TalonSRX(RobotMap.ARM_EXTENSTION_TALON_CAN_ID);
   private WPI_TalonSRX rotationEncoder;
   private WPI_TalonSRX extensionEncoder;
-
+  // Extender phyiscal numbers
   public final double EXTEND_MIN = 0.0; // inches
-  public final double EXTEND_MAX = 38.0; // inches - measured
+  public final double EXTEND_MAX = 38.0; // inches - measured protobot
+  public final double ARM_BASE_LENGTH = 18.0; //inches -measured protobot (from pivit center) dpl 2/16/19
+  public final double ARM_PIVOT_HEIGHT = 32.0; //inches - measured protobot
+  
   private final double EXTEND_COUNT_MAX = 26400; // measured
   private final double kCounts_per_in = EXTEND_COUNT_MAX / EXTEND_MAX;
   private final double kIn_per_count = 1.0 / kCounts_per_in;

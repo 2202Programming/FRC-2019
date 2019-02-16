@@ -33,7 +33,9 @@ import frc.robot.commands.CommandManager.Modes;
  */
 public class Robot extends TimedRobot {
   //common constants for robot
-  public static double dT = kDefaultPeriod;  // Robots sample period (seconds)  
+  public static double dT = kDefaultPeriod;  // Robots sample period (seconds) 
+  //THis years bounding box beyond frame of robot. Use this in limit calcs in subsystems.
+  public static double kProjectConstraint = 30.0; 
   
   //physical devices and subsystems
   public static DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
