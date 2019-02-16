@@ -16,21 +16,17 @@ public class MoveDownToCapture extends Command {
     
     private final double kTolerance = 1.0;
 
-    //Make an h' to more easily construct a triangle
-    private final double calculationHeight;
-
     //Projection of the arm on the ground to be maintained
     private double curProjection;
 
-    private double curHeight;
+    private double curCalcHeight;
     private double endHeight;
 
     public MoveDownToCapture(){
         requires(Robot.arm);
         curProjection = (armInitialLength + Robot.arm.getExtension()) * Math.cos(Robot.arm.getAngle());
-        curHeight = Math.sqrt(Robot.arm.getExtension() * Robot.arm.getExtension() - curProjection * curProjection);
-        endHeight = curHeight - 5.0; //Move down 5 inches
-        calculationHeight = pivotHeight - endHeight;
+        curCalcHeight = Math.sqrt((Robot.arm.getExtension() + armInitialLength) * (Robot.arm.getExtension() + armInitialLength) - curProjection * curProjection);
+        endHeight = curCalcHeight + 5.0; //Move down 5 inches (increase bc increasing distance from x-axis)
         /*
         Alternative method of calculating height
         
@@ -38,17 +34,17 @@ public class MoveDownToCapture extends Command {
     }
 
     protected void execute() {
-        curHeight = Math.sqrt(Robot.arm.getExtension() * Robot.arm.getExtension() - curProjection * curProjection);
+        curCalcHeight = Math.sqrt((Robot.arm.getExtension() + armInitialLength) * (Robot.arm.getExtension() + armInitialLength) - curProjection * curProjection);
 
         //Move to the endHeight while maintaining curProjection
-        Robot.arm.setAngle(90 + Math.toDegrees(Math.atan(calculationHeight / curProjection)));
+        Robot.arm.setAngle(90 + Math.toDegrees(Math.atan(endHeight / curProjection)));
         //Add 90 bc calc goes below x axis
 
         Robot.arm.setExtension(
-            Math.sqrt(calculationHeight * calculationHeight + curProjection * curProjection) - armInitialLength);
+            Math.sqrt(endHeight * endHeight + curProjection * curProjection) - armInitialLength);
     }
 
     protected boolean isFinished() {
-        return Math.abs(curHeight - endHeight) < kTolerance;
+        return Math.abs(curCalcHeight - endHeight) < kTolerance;
     }
 }
