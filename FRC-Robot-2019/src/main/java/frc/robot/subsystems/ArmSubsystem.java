@@ -44,7 +44,7 @@ public class ArmSubsystem extends Subsystem {
     addChild("Arm Rotation Motor", armRotationMotor);
     addChild("Arm Extension Motor", armExtensionMotor);
 
-    armRotationMotor.config_kP(0, 0.17, 30);
+    armRotationMotor.config_kP(0, 0.00015, 30);
     //armRotationMotor.config_kF(0, 0.002, 30);
 
     armExtensionMotor.config_kP(0, 0.1, 30);
@@ -150,6 +150,14 @@ public class ArmSubsystem extends Subsystem {
     setDefaultCommand(new TeleopArmControlCommand());
   }
 
+  public void resetRotationEncoder() {
+    rotationEncoder.setSelectedSensorPosition(0);
+  }
+
+  public void resetExtensionEncoder() {
+    extensionEncoder.setSelectedSensorPosition(0);
+  }
+
   public void logTalons() {
     logTalon(armRotationMotor);
     logTalon(armExtensionMotor);
@@ -158,5 +166,6 @@ public class ArmSubsystem extends Subsystem {
 
   public void logTalon(WPI_TalonSRX talon) {
     SmartDashboard.putNumber(talon.getName() + " Current", talon.getOutputCurrent());
+    SmartDashboard.putNumber(talon.getName() + " Percent Output", talon.getMotorOutputPercent());
   }
 }
