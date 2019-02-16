@@ -3,6 +3,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
+import frc.robot.subsystems.IntakeSubsystem;
 
 public class RotateWristCommand extends Command{
     private double angle;
@@ -15,8 +16,6 @@ public class RotateWristCommand extends Command{
     @Override
     protected void initialize() {
     }
-
-
 
   @Override
   protected void execute() {

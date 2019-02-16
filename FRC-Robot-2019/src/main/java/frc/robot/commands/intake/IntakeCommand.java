@@ -3,14 +3,14 @@ package frc.robot.commands.intake;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import frc.robot.Robot;
 
-public class OuttakeCommand extends InstantCommand {
+public class IntakeCommand extends InstantCommand {
 
-    public OuttakeCommand() {
+    public IntakeCommand() {
         requires(Robot.intake);
     }
 
     @Override
     protected void execute() {
-        Robot.intake.vacuumOff();    
+        Robot.intake.vacuumOn();
     }
 }

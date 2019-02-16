@@ -9,6 +9,10 @@ import frc.robot.Robot;
  * This command turns the wrist from zero, to positive, then to zero, then to negative, then to zero.
  * 
  * @author Kevin Li
+ * 
+ * 2/13/2019  dpl    removed unneeded overrides functions, is finished false to keep running.
+ *
+ * 
  */
 public class RotateWristTestCommand extends Command {
   private XboxController ctrl = Robot.m_oi.getAssistantController();
@@ -21,31 +25,19 @@ public class RotateWristTestCommand extends Command {
 
   @Override
   protected void initialize() {
-    Robot.intake.setAngle(0);
+    Robot.intake.setAngle(positions[currentIndex]);
   }
 
   @Override
   protected void execute() {
     if (ctrl.getAButtonReleased()) { // TODO: change to respective button
-      Robot.intake.setAngle(positions[currentIndex]);
-      currentIndex++;
+      Robot.intake.setAngle(positions[currentIndex++]);
       if (currentIndex > positions.length) currentIndex = 0;
     }
-    
   }
 
   @Override
   protected boolean isFinished() {
-    return true; // TODO: change
-  }
-  
-  @Override
-  protected void end() {
-    super.end();
-  }
-
-  @Override
-  protected void interrupted() {
-    super.interrupted();
+    return false;   //keep doing this until stopped
   }
 }
