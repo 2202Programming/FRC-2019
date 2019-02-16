@@ -21,24 +21,26 @@ public class MoveArmAtHeight extends Command {
     private final double projectionMax = projectionInitialLength + Robot.kProjectConstraint;
 
     //Make an h' to more easily construct a triangle
-    private final double calculationHeight;
+    private double calculationHeight;
 
     //Projection of the arm on the ground
     private double xProjection;
-
-    private boolean belowX;
+    
+    DoubleSupplier heightFunct;
 
     public MoveArmAtHeight(DoubleSupplier heightFunct){
         requires(Robot.arm);
-        double height = heightFunct.getAsDouble();
-
-        belowX = height < pivotHeight;
-        if (!belowX) calculationHeight = height - pivotHeight;
-        else calculationHeight = pivotHeight - height;
-        xProjection = projectionInitialLength;
+        this.heightFunct = heightFunct;
     }
 
     protected void execute() {
+        double height = heightFunct.getAsDouble();
+
+        boolean belowX = height < pivotHeight;
+        if (!belowX) calculationHeight = height - pivotHeight;
+        else calculationHeight = pivotHeight - height;
+        xProjection = projectionInitialLength;
+
         double projChange = Robot.m_oi.getAssistantController().getY();
         //TODO: Mapping joystick properly to change in projection
         xProjection += projChange;

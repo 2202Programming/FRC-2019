@@ -180,14 +180,14 @@ public class CommandManager {
     private CommandGroup CmdFactoryHuntCargo() {
         CommandGroup grp = new CommandGroup("HuntCargo");
         //ArmToHeight(getH)
-        grp.addParallel( new WristTrackFunction(this::wristTrackPerp));
+        grp.addParallel(new WristTrackFunction(this::wristTrackPerp));
 
         return grp;
     }
     private CommandGroup CmdFactoryHuntHatchFloor() {
         CommandGroup grp = new CommandGroup("HuntHatchFloor");
         //ArmToHeight(getH)
-        //WristTrackArm(getWa)
+        grp.addParallel(new WristTrackFunction(this::wristTrackPerp));
         return grp;
     }
     private CommandGroup CmdFactoryHuntGameStart() {
@@ -201,11 +201,13 @@ public class CommandManager {
     }
     private CommandGroup CmdFactoryDeliverHatch() {
         CommandGroup grp = new CommandGroup("DeliverHatch");
+        grp.addParallel(new WristTrackFunction(this::wristTrackParallel));
         return grp;
     }
 
     private CommandGroup CmdFactoryDeliverCargo() {
         CommandGroup grp = new CommandGroup("DeliverCargo");
+        grp.addParallel(new WristTrackFunction(this::wristTrackParallel));
         return grp;
     }
 
