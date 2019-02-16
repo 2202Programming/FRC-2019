@@ -10,8 +10,6 @@ import frc.robot.Robot;
  * 
  */
 public class ComandManager {
-    Robot  r;          //short hand access to our static Robot structure
-
     //OI - operator inputs 
     Button HuntSelect;       //used in hunting modes
     Button HeightSelect;     //used in delivery modes
@@ -54,7 +52,6 @@ public class ComandManager {
 
     public ComandManager(Robot r) {
         currentMode = Modes.Construction;
-        this.r = r;
 
         // Construct our major modes
         zeroRobot = CmdFactoryZeroRobot();
@@ -64,8 +61,11 @@ public class ComandManager {
     // These are largely interruptable so we can switch as state changes
     private CommandGroup CmdFactoryZeroRobot() {
         CommandGroup grp = new CommandGroup();
-        //grp.addParallel(r.arm.getInitCmd());
+        grp.addParallel(Robot.arm.zeroSubsystem());
+        grp.addParallel(Robot.intake.zeroSubsystem());
         return grp;
     }
+
+
 
 }
