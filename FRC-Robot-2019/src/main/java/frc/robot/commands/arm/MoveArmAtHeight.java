@@ -4,12 +4,16 @@ import frc.robot.Robot;
 
 public class MoveArmAtHeight extends Command {
     //Length of the arm from pivot point without extension in inches
-    private final double armInitialLength = 18;
+    private final double armInitialLength = 30;
     //Height of point of rotation for the arm in inches
     private final double pivotHeight = 29.75;
+    
     /*TODO: Legit length
     Starting projection of arm (starts at edge of bumper) in inches */
     private final double projectionInitialLength = 16;
+
+    //Maximum projection based on 
+    private final double projectionMax = projectionInitialLength + 30;
 
     //Make an h' to more easily construct a triangle
     private final double calculationHeight;
@@ -25,6 +29,8 @@ public class MoveArmAtHeight extends Command {
     protected void execute() {
         //TODO: Mapping joystick properly to change in projection
         xProjection = projectionInitialLength + Robot.m_oi.getAssistantController().getY();
+
+        if (xProjection > projectionMax) xProjection = projectionMax;
 
         //Rotate to maintain height as projection changes
         Robot.arm.setAngle(Math.toDegrees(Math.atan(calculationHeight / xProjection)));
