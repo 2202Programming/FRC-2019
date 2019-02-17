@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.Robot;
 import frc.robot.commands.arm.MoveArmAtHeight;
 import frc.robot.commands.arm.MoveDownToCapture;
-import frc.robot.commands.intake.IntakeOnCommand;
+import frc.robot.commands.intake.VacuumCommand;
 import frc.robot.commands.intake.WristTrackFunction;
 
 /**
@@ -71,6 +71,7 @@ public class CommandManager {
     CommandGroup huntingHFloorGrp;
     CommandGroup captureGrp;
     CommandGroup deliveryGrp;
+    CommandGroup ejectGrp;
     
     // Target States - think of this as desired command vector
     Modes currentMode; // what we think are doing now
@@ -120,6 +121,7 @@ public class CommandManager {
         huntingCargoGrp = CmdFactoryHuntCargo();
         captureGrp = CmdFactoryCapture();
         deliveryGrp = CmdFactoryDelivery();
+        ejectGrp = CmdFactoryEject();
     }
 
     /**
@@ -175,7 +177,9 @@ public class CommandManager {
             delHeightIdx = 0;
             gripperH_cmd = DeliveryCargoHeights[delHeightIdx];
             break;
+
         case Ejecting:
+            nextCmd = ejectGrp;
             break;
         default:
             break;
@@ -219,6 +223,11 @@ public class CommandManager {
         Modes nextMode = (prevHuntMode == Modes.HuntingCargo) ? Modes.DeliverCargo : Modes.DeliverHatch;
         setMode(nextMode);
         return (nextMode.get());
+    }
+
+    private int gotoHuntMode() {
+        Modes nextMode = Modes.HuntingHatch;
+        return  nextMode.get();
     }
 
     private void cycleHeight() {
@@ -295,7 +304,7 @@ public class CommandManager {
 
     private CommandGroup CmdFactoryCapture() {
         CommandGroup grp = new CommandGroup("Capture");
-        grp.addSequential(new IntakeOnCommand() );    
+        grp.addSequential(new VacuumCommand(true));                 /// new IntakeOnCommand() );    
         grp.addSequential(new MoveDownToCapture(Capture_dDown), 3.5 );  //TODO: fix  3.5 seconds const
         grp.addSequential(new CallFunctionCmd(this::gotoDeliverMode));
         return grp;
@@ -308,6 +317,12 @@ public class CommandManager {
         return grp;
     }
 
+    private CommandGroup CmdFactoryEject() {
+        CommandGroup grp = new CommandGroup("Eject");
+        grp.addSequential(new VacuumCommand(false)); 
+        grp.addSequential(new CallFunctionCmd(this::gotoHuntMode));
+        return grp;
+    }
 
     class CycleHuntModeCmd extends InstantCommand {
         
@@ -345,8 +360,7 @@ public class CommandManager {
             workFunct.getAsInt();
         }
     }
-
-
+    
     public void log() {
         logCnt++;
         if (logCnt % 50 ==0 ) {

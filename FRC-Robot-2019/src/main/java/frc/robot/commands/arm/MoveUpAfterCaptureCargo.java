@@ -11,8 +11,6 @@ public class MoveUpAfterCaptureCargo extends Command {
 
     //Length of the arm from pivot point without extension in inches
     private final double armInitialLength = 30.0;
-    //Height of point of rotation for the arm in inches
-    private final double pivotHeight = 29.75;
     
     private final double kTolerance = 1.0;
 

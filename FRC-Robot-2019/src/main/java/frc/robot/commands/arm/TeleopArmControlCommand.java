@@ -1,12 +1,12 @@
 package frc.robot.commands.arm;
 
-import edu.wpi.first.wpilibj.Joystick;
+//import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
-import frc.robot.input.PositionEnum;
+//import frc.robot.input.PositionEnum;
 import frc.robot.subsystems.ArmSubsystem;
 
 public class TeleopArmControlCommand extends Command {
@@ -14,8 +14,8 @@ public class TeleopArmControlCommand extends Command {
     private XboxController in;
     private double height_cmd;
     private double projection_cmd;
-    private PositionEnum[] orderedPositions = { PositionEnum.CargoLow, PositionEnum.CargoMid, PositionEnum.CargoHigh,
-            PositionEnum.HatchLow, PositionEnum.HatchMid, PositionEnum.HatchHigh };
+    // private PositionEnum[] orderedPositions = { PositionEnum.CargoLow, PositionEnum.CargoMid, PositionEnum.CargoHigh,
+    //        PositionEnum.HatchLow, PositionEnum.HatchMid, PositionEnum.HatchHigh };
 
     public TeleopArmControlCommand() {
         requires(Robot.arm);

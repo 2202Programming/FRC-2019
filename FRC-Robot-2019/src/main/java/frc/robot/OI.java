@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.LimeLightArcadeDriveCommand;
 import frc.robot.commands.arm.*;
 import frc.robot.commands.drive.*;
-import frc.robot.commands.intake.OuttakeCommand;
 import frc.robot.commands.drive.shift.*;
 import frc.robot.commands.intake.*;
 

@@ -1,7 +1,6 @@
 package frc.robot.commands.arm;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.commands.CommandManager.Modes;
 
 public class MoveDownToCapture extends Command {
     /*
@@ -12,8 +11,6 @@ public class MoveDownToCapture extends Command {
 
     //Length of the arm from pivot point without extension in inches
     private final double armInitialLength = 30.0;
-    //Height of point of rotation for the arm in inches
-    private final double pivotHeight = 29.75;
     
     private final double kTolerance = 1.0;
 

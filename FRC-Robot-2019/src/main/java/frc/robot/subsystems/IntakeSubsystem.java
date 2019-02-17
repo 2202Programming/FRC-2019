@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Spark;
 import frc.robot.subsystems.ExtendedSubSystem;
 import frc.robot.RobotMap;
-import frc.robot.commands.intake.KeepIntakeParallelToGroundCommand;
+
 //used for CustomServo
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
  *                  Added constantant, improved nameing conventions.
  *                  Use DoubleSolenoid.
  *                  
+ * 2/17/2019   DPL  Split vacuum into own subsystem, but contained here
  * 
  */
 /**
@@ -78,21 +79,15 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   DoubleSolenoid vacuumSol = new DoubleSolenoid(RobotMap.INTAKE_PCM_ID, RobotMap.INTAKE_RELEASE_SOLENOID_PCM,
       RobotMap.INTAKE_HOLD_SOLENOID_PCM);
 
-
   // internal state tracking
   boolean vacuumCmdOn;
-
-  void init() {
-    setAngle(0.0); //TODO: Derek fix this
-    vacuumOff();
-  }
 
   /**
    * Creates an intake subsystem.
    */
   public IntakeSubsystem() {
     super("Intake");
-    init();
+    wristServo.setName(this.getSubsystem(), "wrist");
     addChild("In:Wrist", (Sendable) wristServo);
     addChild("In:VacPump", (Sendable) vacuumPump);
     addChild("In:CargoSw", cargoSwitch);
@@ -112,7 +107,7 @@ public class IntakeSubsystem extends ExtendedSubSystem {
    * Wrist Controls
    */
   public void setAngle(double degrees) {
-    wristServo.setAngle(-degrees); //TODO: Backwards direction
+    wristServo.setAngle(-degrees); //TODO: Backwards direction, track that down
   }
 
   /**
@@ -121,6 +116,13 @@ public class IntakeSubsystem extends ExtendedSubSystem {
    */
   public double getAngle() {
     return wristServo.getAngle();
+  }
+
+  /**
+   *  Commands can used the vacuum subsystem without interferring with wrist.
+  */
+  public Subsystem getVacuumSubsystem()  {
+    return this.intakeVacuum;
   }
 
   /**
