@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.Sendable;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -73,7 +74,6 @@ public class IntakeSubsystem extends Subsystem {
   boolean vacuumCmdOn;
 
   void init() {
-    setAngle(0);
     vacuumOff();
   }
 
@@ -96,7 +96,7 @@ public class IntakeSubsystem extends Subsystem {
    * Wrist Controls 
    */
   public void setAngle(double degrees) {
-    wristServo.setAngle(-degrees);
+    wristServo.setAngle(degrees);
   }
 
   /**
@@ -152,6 +152,7 @@ public class IntakeSubsystem extends Subsystem {
   //### not sure how this works yet, prefer to log the whole sub-sys and just just a part of it.
   public void log() {
     SmartDashboard.putData(this);
+    SmartDashboard.putData((Sendable) wristServo);
   }
 
   /**
