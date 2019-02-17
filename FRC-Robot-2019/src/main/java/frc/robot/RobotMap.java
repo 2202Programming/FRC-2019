@@ -76,5 +76,7 @@ public class RobotMap {
   //LIDAR sensors
   public static final int LEFT_FRONT_LIDAR = 1;
   public static final int RIGHT_FRONT_LIDAR = 2;
+  public static final int LEFT_BACK_LIDAR = 3;
+  public static final int RIGHT_BACK_LIDAR = 4;
   
 }

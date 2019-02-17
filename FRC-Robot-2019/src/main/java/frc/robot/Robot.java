@@ -157,7 +157,8 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
-    if (serialSubsystem.isSerialEnabled())
+
+    if (serialSubsystem.isSerialEnabled()) //if serial was initalized, run periodic serial processing loop
     serialSubsystem.processSerial();
   }
 
@@ -204,9 +205,12 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("LimelightY", limeLight.getY());
     SmartDashboard.putNumber("LimelightArea", limeLight.getArea());
     SmartDashboard.putBoolean("LimeTarget", limeLight.hasTarget());
-    if (serialSubsystem.isSerialEnabled()) {
+
+    if (serialSubsystem.isSerialEnabled()) { //verify serial system was initalized before calling for results
     SmartDashboard.putNumber("Left Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.LEFT_FRONT_LIDAR));
     SmartDashboard.putNumber("Right Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.RIGHT_FRONT_LIDAR));
+    SmartDashboard.putNumber("Left Back LIDAR (mm)", serialSubsystem.getDistance(RobotMap.LEFT_BACK_LIDAR));
+    SmartDashboard.putNumber("Right Back LIDAR (mm)", serialSubsystem.getDistance(RobotMap.RIGHT_BACK_LIDAR));
     }
   }
 
