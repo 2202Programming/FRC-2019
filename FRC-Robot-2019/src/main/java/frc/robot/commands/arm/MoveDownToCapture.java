@@ -1,6 +1,7 @@
 package frc.robot.commands.arm;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
+import frc.robot.commands.CommandManager.Modes;
 
 public class MoveDownToCapture extends Command {
     /*
@@ -21,9 +22,12 @@ public class MoveDownToCapture extends Command {
 
     private double curCalcHeight;
     private double endHeight;
+    private double down_cmd;   //inches to move down for pickup
 
-    public MoveDownToCapture(){
+    public MoveDownToCapture(double down){
         requires(Robot.arm);
+        down_cmd = down;
+
         curProjection = (armInitialLength + Robot.arm.getExtension()) * Math.cos(Robot.arm.getAngle());
         curCalcHeight = Math.sqrt((Robot.arm.getExtension() + armInitialLength) * (Robot.arm.getExtension() + armInitialLength) - curProjection * curProjection);
         endHeight = curCalcHeight + 5.0; //Move down 5 inches (increase bc increasing distance from x-axis)
@@ -33,6 +37,9 @@ public class MoveDownToCapture extends Command {
         */
     }
 
+
+    // A button will trigger this when the pilot expects to be over a hatch/cargo.
+    // We need to move into capturing mode, move down. wait a bit
     protected void execute() {
         //Move to the endHeight while maintaining curProjection
         Robot.arm.setAngle(90 + Math.toDegrees(Math.atan(endHeight / curProjection)));
@@ -40,6 +47,7 @@ public class MoveDownToCapture extends Command {
 
         Robot.arm.setExtension(
             Math.sqrt(endHeight * endHeight + curProjection * curProjection) - armInitialLength);
+
     }
 
     protected boolean isFinished() {

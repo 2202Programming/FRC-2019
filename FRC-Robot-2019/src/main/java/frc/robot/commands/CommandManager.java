@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.Robot;
 import frc.robot.commands.arm.MoveArmAtHeight;
+import frc.robot.commands.arm.MoveDownToCapture;
+import frc.robot.commands.intake.IntakeOnCommand;
 import frc.robot.commands.intake.WristTrackFunction;
 
 /**
@@ -64,6 +66,7 @@ public class CommandManager {
     CommandGroup huntingHatchGrp;
     CommandGroup huntingCargoGrp;
     CommandGroup huntingHFloorGrp;
+    CommandGroup captureGrp;
 
     // Target States - think of this as desired command vector
     Modes currentMode; // what we think are doing now
@@ -71,16 +74,19 @@ public class CommandManager {
 
     CommandGroup currentGrp; // what is runing
 
-    double griperH_cmd; // (inches) composite of arm/extender/wrist/cup
+    double gripperH_cmd; // (inches) composite of arm/extender/wrist/cup
 
     // internal states
     int delHeightIdx = 0; // used in delivery selection
     int huntHeightIdx = 0;
+    final Modes huntingModes[] = { Modes.HuntingHatch, Modes.HuntingCargo, Modes.HuntingFloor };
+    int huntModeIdx = 0 ;  //starts at Hatch
 
     // Data points - shares delheightidx, must be same length
     final double DeliveryCargoHeights[] = { 24.0, 48.0, 78.0 }; // TODO: fix the numbers
     final double DeliveryHatchHeights[] = { 20.0, 42.0, 72.0 }; // TODO: fix the numbers
-    final double HuntHeights[] = { 22.0, 14.0, 3.0 }; // height from floor, H,C,Floor TODO:fix numbers
+    final double Capture_dDown = 2.0;  //inches to move down for capture
+    final double HuntHeights[] = { 22.0, 15.0, Capture_dDown }; // height from floor, H,C,Floor TODO:fix numbers
 
     public CommandManager() {
         currentMode = Modes.Construction;
@@ -95,7 +101,9 @@ public class CommandManager {
         // define commands - bind local functions to be used on button hits
         huntSelectCmd = new CallFunctionCmd(this::cycleHuntMode);
         heightSelectCmd = new CallFunctionCmd(this::cycleHeight);
-
+        captRelCmd = new CallFunctionCmd(this::triggerCaptureRelease);
+        
+    
         // bind commands to buttons
         huntSelect.whenPressed(huntSelectCmd);
         heightSelect.whenPressed(heightSelectCmd);
@@ -105,6 +113,7 @@ public class CommandManager {
         huntingHFloorGrp = CmdFactoryHuntHatchFloor();
         huntingHatchGrp = CmdFactoryHuntHatch();
         huntingCargoGrp = CmdFactoryHuntCargo();
+        captureGrp = CmdFactoryCapture();
     }
 
     // handle the state transitions
@@ -116,31 +125,33 @@ public class CommandManager {
             nextCmd = zeroRobotGrp;
             break;
         case HuntingFloor:
-            griperH_cmd = HuntHeights[2];
+            gripperH_cmd = HuntHeights[2];
             nextCmd = huntingHFloorGrp;
             break;
 
         case HuntingCargo:
-            griperH_cmd = HuntHeights[1];
+            gripperH_cmd = HuntHeights[1];
             nextCmd = huntingCargoGrp;
             break;
 
         case HuntingHatch:
             // move the heigh
-            griperH_cmd = HuntHeights[0];
+            gripperH_cmd = HuntHeights[0];
             nextCmd = huntingHatchGrp;
             break;
 
         case Capturing: // moving from hunting to picking it up. Button:Capture
+            gripperH_cmd -= Capture_dDown;
+            nextCmd = captureGrp;
             break;
 
         // DeliveryModes
         case DeliverHatch: // based on what we captured
-            griperH_cmd = DeliveryHatchHeights[delHeightIdx];
+            gripperH_cmd = DeliveryHatchHeights[delHeightIdx];
             break;
 
         case DeliverCargo: // based on what we captured
-            griperH_cmd = DeliveryCargoHeights[delHeightIdx];
+            gripperH_cmd = DeliveryCargoHeights[delHeightIdx];
             break;
         case Ejecting:
             break;
@@ -155,7 +166,7 @@ public class CommandManager {
 
     void installGroup(CommandGroup grp) {
         if (grp == null) return;
-        currentGrp.cancel(); // end methods are called
+        //do we need this???### currentGrp.cancel(); // end methods are called
         currentGrp = grp;
         currentGrp.start(); // schedule our new work, initialize() then execute() are called
     }
@@ -167,16 +178,22 @@ public class CommandManager {
         return false;
     }
 
+    private void triggerCaptureRelease(int unused){
+        //Change StateMachine in command Manger
+        setMode(Modes.Capturing);
+    }
     private void cycleHuntMode(int unused) {
-        final Modes ModeToMode[] = { Modes.HuntingCargo, Modes.HuntingCargo, Modes.HuntingFloor };
+        
         if (isHunting()) {
-            Modes newMode = ModeToMode[(currentMode.get() - Modes.HuntingHatch.get())];
-            setMode(newMode);
+            int idx = huntModeIdx++;
+            huntModeIdx = (idx > huntingModes.length) ? 0 : idx;
+            setMode(huntingModes[huntModeIdx]);
         }
         // not hunting just ignore event
     }
 
     private void cycleHeight(int unused) {
+        if (isHunting()) return;  // if we are not delivery, just bail
         int idx = delHeightIdx + 1; // next height
         // make sure index fits in array
         delHeightIdx = (idx > DeliveryCargoHeights.length) ? 0 : idx;
@@ -193,8 +210,8 @@ public class CommandManager {
     }
 
     // expose desired cup height to commands, set griperheight via state machine.
-    Double cupHeight() {
-        return griperH_cmd;
+    Double gripperHeight() {
+        return gripperH_cmd;
     }
 
     // Command Factories that build command sets for each mode of operation
@@ -212,21 +229,21 @@ public class CommandManager {
 
     private CommandGroup CmdFactoryHuntHatch() {
         CommandGroup grp = new CommandGroup("HuntHatch");
-        grp.addParallel(new MoveArmAtHeight(this::cupHeight));
+        grp.addParallel(new MoveArmAtHeight(this::gripperHeight));
         grp.addParallel(new WristTrackFunction(this::wristTrackParallel));
         return grp;
     }
 
     private CommandGroup CmdFactoryHuntCargo() {
         CommandGroup grp = new CommandGroup("HuntCargo");
-        grp.addParallel(new MoveArmAtHeight(this::cupHeight));
+        grp.addParallel(new MoveArmAtHeight(this::gripperHeight));
         grp.addParallel(new WristTrackFunction(this::wristTrackPerp));
         return grp;
     }
 
     private CommandGroup CmdFactoryHuntHatchFloor() {
         CommandGroup grp = new CommandGroup("HuntHatchFloor");
-        grp.addParallel(new MoveArmAtHeight(this::cupHeight));
+        grp.addParallel(new MoveArmAtHeight(this::gripperHeight));
         grp.addParallel(new WristTrackFunction(this::wristTrackPerp));
         return grp;
     }
@@ -238,6 +255,8 @@ public class CommandManager {
 
     private CommandGroup CmdFactoryCapture() {
         CommandGroup grp = new CommandGroup("Capture");
+        grp.addSequential(new IntakeOnCommand() );    
+        grp.addSequential(new MoveDownToCapture(Capture_dDown), 0.5);  //TODO: fix the .5 seconds const
         return grp;
     }
 

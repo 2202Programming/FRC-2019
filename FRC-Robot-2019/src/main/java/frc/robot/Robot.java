@@ -45,7 +45,7 @@ public class Robot extends TimedRobot {
   Command m_autonomousCommand;
   SendableChooser<Command> m_chooser = new SendableChooser<>();
   
-  CommandManager m_cmdMgr;  
+  public static CommandManager m_cmdMgr;    //fix the public later
 
   // TESTING Started in TestInit
   TestWristRateCommand testWristCmd; 
