@@ -11,7 +11,7 @@ public class SerialPortSubsystem extends Subsystem {
 
 private int distance1; //Sensor #1
 private int distance2; //Sensor #2
-private StringBuilder serialResults;
+private StringBuilder serialResults =new StringBuilder();
 private SerialPort arduinoSerial;
 private long distanceRefresh; //Track time between sensor readings
 private long hertz;
@@ -67,7 +67,7 @@ private boolean serialExists = true;
       }
         //FORMAT is S[# of sensor, 1-4][Distance in mm]E
         //E is end of statement, otherwise add to running string
-        if (!results.contentEquals("E")) {
+        if (results[0] != 'E') {
         serialResults.append(results);
         }
         else {
