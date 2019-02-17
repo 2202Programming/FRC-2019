@@ -18,6 +18,8 @@ import frc.robot.commands.intake.WristTrackFunction;
  * 
  */
 public class CommandManager {
+    int logCnt=0;
+
     // OI - operator inputs
     JoystickButton huntSelect; // used in hunting modes
     JoystickButton heightSelect; // used in delivery modes
@@ -296,6 +298,14 @@ public class CommandManager {
         @Override
         public boolean isFinished() {
             return true;
+        }
+    }
+
+
+    public void log() {
+        logCnt++;
+        if (logCnt % 50 ==0 ) {
+            System.out.println("CmdMod:"+currentMode);
         }
     }
 
