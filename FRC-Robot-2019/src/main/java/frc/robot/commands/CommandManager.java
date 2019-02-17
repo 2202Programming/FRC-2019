@@ -70,6 +70,7 @@ public class CommandManager {
 
     // Target States - think of this as desired command vector
     Modes currentMode; // what we think are doing now
+    Modes prevHuntMode;
     Modes prevMode;
 
     CommandGroup currentGrp; // what is runing
@@ -141,7 +142,8 @@ public class CommandManager {
             break;
 
         case Capturing: // moving from hunting to picking it up. Button:Capture
-            gripperH_cmd -= Capture_dDown;
+            prevHuntMode = currentMode;
+            ///gripperH_cmd -= Capture_dDown;
             nextCmd = captureGrp;
             break;
 
@@ -190,6 +192,12 @@ public class CommandManager {
             setMode(huntingModes[huntModeIdx]);
         }
         // not hunting just ignore event
+    }
+
+    private void gotoDeliverMode(int unused) {
+        //prevHunt mode saved on entering capturing mode... use it for hatch v cargo delivery
+        Modes nextMode = (prevHuntMode == Modes.HuntingCargo) ? Modes.DeliverCargo : Modes.DeliverHatch;
+        setMode(nextMode);
     }
 
     private void cycleHeight(int unused) {
@@ -256,7 +264,8 @@ public class CommandManager {
     private CommandGroup CmdFactoryCapture() {
         CommandGroup grp = new CommandGroup("Capture");
         grp.addSequential(new IntakeOnCommand() );    
-        grp.addSequential(new MoveDownToCapture(Capture_dDown), 0.5);  //TODO: fix the .5 seconds const
+        grp.addSequential(new MoveDownToCapture(Capture_dDown), 3.5 );  //TODO: fix  3.5 seconds const
+        grp.addSequential(new CallFunctionCmd(this::gotoDeliverMode));
         return grp;
     }
 
