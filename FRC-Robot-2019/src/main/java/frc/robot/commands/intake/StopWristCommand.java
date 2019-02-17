@@ -2,11 +2,8 @@ package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import frc.robot.Robot;
-import frc.robot.subsystems.IntakeSubsystem;
 
 public class StopWristCommand extends InstantCommand {
-    private double targetAngle;
-    private IntakeSubsystem wrist;
 
     public StopWristCommand() {
         requires(Robot.intake);
@@ -14,6 +11,6 @@ public class StopWristCommand extends InstantCommand {
 
     @Override
     protected void execute() {
-        wrist.stopWrist();
+        Robot.intake.stopWrist();
     }
 }
