@@ -14,10 +14,20 @@ private String serialResults;
 private SerialPort arduinoSerial;
 private long distanceRefresh; //Track time between sensor readings
 private long hertz;
-
+private boolean serialExists = true;
 
   public SerialPortSubsystem() {
-    arduinoSerial = new SerialPort(115200, SerialPort.Port.kUSB);
+    try {
+      arduinoSerial = new SerialPort(115200, SerialPort.Port.kUSB);
+    }
+    catch(UncleanStatusException e) {
+      serialExists = false;
+    }
+
+  }
+
+  public boolean isSerialEnabled() {
+    return serialExists;
   }
 
   @Override
