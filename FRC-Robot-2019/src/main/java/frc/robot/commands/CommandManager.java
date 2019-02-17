@@ -1,6 +1,6 @@
 package frc.robot.commands;
 
-import java.util.function.*;
+import java.util.function.IntSupplier;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.input.XboxControllerButtonCode;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
@@ -33,19 +33,19 @@ public class CommandManager {
 
     // Modes of behavior
     public enum Modes {
-        Construction(0), // system still coming up... not operational
-        SettingZeros(1), // calling all encoder power on requirements, not operational
+        Construction(0),  // system still coming up... not operational
+        SettingZeros(1),  // calling all encoder power on requirements, not operational
         // Operational modes
         HuntGameStart(2), // special hunting piece mode - hunt the one on our robot
-        HuntingHatch(3), // Button:HuntSelect order 3->4->5--3-->4-->5...
-        HuntingCargo(4), // HuntSelect
-        HuntingFloor(5), // HuntSelect
+        HuntingHatch(3),  // Button:HuntSelect order 3->4->5--3-->4-->5...
+        HuntingCargo(4),  // HuntSelect
+        HuntingFloor(5),  // HuntSelect
         // Capture
-        Capturing(6), // moving from hunting to picking it up. Button:Capture
+        Capturing(6),     // moving from hunting to picking it up. Button:CaptureRelease
         // DeliveryModes
-        DeliverHatch(7), // based on what we captured
-        DeliverCargo(8), // based on what we captured
-        Ejecting(9); // Button:Capture
+        DeliverHatch(7),  // based on what we captured
+        DeliverCargo(8),  // based on what we captured
+        Ejecting(9);      // Button:CaptureRelease
 
         private int v;
 
@@ -70,13 +70,14 @@ public class CommandManager {
     CommandGroup huntingCargoGrp;
     CommandGroup huntingHFloorGrp;
     CommandGroup captureGrp;
-
+    CommandGroup deliveryGrp;
+    
     // Target States - think of this as desired command vector
     Modes currentMode; // what we think are doing now
     Modes prevHuntMode;
     Modes prevMode;
 
-    CommandGroup currentGrp; // what is runing
+    CommandGroup currentGrp; // what is running
 
     double gripperH_cmd; // (inches) composite of arm/extender/wrist/cup
 
@@ -118,16 +119,31 @@ public class CommandManager {
         huntingHatchGrp = CmdFactoryHuntHatch();
         huntingCargoGrp = CmdFactoryHuntCargo();
         captureGrp = CmdFactoryCapture();
+        deliveryGrp = CmdFactoryDelivery();
     }
 
-    // handle the state transitions
+    /**
+     *   Handle the state transitions, set any state vars and setup next command group.
+     *
+     *   Gripper height setting is controlled by state changes while hunting so it 
+     *   set in the here in setMode(). It uses the gripperHeight() to deliver the value
+     *   to the running commands.
+     * 
+     *   When in delivery mode, the height is calculated by cycling through an array
+     *   of heights.  The array index is bumpped on heightSelect button. The value is
+     *   delivered to the commands via deliverGripperHeight();
+     * 
+     *   Different MoveArmAtHeight commands instantiated with the different gripperHeight
+     *   functions assigned.
+     */
     public void setMode(Modes mode) {
         CommandGroup nextCmd=null;
-        // set "constants" for a given mode
+    
         switch (mode) {
         case SettingZeros:
             nextCmd = zeroRobotGrp;
             break;
+
         case HuntingFloor:
             gripperH_cmd = HuntHeights[2];
             nextCmd = huntingHFloorGrp;
@@ -145,17 +161,18 @@ public class CommandManager {
             break;
 
         case Capturing: // moving from hunting to picking it up. Button:Capture
-            prevHuntMode = currentMode;
-            ///gripperH_cmd -= Capture_dDown;
+            prevHuntMode = currentMode;         //this is what we captured
             nextCmd = captureGrp;
             break;
 
         // DeliveryModes
         case DeliverHatch: // based on what we captured
+            delHeightIdx = 0;
             gripperH_cmd = DeliveryHatchHeights[delHeightIdx];
             break;
 
         case DeliverCargo: // based on what we captured
+            delHeightIdx = 0;
             gripperH_cmd = DeliveryCargoHeights[delHeightIdx];
             break;
         case Ejecting:
@@ -168,7 +185,7 @@ public class CommandManager {
         currentMode = mode;
         installGroup(nextCmd);
 }
-
+    //Starts new group. 
     void installGroup(CommandGroup grp) {
         if (grp == null) return;
         //do we need this???### currentGrp.cancel(); // end methods are called
@@ -183,11 +200,11 @@ public class CommandManager {
         return false;
     }
 
-    private void triggerCaptureRelease(int unused){
+    private void triggerCaptureRelease(){
         //Change StateMachine in command Manger
         setMode(Modes.Capturing);
     }
-    private void cycleHuntMode(int unused) {
+    private void cycleHuntMode() {
         
         if (isHunting()) {
             int idx = huntModeIdx + 1;
@@ -197,13 +214,14 @@ public class CommandManager {
         // not hunting just ignore event
     }
 
-    private void gotoDeliverMode(int unused) {
+    private int gotoDeliverMode() {
         //prevHunt mode saved on entering capturing mode... use it for hatch v cargo delivery
         Modes nextMode = (prevHuntMode == Modes.HuntingCargo) ? Modes.DeliverCargo : Modes.DeliverHatch;
         setMode(nextMode);
+        return (nextMode.get());
     }
 
-    private void cycleHeight(int unused) {
+    private void cycleHeight() {
         if (isHunting()) return;  // if we are not delivery, just bail
         int idx = delHeightIdx + 1; // next height
         // make sure index fits in array
@@ -216,12 +234,19 @@ public class CommandManager {
     }
 
     Double wristTrackPerp() {
+        //TODO: will need to account for phi on each side
         double phi = Robot.arm.getAngle();
         return (phi - 180.0);
     }
 
     // expose desired cup height to commands, set griperheight via state machine.
     Double gripperHeight() {
+        return gripperH_cmd;
+    }
+
+    Double deliverGripperHeight() {
+         gripperH_cmd =(prevHuntMode == Modes.HuntingCargo) ? 
+            DeliveryCargoHeights[delHeightIdx] : DeliveryCargoHeights[delHeightIdx];
         return gripperH_cmd;
     }
 
@@ -259,6 +284,10 @@ public class CommandManager {
         return grp;
     }
 
+    // Hunt Game Start will have a game piece at a starting place
+    // that will require some special motion, turn on vacuum,
+    // and finaly go into delivery.
+    //
     private CommandGroup CmdFactoryHuntGameStart() {
         CommandGroup grp = new CommandGroup("HuntGameStart");
         return grp;
@@ -272,58 +301,49 @@ public class CommandManager {
         return grp;
     }
 
-    private CommandGroup CmdFactoryDeliverHatch() {
-        CommandGroup grp = new CommandGroup("DeliverHatch");
+    private CommandGroup CmdFactoryDelivery() {
+        CommandGroup grp = new CommandGroup("Deliver");
+        grp.addParallel(new MoveArmAtHeight(this::deliverGripperHeight));  //use deliver gripper funct
         grp.addParallel(new WristTrackFunction(this::wristTrackParallel));
         return grp;
     }
 
-    private CommandGroup CmdFactoryDeliverCargo() {
-        CommandGroup grp = new CommandGroup("DeliverCargo");
-        grp.addParallel(new WristTrackFunction(this::wristTrackParallel));
-        return grp;
-    }
 
     class CycleHuntModeCmd extends InstantCommand {
         
         @Override
         protected void execute() {
-            cycleHuntMode(0);
+            cycleHuntMode();
         }
-        
     }
 
     class CycleHeightModeCmd extends InstantCommand {
         
         @Override
         protected void execute() {
-            cycleHeight(0);
+            cycleHeight();
         }
-        
     }
 
     class CaptureReleaseCmd extends InstantCommand {
         
         @Override
         protected void execute() {
-            triggerCaptureRelease(0);;
+            triggerCaptureRelease();
         }
-        
     }
 
     class CallFunctionCmd extends InstantCommand {
-        IntConsumer workFunct;
+        IntSupplier workFunct;
 
-        public CallFunctionCmd(IntConsumer workFunct) {
+        public CallFunctionCmd(IntSupplier workFunct) {
             this.workFunct = workFunct;
         }
 
         @Override
-        public void initialize() {
-            workFunct.accept(0);
+        public void execute() {
+            workFunct.getAsInt();
         }
-
-
     }
 
 
