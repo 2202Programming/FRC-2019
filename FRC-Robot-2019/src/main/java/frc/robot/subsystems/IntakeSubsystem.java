@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Spark;
 import frc.robot.subsystems.ExtendedSubSystem;
 import frc.robot.RobotMap;
-import frc.robot.commands.intake.KeepIntakeParallelToGroundCommand;
 //used for CustomServo
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
