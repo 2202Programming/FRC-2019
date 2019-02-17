@@ -28,25 +28,29 @@ public class MoveDownToCapture extends Command {
         requires(Robot.arm);
         down_cmd = down;
 
+        
+    }
+
+    protected void initialize() {
         curProjection = (armInitialLength + Robot.arm.getExtension()) * Math.cos(Robot.arm.getAngle());
         curCalcHeight = Math.sqrt((Robot.arm.getExtension() + armInitialLength) * (Robot.arm.getExtension() + armInitialLength) - curProjection * curProjection);
-        endHeight = curCalcHeight + 5.0; //Move down 5 inches (increase bc increasing distance from x-axis)
+        endHeight = curCalcHeight + down_cmd; //Move down 5 inches (increase bc increasing distance from x-axis)
         /*
         Alternative method of calculating height
         
         */
     }
 
-
     // A button will trigger this when the pilot expects to be over a hatch/cargo.
     // We need to move into capturing mode, move down. wait a bit
     protected void execute() {
+        double angle = 90 + Math.toDegrees(Math.atan(endHeight / curProjection));
+        double extension = Math.sqrt(endHeight * endHeight + curProjection * curProjection) - armInitialLength;
         //Move to the endHeight while maintaining curProjection
-        Robot.arm.setAngle(90 + Math.toDegrees(Math.atan(endHeight / curProjection)));
+        Robot.arm.setAngle(angle);
         //Add 90 bc calc goes below x axis
 
-        Robot.arm.setExtension(
-            Math.sqrt(endHeight * endHeight + curProjection * curProjection) - armInitialLength);
+        Robot.arm.setExtension(extension);
 
     }
 

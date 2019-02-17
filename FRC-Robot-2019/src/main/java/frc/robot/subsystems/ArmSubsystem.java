@@ -59,9 +59,9 @@ public class ArmSubsystem extends ExtendedSubSystem {
     addChild("Arm Rot M", armRotationMotor);
     addChild("Arm Ext M", armExtensionMotor);
 
-    armRotationMotor.config_kP(0, 1.0, 30);
+    armRotationMotor.config_kP(0, 0.8, 30);
 
-    armExtensionMotor.config_kP(0, 1.2, 30);
+    armExtensionMotor.config_kP(0, 0.6, 30);
 
     rotationEncoder = (WPI_TalonSRX) armRotationMotor;
     rotationEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
@@ -179,7 +179,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
   @Override
   public void initDefaultCommand() {
-    setDefaultCommand(new TeleopArmControlCommand());
+    //setDefaultCommand(new TeleopArmControlCommand());
+    //Xander and derek don't want any default commands
   }
 
   /**
