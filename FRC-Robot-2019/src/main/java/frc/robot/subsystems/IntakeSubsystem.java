@@ -62,11 +62,8 @@ public class IntakeSubsystem extends Subsystem {
   final DoubleSolenoid.Value kVacuum = Value.kForward;
   final DoubleSolenoid.Value kRelease = Value.kReverse;
 
-  // Physical devices
-  CustomServo wristServo     = new CustomServo(
-                                              RobotMap.INTAKE_WRIST_SERVO_PWM, 
-                                              WristMinDegrees, WristMaxDegrees, 
-                                              kServoMinPWM, kServoMaxPWM);
+  // Physical devicesServerNotActiveException
+  Servo wristServo     = new Servo(RobotMap.INTAKE_WRIST_SERVO_PWM);
   DigitalInput cargoSwitch   = new DigitalInput(RobotMap.INTAKE_CARGO_SWITCH_MXP_CH);
   SpeedController vacuumPump = new Spark(RobotMap.INTAKE_VACUUM_SPARK_PWM);
   DoubleSolenoid  vacuumSol  = new DoubleSolenoid(RobotMap.INTAKE_PCM_ID,
