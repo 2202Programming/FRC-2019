@@ -64,8 +64,8 @@ public class OI {
     //Arm Commands
     new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whileHeld(new ExtendArmCommand());
     new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode()).whileHeld(new RetractArmCommand());
-    new JoystickButton(assistant, XboxControllerButtonCode.X.getCode()).whenPressed(new RotateArmForwardCommand());
-    new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new RotateArmBackwardCommand());
+    new JoystickButton(assistant, XboxControllerButtonCode.X.getCode()).whileHeld(new RotateArmForwardCommand());
+    new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whileHeld(new RotateArmBackwardCommand());
 
     //Intake Commands
     new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode()).whenPressed(new IntakeCommand());
