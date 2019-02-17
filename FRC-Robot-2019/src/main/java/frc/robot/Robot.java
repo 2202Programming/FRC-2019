@@ -144,10 +144,10 @@ public class Robot extends TimedRobot {
 
   private void logSmartDashboardSensors() {
     // SmartDashboard.putNumber("Left Encoder Count", driveTrain.getLeftEncoderTalon().getSelectedSensorPosition());
-    // SmartDashboard.putNumber("Left Encoder Rate", driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity());
+    SmartDashboard.putNumber("Left Encoder Rate", driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity());
     // SmartDashboard.putNumber("Right Encoder Count", driveTrain.getRightEncoderTalon().getSelectedSensorPosition());
-    // SmartDashboard.putNumber("Right Encoder Rate", driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
-    // SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
+    SmartDashboard.putNumber("Right Encoder Rate", driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
+    SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
     // SmartDashboard.putNumber("Arm Rotation Count", arm.getRotationEncoder().getSelectedSensorPosition());
     // SmartDashboard.putNumber("Arm Extension Count", arm.getExtensionEncoder().getSelectedSensorPosition());
     // SmartDashboard.putBoolean("Arm Extension At Min", arm.extensionAtMin());

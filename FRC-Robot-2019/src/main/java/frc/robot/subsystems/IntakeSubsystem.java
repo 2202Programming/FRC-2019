@@ -74,6 +74,7 @@ public class IntakeSubsystem extends Subsystem {
   boolean vacuumCmdOn;
 
   void init() {
+    wristServo.stopMotor();
     vacuumOff();
   }
 
