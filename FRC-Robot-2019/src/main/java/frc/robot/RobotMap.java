@@ -53,8 +53,8 @@ public class RobotMap {
   //Cargo Trap
   public static final int TRAP_PCM_ID = CAN_PCM1_ID;
   public static final int TRAP_DEPLOY_PCM = 2; 
-  public static final int TRAP_RETRACT_PCM = 3;
-  public static final int TRAP_ARMS_OPEN_PCM = 4; 
+  public static final int TRAP_RETRACT_PCM = 6;
+  public static final int TRAP_ARMS_OPEN_PCM = 7; 
   public static final int TRAP_ARMS_CLOSE_PCM = 5;
   public static final int TRAP_CARGO_SENSOR_DIO = 30;
 
@@ -63,8 +63,8 @@ public class RobotMap {
   public static final int INTAKE_VACUUM_SPARK_PWM = 1;    
   public static final int INTAKE_CARGO_SWITCH_MXP_CH = 11;
   public static final int INTAKE_PCM_ID = CAN_PCM1_ID;
-  public static final int INTAKE_RELEASE_SOLENOID_PCM = 6;   
-  public static final int INTAKE_HOLD_SOLENOID_PCM = 7;      
+  public static final int INTAKE_RELEASE_SOLENOID_PCM = 4;   
+  public static final int INTAKE_HOLD_SOLENOID_PCM = 3;      
 
   //Climber
   public static final int CLIMB_FOOT_SPARK_PWM = 2;

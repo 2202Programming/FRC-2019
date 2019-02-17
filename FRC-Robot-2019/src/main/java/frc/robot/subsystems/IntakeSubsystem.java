@@ -77,7 +77,7 @@ public class IntakeSubsystem extends Subsystem {
   boolean vacuumCmdOn;
 
   void init() {
-    wristServo.setAngle(0);
+    wristServo.setAngle(90);
     vacuumOff();
   }
 
