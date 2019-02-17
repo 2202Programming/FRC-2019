@@ -28,21 +28,20 @@ public class ArmSubsystem extends ExtendedSubSystem {
   private WPI_TalonSRX armExtensionMotor = new WPI_TalonSRX(RobotMap.ARM_EXTENSTION_TALON_CAN_ID);
   private WPI_TalonSRX rotationEncoder;
   private WPI_TalonSRX extensionEncoder;
-  public final double PHI_MAX = 145.0; //In Degrees, Positive is foward
-  public final double PHI_MIN = 32.0; //In Degrees
-  private final double COUNT_MAX = -13600.0; //In encoder counts (Proto Bot)
-  public final double ARM_HEIGHT = 29.75; //In Inches
+  public final double PHI_MAX = 142.0; //In Degrees, Positive is foward
+  public final double PHI_MIN = 31.0; //In Degrees
+  private final double COUNT_MAX = 20000.0; //In encoder counts (Proto Bot)
   public final double MIN_ARM_LENGTH = 30; //TODO: Find real value in inches
   public final double MAX_ARM_LENGTH = 68.0; //TODO: Find real value in inches
   public final double MIN_PROJECTION = 15.0; //TODO: Find real value in inches
   public final double MAX_PROJECTION = 45.0; //TODO: Find real value in inches
-  private double curAngle;
 
   // Extender phyiscal numbers
   public final double EXTEND_MIN = 0.0; // inches
   public final double EXTEND_MAX = 38.0; // inches - measured protobot
-  public final double ARM_BASE_LENGTH = 18.0; //inches -measured protobot (from pivit center) dpl 2/16/19
+  public final double ARM_BASE_LENGTH = 18.0; //inches -measured protobot (from pivot center) dpl 2/16/19
   public final double ARM_PIVOT_HEIGHT = 32.0; //inches - measured protobot
+  public final double WRIST_LENGTH = 7.75; //inches -measured protobot
   
   private final double EXTEND_COUNT_MAX = 26400; // measured
   private final double kCounts_per_in = EXTEND_COUNT_MAX / EXTEND_MAX;
@@ -52,20 +51,22 @@ public class ArmSubsystem extends ExtendedSubSystem {
   final int PIDIdx = 0; //using pid 0 on talon
   final int TO = 30;    //timeout 30ms
 
+  /**
+   * Creates a new arm/lift subsystem.
+   */
   public ArmSubsystem() {
     super("Arm");
     addChild("Arm Rot M", armRotationMotor);
     addChild("Arm Ext M", armExtensionMotor);
 
-    armRotationMotor.config_kP(0, 0.00015, 30);
-    //armRotationMotor.config_kF(0, 0.002, 30);
+    armRotationMotor.config_kP(0, 1.0, 30);
 
-    armExtensionMotor.config_kP(0, 0.1, 30);
+    armExtensionMotor.config_kP(0, 1.2, 30);
 
     rotationEncoder = (WPI_TalonSRX) armRotationMotor;
     rotationEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     rotationEncoder.setSelectedSensorPosition(0);
-
+    rotationEncoder.setInverted(true);
     // dpl this didn't work - rotationEncoder.setInverted(true);
 
     // Assumes extension at zero on power up.
@@ -82,7 +83,10 @@ public class ArmSubsystem extends ExtendedSubSystem {
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
 
-  //used by commands at power up
+  /**
+   * Zeros the arm's encoders - arm and extension are at starting point.
+   * Used by commands at power up.
+   */
   public void zeroArm()
   {
 
@@ -103,39 +107,72 @@ public class ArmSubsystem extends ExtendedSubSystem {
     armRotationMotor.set(ControlMode.Position, encoderPosition);
   }
 
+  /**
+   * Convers the angle measure to encoder counts.
+   * Used in the <code>setAngle</code> method.
+   * @param angle the angle measure, in degrees, to convert.
+   * @return the encoder counts used to set the angle of the arm.
+   */
   private double convertAngleToCounts(double angle) {
     double counts = (PHI_MAX - angle) * COUNT_MAX / (PHI_MAX - PHI_MIN);
     return counts;
   }
 
+  /**
+   * Gets the angle at which the arm subsystem is rotated.
+   * @return the angle of the arm, in radians.
+   */
   public double getAngle() {
-    return PHI_MAX - Converter.countsToAngle(1.88, 2.05, rotationEncoder.getSelectedSensorPosition(), 1024 * 7);
+    return PHI_MAX - (rotationEncoder.getSelectedSensorPosition() / COUNT_MAX * (PHI_MAX - PHI_MIN));
   }
 
+  /**
+   * Gets the rotation encoder.
+   * @return the rotation encoder.
+   */
   public TalonSRX getRotationEncoder() {
     return rotationEncoder;
   }
 
+  /**
+   * Extends the arm to the length given.
+   * @param extendInch the number of inches to set the arm.
+   */
   public void setExtension(double extendInch) {
     double c = extendInch * kCounts_per_in;
     armExtensionMotor.set(ControlMode.Position, c);
   }
 
-  // inches
+  /**
+   * Gets the extension length of the arm in inches.
+   * @return the length of the arm, in inches.
+   */
   public double getExtension() {
     int counts = extensionEncoder.getSelectedSensorPosition();
     return counts * kIn_per_count;
     // return Converter.countsToDistance(0.94, counts, 1024);
   }
 
+  /**
+   * Gets the extension encoder.
+   * @return the extension encoder.
+   */
   public TalonSRX getExtensionEncoder() {
     return extensionEncoder;
   }
 
+  /**
+   * Gets whether or not the arm is at the state of being the least extended it can.
+   * @return <code>true</code> if the arm is at the minimum extension state, <code>false</code> otherwise.
+   */
   public boolean extensionAtMin() {
     return armExtensionMotor.getSensorCollection().isRevLimitSwitchClosed();
   }
 
+  /**
+   * Gets whether or not the arm is at the state of being the most extended it can.
+   * @return <code>true</code> if the arm is at the maximum extension state, <code>false</code> otherwise.
+   */
   public boolean extensionAtMax() {
     return armExtensionMotor.getSensorCollection().isFwdLimitSwitchClosed();
   }
@@ -145,14 +182,24 @@ public class ArmSubsystem extends ExtendedSubSystem {
     setDefaultCommand(new TeleopArmControlCommand());
   }
 
+  /**
+   * Resets the rotation encoder.
+   */
   public void resetRotationEncoder() {
     rotationEncoder.setSelectedSensorPosition(0);
   }
 
+  /**
+   * Resets the extension encoder.
+   */
   public void resetExtensionEncoder() {
     extensionEncoder.setSelectedSensorPosition(0);
   }
 
+  /**
+   * Gets the command used to zero the arm subsystem.
+   * @return a new <code>ArmZero</code> command.
+   */
   @Override
   public Command zeroSubsystem() {
     return new ArmZero();
@@ -164,12 +211,19 @@ public class ArmSubsystem extends ExtendedSubSystem {
     SmartDashboard.putData((Sendable) armExtensionMotor);
   }
 
+  /**
+   * Logs the talons used in the arm subsystem, which are the rotation motor and the extension motor.
+   */
   public void logTalons() {
     logTalon(armRotationMotor);
     logTalon(armExtensionMotor);
-    System.out.println("Encoder Count: " + rotationEncoder.getSelectedSensorPosition());
   }
-private void logTalon(WPI_TalonSRX talon) {
+
+  /**
+   * Logs the given talon.
+   * @param talon the WPI_TalonSRX to log.
+   */
+  private void logTalon(WPI_TalonSRX talon) {
     SmartDashboard.putNumber(talon.getName() + " Current", talon.getOutputCurrent());
     SmartDashboard.putNumber(talon.getName() + " Percent Output", talon.getMotorOutputPercent());
   }
