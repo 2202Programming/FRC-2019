@@ -77,7 +77,7 @@ public class IntakeSubsystem extends Subsystem {
   boolean vacuumCmdOn;
 
   void init() {
-    wristServo.stopMotor();
+    wristServo.setAngle(0);
     vacuumOff();
   }
 
@@ -94,7 +94,6 @@ public class IntakeSubsystem extends Subsystem {
 
   @Override
   public void initDefaultCommand() {
-    setDefaultCommand(new StopWristCommand());
   }
 
   /**
