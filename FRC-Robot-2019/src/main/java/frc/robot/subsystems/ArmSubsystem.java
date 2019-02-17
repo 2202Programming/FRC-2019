@@ -29,9 +29,9 @@ public class ArmSubsystem extends Subsystem {
   private WPI_TalonSRX armExtensionMotor = new WPI_TalonSRX(RobotMap.ARM_EXTENSTION_TALON_CAN_ID);
   private WPI_TalonSRX rotationEncoder;
   private WPI_TalonSRX extensionEncoder;
-  private final double PHI_MAX = 145.0; //In Degrees, Positive is foward
-  private final double PHI_MIN = 32.0; //In Degrees
-  private final double COUNT_MAX = -13600.0; //In encoder counts (Proto Bot)
+  private final double PHI_MAX = 157.0; //In Degrees, Positive is foward
+  private final double PHI_MIN = 29.0; //In Degrees
+  private final double COUNT_MAX = 54200.0; //In encoder counts (Proto Bot)
 
   public ArmSubsystem() {
     super("Arm");
@@ -47,6 +47,7 @@ public class ArmSubsystem extends Subsystem {
 
     rotationEncoder = (WPI_TalonSRX) armRotationMotor;
     rotationEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
+    rotationEncoder.setInverted(true);
 
     extensionEncoder = (WPI_TalonSRX) armExtensionMotor;
     extensionEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
@@ -64,9 +65,23 @@ public class ArmSubsystem extends Subsystem {
     armRotationMotor.set(ControlMode.Position, encoderPosition);
   }
 
+  /**
+   * Convers the angle measure to encoder counts.
+   * Used in the <code>setAngle</code> method.
+   * @param angle the angle measure, in degrees, to convert.
+   * @return the encoder counts used to set the angle of the arm.
+   */
   private double convertAngleToCounts(double angle) {
     double counts = (PHI_MAX - angle) * COUNT_MAX / (PHI_MAX - PHI_MIN);
     return counts;
+  }
+
+  /**
+   * Gets the angle at which the arm subsystem is rotated.
+   * @return the angle of the arm, in radians.
+   */
+  public double getAngle() {
+    return PHI_MAX - (rotationEncoder.getSelectedSensorPosition() / COUNT_MAX * (PHI_MAX - PHI_MIN));
   }
 
   public void logArmRotation() {
@@ -75,10 +90,6 @@ public class ArmSubsystem extends Subsystem {
 
   public void logArmExtnension() {
     SmartDashboard.putData((Sendable) armExtensionMotor);
-  }
-
-  public double getAngle() {
-    return PHI_MAX + Converter.countsToAngle(1.88, 2.05, rotationEncoder.getSelectedSensorPosition(), 1024*7);
   }
 
   public void rotateForward() {
