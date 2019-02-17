@@ -39,7 +39,7 @@ public class Robot extends TimedRobot {
   public static IntakeSubsystem intake = new IntakeSubsystem();
   public static CargoTrapSubsystem cargoTrap = new CargoTrapSubsystem();
   public static ArmSubsystem arm = new ArmSubsystem();
-  public static SerialPortSubsystem serialSubsystem = new SerialPortSubsystem();
+  public static SerialPortSubsystem serialSubsystem;
   public static OI m_oi = new OI(); //OI Depends on the subsystems and must be last
 
   Command m_autonomousCommand;
@@ -59,6 +59,7 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // chooser.addOption("My Auto", new MyAutoCommand());
     SmartDashboard.putData("Auto mode", m_chooser);
+    serialSubsystem = new SerialPortSubsystem();
     m_cmdMgr = new CommandManager();
     m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's functions
 
@@ -154,6 +155,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
+    if (serialSubsystem.isSerialEnabled())
     serialSubsystem.processSerial();
   }
 
@@ -196,12 +198,14 @@ public class Robot extends TimedRobot {
     //SmartDashboard.putData(driveTrain);
     //SmartDashboard.putData(gearShifter);
     
-    // SmartDashboard.putNumber("LimelightX", limeLight.getX());
-    // SmartDashboard.putNumber("LimelightY", limeLight.getY());
-    // SmartDashboard.putNumber("LimelightArea", limeLight.getArea());
-    // SmartDashboard.putBoolean("LimeTarget", limeLight.hasTarget());
-    // SmartDashboard.putNumber("Left Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.LEFT_FRONT_LIDAR));
-    // SmartDashboard.putNumber("Right Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.RIGHT_FRONT_LIDAR));
+    SmartDashboard.putNumber("LimelightX", limeLight.getX());
+    SmartDashboard.putNumber("LimelightY", limeLight.getY());
+    SmartDashboard.putNumber("LimelightArea", limeLight.getArea());
+    SmartDashboard.putBoolean("LimeTarget", limeLight.hasTarget());
+    if (serialSubsystem.isSerialEnabled()) {
+    SmartDashboard.putNumber("Left Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.LEFT_FRONT_LIDAR));
+    SmartDashboard.putNumber("Right Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.RIGHT_FRONT_LIDAR));
+    }
   }
 
   private void resetAllDashBoardSensors() {
