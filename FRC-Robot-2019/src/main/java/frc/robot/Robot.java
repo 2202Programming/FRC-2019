@@ -144,16 +144,16 @@ public class Robot extends TimedRobot {
 
   private void logSmartDashboardSensors() {
     // SmartDashboard.putNumber("Left Encoder Count", driveTrain.getLeftEncoderTalon().getSelectedSensorPosition());
-    SmartDashboard.putNumber("Left Encoder Rate", driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity());
+    //SmartDashboard.putNumber("Left Encoder Rate", driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity());
     // SmartDashboard.putNumber("Right Encoder Count", driveTrain.getRightEncoderTalon().getSelectedSensorPosition());
-    SmartDashboard.putNumber("Right Encoder Rate", driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
+    //SmartDashboard.putNumber("Right Encoder Rate", driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
     SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
     SmartDashboard.putNumber("Arm Rotation Count", arm.getRotationEncoder().getSelectedSensorPosition());
-    // SmartDashboard.putNumber("Arm Extension Count", arm.getExtensionEncoder().getSelectedSensorPosition());
+    SmartDashboard.putNumber("Arm Extension Count", arm.getExtensionEncoder().getSelectedSensorPosition());
     // SmartDashboard.putBoolean("Arm Extension At Min", arm.extensionAtMin());
     // SmartDashboard.putBoolean("Arm Extension At Max", arm.extensionAtMax());
     SmartDashboard.putNumber("Arm Angle", arm.getAngle());
-    // SmartDashboard.putNumber("Arm Extension Distance", arm.getDistanceExtended());
+    SmartDashboard.putNumber("Arm Extension Distance", arm.getDistanceExtended());
 
     SmartDashboard.putNumber("Wrist Angle", intake.getAngle());
     intake.log();   //DPL 2/10/19 review this with Billy/Xander
@@ -168,10 +168,10 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(arm);
     
     // SmartDashboard.putBoolean("LimeTarget", limeLight.hasTarget());
-    if (serialSubsystem.isSerialEnabled()) {
-    SmartDashboard.putNumber("Left Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.LEFT_FRONT_LIDAR));
-    SmartDashboard.putNumber("Right Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.RIGHT_FRONT_LIDAR));
-    }
+    //if (serialSubsystem.isSerialEnabled()) {
+   // SmartDashboard.putNumber("Left Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.LEFT_FRONT_LIDAR));
+    //SmartDashboard.putNumber("Right Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.RIGHT_FRONT_LIDAR));
+    //}
   }
 
   private void resetAllDashBoardSensors() {
