@@ -177,6 +177,18 @@ public class ArmSubsystem extends ExtendedSubSystem {
     return armExtensionMotor.getSensorCollection().isFwdLimitSwitchClosed();
   }
 
+  public void extend() {
+    armExtensionMotor.set(0.3);
+  }
+
+  public void retract() {
+    armExtensionMotor.set(-0.3);
+  }
+
+  public void stopExtension() {
+    armExtensionMotor.set(0);
+  }
+
   @Override
   public void initDefaultCommand() {
     //setDefaultCommand(new TeleopArmControlCommand());
