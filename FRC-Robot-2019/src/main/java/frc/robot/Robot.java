@@ -164,6 +164,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(Scheduler.getInstance()); 
     SmartDashboard.putData(driveTrain);
     SmartDashboard.putData(gearShifter);
+    SmartDashboard.putData(intake);
+    SmartDashboard.putData(arm);
     
     // SmartDashboard.putBoolean("LimeTarget", limeLight.hasTarget());
     if (serialSubsystem.isSerialEnabled()) {
