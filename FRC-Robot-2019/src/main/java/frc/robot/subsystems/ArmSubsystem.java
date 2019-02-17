@@ -89,12 +89,16 @@ public class ArmSubsystem extends ExtendedSubSystem {
    */
   public void zeroArm()
   {
-
     armExtensionMotor.setSelectedSensorPosition(0);
     armExtensionMotor.setIntegralAccumulator(0, PIDIdx, TO);
+    armExtensionMotor.configClosedloopRamp(0.25, TO);        //.25 seconds
+    armExtensionMotor.configContinuousCurrentLimit(10, TO);  //amps
 
     armRotationMotor.setSelectedSensorPosition(0);
     armRotationMotor.setIntegralAccumulator(0.0, PIDIdx, TO);
+    armRotationMotor.configClosedloopRamp(0.50, TO);        //.50 seconds
+    armRotationMotor.configContinuousCurrentLimit(10, TO);  //amps
+
   }
 
   /**
