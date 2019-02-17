@@ -11,6 +11,7 @@ import java.util.ResourceBundle.Control;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -38,9 +39,11 @@ public class ArmSubsystem extends Subsystem {
     addChild("Arm Rotation Motor", armRotationMotor);
     addChild("Arm Extension Motor", armExtensionMotor);
 
+    armRotationMotor.setNeutralMode(NeutralMode.Brake);
     armRotationMotor.config_kP(0, 0.17, 30);
     //armRotationMotor.config_kF(0, 0.002, 30);
 
+    armExtensionMotor.setNeutralMode(NeutralMode.Brake);
     armExtensionMotor.config_kP(0, 0.1, 30);
 
     rotationEncoder = (WPI_TalonSRX) armRotationMotor;
