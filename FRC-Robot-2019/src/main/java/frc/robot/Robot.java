@@ -30,7 +30,9 @@ public class Robot extends TimedRobot {
   //common constants for robot
   public static double dT = kDefaultPeriod;  // Robots sample period (seconds) 
   //THis years bounding box beyond frame of robot. Use this in limit calcs in subsystems.
-  public static double kProjectConstraint = 30.0; 
+  public static double kProjectConstraint = 26.0; //inches from bumper (net 30 from frame)
+  public static double kForwardProjectMin = 18.0; //inches from arm pivot x-axis to bumper
+  public static double kReverseProjectMin = 18.0; //inches from arm pivot x-axis to bumper
   
   //physical devices and subsystems
   public static DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();

@@ -51,6 +51,7 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   public final double WristMinDegrees = -100.0; // pointing down, relative to the arm
   public final double WristMaxDegrees = +100.0; // pointing up
   public final double WristStraightDegrees = 0.0; // points near straight out
+  public final double WristDistToPivot = 4.0; //inches
   public final double PumpSpeed = 1.0; // motor units
 
   // ### Servo range needs to be checked since the servo is modified with an
@@ -82,7 +83,7 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   boolean vacuumCmdOn;
 
   void init() {
-    setAngle(WristMinDegrees);
+    setAngle(0.0); //TODO: Derek fix this
     vacuumOff();
   }
 
@@ -111,7 +112,7 @@ public class IntakeSubsystem extends ExtendedSubSystem {
    * Wrist Controls
    */
   public void setAngle(double degrees) {
-    wristServo.setAngle(degrees);
+    wristServo.setAngle(-degrees); //TODO: Backwards direction
   }
 
   /**

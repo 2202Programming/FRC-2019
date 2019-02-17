@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.input.XboxControllerButtonCode;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.Robot;
 import frc.robot.commands.arm.MoveArmAtHeight;
@@ -86,10 +87,10 @@ public class CommandManager {
     int huntModeIdx = 0 ;  //starts at Hatch
 
     // Data points - shares delheightidx, must be same length
-    final double DeliveryCargoHeights[] = { 24.0, 48.0, 78.0 }; // TODO: fix the numbers
-    final double DeliveryHatchHeights[] = { 20.0, 42.0, 72.0 }; // TODO: fix the numbers
+    final double DeliveryCargoHeights[] = { 32.0, 60.0, 88.0 }; // TODO: fix the numbers
+    final double DeliveryHatchHeights[] = { 28.0, 56.0, 84.0 }; // TODO: fix the numbers
     final double Capture_dDown = 2.0;  //inches to move down for capture
-    final double HuntHeights[] = { 22.0, 15.0, Capture_dDown }; // height from floor, H,C,Floor TODO:fix numbers
+    final double HuntHeights[] = { 28.0, 17.0, Capture_dDown + 4.0 }; // height from floor, H,C,Floor TODO:fix numbers
 
     public CommandManager() {
         currentMode = Modes.Construction;
@@ -102,9 +103,9 @@ public class CommandManager {
         captureRelease = new JoystickButton(aCtlr, XboxControllerButtonCode.TRIGGER_RIGHT.getCode());
 
         // define commands - bind local functions to be used on button hits
-        huntSelectCmd = new CallFunctionCmd(this::cycleHuntMode);
-        heightSelectCmd = new CallFunctionCmd(this::cycleHeight);
-        captRelCmd = new CallFunctionCmd(this::triggerCaptureRelease);
+        huntSelectCmd = new CycleHuntModeCmd();         // (this::cycleHuntMode);
+        heightSelectCmd = new CycleHeightModeCmd();
+        captRelCmd = new CaptureReleaseCmd();
         
     
         // bind commands to buttons
@@ -189,8 +190,8 @@ public class CommandManager {
     private void cycleHuntMode(int unused) {
         
         if (isHunting()) {
-            int idx = huntModeIdx++;
-            huntModeIdx = (idx > huntingModes.length) ? 0 : idx;
+            int idx = huntModeIdx + 1;
+            huntModeIdx = (idx >= huntingModes.length) ? 0 : idx;
             setMode(huntingModes[huntModeIdx]);
         }
         // not hunting just ignore event
@@ -206,7 +207,7 @@ public class CommandManager {
         if (isHunting()) return;  // if we are not delivery, just bail
         int idx = delHeightIdx + 1; // next height
         // make sure index fits in array
-        delHeightIdx = (idx > DeliveryCargoHeights.length) ? 0 : idx;
+        delHeightIdx = (idx >= DeliveryCargoHeights.length) ? 0 : idx;
     }
 
     Double wristTrackParallel() {
@@ -283,7 +284,34 @@ public class CommandManager {
         return grp;
     }
 
-    class CallFunctionCmd extends Command {
+    class CycleHuntModeCmd extends InstantCommand {
+        
+        @Override
+        protected void execute() {
+            cycleHuntMode(0);
+        }
+        
+    }
+
+    class CycleHeightModeCmd extends InstantCommand {
+        
+        @Override
+        protected void execute() {
+            cycleHeight(0);
+        }
+        
+    }
+
+    class CaptureReleaseCmd extends InstantCommand {
+        
+        @Override
+        protected void execute() {
+            triggerCaptureRelease(0);;
+        }
+        
+    }
+
+    class CallFunctionCmd extends InstantCommand {
         IntConsumer workFunct;
 
         public CallFunctionCmd(IntConsumer workFunct) {
@@ -295,10 +323,7 @@ public class CommandManager {
             workFunct.accept(0);
         }
 
-        @Override
-        public boolean isFinished() {
-            return true;
-        }
+
     }
 
 
