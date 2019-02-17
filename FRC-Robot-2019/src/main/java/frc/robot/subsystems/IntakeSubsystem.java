@@ -100,6 +100,10 @@ public class IntakeSubsystem extends Subsystem {
     wristServo.setAngle(degrees);
   }
 
+  public void stopWrist(){
+    wristServo.stopMotor();
+  }
+
   /**
    * 
    * @return  wrist angle (degrees)
