@@ -26,8 +26,8 @@ public class TeleopArmControlCommand extends Command {
     protected void initialize() {
         // TODO: Find the real intial values
         arm.zeroArm();
-        projection_cmd = 12.75;
-        height_cmd = 7.5;
+        projection_cmd = 10.5;
+        height_cmd = 6.5;
     }
 
     @Override
