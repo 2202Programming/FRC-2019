@@ -4,22 +4,28 @@ import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
-import frc.robot.commands.util.RateController;
+import frc.robot.commands.util.RateLimiter;
+import frc.robot.commands.util.RateLimiter.InputModel;
 
 public class TestWristRateCommand extends Command {
-    RateController wristRC;
+    RateLimiter wristRC;
 
     public TestWristRateCommand() {
 
         requires(Robot.intake);
-        wristRC = new RateController(this::getCmd, Robot.intake::getAngle, Robot.intake::setAngle,
+        wristRC = new RateLimiter(Robot.dT,
+                this::getCmd, 
+                Robot.intake::getAngle, 
+                Robot.intake::setAngle,
                 Robot.intake.WristMinDegrees, 
                 Robot.intake.WristMaxDegrees, 
-                20.0, // dx_min deg/sec (magnitude)
-                60.0, // dx_max deg/sec
-                -0.15, // dz_min (normalized units)
-                0.15, // dz_manx(normalized units)
-                0.0); // expo
+                -20.0, // dx_fall deg/sec 
+                60.0,  // dx_raise deg/ses
+                InputModel.Rate);
+        
+        //finish up scaling for rate
+        wristRC.setRateGain(20.0);   // stick (-1, 1) *k = deg/sec comm  -/+20 deg/sec
+        wristRC.setDeadZone(2.0);    // ignore rates less than 2.0 deg/sec
     }
 
     // Must supply a function to get a user's command in normalized units
@@ -45,6 +51,6 @@ public class TestWristRateCommand extends Command {
     }
 
     public void log() {
-        SmartDashboard.putNumber("wr:cmd", wristRC.X());
+        SmartDashboard.putNumber("TRR:RCout", wristRC.get());
     }
 }

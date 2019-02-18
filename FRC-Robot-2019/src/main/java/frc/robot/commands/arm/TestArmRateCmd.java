@@ -5,39 +5,38 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
-import frc.robot.commands.util.RateController;
+import frc.robot.commands.util.RateLimiter;
+import frc.robot.commands.util.RateLimiter.InputModel;
 
 public class TestArmRateCmd extends CommandGroup {
 
-    RateController armRC;
-    RateController extenderRC;
+    RateLimiter armRC;
+    RateLimiter extenderRC;
 
     public TestArmRateCmd() {
-        armRC = new RateController(this::getShoulderCmd, 
+        armRC = new RateLimiter(Robot.dT,
+                this::getShoulderCmd, 
                 Robot.arm::getAngle, Robot.arm::setAngle, 
                 Robot.arm.PHI_MIN, // ShoulderMinDegrees,
                 Robot.arm.PHI_MAX, // ShoulderMaxDegrees,
-                2.0, // dx_min deg/sec (magnitude)
-                2.0, // dx_max deg/sec
-                -0.15, // dz_min (normalized units)
-                0.15, // dz_manx(normalized units)
-                0.0); // expo
+                -3.0, // dx_falling  
+                5.0, // dx_raising
+                InputModel.Position); // expo
 
 
-        extenderRC = new RateController(this::getExtenderCmd, 
+        extenderRC = new RateLimiter(Robot.dT,
+            this::getExtenderCmd, 
             Robot.arm::getExtension, Robot.arm::setExtension, 
-            0.0, //Robot.arm.EXTEND_MIN, // inches,
+            5.0,  //Robot.arm.EXTEND_MIN, // inches,
             15.0, //Robot.arm.EXTEND_MAX, // inches
-            5.0, // dx_min in/sec (magnitude)
-            5.0, // dx_max in/sec
-           -0.05, // dz_min (normalized units)
-            0.05, // dz_manx(normalized units)
-            0.0); // expo
+            -5.0, // dx_falling
+            5.0,  // dx_raising
+            InputModel.Position); 
 
         class RateCmd extends Command {
-            final RateController rc;
+            final RateLimiter rc;
 
-            RateCmd(RateController _rc) {
+            RateCmd(RateLimiter _rc) {
                 requires(Robot.arm);
                 rc = _rc;
             }
@@ -59,8 +58,8 @@ public class TestArmRateCmd extends CommandGroup {
     }
 
     public void log() {
-        SmartDashboard.putNumber("rc:sh:cmd", armRC.X() );
-        SmartDashboard.putNumber("rc:ext:cmd", extenderRC.X()); 
+        SmartDashboard.putNumber("rc:sh:cmd", armRC.get() );
+        SmartDashboard.putNumber("rc:ext:cmd", extenderRC.get()); 
     }
     // ### TODO: move the binding functions to a less hidden place - DPL
     // Bind the control to our functions
