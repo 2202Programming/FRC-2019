@@ -11,6 +11,10 @@ public class SerialPortSubsystem extends Subsystem {
 
 private int distance1; //Sensor #1
 private int distance2; //Sensor #2
+private int distance3; //Sensor #3
+private int distance4; //Sensor #4
+
+
 private StringBuilder serialResults =new StringBuilder();
 private SerialPort arduinoSerial;
 private long distanceRefresh; //Track time between sensor readings
@@ -39,6 +43,8 @@ private boolean serialExists = true;
   public int getDistance(int sensor) {
     if (sensor==1) return distance1;
     if (sensor==2) return distance2;
+    if (sensor==3) return distance3;
+    if (sensor==4) return distance4;
     return 0;
   }
 
@@ -90,6 +96,8 @@ private boolean serialExists = true;
 
               if(sensor==1) distance1 = distance;
               if(sensor==2) distance2 = distance;
+              if(sensor==3) distance3 = distance;
+              if(sensor==4) distance4 = distance;
             }
           
             serialResults.delete(0, serialResults.length());

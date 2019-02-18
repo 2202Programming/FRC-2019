@@ -30,7 +30,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   private WPI_TalonSRX extensionEncoder;
   public final double PHI_MAX = 142.0; //In Degrees, Positive is foward
   public final double PHI_MIN = 31.0; //In Degrees
-  private final double COUNT_MAX = 20000.0; //In encoder counts (Proto Bot)
+  private final double COUNT_MAX = 21500.0; //In encoder counts (Proto Bot)
   public final double MIN_ARM_LENGTH = 30; //TODO: Find real value in inches
   public final double MAX_ARM_LENGTH = 68.0; //TODO: Find real value in inches
   public final double MIN_PROJECTION = 15.0; //TODO: Find real value in inches
@@ -38,12 +38,12 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
   // Extender phyiscal numbers
   public final double EXTEND_MIN = 0.0; // inches
-  public final double EXTEND_MAX = 38.0; // inches - measured protobot
-  public final double ARM_BASE_LENGTH = 18.0; //inches -measured protobot (from pivot center) dpl 2/16/19
-  public final double ARM_PIVOT_HEIGHT = 32.0; //inches - measured protobot
-  public final double WRIST_LENGTH = 7.75; //inches -measured protobot
+  public final double EXTEND_MAX = 38.0; // inches - measured practice bot
+  public final double ARM_BASE_LENGTH = 18.0; //inches -measured practice bot (from pivot center) xg 2/16/19
+  public final double ARM_PIVOT_HEIGHT = 30.25; //inches - measured practice bot
+  public final double WRIST_LENGTH = 7.75; //inches -measured practice bot
   
-  private final double EXTEND_COUNT_MAX = 26400; // measured
+  private final double EXTEND_COUNT_MAX = 21500; // measured practice bot
   private final double kCounts_per_in = EXTEND_COUNT_MAX / EXTEND_MAX;
   private final double kIn_per_count = 1.0 / kCounts_per_in;
 
