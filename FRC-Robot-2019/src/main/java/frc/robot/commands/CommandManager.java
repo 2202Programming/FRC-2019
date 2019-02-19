@@ -113,6 +113,7 @@ public class CommandManager {
         // bind commands to buttons
         huntSelect.whenPressed(huntSelectCmd);
         heightSelect.whenPressed(heightSelectCmd);
+        captureRelease.whenPressed(captRelCmd);
 
         // Construct our major modes
         zeroRobotGrp = CmdFactoryZeroRobot();
