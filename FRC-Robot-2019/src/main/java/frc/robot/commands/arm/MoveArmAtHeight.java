@@ -8,7 +8,7 @@ import frc.robot.Robot;
 public class MoveArmAtHeight extends Command {
     // Length of the arm from pivot point without extension in inches
     private final double armInitialLength = Robot.arm.EXTEND_MIN + Robot.arm.ARM_BASE_LENGTH
-            + Robot.intake.WristDistToPivot;
+            + Robot.intake.WristDistToPivot + Robot.arm.STARTING_EXTEND;
     // Height of point of rotation for the arm in inches
     private final double pivotHeight = Robot.arm.ARM_PIVOT_HEIGHT;
 
@@ -16,14 +16,14 @@ public class MoveArmAtHeight extends Command {
      * TODO: Legit length Starting projection of arm (starts at edge of bumper) in
      * inches
      */
-    private final double xCenter = (Robot.kProjectConstraint + Robot.kForwardProjectMin) / 2;
+    private final double xCenter = (Robot.kProjectConstraint + Robot.arm.MIN_PROJECTION) / 2;
     private final double projectionInitialLength = xCenter; // TODO:FIX this to take account for which side arm is on
     // there will be two limit - forward side and rear side. - Derek/Shawn
 
     DoubleSupplier getHeight;
 
-    // Maximum projection based on
-    private final double projectionMax = Robot.kForwardProjectMin + Robot.kProjectConstraint;
+    // Maximum projection based on (inches from pivot)
+    private final double projectionMax = Robot.arm.MAX_PROJECTION;
 
     // Make an h' to more easily construct a triangle
     private double calculationHeight;
@@ -59,11 +59,12 @@ public class MoveArmAtHeight extends Command {
         // Rotate to maintain height as projection changes
         double angle = Math.toDegrees(Math.atan(calculationHeight / xProjection));
         angle += (belowPiv) ? 90.0 : 0.0;
-
+        angle = Math.max(35, Math.min(angle, 151));
+        
         double extension = Math.sqrt(calculationHeight * calculationHeight + xProjection * xProjection);
-        extension -= armInitialLength;
+        extension = Math.max(-Robot.arm.STARTING_EXTEND, Math.min(extension - armInitialLength, Robot.arm.EXTEND_MAX));
         // Extend to allow for change in projection
-        Robot.arm.setExtension(extension);
+        Robot.arm.setExtension(extension);   //From the start position (d0)
         Robot.arm.setAngle(angle);
         /*
          * Alternative extension calculation xProjection /

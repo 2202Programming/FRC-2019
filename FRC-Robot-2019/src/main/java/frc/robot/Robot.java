@@ -30,9 +30,9 @@ public class Robot extends TimedRobot {
   //common constants for robot
   public static double dT = kDefaultPeriod;  // Robots sample period (seconds) 
   //THis years bounding box beyond frame of robot. Use this in limit calcs in subsystems.
-  public static double kProjectConstraint = 26.0; //inches from bumper (net 30 from frame)
-  public static double kForwardProjectMin = 18.0; //inches from arm pivot x-axis to bumper
-  public static double kReverseProjectMin = 18.0; //inches from arm pivot x-axis to bumper
+  public static double kProjectConstraint = 30.0; //inches from frame
+  //public static double kForwardProjectMin = 18.0; //inches from arm pivot x-axis to bumper
+  //public static double kReverseProjectMin = 18.0; //inches from arm pivot x-axis to bumper
   
   //physical devices and subsystems
   public static DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
@@ -44,9 +44,6 @@ public class Robot extends TimedRobot {
   public static SerialPortSubsystem serialSubsystem;
   public static OI m_oi = new OI(); //OI Depends on the subsystems and must be last
 
-  Command m_autonomousCommand;
-  SendableChooser<Command> m_chooser = new SendableChooser<>();
-  
   public static CommandManager m_cmdMgr;    //fix the public later
 
   // TESTING Started in TestInit
@@ -59,9 +56,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    // chooser.addOption("My Auto", new MyAutoCommand());
-    SmartDashboard.putData("Auto mode", m_chooser);
-    serialSubsystem = new SerialPortSubsystem();
+    //serialSubsystem = new SerialPortSubsystem();
     m_cmdMgr = new CommandManager();
     m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's functions
 
@@ -113,19 +108,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_chooser.getSelected();
-
-    /*
-     * String autoSelected = SmartDashboard.getString("Auto Selector", "Default");
-     * switch(autoSelected) { case "My Auto": autonomousCommand = new
-     * MyAutoCommand(); break; case "Default Auto": default: autonomousCommand = new
-     * ExampleCommand(); break; }
-     */
-
-    // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.start();
-    }
     resetAllDashBoardSensors();
   }
 
@@ -144,9 +126,7 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
-    }
+    
     resetAllDashBoardSensors();
     m_cmdMgr.setMode(Modes.HuntingHatch);   
   }
@@ -158,8 +138,8 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
 
-    if (serialSubsystem.isSerialEnabled()) //if serial was initalized, run periodic serial processing loop
-    serialSubsystem.processSerial();
+//    if (serialSubsystem.isSerialEnabled()) //if serial was initalized, run periodic serial processing loop
+//    serialSubsystem.processSerial();
   }
 
    @Override
@@ -189,14 +169,13 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Arm:Phi(deg)", arm.getAngle());
     SmartDashboard.putNumber("Arm:Ext(in)", arm.getExtension());
     
-    testArmCmd.log();
-
-    SmartDashboard.putNumber("Wrist(deg)", intake.getAngle());
+    SmartDashboard.putNumber("Wr(deg)", intake.getAngle());
+   /*
     intake.log();   //DPL 2/10/19 review this with Billy/Xander
     arm.log();
     arm.logTalons();
     m_cmdMgr.log();
-    
+/*    
     SmartDashboard.putData(Scheduler.getInstance()); 
     //SmartDashboard.putData(driveTrain);
     //SmartDashboard.putData(gearShifter);
@@ -212,6 +191,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Left Back LIDAR (mm)", serialSubsystem.getDistance(RobotMap.LEFT_BACK_LIDAR));
     SmartDashboard.putNumber("Right Back LIDAR (mm)", serialSubsystem.getDistance(RobotMap.RIGHT_BACK_LIDAR));
     }
+ */
   }
 
   private void resetAllDashBoardSensors() {

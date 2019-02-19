@@ -255,7 +255,7 @@ public class CommandManager {
 
     Double deliverGripperHeight() {
          gripperH_cmd =(prevHuntMode == Modes.HuntingCargo) ? 
-            DeliveryCargoHeights[delHeightIdx] : DeliveryCargoHeights[delHeightIdx];
+            DeliveryCargoHeights[delHeightIdx] : DeliveryHatchHeights[delHeightIdx];
         return gripperH_cmd;
     }
 

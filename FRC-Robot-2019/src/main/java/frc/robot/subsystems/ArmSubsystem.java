@@ -14,11 +14,10 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Robot;
 import frc.robot.RobotMap;
 import frc.robot.commands.arm.ArmZero;
-import frc.robot.commands.arm.TeleopArmControlCommand;
-import frc.robot.input.Converter;
-//import frc.robot.triggers.MotorOverPowerShutdown;
+
 
 /**
  * A Lift subsystem.
@@ -28,24 +27,26 @@ public class ArmSubsystem extends ExtendedSubSystem {
   private WPI_TalonSRX armExtensionMotor = new WPI_TalonSRX(RobotMap.ARM_EXTENSTION_TALON_CAN_ID);
   private WPI_TalonSRX rotationEncoder;
   private WPI_TalonSRX extensionEncoder;
-  public final double PHI_MAX = 142.0; //In Degrees, Positive is foward
-  public final double PHI_MIN = 31.0; //In Degrees
-  private final double COUNT_MAX = 21500.0; //In encoder counts (Proto Bot)
-  public final double MIN_ARM_LENGTH = 30; //TODO: Find real value in inches
-  public final double MAX_ARM_LENGTH = 68.0; //TODO: Find real value in inches
-  public final double MIN_PROJECTION = 15.0; //TODO: Find real value in inches
-  public final double MAX_PROJECTION = 45.0; //TODO: Find real value in inches
+  public final double PHI_MAX = 157.0; //In Degrees, Positive is foward, bottom front
+  public final double PHI_MIN = 29.0;  //In Degrees, Near top front 
+  private final double COUNT_MAX = 54200.0; //In encoder counts (Proto Bot)
+  
+  public final double PIVOT_TO_FRONT = 16.5; // to the frame  
+  public final double MIN_PROJECTION = PIVOT_TO_FRONT + -6.5; //inches from pivot to close arm position
+  public final double MAX_PROJECTION = PIVOT_TO_FRONT + Robot.kProjectConstraint; //
 
   // Extender phyiscal numbers
   public final double EXTEND_MIN = 0.0; // inches
-  public final double EXTEND_MAX = 38.0; // inches - measured practice bot
+  public final double EXTEND_MAX = 37.0; // inches - measured practice bot
   public final double ARM_BASE_LENGTH = 18.0; //inches -measured practice bot (from pivot center) xg 2/16/19
   public final double ARM_PIVOT_HEIGHT = 30.25; //inches - measured practice bot
   public final double WRIST_LENGTH = 7.75; //inches -measured practice bot
   
-  private final double EXTEND_COUNT_MAX = 21500; // measured practice bot
+  private final double EXTEND_COUNT_MAX = 22500; // measured practice bot
   private final double kCounts_per_in = EXTEND_COUNT_MAX / EXTEND_MAX;
   private final double kIn_per_count = 1.0 / kCounts_per_in;
+  public final double STARTING_EXTEND = 7.69; //inches
+  private final double k_dl_dphi = 0.032639; // inches per degree (measured practice bot)
 
   //talon controls
   final int PIDIdx = 0; //using pid 0 on talon
@@ -59,9 +60,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
     addChild("Arm Rot M", armRotationMotor);
     addChild("Arm Ext M", armExtensionMotor);
 
-    armRotationMotor.config_kP(0, 0.8, 30);
-
-    armExtensionMotor.config_kP(0, 0.6, 30);
+    armRotationMotor.config_kP(0, 0.0 /* 0.8*/, 30);
+    armExtensionMotor.config_kP(0, 0.4 /*0.6*/, 30);
 
     rotationEncoder = (WPI_TalonSRX) armRotationMotor;
     rotationEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
@@ -75,7 +75,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
     armExtensionMotor.setSelectedSensorPosition(0);
     armExtensionMotor.setIntegralAccumulator(0, 0, 30);
-    armExtensionMotor.setSensorPhase(false);
+    armExtensionMotor.setSensorPhase(true);
+    armExtensionMotor.setInverted(true);
     // safety triggers
     // MotorOverPowerShutdown opsExt =
     // new MotorOverPowerShutdown(this.armExtensionMotor, 20.0, 0.5);
@@ -91,13 +92,13 @@ public class ArmSubsystem extends ExtendedSubSystem {
   {
     armExtensionMotor.setSelectedSensorPosition(0);
     armExtensionMotor.setIntegralAccumulator(0, PIDIdx, TO);
-    armExtensionMotor.configClosedloopRamp(0.25, TO);        //.25 seconds
-    armExtensionMotor.configContinuousCurrentLimit(10, TO);  //amps
+   // armExtensionMotor.configClosedloopRamp(0.25, TO);        //.25 seconds
+   // armExtensionMotor.configContinuousCurrentLimit(10, TO);  //amps
 
     armRotationMotor.setSelectedSensorPosition(0);
     armRotationMotor.setIntegralAccumulator(0.0, PIDIdx, TO);
-    armRotationMotor.configClosedloopRamp(0.50, TO);        //.50 seconds
-    armRotationMotor.configContinuousCurrentLimit(10, TO);  //amps
+    //armRotationMotor.configClosedloopRamp(0.50, TO);        //.50 seconds
+    //armRotationMotor.configContinuousCurrentLimit(10, TO);  //amps
 
   }
 
@@ -143,7 +144,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * @param extendInch the number of inches to set the arm.
    */
   public void setExtension(double extendInch) {
-    double c = extendInch * kCounts_per_in;
+    double c = (extendInch - (getAngle() - PHI_MAX) * k_dl_dphi) * kCounts_per_in;
     armExtensionMotor.set(ControlMode.Position, c);
   }
 
@@ -153,7 +154,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
    */
   public double getExtension() {
     int counts = extensionEncoder.getSelectedSensorPosition();
-    return counts * kIn_per_count;
+    return (STARTING_EXTEND + (getAngle() - PHI_MAX) * k_dl_dphi)+ counts * kIn_per_count;
     // return Converter.countsToDistance(0.94, counts, 1024);
   }
 
