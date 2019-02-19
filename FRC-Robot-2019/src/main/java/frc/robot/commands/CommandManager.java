@@ -42,10 +42,12 @@ public class CommandManager {
         HuntingFloor(5),  // HuntSelect
         // Capture
         Capturing(6),     // moving from hunting to picking it up. Button:CaptureRelease
+        // TODO: Make sure capturing leads right to recapturing, and make recapturing lead to deliver (if not dropped), hunting/capturing otherwise
+        Recapturing(7),   // 3-second period where robot will be able to recapture hatch/cargo if dropped
         // DeliveryModes
-        DeliverHatch(7),  // based on what we captured
-        DeliverCargo(8),  // based on what we captured
-        Ejecting(9);      // Button:CaptureRelease
+        DeliverHatch(8),  // based on what we captured
+        DeliverCargo(9),  // based on what we captured
+        Ejecting(10);     // Button:CaptureRelease
 
         private int v;
 
