@@ -60,7 +60,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
     addChild("Arm Rot M", armRotationMotor);
     addChild("Arm Ext M", armExtensionMotor);
 
-    armRotationMotor.config_kP(0, 0.0 /* 0.8*/, 30);
+    armRotationMotor.config_kP(0, 0.1 /* 0.8*/, 30);
     armExtensionMotor.config_kP(0, 0.4 /*0.6*/, 30);
 
     rotationEncoder = (WPI_TalonSRX) armRotationMotor;

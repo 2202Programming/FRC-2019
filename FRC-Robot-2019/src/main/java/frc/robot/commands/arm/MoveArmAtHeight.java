@@ -13,8 +13,8 @@ public class MoveArmAtHeight extends Command {
     private final double pivotHeight = Robot.arm.ARM_PIVOT_HEIGHT;
 
     /*
-     * TODO: Legit length Starting projection of arm (starts at edge of bumper) in
-     * inches
+     * Billy & X think this is working. 
+     *   
      */
     private final double xCenter = (Robot.kProjectConstraint + Robot.arm.MIN_PROJECTION) / 2;
     private final double projectionInitialLength = xCenter; // TODO:FIX this to take account for which side arm is on
@@ -59,10 +59,10 @@ public class MoveArmAtHeight extends Command {
         // Rotate to maintain height as projection changes
         double angle = Math.toDegrees(Math.atan(calculationHeight / xProjection));
         angle += (belowPiv) ? 90.0 : 0.0;
-        angle = Math.max(35, Math.min(angle, 151));
+        angle = Math.max(35, Math.min(angle, 151));   /// TODO: hack - put real limits here
         
         double extension = Math.sqrt(calculationHeight * calculationHeight + xProjection * xProjection);
-        extension = Math.max(-Robot.arm.STARTING_EXTEND, Math.min(extension - armInitialLength, Robot.arm.EXTEND_MAX));
+        extension = Math.max(-Robot.arm.STARTING_EXTEND, Math.min(extension - armInitialLength, Robot.arm.EXTEND_MAX - Robot.arm.STARTING_EXTEND));
         // Extend to allow for change in projection
         Robot.arm.setExtension(extension);   //From the start position (d0)
         Robot.arm.setAngle(angle);
