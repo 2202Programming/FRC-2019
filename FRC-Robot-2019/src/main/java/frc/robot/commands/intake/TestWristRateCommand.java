@@ -11,7 +11,6 @@ public class TestWristRateCommand extends Command {
     RateLimiter wristRC;
 
     public TestWristRateCommand() {
-
         requires(Robot.intake);
         wristRC = new RateLimiter(Robot.dT,
                 this::getCmd, 
@@ -30,22 +29,23 @@ public class TestWristRateCommand extends Command {
 
     // Must supply a function to get a user's command in normalized units
     public double getCmd() {
-        return Robot.m_oi.getAssistantController().getY(Hand.kLeft);
+        double   temp =  Robot.m_oi.getAssistantController().getY(Hand.kLeft);
+        return temp;
     }
 
-    @Override
+    
     protected void initialize() {
         wristRC.initialize();
     }
 
-    @Override
+    
     protected void execute() {
         wristRC.execute();
     }
 
     // This is just a test, it doesn't finish. Enjoy moving the write with the
     // controller.
-    @Override
+    
     public boolean isFinished() {
         return false;
     }

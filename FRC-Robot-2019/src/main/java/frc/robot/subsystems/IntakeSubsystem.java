@@ -49,7 +49,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 public class IntakeSubsystem extends ExtendedSubSystem {
   // Local Constants that define facts about the intake system
-  public final double WristMinDegrees = -100.0; // pointing down, relative to the arm
+  public final double WristMinDegrees = -103.0; // pointing down, relative to the arm //dpl hack
   public final double WristMaxDegrees = +100.0; // pointing up
   public final double WristStraightDegrees = 0.0; // points near straight out
   public final double WristDistToPivot = 4.0; //inches
@@ -88,7 +88,7 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   public IntakeSubsystem() {
     super("Intake");
     wristServo.setName(this.getSubsystem(), "wrist");
-    addChild("In:Wrist", (Sendable) wristServo);
+  //  addChild("In:Wrist", (Sendable) wristServo);
     addChild("In:VacPump", (Sendable) vacuumPump);
     addChild("In:CargoSw", cargoSwitch);
     addChild("In:VacSol", (Sendable) vacuumSol);
@@ -107,7 +107,8 @@ public class IntakeSubsystem extends ExtendedSubSystem {
    * Wrist Controls
    */
   public void setAngle(double degrees) {
-    wristServo.setAngle(-degrees); //TODO: Backwards direction, track that down
+
+     wristServo.setAngle(-degrees); //TODO: Backwards direction, track that down
   }
 
   /**
@@ -166,8 +167,9 @@ public class IntakeSubsystem extends ExtendedSubSystem {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    builder.setSmartDashboardType("CustomServo");
-    builder.addDoubleProperty("Value", this::getAngle, this::setAngle);
+    ///DPL is this the call to set servor to 103?
+    //builder.setSmartDashboardType("CustomServo");
+    //builder.addDoubleProperty("Value", this::getAngle, this::setAngle);
   }
 
   // Create the zeroSubsystem Command

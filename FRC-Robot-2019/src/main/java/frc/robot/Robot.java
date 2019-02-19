@@ -60,6 +60,8 @@ public class Robot extends TimedRobot {
     m_cmdMgr = new CommandManager();
     m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's functions
 
+    Robot.intake.zeroSubsystem();
+
     //TESTING Commands, only get scheduled if we enter Test mode
     testWristCmd = new TestWristRateCommand();
     testArmCmd = new TestArmRateCmd();
@@ -144,15 +146,16 @@ public class Robot extends TimedRobot {
 
    @Override
    public void testInit() {
-     super.testInit();
-     testArmCmd.start();
+     //testArmCmd.start();
      testWristCmd.start();
+     Scheduler.getInstance().enable();   //### hack? or required?
    }
   /**
    * This function is called periodically during test mode.
    */
   @Override
   public void testPeriodic() {
+    Scheduler.getInstance().run();
   }
 
   private void logSmartDashboardSensors() {
