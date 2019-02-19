@@ -57,10 +57,17 @@ private boolean serialExists = true;
     byte[] results;
     int sensor = 0;
     int distance = 0;
+    boolean isDigit = true;
     
     //reduce buffer size to last 1000 bytes to prevent loop time overrun
     while (arduinoSerial.getBytesReceived()>1000) {
-      results = arduinoSerial.read(1);
+      try {
+        results = arduinoSerial.read(1);  //dpl was  .readString(1);
+      } catch (UncleanStatusException e) {     //Catch uncleanstatusexception and restart serial port 
+        System.out.println("Serial Exception UncleanStatusException caught. Code:" + e.getStatus());
+        arduinoSerial.reset();
+        return;
+      }
     }
     //read buffer if available one char at a time
     while (arduinoSerial.getBytesReceived()>0) {
@@ -88,16 +95,22 @@ private boolean serialExists = true;
             System.out.println("Bad serial packet start char, tossing.");
           }
           else {
-              
-            sensor = Character.getNumericValue(serialResults.charAt(1));
-          
+            if (Character.isDigit(serialResults.charAt(1))) {
+              sensor = Character.getNumericValue(serialResults.charAt(1));
+            }
             if(serialResults.length()>2) {
-              distance = Integer.parseInt(serialResults.substring(2));
+              for (int i = 2; i<serialResults.length(); i++) { //check remaining chars to make sure they are all digits
+                if (!Character.isDigit(serialResults.charAt(i)))
+                  isDigit = false;
+              }
+              if (isDigit) { //only convert to integer if everything left in the string are digits
+                distance = Integer.parseInt(serialResults.substring(2));
 
-              if(sensor==1) distance1 = distance;
-              if(sensor==2) distance2 = distance;
-              if(sensor==3) distance3 = distance;
-              if(sensor==4) distance4 = distance;
+                if(sensor==1) distance1 = distance;
+                if(sensor==2) distance2 = distance;
+                if(sensor==3) distance3 = distance;
+                if(sensor==4) distance4 = distance;
+              }
             }
           
             serialResults.delete(0, serialResults.length());
