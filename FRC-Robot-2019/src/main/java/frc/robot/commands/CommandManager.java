@@ -3,6 +3,9 @@ package frc.robot.commands;
 import java.util.function.IntSupplier;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.input.XboxControllerButtonCode;
+
+import edu.wpi.first.wpilibj.XboxController;
+
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
@@ -82,7 +85,9 @@ public class CommandManager {
 
     CommandGroup currentGrp; // what is running
 
-    double gripperH_cmd; // (inches) composite of arm/extender/wrist/cup
+    //gripper commanded postion - main output of the controls
+    double gripperE_cmd;  // (inches) Extension of arm/extender/wrist/cup
+    double gripperH_cmd =22.0; //hack // (inches) composite of arm/extender/wrist/cup
 
     // internal states
     int delHeightIdx = 0; // used in delivery selection
@@ -93,7 +98,7 @@ public class CommandManager {
     // Data points - shares delheightidx, must be same length
     final double DeliveryCargoHeights[] = { 32.0, 60.0, 88.0 }; // TODO: fix the numbers
     final double DeliveryHatchHeights[] = { 28.0, 56.0, 84.0 }; // TODO: fix the numbers
-    final double Capture_dDown = 2.0;  //inches to move down for capture
+    final double Capture_dDown = 5.0;  //inches to move down for capture
     final double HuntHeights[] = { 28.0, 17.0, Capture_dDown + 4.0 }; // height from floor, H,C,Floor TODO:fix numbers
 
     public CommandManager() {
@@ -102,15 +107,14 @@ public class CommandManager {
         // XboxController dCtlr = Robot.m_oi.getDriverController();
 
         // setup buttons
-        huntSelect = new JoystickButton(aCtlr, XboxControllerButtonCode.LB.getCode());
-        heightSelect = new JoystickButton(aCtlr, XboxControllerButtonCode.TRIGGER_LEFT.getCode());
-        captureRelease = new JoystickButton(aCtlr, XboxControllerButtonCode.TRIGGER_RIGHT.getCode());
+        huntSelect     = new JoystickButton(aCtlr, XboxControllerButtonCode.LB.getCode());
+        heightSelect   = new JoystickButton(aCtlr, XboxControllerButtonCode.RB.getCode());
+        captureRelease = new JoystickButton(aCtlr, XboxControllerButtonCode.A.getCode());
 
         // define commands - bind local functions to be used on button hits
         huntSelectCmd = new CycleHuntModeCmd();         // (this::cycleHuntMode);
         heightSelectCmd = new CycleHeightModeCmd();
         captRelCmd = new CaptureReleaseCmd();
-        
     
         // bind commands to buttons
         huntSelect.whenPressed(huntSelectCmd);
@@ -145,6 +149,9 @@ public class CommandManager {
         CommandGroup nextCmd=null;
     
         switch (mode) {
+        case Construction:
+            break;
+            
         case SettingZeros:
             nextCmd = zeroRobotGrp;
             break;
@@ -262,6 +269,11 @@ public class CommandManager {
         return gripperH_cmd;
     }
 
+    Double gripperExtension() {
+        return gripperE_cmd;
+    }
+
+
     // Command Factories that build command sets for each mode of operation
     // These are largely interruptable so we can switch as state changes
     private CommandGroup CmdFactoryZeroRobot() {
@@ -277,21 +289,21 @@ public class CommandManager {
 
     private CommandGroup CmdFactoryHuntHatch() {
         CommandGroup grp = new CommandGroup("HuntHatch");
-        grp.addParallel(new MoveArmAtHeight(this::gripperHeight));
+        grp.addParallel(new MoveArmAtHeight(this::gripperHeight, this::gripperExtension));
         grp.addParallel(new WristTrackFunction(this::wristTrackParallel));
         return grp;
     }
 
     private CommandGroup CmdFactoryHuntCargo() {
         CommandGroup grp = new CommandGroup("HuntCargo");
-        grp.addParallel(new MoveArmAtHeight(this::gripperHeight));
+        grp.addParallel(new MoveArmAtHeight(this::gripperHeight, this::gripperExtension));
         grp.addParallel(new WristTrackFunction(this::wristTrackPerp));
         return grp;
     }
 
     private CommandGroup CmdFactoryHuntHatchFloor() {
         CommandGroup grp = new CommandGroup("HuntHatchFloor");
-        grp.addParallel(new MoveArmAtHeight(this::gripperHeight));
+        grp.addParallel(new MoveArmAtHeight(this::gripperHeight, this::gripperExtension));
         grp.addParallel(new WristTrackFunction(this::wristTrackPerp));
         return grp;
     }
@@ -315,7 +327,7 @@ public class CommandManager {
 
     private CommandGroup CmdFactoryDelivery() {
         CommandGroup grp = new CommandGroup("Deliver");
-        grp.addParallel(new MoveArmAtHeight(this::deliverGripperHeight));  //use deliver gripper funct
+        grp.addParallel(new MoveArmAtHeight(this::deliverGripperHeight, this::gripperExtension)); //use deliver gripper funct
         grp.addParallel(new WristTrackFunction(this::wristTrackParallel));
         return grp;
     }

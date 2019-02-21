@@ -1,4 +1,4 @@
-package frc.robot.commands.intake;
+package frc.robot.commands.intake.tests;
 
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
@@ -32,7 +32,6 @@ public class TestWristRateCommand extends Command {
         double   temp =  Robot.m_oi.getAssistantController().getY(Hand.kLeft);
         return temp;
     }
-
     
     protected void initialize() {
         wristRC.initialize();

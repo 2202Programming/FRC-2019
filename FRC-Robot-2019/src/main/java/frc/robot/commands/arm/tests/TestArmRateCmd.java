@@ -1,4 +1,4 @@
-package frc.robot.commands.arm;
+package frc.robot.commands.arm.tests;
 
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.CommandGroup;

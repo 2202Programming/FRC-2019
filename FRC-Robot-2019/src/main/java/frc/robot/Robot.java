@@ -14,8 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.*;
 import frc.robot.RobotMap;
-import frc.robot.commands.arm.TestArmRateCmd;
-import frc.robot.commands.intake.TestWristRateCommand;
+
 import frc.robot.commands.CommandManager;
 import frc.robot.commands.CommandManager.Modes;
 
@@ -45,10 +44,7 @@ public class Robot extends TimedRobot {
   public static OI m_oi = new OI(); //OI Depends on the subsystems and must be last
 
   public static CommandManager m_cmdMgr;    //fix the public later
-
-  // TESTING Started in TestInit
-  TestWristRateCommand testWristCmd; 
-  TestArmRateCmd testArmCmd; 
+  private RobotTest m_testRobot;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -56,15 +52,16 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    // Create the test subsystem
+    m_testRobot  = new RobotTest();
+
+
     //serialSubsystem = new SerialPortSubsystem();
     m_cmdMgr = new CommandManager();
     m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's functions
 
-    Robot.intake.zeroSubsystem();
-
-    //TESTING Commands, only get scheduled if we enter Test mode
-    testWristCmd = new TestWristRateCommand();
-    testArmCmd = new TestArmRateCmd();
+   /// TODO: confirm this. DPL should be covered by SettingZeros mode Robot.intake.zeroSubsystem();
+    
   }
 
   /**
@@ -146,16 +143,17 @@ public class Robot extends TimedRobot {
 
    @Override
    public void testInit() {
-     //testArmCmd.start();
-     testWristCmd.start();
-     Scheduler.getInstance().enable();   //### hack? or required?
+     m_testRobot.initialize();
+     Scheduler.getInstance().enable();   //### hack? or required?  Seems required otherwise nothing runs 
    }
+
   /**
    * This function is called periodically during test mode.
    */
   @Override
   public void testPeriodic() {
     Scheduler.getInstance().run();
+    m_testRobot.periodic();
   }
 
   private void logSmartDashboardSensors() {
@@ -165,14 +163,9 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putNumber("Right Encoder Rate", driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
     // SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
 
-    SmartDashboard.putNumber("Arm:Phi(raw)", arm.getRotationEncoder().getSelectedSensorPosition());
-    SmartDashboard.putNumber("Arm:Ext(raw)", arm.getExtensionEncoder().getSelectedSensorPosition());
-    SmartDashboard.putBoolean("Arm:Ext@Min", arm.extensionAtMin());
-    SmartDashboard.putBoolean("Arm:Ext@Max", arm.extensionAtMax());
-    SmartDashboard.putNumber("Arm:Phi(deg)", arm.getAngle());
-    SmartDashboard.putNumber("Arm:Ext(in)", arm.getExtension());
     
-    SmartDashboard.putNumber("Wr(deg)", intake.getAngle());
+    
+    SmartDashboard.putNumber("In:Wr(deg)", intake.getAngle());
    /*
     intake.log();   //DPL 2/10/19 review this with Billy/Xander
     arm.log();
