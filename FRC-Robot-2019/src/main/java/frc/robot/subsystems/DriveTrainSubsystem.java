@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap;
 import frc.robot.commands.drive.ArcadeDriveCommand;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
 /**
  * The basic drive train subsystem for four motors
@@ -51,7 +53,10 @@ public class DriveTrainSubsystem extends Subsystem {
   private final double MAX_OUTPUT = 1.0;
   private final double RIGHT_SIDE_INVERT_MULTIPLIER = -1.0;
   
-  public DriveTrainSubsystem() {
+  private NetworkTableInstance tableInst;
+  private NetworkTableEntry cameraSelect;
+
+  public DriveTrainSubsystem() {    
     addChild("Middle Left CIM", (Sendable) middleLeftMotor);
     addChild("Back Left CIM", (Sendable) backLeftMotor);
     addChild("Front Right CIM", (Sendable) frontRightMotor);
@@ -84,6 +89,8 @@ public class DriveTrainSubsystem extends Subsystem {
 
     drive = new DifferentialDrive(leftMotors, rightMotors);
     inversionConstant = 1;
+
+    tableInst = NetworkTableInstance.getDefault();
   }
 
   private void limitTalon(WPI_TalonSRX talon){
@@ -177,6 +184,15 @@ public class DriveTrainSubsystem extends Subsystem {
    */
   public void invertControls() {
     inversionConstant *= -1;
+
+    //post to network tables which drive camera to show based on control direction
+    cameraSelect = tableInst.getEntry("/PiSwitch");
+    if (inversionConstant>0) {
+      cameraSelect.setDouble(0);
+    }
+    else {
+      cameraSelect.setDouble(1);
+    }
   }
 
    /**
