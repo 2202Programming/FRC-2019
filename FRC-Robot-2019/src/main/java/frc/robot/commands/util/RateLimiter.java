@@ -121,15 +121,19 @@ public class RateLimiter {
   // helper functions
   private double dX(){   
     double dX=0.0;
+    double kc = cmd * kRate;   //input cmd * K gain (units or units/sec)
+
     if (model == InputModel.Rate) {
       // In rate mode we treat input as a dX to integrate to get desired X
       // This way we can limit X's growth rate and position.
-      double cmdDz = deadZone(cmd * kRate);    //rates need dz on inputs, typically joysticks
+      //rates need dz on inputs, typically joysticks
+      double cmdDz = deadZone(kc);
+
       dX = limit(cmdDz, dx_fall, dx_raise);
     }
     if (model == InputModel.Position) {
       // for postion limits, need to look at command vs current an limit rate aka dX
-      double rate = (cmd - Xprev)/dT;   
+      double rate = (kc - Xprev)/dT;   
       double phyRate = (devPos - devPrev) /dT;  //this could amplify noise
       dX = limit(rate, dx_fall, dx_raise);
     }
@@ -145,7 +149,7 @@ public class RateLimiter {
 
   // apply deadzone to input in and scale to get propper range
   private double deadZone(double x) {
-    if (Math.abs(x) > dz_mag)  return (double) 0.0;
+    if (Math.abs(x) < dz_mag)  return (double) 0.0;
     return x;
   }
 

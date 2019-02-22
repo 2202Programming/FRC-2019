@@ -7,39 +7,40 @@ import frc.robot.Robot;
 import frc.robot.commands.util.RateLimiter;
 import frc.robot.commands.util.RateLimiter.InputModel;
 
-public class TestWristRateCommand extends Command {
-    RateLimiter wristRC;
+public class TestWristPositionCommand extends Command {
+    RateLimiter wristPC;
 
-    public TestWristRateCommand() {
+    public TestWristPositionCommand() {
         requires(Robot.intake);
-        wristRC = new RateLimiter(Robot.dT,
+        wristPC = new RateLimiter(Robot.dT,
                 this::getCmd, 
                 Robot.intake::getAngle, 
                 Robot.intake::setAngle,
                 Robot.intake.WristMinDegrees, 
                 Robot.intake.WristMaxDegrees, 
-                -80.0, // dx_fall deg/sec 
-                180.0,  // dx_raise deg/ses
-                InputModel.Rate);
+               -60.0,   // dx_fall deg/sec 
+                180.0,  // dx_raise deg/se
+                InputModel.Position);
         
         //finish up scaling for rate
-        wristRC.setRateGain(200.0);   // stick (-1, 1) *k = deg/sec comm  -/+200 deg/sec
-        wristRC.setDeadZone(5.0);    // ignore rates less than 5.0 deg/sec
+        wristPC.setRateGain(100.0);   // trigger (-1, 1) *k = deg command
+        wristPC.setDeadZone(10.0);    // ignore position less than 2.0 deg
     }
 
     // Must supply a function to get a user's command in normalized units
     public double getCmd() {
-        double   temp =  Robot.m_oi.getAssistantController().getY(Hand.kLeft);
+        // trigger is zo to 1, so make it -1 to 1
+        double   temp = -1.0 + 2 * Robot.m_oi.getAssistantController().getTriggerAxis(Hand.kLeft);
         return temp;
     }
     
     protected void initialize() {
-        wristRC.initialize();
+        wristPC.initialize();
     }
 
     
     protected void execute() {
-        wristRC.execute();
+        wristPC.execute();
     }
 
     // This is just a test, it doesn't finish. Enjoy moving the write with the
@@ -50,6 +51,6 @@ public class TestWristRateCommand extends Command {
     }
 
     public void log() {
-        SmartDashboard.putNumber("TWR:RCout", wristRC.get());
+        SmartDashboard.putNumber("TWP:RPout", wristPC.get());
     }
 }
