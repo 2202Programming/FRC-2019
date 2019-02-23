@@ -235,6 +235,7 @@ public class CommandManager {
 
     private void flip() {
         setMode(Modes.Flipping);
+        Robot.arm.invert(); //TODO: Find right place to do this...
     }
     private void cycleHuntMode() {
         
@@ -256,6 +257,10 @@ public class CommandManager {
     private int gotoHuntMode() {
         Modes nextMode = Modes.HuntingHatch;
         return  nextMode.get();
+    }
+
+    private void gotoPrevMode() {
+        setMode(prevMode);
     }
 
     private void cycleHeight() {
@@ -368,6 +373,7 @@ public class CommandManager {
         int tempFlipLength = 10; //TODO: Find actual extension to flip
         grp.addSequential(new ExtendArmToPositionCommand(tempFlipLength));
         grp.addSequential(new TestRotateArmToAngleCommand(0)); //TODO: Maybe rotate to a diff specific angle
+        grp.addSequential(new PrevCmd());
         return grp;
     }
 
@@ -399,6 +405,13 @@ public class CommandManager {
         @Override
         protected void execute() {
             flip();
+        }
+    }
+
+    class PrevCmd extends InstantCommand {
+        @Override
+        protected void execute() {
+            gotoPrevMode();
         }
     }
 
