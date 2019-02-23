@@ -28,11 +28,13 @@ public class CommandManager {
     JoystickButton huntSelect; // used in hunting modes
     JoystickButton heightSelect; // used in delivery modes
     JoystickButton captureRelease; // used in delivery modes to go back to hunting
+    JoystickButton flip; // used to flip arm other direction
 
     // Button Commands
     Command huntSelectCmd;
     Command heightSelectCmd;
     Command captRelCmd;
+    Command flipCmd;
 
     // Modes of behavior
     public enum Modes {
@@ -112,16 +114,20 @@ public class CommandManager {
         huntSelect     = new JoystickButton(aCtlr, XboxControllerButtonCode.LB.getCode());
         heightSelect   = new JoystickButton(aCtlr, XboxControllerButtonCode.RB.getCode());
         captureRelease = new JoystickButton(aCtlr, XboxControllerButtonCode.A.getCode());
+        flip = new JoystickButton(aCtlr, XboxControllerButtonCode.X.getCode());
 
         // define commands - bind local functions to be used on button hits
         huntSelectCmd = new CycleHuntModeCmd();         // (this::cycleHuntMode);
         heightSelectCmd = new CycleHeightModeCmd();
         captRelCmd = new CaptureReleaseCmd();
+        flipCmd = new FlipCmd();
+        
     
         // bind commands to buttons
         huntSelect.whenPressed(huntSelectCmd);
         heightSelect.whenPressed(heightSelectCmd);
         captureRelease.whenPressed(captRelCmd);
+        flip.whenPressed(flipCmd);
 
         // Construct our major modes
         zeroRobotGrp = CmdFactoryZeroRobot();
@@ -223,6 +229,10 @@ public class CommandManager {
     private void triggerCaptureRelease(){
         //Change StateMachine in command Manger
         setMode(Modes.Capturing);
+    }
+
+    private void flip() {
+        setMode(Modes.Flipping);
     }
     private void cycleHuntMode() {
         
@@ -349,7 +359,7 @@ public class CommandManager {
         CommandGroup grp = new CommandGroup("Flip");
         //Set wrist to zero
         //Extend arm out certain distance
-        //Rotate to zero
+        //Rotate to (slightly past) 0
         //...rest is handled by going back to previous state
         return grp;
     }
@@ -375,6 +385,13 @@ public class CommandManager {
         @Override
         protected void execute() {
             triggerCaptureRelease();
+        }
+    }
+
+    class FlipCmd extends InstantCommand {
+        @Override
+        protected void execute() {
+            flip();
         }
     }
 
