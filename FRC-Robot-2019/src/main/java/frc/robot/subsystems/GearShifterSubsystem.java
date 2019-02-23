@@ -10,16 +10,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class GearShifterSubsystem extends Subsystem {
     private long logTimer;
+    private boolean isAutoShiftEnabled;
 
     public GearShifterSubsystem() {
         logTimer = System.currentTimeMillis();
+    }
+
+    public void autoshiftEnabled(boolean temp) {
+        isAutoShiftEnabled = temp;
     }
 
     public void log(int interval) {
 
         if ((logTimer + interval) < System.currentTimeMillis()) { //only post to smartdashboard every interval ms
           logTimer = System.currentTimeMillis();
-    
+          SmartDashboard.putBoolean("Autoshift Enabled", isAutoShiftEnabled);  
           SmartDashboard.putString("Gear Shifter State", String.valueOf(getCurGear()));
         }
       }

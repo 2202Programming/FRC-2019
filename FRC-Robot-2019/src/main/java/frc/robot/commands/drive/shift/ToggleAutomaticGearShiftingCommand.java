@@ -18,8 +18,10 @@ public class ToggleAutomaticGearShiftingCommand extends InstantCommand {
         System.out.println(gearShifter.getDefaultCommandName());
         if(gearShifter.getDefaultCommandName().equals("AutomaticGearShiftCommand")) {
             Robot.gearShifter.setDefaultCommand(null);
+            Robot.gearShifter.autoshiftEnabled(false);
         } else {
             Robot.gearShifter.setDefaultCommand(new AutomaticGearShiftCommand());
+            Robot.gearShifter.autoshiftEnabled(true);
         }
     }
 }
