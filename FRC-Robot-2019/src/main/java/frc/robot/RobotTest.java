@@ -26,14 +26,14 @@ public class RobotTest {
         // TESTING Commands, only get scheduled if we enter Test mode
         testWristCmd = new  TestWristRateCommand();
                             //TestWristPositionCommand();
-
-       // testArmCmd = new TestArmRateCmd();
-
-       
-
     }
 
     public void initialize() {
+        // remove defaultCommands so only testing is being done.
+        Robot.intake.setDefaultCommand(null);
+        Robot.gearShifter.setDefaultCommand(null);
+        Robot.arm.setDefaultCommand(null);
+       
         // testArmCmd.start();
         testWristCmd.start();
     }
