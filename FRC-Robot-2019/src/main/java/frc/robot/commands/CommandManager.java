@@ -10,6 +10,8 @@ import frc.robot.commands.arm.MoveArmAtHeight;
 import frc.robot.commands.arm.MoveDownToCapture;
 import frc.robot.commands.intake.VacuumCommand;
 import frc.robot.commands.intake.WristTrackFunction;
+import frc.robot.commands.util.RateLimiter;
+import frc.robot.commands.util.RateLimiter.InputModel;
 
 /**
  * One class, singleton, to rule them all. Coordinates major modes of operation.
@@ -18,7 +20,6 @@ import frc.robot.commands.intake.WristTrackFunction;
  */
 public class CommandManager {
     int logCnt=0;
-
     
     // Button Commands
     Command huntSelectCmd;
@@ -77,6 +78,8 @@ public class CommandManager {
     CommandGroup currentGrp; // what is running
 
     //gripper commanded postion - main output of the controls
+    //RateLimiter rp_h;
+    RateLimiter rr_ext;
     double gripperE_cmd = 0.0;    // (inches) Extension of arm/extender/wrist/cup
     double gripperH_cmd = 0.0;    // (inches) composite of arm/extender/wrist/cup
 
@@ -88,13 +91,16 @@ public class CommandManager {
 
     // Initial gripper extension by huntModeIdx
     // Extension from pivot point.
-    final double gripper_start[] = {22.0, 25.0, 30.};  //TODO: fix the numbers
+    final double gripperE_start[] = {22.0, 25.0, 30.};  //TODO: fix the numbers
     
     // Data points - shares delheightidx, must be same length
     final double DeliveryCargoHeights[] = { 32.0, 60.0, 88.0 }; // TODO: fix the numbers
     final double DeliveryHatchHeights[] = { 28.0, 56.0, 84.0 }; // TODO: fix the numbers
     final double Capture_dDown = 5.0;  //inches to move down for capture
     final double HuntHeights[] = { 28.0, 17.0, Capture_dDown + 4.0 }; // height from floor, H,C,Floor TODO:fix numbers
+
+    //Phyical values from sub-systems as needed
+    Position armPosition;
 
     public CommandManager() {
         currentMode = Modes.Construction;
@@ -112,6 +118,20 @@ public class CommandManager {
         captureGrp = CmdFactoryCapture();
         deliveryGrp = CmdFactoryDelivery();
         ejectGrp = CmdFactoryEject();
+        armPosition = Robot.arm.getArmPosition();
+
+        rr_ext = new RateLimiter(Robot.dT, 
+            Robot.m_oi::extensionInput,
+            this::armExtension, null,
+            Robot.arm.EXTEND_MIN,
+            Robot.arm.EXTEND_MAX,
+            -10.0, //inches/sec
+            10.0, //inches/sec 
+            InputModel.Rate);
+        rr_ext.setDeadZone(.5);
+        rr_ext.setRateGain(15.0);  // 15 in/sec max stick input
+
+        
     }
 
     /**
@@ -243,6 +263,7 @@ public class CommandManager {
 
     // expose desired cup height to commands, set griperheight via state machine.
     Double gripperHeight() {
+
         return gripperH_cmd;
     }
 
@@ -252,19 +273,43 @@ public class CommandManager {
         return gripperH_cmd;
     }
 
-    Double gripperExtension() {
+
+    double gripperECmd() {
         return gripperE_cmd;
     }
 
+    public Double gripperExtension() {
+        double ext = rr_ext.get();    // rate & postion limited
+        return ext;
+    }
+
+    // called every frame, reads inputs 
+    void execute() {
+        armPosition = Robot.arm.getArmPosition();
+        //read inputs
+        double capHeightIn = Robot.m_oi.captureHeightInput();  //trigger
+        rr_ext.execute();
+    }
+
     /**
-     *  initialize the commands from the current position 
+     *  initialize the commands from the current position, sets the
+     *  gripper[EH]_cmd to where they are right now. 
+     * 
+     *  Return only needed because it's invokeds as a FunctionCommand
      */
     int  initialize() {
-        Position position = Robot.arm.getArmPosition();
-        gripperE_cmd = position.projection;
-        gripperH_cmd = position.height;
+        armPosition = Robot.arm.getArmPosition();   //update position
+        gripperE_cmd = armPosition.projection;
+        gripperH_cmd = armPosition.height;
+        rr_ext.initialize();
+        rr_ext.setState(armPosition.projection);
         return 0;
     }
+
+    double armExtension() {
+        return armPosition.projection;
+    }
+    
 
     // Command Factories that build command sets for each mode of operation
     // These are largely interruptable so we can switch as state changes

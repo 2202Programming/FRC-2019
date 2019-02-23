@@ -89,9 +89,9 @@ public class IntakeSubsystem extends ExtendedSubSystem {
     super("Intake");
     wristServo.setName(this.getSubsystem(), "wrist");
   //  addChild("In:Wrist", (Sendable) wristServo);
-    addChild("In:VacPump", (Sendable) vacuumPump);
+   // addChild("In:VacPump", vacuumPump);
     addChild("In:CargoSw", cargoSwitch);
-    addChild("In:VacSol", (Sendable) vacuumSol);
+    addChild("In:VacSol",  vacuumSol);
 
     intakeVacuum = new Subsystem("Intake:Vac"){
       @Override
@@ -107,7 +107,6 @@ public class IntakeSubsystem extends ExtendedSubSystem {
    * Wrist Controls
    */
   public void setAngle(double degrees) {
-
      wristServo.setAngle(-degrees); //TODO: Backwards direction, track that down
   }
 
@@ -193,7 +192,8 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   }
 
   public void log() {
-    SmartDashboard.putData(this);
+    SmartDashboard.putData("intake0", this);
+    SmartDashboard.putNumber("In:Wr(deg)", getAngle());
   }
 
   /**

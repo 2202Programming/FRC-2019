@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import frc.robot.input.XboxControllerButtonCode;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.LimeLightArcadeDriveCommand;
@@ -57,7 +58,6 @@ public class OI {
   public JoystickButton heightSelect;       // used in delivery modes
   public JoystickButton captureRelease;     // used in delivery modes to go back to hunting
 
-
   @SuppressWarnings({ "resource", })
   public OI() {
     
@@ -87,6 +87,17 @@ public class OI {
     
   }
 
+  // Bind analog controls to functions to use by the commands
+  // this way we only change it key/stick assignemnts once.
+  public double captureHeightInput() {
+    return Robot.m_oi.assistant.getTriggerAxis(Hand.kRight);
+  }
+
+  public double extensionInput() 
+  {
+    return Robot.m_oi.assistant.getY(Hand.kRight);
+  }
+
   public XboxController getDriverController() {
     return driver;
   }
@@ -98,5 +109,7 @@ public class OI {
   public XboxController getSwitchBoard() {
     return switchBoard;
   }
+
+  
 
 }

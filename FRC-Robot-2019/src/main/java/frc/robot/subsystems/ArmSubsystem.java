@@ -214,7 +214,6 @@ public class ArmSubsystem extends ExtendedSubSystem {
     return position;
   }
 
-
   @Override
   public void initDefaultCommand() {
     //setDefaultCommand(new TeleopArmControlCommand());

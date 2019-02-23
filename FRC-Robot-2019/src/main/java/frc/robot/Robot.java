@@ -71,7 +71,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     logSmartDashboardSensors();
     limeLight.populateLimelight();
-    
+
     if (serialSubsystem.isSerialEnabled()) {
       serialSubsystem.processSerial();
     }
@@ -124,7 +124,6 @@ public class Robot extends TimedRobot {
     // this line or comment it out.
     m_cmdMgr.setMode(Modes.SettingZeros);
     resetAllDashBoardSensors();
-    //m_cmdMgr.setMode(Modes.HuntingHatch);   
   }
 
   /**
@@ -162,10 +161,10 @@ public class Robot extends TimedRobot {
 
     
     
-    SmartDashboard.putNumber("In:Wr(deg)", intake.getAngle());
-   /*
-    intake.log();   //DPL 2/10/19 review this with Billy/Xander
+    
+    intake.log();   
     arm.log();
+    /*
     arm.logTalons();
     m_cmdMgr.log();
 /*    
