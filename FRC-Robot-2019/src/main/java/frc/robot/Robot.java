@@ -77,6 +77,10 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     logSmartDashboardSensors();
     limeLight.populateLimelight();
+    
+    if (serialSubsystem.isSerialEnabled()) {
+      serialSubsystem.processSerial();
+    }
   }
 
   /**
@@ -129,9 +133,7 @@ public class Robot extends TimedRobot {
     resetAllDashBoardSensors();
     m_cmdMgr.setMode(Modes.HuntingHatch);   
 
-    if (serialSubsystem.isSerialEnabled()) {
-      serialSubsystem.processSerial();
-    }
+
   }
 
   /**
