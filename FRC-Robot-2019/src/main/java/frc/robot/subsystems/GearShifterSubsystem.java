@@ -11,7 +11,7 @@ public class GearShifterSubsystem extends Subsystem {
 
 
     //physical devices
-    private DoubleSolenoid gearShiftSolenoid = new DoubleSolenoid(RobotMap.GEARSHIFT_PMC_ID,
+    private DoubleSolenoid gearShiftSolenoid = new DoubleSolenoid(RobotMap.GEARSHIFT_PCM_ID,
             RobotMap.GEARSHIFTUP_SOLENOID_PCM, RobotMap.GEARSHIFTDOWN_SOLENOID_PCM);
 
     public enum Gear {        

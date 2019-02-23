@@ -4,20 +4,20 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
 public class ExtendArmToPositionCommand extends Command {
-    private double position;
+    final private double kTolerance = 2.0;
+    private double distance;
 
-    public ExtendArmToPositionCommand(double position) {
-        this.position = position;
+    public ExtendArmToPositionCommand(double distance) {
+        this.distance = distance;
         requires(Robot.arm);
     }
 
     @Override
     protected void execute() {
-        Robot.arm.extendToPosition(position);
+        Robot.arm.setExtension(distance);
     }
 
-    @Override
     protected boolean isFinished() {
-        return false;
+        return Math.abs(Robot.arm.getExtension() - distance) < kTolerance;   
     }
 }

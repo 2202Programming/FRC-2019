@@ -15,6 +15,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.*;
 import frc.robot.RobotMap;
 
+import frc.robot.commands.CommandManager;
+import frc.robot.commands.CommandManager.Modes;
+
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the TimedRobot
@@ -23,7 +26,14 @@ import frc.robot.RobotMap;
  * project.
  */
 public class Robot extends TimedRobot {
+  //common constants for robot
+  public static double dT = kDefaultPeriod;  // Robots sample period (seconds) 
+  //THis years bounding box beyond frame of robot. Use this in limit calcs in subsystems.
+  public static double kProjectConstraint = 30.0; //inches from frame
+  //public static double kForwardProjectMin = 18.0; //inches from arm pivot x-axis to bumper
+  //public static double kReverseProjectMin = 18.0; //inches from arm pivot x-axis to bumper
   
+  //physical devices and subsystems
   public static DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
   public static GearShifterSubsystem gearShifter = new GearShifterSubsystem(driveTrain.kShiftPoint);
   public static LimeLightSubsystem limeLight = new LimeLightSubsystem();
@@ -33,8 +43,8 @@ public class Robot extends TimedRobot {
   public static SerialPortSubsystem serialSubsystem;
   public static OI m_oi = new OI(); //OI Depends on the subsystems and must be last
 
-  Command m_autonomousCommand;
-  SendableChooser<Command> m_chooser = new SendableChooser<>();
+  public static CommandManager m_cmdMgr;    //fix the public later
+  private RobotTest m_testRobot;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -42,9 +52,16 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    // chooser.addOption("My Auto", new MyAutoCommand());
-    SmartDashboard.putData("Auto mode", m_chooser);
-    serialSubsystem = new SerialPortSubsystem();
+    // Create the test subsystem
+    m_testRobot  = new RobotTest();
+
+
+    //serialSubsystem = new SerialPortSubsystem();
+    m_cmdMgr = new CommandManager();
+    m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's functions
+
+   /// TODO: confirm this. DPL should be covered by SettingZeros mode Robot.intake.zeroSubsystem();
+    
   }
 
   /**
@@ -90,19 +107,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_chooser.getSelected();
-
-    /*
-     * String autoSelected = SmartDashboard.getString("Auto Selector", "Default");
-     * switch(autoSelected) { case "My Auto": autonomousCommand = new
-     * MyAutoCommand(); break; case "Default Auto": default: autonomousCommand = new
-     * ExampleCommand(); break; }
-     */
-
-    // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.start();
-    }
     resetAllDashBoardSensors();
   }
 
@@ -121,12 +125,10 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
-    }
+    
     resetAllDashBoardSensors();
-    intake.setAngle(0.0);
-    }
+    m_cmdMgr.setMode(Modes.HuntingHatch);   
+  }
 
   /**
    * This function is called periodically during operator control.
@@ -134,48 +136,58 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     Scheduler.getInstance().run();
-    if (serialSubsystem.isSerialEnabled())
-    serialSubsystem.processSerial();
+
+//    if (serialSubsystem.isSerialEnabled()) //if serial was initalized, run periodic serial processing loop
+//    serialSubsystem.processSerial();
   }
+
+   @Override
+   public void testInit() {
+     m_testRobot.initialize();
+     Scheduler.getInstance().enable();   //### hack? or required?  Seems required otherwise nothing runs 
+   }
 
   /**
    * This function is called periodically during test mode.
    */
   @Override
   public void testPeriodic() {
+    Scheduler.getInstance().run();
+    m_testRobot.periodic();
   }
 
   private void logSmartDashboardSensors() {
-    SmartDashboard.putNumber("Left Encoder Count", driveTrain.getLeftEncoderTalon().getSelectedSensorPosition());
-    SmartDashboard.putNumber("Left Encoder Rate", driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity());
-    SmartDashboard.putNumber("Right Encoder Count", driveTrain.getRightEncoderTalon().getSelectedSensorPosition());
-    SmartDashboard.putNumber("Right Encoder Rate", driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
-    SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
-    SmartDashboard.putNumber("Arm Rotation Count", arm.getRotationEncoder().getSelectedSensorPosition());
-    SmartDashboard.putNumber("Arm Extension Count", arm.getExtensionEncoder().getSelectedSensorPosition());
-    SmartDashboard.putBoolean("Arm Extension At Min", arm.extensionAtMin());
-    SmartDashboard.putBoolean("Arm Extension At Max", arm.extensionAtMax());
-    SmartDashboard.putNumber("Arm Angle", arm.getAngle());
-    SmartDashboard.putNumber("Arm Extension Distance", arm.getDistanceExtended());
+    // SmartDashboard.putNumber("Left Encoder Count", driveTrain.getLeftEncoderTalon().getSelectedSensorPosition());
+    // SmartDashboard.putNumber("Left Encoder Rate", driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity());
+    // SmartDashboard.putNumber("Right Encoder Count", driveTrain.getRightEncoderTalon().getSelectedSensorPosition());
+    // SmartDashboard.putNumber("Right Encoder Rate", driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
+    // SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
 
-    SmartDashboard.putNumber("Wrist Angle", intake.getAngle());
-    intake.log();   //DPL 2/10/19 review this with Billy/Xander
-    arm.logArmRotation();
-    arm.logArmExtnension();
-    arm.logTalons();
     
+    
+    SmartDashboard.putNumber("In:Wr(deg)", intake.getAngle());
+   /*
+    intake.log();   //DPL 2/10/19 review this with Billy/Xander
+    arm.log();
+    arm.logTalons();
+    m_cmdMgr.log();
+/*    
     SmartDashboard.putData(Scheduler.getInstance()); 
-    SmartDashboard.putData(driveTrain);
-    SmartDashboard.putData(gearShifter);
+    //SmartDashboard.putData(driveTrain);
+    //SmartDashboard.putData(gearShifter);
     
     SmartDashboard.putNumber("LimelightX", limeLight.getX());
     SmartDashboard.putNumber("LimelightY", limeLight.getY());
     SmartDashboard.putNumber("LimelightArea", limeLight.getArea());
     SmartDashboard.putBoolean("LimeTarget", limeLight.hasTarget());
-    if (serialSubsystem.isSerialEnabled()) {
+
+    if (serialSubsystem.isSerialEnabled()) { //verify serial system was initalized before calling for results
     SmartDashboard.putNumber("Left Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.LEFT_FRONT_LIDAR));
     SmartDashboard.putNumber("Right Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.RIGHT_FRONT_LIDAR));
+    SmartDashboard.putNumber("Left Back LIDAR (mm)", serialSubsystem.getDistance(RobotMap.LEFT_BACK_LIDAR));
+    SmartDashboard.putNumber("Right Back LIDAR (mm)", serialSubsystem.getDistance(RobotMap.RIGHT_BACK_LIDAR));
     }
+ */
   }
 
   private void resetAllDashBoardSensors() {

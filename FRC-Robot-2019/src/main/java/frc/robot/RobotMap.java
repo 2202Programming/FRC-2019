@@ -35,7 +35,7 @@ public class RobotMap {
   public static final int ENCODER_RIGHT_PIN_1 = 2;
   public static final int ENCODER_RIGHT_PIN_2 = 3;
 
-  public static final int GEARSHIFT_PMC_ID = CAN_PCM1_ID;
+  public static final int GEARSHIFT_PCM_ID = CAN_PCM1_ID;
   public static final int GEARSHIFTUP_SOLENOID_PCM = 0;
   public static final int GEARSHIFTDOWN_SOLENOID_PCM = 1;
   
@@ -76,5 +76,7 @@ public class RobotMap {
   //LIDAR sensors
   public static final int LEFT_FRONT_LIDAR = 1;
   public static final int RIGHT_FRONT_LIDAR = 2;
+  public static final int LEFT_BACK_LIDAR = 3;
+  public static final int RIGHT_BACK_LIDAR = 4;
   
 }
