@@ -215,8 +215,11 @@ public class DriveTrainSubsystem extends Subsystem {
     return (rightEncoder.getSelectedSensorVelocity()* kSamplePeriod * ENCODER_RIGHT_DISTANCE_PER_PULSE);
   }
 
-  public boolean isMoving() {
-    return Math.abs(velLeft()) < 100 || Math.abs(velRight()) < 100;
+  /**
+   * Deadband in inches/sec
+   */
+  public boolean isMoving(double deadband) {
+    return Math.abs(velLeft()) < deadband || Math.abs(velRight()) < deadband;
   }
 
   /**
