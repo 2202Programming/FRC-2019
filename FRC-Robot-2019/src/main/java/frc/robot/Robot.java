@@ -171,6 +171,7 @@ public class Robot extends TimedRobot {
     driveTrain.log(103); //tell drivertrain to post to dashboard every Xms
     limeLight.log(100); //tell limelight to post to dashboard every Xms
     serialSubsystem.log(107); //tell serial to post to dashboard every Xms
+    arm.log(109);
   }
 
   private void resetAllDashBoardSensors() {
