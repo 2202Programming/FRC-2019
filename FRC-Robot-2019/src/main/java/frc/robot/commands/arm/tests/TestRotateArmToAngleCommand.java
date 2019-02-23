@@ -17,6 +17,6 @@ public class TestRotateArmToAngleCommand extends Command {
     }
 
     protected boolean isFinished() {
-        return Math.abs(Robot.arm.getAngle() - angle) < kTolerance;   
+        return Math.abs(Robot.arm.getAbsoluteAngle() - angle) < kTolerance;   
     }
 }

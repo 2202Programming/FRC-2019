@@ -141,13 +141,19 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
   /**
    * Gets the angle at which the arm subsystem is rotated.
-   * @return the angle of the arm, in radians.
+   * @return the angle of the arm, in degrees.
    */
-  public double getAngle() {
-    //  return PHI_MAX - (rotationEncoder.getSelectedSensorPosition() / COUNT_MAX * (PHI_MAX - PHI_MIN));
+  public double getRealAngle() {
+    //  return PHI_MAX - (rotationEncoder.getSelectedSensorPosition()  / COUNT_MAX * (PHI_MAX - PHI_MIN));
     double counts = armRotationMotor.getSelectedSensorPosition();
     double angle = PHI0 - counts * kDeg_per_count;
     return angle;
+  }
+
+  public double getAbsoluteAngle() {
+    double counts = armRotationMotor.getSelectedSensorPosition();
+    double angle = PHI0 - counts * kDeg_per_count;
+    return inversionConstant * angle;
   }
 
   /**
@@ -160,7 +166,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * @param extendInch  (inches) to set the arm.
    */
   public void setExtension(double l) {
-    double angle = getAngle();                     //current angle
+    double angle = getRealAngle();                     //current angle
     double compLen = ((angle - PHI0)*k_dl_dphi);   // ext due to rotation to compensate for
     double len = (l - L0) - compLen;               // net len to command
 
@@ -182,7 +188,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public double getExtension() {
     int counts = armExtensionMotor.getSelectedSensorPosition();
     //   L0  + phi correction
-    return (L0 + (getAngle() - PHI0) * k_dl_dphi) + (counts * kIn_per_count);
+    return (L0 + (getRealAngle() - PHI0) * k_dl_dphi) + (counts * kIn_per_count);
   }
 
   
@@ -230,7 +236,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
     //SmartDashboard.putData((Sendable) armRotationMotor);
     //SmartDashboard.putData((Sendable) armExtensionMotor);
     SmartDashboard.putNumber("Arm:Phi(raw)", armRotationMotor.getSelectedSensorPosition());
-    SmartDashboard.putNumber("Arm:Phi(deg)", getAngle());
+    SmartDashboard.putNumber("Arm:Phi(deg)", getAbsoluteAngle());
     SmartDashboard.putNumber("Arm:Ext(raw)", armExtensionMotor. getSelectedSensorPosition());
     SmartDashboard.putNumber("Arm:Ext(in)",  getExtension());
 

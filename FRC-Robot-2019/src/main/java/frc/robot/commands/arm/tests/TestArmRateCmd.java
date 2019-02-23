@@ -16,7 +16,7 @@ public class TestArmRateCmd extends CommandGroup {
     public TestArmRateCmd() {
         armRC = new RateLimiter(Robot.dT,
                 this::getShoulderCmd, 
-                Robot.arm::getAngle, Robot.arm::setAngle, 
+                Robot.arm::getRealAngle, Robot.arm::setAngle, 
                 Robot.arm.PHI_MIN, // ShoulderMinDegrees,
                 Robot.arm.PHI_MAX, // ShoulderMaxDegrees,
                 -3.0, // dx_falling  

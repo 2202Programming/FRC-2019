@@ -266,14 +266,15 @@ public class CommandManager {
     }
 
     Double wristTrackParallel() {
-        double phi = Robot.arm.getAngle();
-        return (phi - 90.0);
+        double phi = Robot.arm.getAbsoluteAngle();
+        //
+        return Robot.arm.getInversion() * (phi - 90.0);
     }
 
     Double wristTrackPerp() {
         //TODO: will need to account for phi on each side
-        double phi = Robot.arm.getAngle();
-        return (phi - 180.0);
+        double phi = Robot.arm.getAbsoluteAngle();
+        return Robot.arm.getInversion() * (phi - 180.0);
     }
 
     Double wristTrackZero() {
