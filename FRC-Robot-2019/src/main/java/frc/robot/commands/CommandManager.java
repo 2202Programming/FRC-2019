@@ -50,7 +50,8 @@ public class CommandManager {
         // DeliveryModes
         DeliverHatch(8),  // based on what we captured
         DeliverCargo(9),  // based on what we captured
-        Ejecting(10);     // Button:CaptureRelease
+        Ejecting(10),     // Button:CaptureRelease
+        Flipping(11);     // Button:FlipArm
 
         private int v;
 
@@ -77,6 +78,7 @@ public class CommandManager {
     CommandGroup captureGrp;
     CommandGroup deliveryGrp;
     CommandGroup ejectGrp;
+    CommandGroup flipGrp;
     
     // Target States - think of this as desired command vector
     Modes currentMode; // what we think are doing now
@@ -129,6 +131,7 @@ public class CommandManager {
         captureGrp = CmdFactoryCapture();
         deliveryGrp = CmdFactoryDelivery();
         ejectGrp = CmdFactoryEject();
+        flipGrp = CmdFactoryFlip();
     }
 
     /**
@@ -190,6 +193,9 @@ public class CommandManager {
 
         case Ejecting:
             nextCmd = ejectGrp;
+            break;
+        case Flipping:
+            nextCmd = flipGrp;
             break;
         default:
             break;
@@ -336,6 +342,15 @@ public class CommandManager {
         CommandGroup grp = new CommandGroup("Eject");
         grp.addSequential(new VacuumCommand(false)); 
         grp.addSequential(new CallFunctionCmd(this::gotoHuntMode));
+        return grp;
+    }
+
+    private CommandGroup CmdFactoryFlip() {
+        CommandGroup grp = new CommandGroup("Flip");
+        //Set wrist to zero
+        //Extend arm out certain distance
+        //Rotate to zero
+        //...rest is handled by going back to previous state
         return grp;
     }
 
