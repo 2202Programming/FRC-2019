@@ -19,8 +19,6 @@ private int distance4; //Sensor #4
 
 private StringBuilder serialResults =new StringBuilder();
 private SerialPort arduinoSerial;
-private long distanceRefresh; //Track time between sensor readings
-private long hertz;
 private boolean serialExists = true;
 private long logTimer;
 
@@ -53,10 +51,6 @@ private long logTimer;
     return 0;
   }
 
-  public long getHertz() {
-    return hertz;
-  }
-
   public Boolean allDigits(String tempString) {
     for (int i = 0; i<tempString.length(); i++) { //check all chars to make sure they are all digits
       if (!Character.isDigit(tempString.charAt(i)))
@@ -79,25 +73,34 @@ private long logTimer;
     }
   }
 
-  public void processSerial() {
-    byte[] results;
-    int sensor = 0;
-    int distance = 0;
-    
-    //reduce buffer size to last 1000 bytes to prevent loop time overrun
-    while (arduinoSerial.getBytesReceived()>1000) {
+  public void serialReduction(int bufferLimit) { //throw away serial buffer contents until size is < bufferLimit
+    String tempResults;
+
+    while (arduinoSerial.getBytesReceived() > bufferLimit) {
       try {
-        results = arduinoSerial.read(1);  //dpl was  .readString(1);
-      } catch (UncleanStatusException e) {     //Catch uncleanstatusexception and restart serial port 
+        tempResults = arduinoSerial.readString(1);  //dpl was  .readString(1);
+      } 
+      catch (UncleanStatusException e) {     //Catch uncleanstatusexception and restart serial port 
         System.out.println("Serial Exception UncleanStatusException caught. Code:" + e.getStatus());
         arduinoSerial.reset();
         return;
       }
     }
+    return;
+  }
+
+  public void processSerial() {
+    String results;
+    int sensor = 0;
+    int distance = 0;
+    
+    //reduce buffer size to last 1000 bytes to prevent loop time overrun
+    serialReduction(1000);
+
     //read buffer if available one char at a time
     while (arduinoSerial.getBytesReceived()>0) {
       try {
-        results = arduinoSerial.read(1);  //dpl was  .readString(1);
+        results = arduinoSerial.readString(1);  //dpl was  .readString(1);
       } catch (UncleanStatusException e) {     //Catch uncleanstatusexception and restart serial port 
         System.out.println("Serial Exception UncleanStatusException caught. Code:" + e.getStatus());
         arduinoSerial.reset();
@@ -105,7 +108,7 @@ private long logTimer;
       }
         //FORMAT is S[# of sensor, 1-4][Distance in mm]E
         //E is end of statement, otherwise add to running string
-        if (results[0] != 'E') {
+        if (results.charAt(0) != 'E') {
         serialResults.append(results);
         }
         else {
@@ -136,11 +139,6 @@ private long logTimer;
           
             serialResults.delete(0, serialResults.length());
                        
-            Long refreshTime = System.currentTimeMillis() - distanceRefresh;
-            distanceRefresh = System.currentTimeMillis();
-            
-            hertz=0;
-            if (refreshTime>0) hertz = 1000/refreshTime;
           }
         }
       }
