@@ -154,10 +154,7 @@ public class Robot extends TimedRobot {
   }
 
   private void logSmartDashboardSensors() {
-    // SmartDashboard.putNumber("Left Encoder Count", driveTrain.getLeftEncoderTalon().getSelectedSensorPosition());
-    // SmartDashboard.putNumber("Left Encoder Rate", driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity());
-    // SmartDashboard.putNumber("Right Encoder Count", driveTrain.getRightEncoderTalon().getSelectedSensorPosition());
-    // SmartDashboard.putNumber("Right Encoder Rate", driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
+
     // SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
 
     
@@ -174,10 +171,9 @@ public class Robot extends TimedRobot {
     //SmartDashboard.putData(gearShifter);
 */
     
-
-    limeLight.log(100); //tell limelight to post to dashboard every 100ms
-    serialSubsystem.log(100); //tell serial to post to dashboard every 100ms
- 
+    driveTrain.log(103); //tell drivertrain to post to dashboard every Xms
+    limeLight.log(100); //tell limelight to post to dashboard every Xms
+    serialSubsystem.log(107); //tell serial to post to dashboard every Xms
   }
 
   private void resetAllDashBoardSensors() {
