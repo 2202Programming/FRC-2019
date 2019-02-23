@@ -16,7 +16,6 @@ import frc.robot.RobotMap;
 import frc.robot.commands.arm.ArmZero;
 import frc.robot.commands.util.MathUtil;
 
-
 /**
  * Arm based lifter subsystem.
  * 
@@ -50,17 +49,17 @@ public class ArmSubsystem extends ExtendedSubSystem {
   // Constants used by commands as measured
   public final double PHI0 = 157.0;    // degrees, starting position - encoder zero
   public final double PHI_MAX = 157.0; //In Degrees, Positive is foward, bottom front
-  public final double PHI_MIN = 29.0;  //In Degrees, Near top front 
-  //private final double COUNT_MAX = 54200.0; //In encoder counts (Proto Bot)
+  public final double PHI_MIN = 0.0;   //In Degrees, Near top front 
+  
   private final double kCounts_per_deg = 824;  // 149.333;  // TODO:confirm //COUNT_MAX / (PHI_MAX - PHI_MIN);
   private final double kDeg_per_count = 1.0 / kCounts_per_deg;
   
   //Geometry of the arm's pivot point
   public final double PIVOT_TO_FRONT = 16.5; // inches pivot center to the frame  
-  public final double MIN_PROJECTION = PIVOT_TO_FRONT + -6.5; //inches from pivot to close arm position
+  public final double MIN_PROJECTION = PIVOT_TO_FRONT - 6.5; //inches from pivot to close arm position
   public final double MAX_PROJECTION = PIVOT_TO_FRONT + Robot.kProjectConstraint; //
 
-  // Extender phyiscal numbers - d
+  // Extender phyiscal numbers 
   public final double L0 = 7.69;                 // inches - starting point, encoder zero 
   public final double EXTEND_MIN = 0.0;          // inches
   public final double EXTEND_MAX = 37.0;         // inches - measured practice bot
@@ -79,6 +78,14 @@ public class ArmSubsystem extends ExtendedSubSystem {
   final int PIDIdx = 0; //using pid 0 on talon
   final int TO = 30;    //timeout 30ms
 
+  public class Position{
+    public double height;
+    public double projection;
+  };
+
+  //outputs in robot coordinates h,ext (inches)
+  Position position = new Position();
+  
   /**
    * Creates a new arm/lift subsystem.
    */
@@ -101,9 +108,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
     armExtensionMotor.setIntegralAccumulator(0, 0, 30);
     armExtensionMotor.setSensorPhase(true);
     armExtensionMotor.setInverted(true);
-
-    zeroArm();  // will also get called on transition to teleOp, should arms be moved 
   }
+
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
 
@@ -196,6 +202,18 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public boolean extensionAtMax() {
     return armExtensionMotor.getSensorCollection().isFwdLimitSwitchClosed();
   }
+
+  /**
+   * Computes height of gripper and projection on floor from pivot, pivot is horizontal zero
+   */
+  public Position getArmPosition() {
+    double rads = Math.toRadians(getAngle());
+    double l = PIVOT_TO_FRONT + WRIST_LENGTH + getExtension();
+    position.height = ARM_PIVOT_HEIGHT + l*Math.cos(rads); 
+    position.projection = l*Math.sin(rads);
+    return position;
+  }
+
 
   @Override
   public void initDefaultCommand() {

@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.Robot;
+import frc.robot.subsystems.ArmSubsystem.Position;
 import frc.robot.commands.arm.MoveArmAtHeight;
 import frc.robot.commands.arm.MoveDownToCapture;
 import frc.robot.commands.intake.VacuumCommand;
@@ -86,8 +87,8 @@ public class CommandManager {
     CommandGroup currentGrp; // what is running
 
     //gripper commanded postion - main output of the controls
-    double gripperE_cmd;  // (inches) Extension of arm/extender/wrist/cup
-    double gripperH_cmd =22.0; //hack // (inches) composite of arm/extender/wrist/cup
+    double gripperE_cmd = 0.0;    // (inches) Extension of arm/extender/wrist/cup
+    double gripperH_cmd = 0.0;    // (inches) composite of arm/extender/wrist/cup
 
     // internal states
     int delHeightIdx = 0; // used in delivery selection
@@ -95,6 +96,10 @@ public class CommandManager {
     final Modes huntingModes[] = { Modes.HuntingHatch, Modes.HuntingCargo, Modes.HuntingFloor };
     int huntModeIdx = 0 ;  //starts at Hatch
 
+    // Initial gripper extension by huntModeIdx
+    // Extension from pivot point.
+    final double gripper_start[] = {22.0, 25.0, 30.};  //TODO: fix the numbers
+    
     // Data points - shares delheightidx, must be same length
     final double DeliveryCargoHeights[] = { 32.0, 60.0, 88.0 }; // TODO: fix the numbers
     final double DeliveryHatchHeights[] = { 28.0, 56.0, 84.0 }; // TODO: fix the numbers
@@ -167,7 +172,7 @@ public class CommandManager {
             break;
 
         case HuntingHatch:
-            // move the heigh
+            // move the height
             gripperH_cmd = HuntHeights[0];
             nextCmd = huntingHatchGrp;
             break;
@@ -273,17 +278,30 @@ public class CommandManager {
         return gripperE_cmd;
     }
 
+    /**
+     *  initialize the commands from the current position 
+     */
+    int  initialize() {
+        Position position = Robot.arm.getArmPosition();
+        gripperE_cmd = position.projection;
+        gripperH_cmd = position.height;
+        return 0;
+    }
 
     // Command Factories that build command sets for each mode of operation
     // These are largely interruptable so we can switch as state changes
     private CommandGroup CmdFactoryZeroRobot() {
         CommandGroup grp = new CommandGroup("ZeroRobot");
-        grp.addParallel(Robot.arm.zeroSubsystem());
-        grp.addParallel(Robot.intake.zeroSubsystem());
+        grp.addSequential(Robot.arm.zeroSubsystem());
+        grp.addSequential(Robot.intake.zeroSubsystem());
+        grp.addSequential(new CallFunctionCmd(this::initialize));
 
         // commands to come
         /// grp.addParallel(Robot.climber.zeroSubsystem());
         /// grp.addParallel(Robot.cargoTrap.zeroSubsystem());
+
+        //TODO: this should goto initial hatch when we have that
+        grp.addSequential(new NextModeCmd(Modes.HuntingHatch));
         return grp;
     }
 
@@ -337,6 +355,19 @@ public class CommandManager {
         grp.addSequential(new VacuumCommand(false)); 
         grp.addSequential(new CallFunctionCmd(this::gotoHuntMode));
         return grp;
+    }
+
+    //Used at the end of a command group to jump to next mode
+    class NextModeCmd extends InstantCommand {
+        Modes mode2set;
+        NextModeCmd(Modes m) {
+            mode2set = m;
+        }
+
+        @Override
+        protected void execute() {
+            setMode(mode2set);
+        }
     }
 
     class CycleHuntModeCmd extends InstantCommand {

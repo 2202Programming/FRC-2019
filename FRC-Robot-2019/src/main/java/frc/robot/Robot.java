@@ -54,14 +54,8 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Create the test subsystem
     m_testRobot  = new RobotTest();
-
-
-    //serialSubsystem = new SerialPortSubsystem();
     m_cmdMgr = new CommandManager();
-    m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's functions
-
-   /// TODO: confirm this. DPL should be covered by SettingZeros mode Robot.intake.zeroSubsystem();
-    
+    m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function
   }
 
   /**
@@ -129,11 +123,9 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    
+    m_cmdMgr.setMode(Modes.SettingZeros);
     resetAllDashBoardSensors();
-    m_cmdMgr.setMode(Modes.HuntingHatch);   
-
-
+    //m_cmdMgr.setMode(Modes.HuntingHatch);   
   }
 
   /**
