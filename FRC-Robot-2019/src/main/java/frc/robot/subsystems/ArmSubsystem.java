@@ -95,9 +95,9 @@ public class ArmSubsystem extends ExtendedSubSystem {
     addChild("Arm:Ext:Mtr", armExtensionMotor);
 
     // Set Talon postion mode gains
-    armRotationMotor.config_kP(0, 0.0 /* 0.8*/, 30);
-    armExtensionMotor.config_kP(0, 0.0 /*0.6*/, 30);
-    System.out.println("Warning - Arm motors have zeros for all Talon pid loops");
+    armRotationMotor.config_kP(0, 0.05 /* 0.8*/, 30); 
+    armExtensionMotor.config_kP(0, 0.05 /*0.6*/, 30);
+    System.out.println("Warning - Arm motors have bogus values");
 
     // Arm
     armRotationMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
@@ -106,7 +106,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
     // Extension on power will be out. 
     armExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     armExtensionMotor.setIntegralAccumulator(0, 0, 30);
-    armExtensionMotor.setSensorPhase(true);
+    armExtensionMotor.setSensorPhase(false);
     armExtensionMotor.setInverted(true);
   }
 
