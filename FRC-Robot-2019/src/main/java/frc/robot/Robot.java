@@ -167,11 +167,11 @@ public class Robot extends TimedRobot {
     //SmartDashboard.putData(gearShifter);
 */
     //picking hopefully non-overlapping time intervals so all the logging isn't done at the same cycle
-    gearShifter.log(111); //tell gearshifter to post to dashboard every Xms
-    driveTrain.log(103); //tell drivertrain to post to dashboard every Xms
-    limeLight.log(100); //tell limelight to post to dashboard every Xms
-    serialSubsystem.log(107); //tell serial to post to dashboard every Xms
-    arm.log(109);
+    gearShifter.log(511); //tell gearshifter to post to dashboard every Xms
+    driveTrain.log(503); //tell drivertrain to post to dashboard every Xms
+    limeLight.log(500); //tell limelight to post to dashboard every Xms
+    serialSubsystem.log(507); //tell serial to post to dashboard every Xms
+    arm.log(509);
   }
 
   private void resetAllDashBoardSensors() {
