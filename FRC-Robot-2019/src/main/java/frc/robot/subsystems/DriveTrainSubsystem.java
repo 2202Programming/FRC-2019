@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -98,6 +99,7 @@ public class DriveTrainSubsystem extends Subsystem {
     talon.configContinuousCurrentLimit(30, 10);
     talon.enableCurrentLimit(true);
     talon.configOpenloopRamp(0.08, 10);
+    talon.setNeutralMode(NeutralMode.Brake);
   }
 
   @Override
