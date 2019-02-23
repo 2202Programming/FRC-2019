@@ -5,6 +5,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.Robot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class LimeLightSubsystem extends Subsystem {
 
@@ -13,11 +14,29 @@ public class LimeLightSubsystem extends Subsystem {
     private double area;
     private double target;
     private NetworkTable table;
+    private long logTimer;
     
+    public LimeLightSubsystem() {
+        logTimer = System.currentTimeMillis();
+    }
+
     @Override
     protected void initDefaultCommand() {
 
     }
+
+    public void log(int interval) {
+
+        if ((logTimer + interval) < System.currentTimeMillis()) { //only post to smartdashboard every interval ms
+          logTimer = System.currentTimeMillis();
+
+          SmartDashboard.putNumber("LimelightX", getX());
+          SmartDashboard.putNumber("LimelightY", getY());
+          SmartDashboard.putNumber("LimelightArea", getArea());
+          SmartDashboard.putBoolean("LimeTarget", hasTarget());
+
+        }
+      }
 
     public void populateLimelight() {
         table = NetworkTableInstance.getDefault().getTable("limelight");

@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.hal.util.UncleanStatusException;
 import java.lang.StringBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.RobotMap;
 
 //Listens on USB Serial port for LIDAR distance data from the arduino
 
@@ -20,6 +22,7 @@ private SerialPort arduinoSerial;
 private long distanceRefresh; //Track time between sensor readings
 private long hertz;
 private boolean serialExists = true;
+private long logTimer;
 
   public SerialPortSubsystem() {
     try {
@@ -28,6 +31,8 @@ private boolean serialExists = true;
     catch(UncleanStatusException e) {
       serialExists = false;
     }
+
+    logTimer = System.currentTimeMillis();
 
   }
 
@@ -58,6 +63,20 @@ private boolean serialExists = true;
         return false;
     }
     return true;
+  }
+
+  public void log(int interval) {
+
+    if ((logTimer + interval) < System.currentTimeMillis()) { //only post to smartdashboard every interval ms
+      logTimer = System.currentTimeMillis();
+      if (isSerialEnabled()) { //verify serial system was initalized before calling for results
+        SmartDashboard.putNumber("Left Front LIDAR (mm)", getDistance(RobotMap.LEFT_FRONT_LIDAR));
+        SmartDashboard.putNumber("Right Front LIDAR (mm)", getDistance(RobotMap.RIGHT_FRONT_LIDAR));
+        SmartDashboard.putNumber("Left Back LIDAR (mm)", getDistance(RobotMap.LEFT_BACK_LIDAR));
+        SmartDashboard.putNumber("Right Back LIDAR (mm)", getDistance(RobotMap.RIGHT_BACK_LIDAR));
+        }
+        SmartDashboard.putBoolean("Serial Enabled?", isSerialEnabled());
+    }
   }
 
   public void processSerial() {
