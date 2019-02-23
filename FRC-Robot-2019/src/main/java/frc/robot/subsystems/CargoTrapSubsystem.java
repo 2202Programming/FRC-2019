@@ -49,7 +49,7 @@ public class CargoTrapSubsystem extends Subsystem {
 
     @Override
     public void initDefaultCommand() {
-        setDefaultCommand(new AutoTrapCargoCommand());
+        //setDefaultCommand(new AutoTrapCargoCommand());
     }
 
     /**
