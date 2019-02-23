@@ -48,7 +48,8 @@ public class TeleopArmControlCommand extends Command {
         double heightAbovePivot = height_cmd - arm.ARM_PIVOT_HEIGHT;
         double curAngle = -Math.toDegrees(Math.atan(heightAbovePivot / projection_cmd)) + 90;
         //double extensionLength = limit(0, arm.EXTEND_MAX, Math.sqrt(heightAbovePivot * heightAbovePivot + projection_cmd * projection_cmd) - arm.ARM_BASE_LENGTH - arm.WRIST_LENGTH);
-        double extensionLength = MathUtil.limit(0, arm.EXTEND_MAX, (projection_cmd / Math.cos(Math.toRadians(90 - arm.getAngle()))) - arm.ARM_BASE_LENGTH - arm.WRIST_LENGTH);
+        double calculatedExtension = (projection_cmd / Math.cos(Math.toRadians(90 - arm.getAngle()))) - arm.ARM_BASE_LENGTH - arm.WRIST_LENGTH;
+        double extensionLength = MathUtil.limit(calculatedExtension, arm.EXTEND_MIN, arm.EXTEND_MAX);
         
         SmartDashboard.putNumber("Current Height : ", height_cmd);
         SmartDashboard.putNumber("Current Projection: ", projection_cmd);
@@ -69,12 +70,12 @@ public class TeleopArmControlCommand extends Command {
             // Go To Higher State
         } else {
             // TODO: Bind to real controls and add rate limiting
-            double changeInHeight = Math.abs(in.getY(Hand.kLeft)) < 0.05? 0: -in.getY(Hand.kLeft);
-            double changeInProjection = Math.abs(in.getY(Hand.kRight)) < 0.05? 0: -in.getY(Hand.kRight);
+            double changeInHeight = heightCmdFunct.getAsDouble();
+            double changeInProjection = projectionCmdFunct.getAsDouble();;
 
             // TODO: Limit these values so they don't break physical constraints
-            height_cmd = MathUtil.limit(12, 70, height_cmd + changeInHeight);
-            projection_cmd = MathUtil.limit(arm.MIN_PROJECTION, arm.MAX_PROJECTION, projection_cmd + changeInProjection);
+            height_cmd = MathUtil.limit(height_cmd + changeInHeight, 12, 70);
+            projection_cmd = MathUtil.limit(projection_cmd + changeInProjection, arm.MIN_PROJECTION, arm.MAX_PROJECTION);
         }
     }
 
