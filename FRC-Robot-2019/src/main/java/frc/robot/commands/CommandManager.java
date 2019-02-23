@@ -1,12 +1,6 @@
 package frc.robot.commands;
 
 import java.util.function.IntSupplier;
-import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.input.XboxControllerButtonCode;
-
-import edu.wpi.first.wpilibj.XboxController;
-
-import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.CommandGroup;
@@ -25,11 +19,7 @@ import frc.robot.commands.intake.WristTrackFunction;
 public class CommandManager {
     int logCnt=0;
 
-    // OI - operator inputs
-    JoystickButton huntSelect; // used in hunting modes
-    JoystickButton heightSelect; // used in delivery modes
-    JoystickButton captureRelease; // used in delivery modes to go back to hunting
-
+    
     // Button Commands
     Command huntSelectCmd;
     Command heightSelectCmd;
@@ -108,25 +98,13 @@ public class CommandManager {
 
     public CommandManager() {
         currentMode = Modes.Construction;
-        XboxController aCtlr = Robot.m_oi.getAssistantController();
         // XboxController dCtlr = Robot.m_oi.getDriverController();
-
-        // setup buttons
-        huntSelect     = new JoystickButton(aCtlr, XboxControllerButtonCode.LB.getCode());
-        heightSelect   = new JoystickButton(aCtlr, XboxControllerButtonCode.RB.getCode());
-        captureRelease = new JoystickButton(aCtlr, XboxControllerButtonCode.A.getCode());
-
-        // define commands - bind local functions to be used on button hits
-        huntSelectCmd = new CycleHuntModeCmd();         // (this::cycleHuntMode);
-        heightSelectCmd = new CycleHeightModeCmd();
-        captRelCmd = new CaptureReleaseCmd();
-    
         // bind commands to buttons
-        huntSelect.whenPressed(huntSelectCmd);
-        heightSelect.whenPressed(heightSelectCmd);
-        captureRelease.whenPressed(captRelCmd);
+        Robot.m_oi.huntSelect.whenPressed(new CycleHuntModeCmd());
+        Robot.m_oi.heightSelect.whenPressed(new CycleHeightModeCmd());
+        Robot.m_oi.captureRelease.whenPressed(new CaptureReleaseCmd());
 
-        // Construct our major modes
+        // Construct our major modes from their command factories
         zeroRobotGrp = CmdFactoryZeroRobot();
         huntingHFloorGrp = CmdFactoryHuntHatchFloor();
         huntingHatchGrp = CmdFactoryHuntHatch();
