@@ -40,7 +40,7 @@ public class Robot extends TimedRobot {
   public static IntakeSubsystem intake = new IntakeSubsystem();
   public static CargoTrapSubsystem cargoTrap = new CargoTrapSubsystem();
   public static ArmSubsystem arm = new ArmSubsystem();
-  public static SerialPortSubsystem serialSubsystem;
+  public static SerialPortSubsystem serialSubsystem = new SerialPortSubsystem();
   public static OI m_oi = new OI(); //OI Depends on the subsystems and must be last
 
   public static CommandManager m_cmdMgr;    //fix the public later
@@ -128,6 +128,10 @@ public class Robot extends TimedRobot {
     
     resetAllDashBoardSensors();
     m_cmdMgr.setMode(Modes.HuntingHatch);   
+
+    if (serialSubsystem.isSerialEnabled()) {
+      serialSubsystem.processSerial();
+    }
   }
 
   /**
@@ -180,14 +184,14 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("LimelightY", limeLight.getY());
     SmartDashboard.putNumber("LimelightArea", limeLight.getArea());
     SmartDashboard.putBoolean("LimeTarget", limeLight.hasTarget());
-
+*/
     if (serialSubsystem.isSerialEnabled()) { //verify serial system was initalized before calling for results
     SmartDashboard.putNumber("Left Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.LEFT_FRONT_LIDAR));
     SmartDashboard.putNumber("Right Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.RIGHT_FRONT_LIDAR));
     SmartDashboard.putNumber("Left Back LIDAR (mm)", serialSubsystem.getDistance(RobotMap.LEFT_BACK_LIDAR));
     SmartDashboard.putNumber("Right Back LIDAR (mm)", serialSubsystem.getDistance(RobotMap.RIGHT_BACK_LIDAR));
     }
- */
+ 
   }
 
   private void resetAllDashBoardSensors() {
