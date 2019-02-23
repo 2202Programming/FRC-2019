@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.hal.util.UncleanStatusException;
 import java.lang.StringBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.RobotMap;
 
 //Listens on USB Serial port for LIDAR distance data from the arduino
 
@@ -17,9 +19,8 @@ private int distance4; //Sensor #4
 
 private StringBuilder serialResults =new StringBuilder();
 private SerialPort arduinoSerial;
-private long distanceRefresh; //Track time between sensor readings
-private long hertz;
 private boolean serialExists = true;
+private long logTimer;
 
   public SerialPortSubsystem() {
     try {
@@ -28,6 +29,8 @@ private boolean serialExists = true;
     catch(UncleanStatusException e) {
       serialExists = false;
     }
+
+    logTimer = System.currentTimeMillis();
 
   }
 
@@ -48,10 +51,6 @@ private boolean serialExists = true;
     return 0;
   }
 
-  public long getHertz() {
-    return hertz;
-  }
-
   public Boolean allDigits(String tempString) {
     for (int i = 0; i<tempString.length(); i++) { //check all chars to make sure they are all digits
       if (!Character.isDigit(tempString.charAt(i)))
@@ -60,25 +59,48 @@ private boolean serialExists = true;
     return true;
   }
 
-  public void processSerial() {
-    byte[] results;
-    int sensor = 0;
-    int distance = 0;
-    
-    //reduce buffer size to last 1000 bytes to prevent loop time overrun
-    while (arduinoSerial.getBytesReceived()>1000) {
+  public void log(int interval) {
+
+    if ((logTimer + interval) < System.currentTimeMillis()) { //only post to smartdashboard every interval ms
+      logTimer = System.currentTimeMillis();
+      if (isSerialEnabled()) { //verify serial system was initalized before calling for results
+        SmartDashboard.putNumber("Left Front LIDAR (mm)", getDistance(RobotMap.LEFT_FRONT_LIDAR));
+        SmartDashboard.putNumber("Right Front LIDAR (mm)", getDistance(RobotMap.RIGHT_FRONT_LIDAR));
+        SmartDashboard.putNumber("Left Back LIDAR (mm)", getDistance(RobotMap.LEFT_BACK_LIDAR));
+        SmartDashboard.putNumber("Right Back LIDAR (mm)", getDistance(RobotMap.RIGHT_BACK_LIDAR));
+        }
+        SmartDashboard.putBoolean("Serial Enabled?", isSerialEnabled());
+    }
+  }
+
+  public void serialReduction(int bufferLimit) { //throw away serial buffer contents until size is < bufferLimit
+    String tempResults;
+
+    while (arduinoSerial.getBytesReceived() > bufferLimit) {
       try {
-        results = arduinoSerial.read(1);  //dpl was  .readString(1);
-      } catch (UncleanStatusException e) {     //Catch uncleanstatusexception and restart serial port 
+        tempResults = arduinoSerial.readString(1);  //dpl was  .readString(1);
+      } 
+      catch (UncleanStatusException e) {     //Catch uncleanstatusexception and restart serial port 
         System.out.println("Serial Exception UncleanStatusException caught. Code:" + e.getStatus());
         arduinoSerial.reset();
         return;
       }
     }
+    return;
+  }
+
+  public void processSerial() {
+    String results;
+    int sensor = 0;
+    int distance = 0;
+    
+    //reduce buffer size to last 1000 bytes to prevent loop time overrun
+    serialReduction(1000);
+
     //read buffer if available one char at a time
     while (arduinoSerial.getBytesReceived()>0) {
       try {
-        results = arduinoSerial.read(1);  //dpl was  .readString(1);
+        results = arduinoSerial.readString(1);  //dpl was  .readString(1);
       } catch (UncleanStatusException e) {     //Catch uncleanstatusexception and restart serial port 
         System.out.println("Serial Exception UncleanStatusException caught. Code:" + e.getStatus());
         arduinoSerial.reset();
@@ -86,7 +108,7 @@ private boolean serialExists = true;
       }
         //FORMAT is S[# of sensor, 1-4][Distance in mm]E
         //E is end of statement, otherwise add to running string
-        if (results[0] != 'E') {
+        if (results.charAt(0) != 'E') {
         serialResults.append(results);
         }
         else {
@@ -117,11 +139,6 @@ private boolean serialExists = true;
           
             serialResults.delete(0, serialResults.length());
                        
-            Long refreshTime = System.currentTimeMillis() - distanceRefresh;
-            distanceRefresh = System.currentTimeMillis();
-            
-            hertz=0;
-            if (refreshTime>0) hertz = 1000/refreshTime;
           }
         }
       }
