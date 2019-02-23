@@ -173,18 +173,20 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(Scheduler.getInstance()); 
     //SmartDashboard.putData(driveTrain);
     //SmartDashboard.putData(gearShifter);
+*/
     
     SmartDashboard.putNumber("LimelightX", limeLight.getX());
     SmartDashboard.putNumber("LimelightY", limeLight.getY());
     SmartDashboard.putNumber("LimelightArea", limeLight.getArea());
     SmartDashboard.putBoolean("LimeTarget", limeLight.hasTarget());
-*/
+
     if (serialSubsystem.isSerialEnabled()) { //verify serial system was initalized before calling for results
     SmartDashboard.putNumber("Left Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.LEFT_FRONT_LIDAR));
     SmartDashboard.putNumber("Right Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.RIGHT_FRONT_LIDAR));
     SmartDashboard.putNumber("Left Back LIDAR (mm)", serialSubsystem.getDistance(RobotMap.LEFT_BACK_LIDAR));
     SmartDashboard.putNumber("Right Back LIDAR (mm)", serialSubsystem.getDistance(RobotMap.RIGHT_BACK_LIDAR));
     }
+    SmartDashboard.putBoolean("Serial Enabled?", serialSubsystem.isSerialEnabled());
  
   }
 
