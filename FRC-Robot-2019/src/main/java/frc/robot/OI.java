@@ -52,8 +52,15 @@ public class OI {
   private XboxController assistant = new XboxController(1);
   private XboxController switchBoard = new XboxController(2);
 
+  // OI - operator inputs
+  public JoystickButton huntSelect;         // used in hunting modes
+  public JoystickButton heightSelect;       // used in delivery modes
+  public JoystickButton captureRelease;     // used in delivery modes to go back to hunting
+
+
   @SuppressWarnings({ "resource", })
   public OI() {
+    
     // Drive Train Commands
     new JoystickButton(driver, XboxControllerButtonCode.A.getCode()).whenPressed(new DownShiftCommand());
     new JoystickButton(driver, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
@@ -61,6 +68,10 @@ public class OI {
     new JoystickButton(driver, XboxControllerButtonCode.X.getCode()).whenPressed(new InvertDriveControlsCommand());
     new JoystickButton(driver, XboxControllerButtonCode.LB.getCode()).whileHeld(new TankDriveCommand());
 
+    // setup buttons
+    huntSelect     = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
+    heightSelect   = new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode());
+    captureRelease = new JoystickButton(assistant, XboxControllerButtonCode.A.getCode());
     // Arm Commands
     //new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode()).whileHeld(new ExtendArmCommand());
     //new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whileHeld(new RetractArmCommand());

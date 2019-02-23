@@ -1,16 +1,11 @@
 package frc.robot.commands;
 
 import java.util.function.IntSupplier;
-import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.input.XboxControllerButtonCode;
-
-import edu.wpi.first.wpilibj.XboxController;
-
-import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.Robot;
+import frc.robot.subsystems.ArmSubsystem.Position;
 import frc.robot.commands.arm.MoveArmAtHeight;
 import frc.robot.commands.arm.MoveDownToCapture;
 import frc.robot.commands.intake.VacuumCommand;
@@ -24,11 +19,7 @@ import frc.robot.commands.intake.WristTrackFunction;
 public class CommandManager {
     int logCnt=0;
 
-    // OI - operator inputs
-    JoystickButton huntSelect; // used in hunting modes
-    JoystickButton heightSelect; // used in delivery modes
-    JoystickButton captureRelease; // used in delivery modes to go back to hunting
-
+    
     // Button Commands
     Command huntSelectCmd;
     Command heightSelectCmd;
@@ -86,8 +77,8 @@ public class CommandManager {
     CommandGroup currentGrp; // what is running
 
     //gripper commanded postion - main output of the controls
-    double gripperE_cmd;  // (inches) Extension of arm/extender/wrist/cup
-    double gripperH_cmd =22.0; //hack // (inches) composite of arm/extender/wrist/cup
+    double gripperE_cmd = 0.0;    // (inches) Extension of arm/extender/wrist/cup
+    double gripperH_cmd = 0.0;    // (inches) composite of arm/extender/wrist/cup
 
     // internal states
     int delHeightIdx = 0; // used in delivery selection
@@ -95,6 +86,10 @@ public class CommandManager {
     final Modes huntingModes[] = { Modes.HuntingHatch, Modes.HuntingCargo, Modes.HuntingFloor };
     int huntModeIdx = 0 ;  //starts at Hatch
 
+    // Initial gripper extension by huntModeIdx
+    // Extension from pivot point.
+    final double gripper_start[] = {22.0, 25.0, 30.};  //TODO: fix the numbers
+    
     // Data points - shares delheightidx, must be same length
     final double DeliveryCargoHeights[] = { 32.0, 60.0, 88.0 }; // TODO: fix the numbers
     final double DeliveryHatchHeights[] = { 28.0, 56.0, 84.0 }; // TODO: fix the numbers
@@ -103,25 +98,13 @@ public class CommandManager {
 
     public CommandManager() {
         currentMode = Modes.Construction;
-        XboxController aCtlr = Robot.m_oi.getAssistantController();
         // XboxController dCtlr = Robot.m_oi.getDriverController();
-
-        // setup buttons
-        huntSelect     = new JoystickButton(aCtlr, XboxControllerButtonCode.LB.getCode());
-        heightSelect   = new JoystickButton(aCtlr, XboxControllerButtonCode.RB.getCode());
-        captureRelease = new JoystickButton(aCtlr, XboxControllerButtonCode.A.getCode());
-
-        // define commands - bind local functions to be used on button hits
-        huntSelectCmd = new CycleHuntModeCmd();         // (this::cycleHuntMode);
-        heightSelectCmd = new CycleHeightModeCmd();
-        captRelCmd = new CaptureReleaseCmd();
-    
         // bind commands to buttons
-        huntSelect.whenPressed(huntSelectCmd);
-        heightSelect.whenPressed(heightSelectCmd);
-        captureRelease.whenPressed(captRelCmd);
+        Robot.m_oi.huntSelect.whenPressed(new CycleHuntModeCmd());
+        Robot.m_oi.heightSelect.whenPressed(new CycleHeightModeCmd());
+        Robot.m_oi.captureRelease.whenPressed(new CaptureReleaseCmd());
 
-        // Construct our major modes
+        // Construct our major modes from their command factories
         zeroRobotGrp = CmdFactoryZeroRobot();
         huntingHFloorGrp = CmdFactoryHuntHatchFloor();
         huntingHatchGrp = CmdFactoryHuntHatch();
@@ -167,7 +150,7 @@ public class CommandManager {
             break;
 
         case HuntingHatch:
-            // move the heigh
+            // move the height
             gripperH_cmd = HuntHeights[0];
             nextCmd = huntingHatchGrp;
             break;
@@ -273,17 +256,30 @@ public class CommandManager {
         return gripperE_cmd;
     }
 
+    /**
+     *  initialize the commands from the current position 
+     */
+    int  initialize() {
+        Position position = Robot.arm.getArmPosition();
+        gripperE_cmd = position.projection;
+        gripperH_cmd = position.height;
+        return 0;
+    }
 
     // Command Factories that build command sets for each mode of operation
     // These are largely interruptable so we can switch as state changes
     private CommandGroup CmdFactoryZeroRobot() {
         CommandGroup grp = new CommandGroup("ZeroRobot");
-        grp.addParallel(Robot.arm.zeroSubsystem());
-        grp.addParallel(Robot.intake.zeroSubsystem());
+        grp.addSequential(Robot.arm.zeroSubsystem());
+        grp.addSequential(Robot.intake.zeroSubsystem());
+        grp.addSequential(new CallFunctionCmd(this::initialize));
 
         // commands to come
         /// grp.addParallel(Robot.climber.zeroSubsystem());
         /// grp.addParallel(Robot.cargoTrap.zeroSubsystem());
+
+        //TODO: this should goto initial hatch when we have that
+        grp.addSequential(new NextModeCmd(Modes.HuntingHatch));
         return grp;
     }
 
@@ -337,6 +333,19 @@ public class CommandManager {
         grp.addSequential(new VacuumCommand(false)); 
         grp.addSequential(new CallFunctionCmd(this::gotoHuntMode));
         return grp;
+    }
+
+    //Used at the end of a command group to jump to next mode
+    class NextModeCmd extends InstantCommand {
+        Modes mode2set;
+        NextModeCmd(Modes m) {
+            mode2set = m;
+        }
+
+        @Override
+        protected void execute() {
+            setMode(mode2set);
+        }
     }
 
     class CycleHuntModeCmd extends InstantCommand {
