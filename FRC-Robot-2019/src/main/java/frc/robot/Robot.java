@@ -155,10 +155,6 @@ public class Robot extends TimedRobot {
 
   private void logSmartDashboardSensors() {
 
-    // SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
-
-    
-    
     SmartDashboard.putNumber("In:Wr(deg)", intake.getAngle());
    /*
     intake.log();   //DPL 2/10/19 review this with Billy/Xander
@@ -170,7 +166,8 @@ public class Robot extends TimedRobot {
     //SmartDashboard.putData(driveTrain);
     //SmartDashboard.putData(gearShifter);
 */
-    
+    //picking hopefully non-overlapping time intervals so all the logging isn't done at the same cycle
+    gearShifter.log(111); //tell gearshifter to post to dashboard every Xms
     driveTrain.log(103); //tell drivertrain to post to dashboard every Xms
     limeLight.log(100); //tell limelight to post to dashboard every Xms
     serialSubsystem.log(107); //tell serial to post to dashboard every Xms

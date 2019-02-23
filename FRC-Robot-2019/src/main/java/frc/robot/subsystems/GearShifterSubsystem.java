@@ -6,9 +6,23 @@ import edu.wpi.first.wpilibj.Sendable;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 import frc.robot.commands.drive.shift.AutomaticGearShiftCommand;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class GearShifterSubsystem extends Subsystem {
+    private long logTimer;
 
+    public GearShifterSubsystem() {
+        logTimer = System.currentTimeMillis();
+    }
+
+    public void log(int interval) {
+
+        if ((logTimer + interval) < System.currentTimeMillis()) { //only post to smartdashboard every interval ms
+          logTimer = System.currentTimeMillis();
+    
+          SmartDashboard.putString("Gear Shifter State", String.valueOf(getCurGear()));
+        }
+      }
 
     //physical devices
     private DoubleSolenoid gearShiftSolenoid = new DoubleSolenoid(RobotMap.GEARSHIFT_PCM_ID,
