@@ -52,12 +52,18 @@ private boolean serialExists = true;
     return hertz;
   }
 
+  public Boolean allDigits(String tempString) {
+    for (int i = 0; i<tempString.length(); i++) { //check all chars to make sure they are all digits
+      if (!Character.isDigit(tempString.charAt(i)))
+        return false;
+    }
+    return true;
+  }
 
   public void processSerial() {
     byte[] results;
     int sensor = 0;
     int distance = 0;
-    boolean isDigit = true;
     
     //reduce buffer size to last 1000 bytes to prevent loop time overrun
     while (arduinoSerial.getBytesReceived()>1000) {
@@ -99,11 +105,7 @@ private boolean serialExists = true;
               sensor = Character.getNumericValue(serialResults.charAt(1));
             }
             if(serialResults.length()>2) {
-              for (int i = 2; i<serialResults.length(); i++) { //check remaining chars to make sure they are all digits
-                if (!Character.isDigit(serialResults.charAt(i)))
-                  isDigit = false;
-              }
-              if (isDigit) { //only convert to integer if everything left in the string are digits
+              if (allDigits(serialResults.substring(2))) { //only convert to integer if everything left in the string are digits
                 distance = Integer.parseInt(serialResults.substring(2));
 
                 if(sensor==1) distance1 = distance;
