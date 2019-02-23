@@ -134,7 +134,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * @param angle the angle to rotate the arm to
    */
   public void setAngle(double angle) {
-    double counts = (angle - PHI0) * kCounts_per_deg;
+    //If inverted, translate based on max angle backwards
+    double counts = (PHI0 - inversionConstant*angle) * kCounts_per_deg;
     armRotationMotor.set(ControlMode.Position, counts);
   }
 
@@ -145,7 +146,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public double getAngle() {
     //  return PHI_MAX - (rotationEncoder.getSelectedSensorPosition() / COUNT_MAX * (PHI_MAX - PHI_MIN));
     double counts = armRotationMotor.getSelectedSensorPosition();
-    double angle = counts*kDeg_per_count +  PHI0;
+    double angle = PHI0 - counts * kDeg_per_count;
     return angle;
   }
 
@@ -161,7 +162,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public void setExtension(double l) {
     double angle = getAngle();                     //current angle
     double compLen = ((angle - PHI0)*k_dl_dphi);   // ext due to rotation to compensate for
-    double len = (l - L0) - compLen;                // net len to command
+    double len = (l - L0) - compLen;               // net len to command
 
     //Make sure we limit to the range of the extension is capable
     if (len < EXTEND_MIN) {
@@ -214,6 +215,14 @@ public class ArmSubsystem extends ExtendedSubSystem {
   @Override
   public Command zeroSubsystem() {
     return new ArmZero();
+  }
+
+  public void invert() {
+    inversionConstant *= -1;
+  }
+
+  public short getInversion() {
+    return inversionConstant;
   }
 
   @Override
