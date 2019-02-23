@@ -79,6 +79,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
   final int PIDIdx = 0; //using pid 0 on talon
   final int TO = 30;    //timeout 30ms
 
+  private short inversionConstant;
+
   /**
    * Creates a new arm/lift subsystem.
    */
@@ -103,6 +105,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
     armExtensionMotor.setInverted(true);
 
     zeroArm();  // will also get called on transition to teleOp, should arms be moved 
+
+    inversionConstant = 1;
   }
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
