@@ -71,10 +71,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     logSmartDashboardSensors();
     limeLight.populateLimelight();
-    
-    if (serialSubsystem.isSerialEnabled()) {
-      serialSubsystem.processSerial();
-    }
+    serialSubsystem.processSerial();
   }
 
   /**

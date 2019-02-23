@@ -27,7 +27,7 @@ private long logTimer;
       arduinoSerial = new SerialPort(115200, SerialPort.Port.kUSB);
     }
     catch(UncleanStatusException e) {
-      serialExists = false;
+      serialExists = false; //if fails to init, stop future attempts to check serial buffer
     }
 
     logTimer = System.currentTimeMillis();
@@ -74,11 +74,11 @@ private long logTimer;
   }
 
   public void serialReduction(int bufferLimit) { //throw away serial buffer contents until size is < bufferLimit
-    String tempResults;
+    String temp;
 
     while (arduinoSerial.getBytesReceived() > bufferLimit) {
       try {
-        tempResults = arduinoSerial.readString(1);  //dpl was  .readString(1);
+        temp = arduinoSerial.readString(1);  //dpl was  .readString(1);
       } 
       catch (UncleanStatusException e) {     //Catch uncleanstatusexception and restart serial port 
         System.out.println("Serial Exception UncleanStatusException caught. Code:" + e.getStatus());
@@ -91,59 +91,78 @@ private long logTimer;
 
   public void processSerial() {
     String results;
-    int sensor = 0;
-    int distance = 0;
     
-    //reduce buffer size to last 1000 bytes to prevent loop time overrun
-    serialReduction(1000);
+    if (serialExists) {  //only run if serial port was correctly initalized
 
-    //read buffer if available one char at a time
-    while (arduinoSerial.getBytesReceived()>0) {
-      try {
-        results = arduinoSerial.readString(1);  //dpl was  .readString(1);
-      } catch (UncleanStatusException e) {     //Catch uncleanstatusexception and restart serial port 
-        System.out.println("Serial Exception UncleanStatusException caught. Code:" + e.getStatus());
-        arduinoSerial.reset();
-        return;
-      }
-        //FORMAT is S[# of sensor, 1-4][Distance in mm]E
-        //E is end of statement, otherwise add to running string
-        if (results.charAt(0) != 'E') {
-        serialResults.append(results);
+      //reduce buffer size to last 1000 bytes to prevent loop time overrun
+      serialReduction(1000);
+
+      //read buffer if available one char at a time
+      while (arduinoSerial.getBytesReceived()>0) {
+        try {
+          results = arduinoSerial.readString(1);  //dpl was  .readString(1);
+        } 
+        catch (UncleanStatusException e) {     //Catch uncleanstatusexception and restart serial port 
+          System.out.println("Serial Exception UncleanStatusException caught. Code:" + e.getStatus());
+          arduinoSerial.reset();
+          return;
         }
-        else {
-          //Correct statement is minimum of 3 char long
-          if(serialResults.length()<3) {
-            serialResults.delete(0, serialResults.length());
-            System.out.println("Bad serial packet length, tossing.");
-          }
-          //Correct statement starts with S
-          else if(serialResults.charAt(0) != 'S') {
-            serialResults.delete(0, serialResults.length());
-            System.out.println("Bad serial packet start char, tossing.");
-          }
-          else {
-            if (Character.isDigit(serialResults.charAt(1))) {
-              sensor = Character.getNumericValue(serialResults.charAt(1));
-            }
-            if(serialResults.length()>2) {
-              if (allDigits(serialResults.substring(2))) { //only convert to integer if everything left in the string are digits
-                distance = Integer.parseInt(serialResults.substring(2));
-
-                if(sensor==1) distance1 = distance;
-                if(sensor==2) distance2 = distance;
-                if(sensor==3) distance3 = distance;
-                if(sensor==4) distance4 = distance;
-              }
-            }
-          
-            serialResults.delete(0, serialResults.length());
-                       
-          }
+        //FORMAT is S[# of sensor, 1-4][Distance in mm]E
+        //E is end of message, otherwise add to running string
+        if (results.charAt(0) != 'E') {
+          serialResults.append(results); //message not done, append byte
+        }
+        else { //Found an E, time to process message (without E at end)
+          processMessage(serialResults);
         }
       }
     }
+  }
+  
 
+  public void processMessage(StringBuilder serialResults){
+    int sensor = 0;
+    int distance = 0;
 
+    if(serialResults.length()<3) { //correct message is at least 3 char long
+      serialResults.delete(0, serialResults.length());
+      System.out.println("Bad serial packet length, tossing.");
+      return;
+    }
+
+    if(serialResults.charAt(0) != 'S') { //Correct statement starts with S
+      serialResults.delete(0, serialResults.length());
+      System.out.println("Bad serial packet start char, tossing.");
+      return;
+    }
+    
+    if (!Character.isDigit(serialResults.charAt(1))) { // if 2nd byte is a number (it should be) this is the sensor #
+      serialResults.delete(0, serialResults.length());
+      System.out.println("Bad serial packet sensor #, tossing.");
+      return;
+    }
+
+    sensor = Character.getNumericValue(serialResults.charAt(1));
+
+    if (!allDigits(serialResults.substring(2))) { //only convert to integer if everything left in the string are digits
+      serialResults.delete(0, serialResults.length());
+      System.out.println("Bad serial packet distance #, tossing.");
+      return;
+    }
+
+    distance = Integer.parseInt(serialResults.substring(2));
+
+    switch(sensor) { //set read distance to correct LIDAR based on read sensor ID
+      case 1: distance1=distance;
+              break;
+      case 2: distance2=distance;
+              break;
+      case 3: distance3=distance;
+              break;
+      case 4: distance4=distance;
+              break;
+    }
+
+    serialResults.delete(0, serialResults.length()); //message processed, delete
+  }
 }
-
