@@ -11,8 +11,10 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.Robot;
+import frc.robot.commands.arm.ExtendArmToPositionCommand;
 import frc.robot.commands.arm.MoveArmAtHeight;
 import frc.robot.commands.arm.MoveDownToCapture;
+import frc.robot.commands.arm.tests.TestRotateArmToAngleCommand;
 import frc.robot.commands.intake.VacuumCommand;
 import frc.robot.commands.intake.WristTrackFunction;
 
@@ -274,6 +276,10 @@ public class CommandManager {
         return (phi - 180.0);
     }
 
+    Double wristTrackZero() {
+        return 0.0;
+    }
+
     // expose desired cup height to commands, set griperheight via state machine.
     Double gripperHeight() {
         return gripperH_cmd;
@@ -357,10 +363,10 @@ public class CommandManager {
 
     private CommandGroup CmdFactoryFlip() {
         CommandGroup grp = new CommandGroup("Flip");
-        //Set wrist to zero
-        //Extend arm out certain distance
-        //Rotate to (slightly past) 0
-        //...rest is handled by going back to previous state
+        grp.addSequential(new WristTrackFunction(this::wristTrackZero));
+        int tempFlipLength = 10; //TODO: Find actual extension to flip
+        grp.addSequential(new ExtendArmToPositionCommand(tempFlipLength));
+        grp.addSequential(new TestRotateArmToAngleCommand(0)); //TODO: Maybe rotate to a diff specific angle
         return grp;
     }
 
@@ -414,5 +420,4 @@ public class CommandManager {
             System.out.println("CmdMod:"+currentMode);
         }
     }
-
 }
