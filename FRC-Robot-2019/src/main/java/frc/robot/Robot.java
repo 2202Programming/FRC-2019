@@ -56,6 +56,7 @@ public class Robot extends TimedRobot {
     m_testRobot  = new RobotTest();
     m_cmdMgr = new CommandManager();
     m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function
+    limeLight.disableLED(); //disable blinding green LED that Trevor hates
   }
 
   /**
@@ -81,6 +82,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
+    limeLight.disableLED(); //disable blinding green LED that Trevor hates
   }
 
   @Override
@@ -103,6 +105,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     resetAllDashBoardSensors();
+    limeLight.enableLED(); //active limelight LED when operational
   }
 
   /**
@@ -121,7 +124,8 @@ public class Robot extends TimedRobot {
     // this line or comment it out.
     m_cmdMgr.setMode(Modes.SettingZeros);
     resetAllDashBoardSensors();
-    //m_cmdMgr.setMode(Modes.HuntingHatch);   
+    //m_cmdMgr.setMode(Modes.HuntingHatch);  
+    limeLight.enableLED(); //active limelight LED when operational 
   }
 
   /**
@@ -138,6 +142,7 @@ public class Robot extends TimedRobot {
    @Override
    public void testInit() {
      m_testRobot.initialize();
+     limeLight.enableLED(); //active limelight LED when operational
      Scheduler.getInstance().enable();   //### hack? or required?  Seems required otherwise nothing runs 
    }
 

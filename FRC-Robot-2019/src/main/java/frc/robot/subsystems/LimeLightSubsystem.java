@@ -59,6 +59,14 @@ public class LimeLightSubsystem extends Subsystem {
         return;
     }
 
+    public void disableLED() {
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(1);
+    }
+
+    public void enableLED() {
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("ledMode").setNumber(3);
+    }
+
     public NetworkTable getNetworkTable() {
         return table;
     }
