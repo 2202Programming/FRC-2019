@@ -4,6 +4,7 @@ import frc.robot.commands.util.MathUtil;
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
+import frc.robot.subsystems.ArmSubsystem;
 
 /** 
  * 
@@ -16,6 +17,8 @@ import frc.robot.Robot;
  */
 
 public class MoveArmAtHeight extends Command {
+    //ArmSubsystem  arm = Robot.arm;
+
     // Length of the arm from pivot point without extension in inches
     private final double armInitialLength = Robot.arm.EXTEND_MIN + Robot.arm.ARM_BASE_LENGTH
             + Robot.intake.WristDistToPivot + Robot.arm.L0;
@@ -60,13 +63,17 @@ public class MoveArmAtHeight extends Command {
         angle += (belowPiv) ? 90.0 : 0.0;
         angle = MathUtil.limit(angle, Robot.arm.PHI_MIN, Robot.arm.PHI_MAX); 
         
-        double extension = Math.sqrt( h*h + xProjection * xProjection);
-        //TODO: double check this with Xander - DPL - I think you can ignore L0, extension is 0 to 38 inches???
-        extension = Math.max(-Robot.arm.L0, Math.min(extension - armInitialLength, Robot.arm.EXTEND_MAX - Robot.arm.L0));
+        double projLen= Math.sqrt( h*h + xProjection * xProjection);    //total length of arm, from pivot point
+        double ext  = projLen - (Robot.arm.ARM_BASE_LENGTH + Robot.arm.WRIST_LENGTH);   // extension required
         
+        double compLen = Robot.arm.getCompLen(angle);
+
+        //limit within range, TODO: do we need to account for phi/ext interaction here?
+        ext = MathUtil.limit(ext, Robot.arm.EXTEND_MIN, Robot.arm.EXTEND_MAX);
+
         // Extend to allow for change in projection
-        Robot.arm.setExtension(extension);   //From the start position (d0)
-        Robot.arm.setAngle(angle);
+        Robot.arm.setExtension(ext);   //absolute ext needed projection
+        Robot.arm.setAngle(angle);     //angle required for height
         /*
          * Alternative extension calculation xProjection /
          * Math.cos(Robot.arm.getAngle()) - armInitialLength

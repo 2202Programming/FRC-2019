@@ -60,7 +60,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public final double MAX_PROJECTION = PIVOT_TO_FRONT + Robot.kProjectConstraint; //
 
   // Extender phyiscal numbers 
-  public final double L0 = 7.69;                 // inches - starting point, encoder zero 
+  public final double L0 = 6.0 ;                 // inches - starting point, encoder zero 
   public final double EXTEND_MIN = 0.0;          // inches
   public final double EXTEND_MAX = 37.0;         // inches - measured practice bot
   public final double ARM_BASE_LENGTH = 18.0;    //inches - measured practice bot (from pivot center) xg 2/16/19
@@ -95,9 +95,12 @@ public class ArmSubsystem extends ExtendedSubSystem {
     addChild("Arm:Ext:Mtr", armExtensionMotor);
 
     // Set Talon postion mode gains
-    armRotationMotor.config_kP(0, 0.05 /* 0.8*/, 30); 
-    armExtensionMotor.config_kP(0, 0.05 /*0.6*/, 30);
-    System.out.println("Warning - Arm motors have bogus values");
+    armRotationMotor.config_kP(0, 0.1 /* 0.8*/, 30); 
+    armRotationMotor.configPeakOutputForward(0.3);
+    armRotationMotor.configPeakOutputReverse(-0.3);
+
+    armExtensionMotor.config_kP(0, 0.1 /*0.6*/, 30);
+    System.out.println("Warning - Arm motors have low values");
 
     // Arm
     armRotationMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
@@ -121,13 +124,9 @@ public class ArmSubsystem extends ExtendedSubSystem {
   {
     armExtensionMotor.setSelectedSensorPosition(0);
     armExtensionMotor.setIntegralAccumulator(0, PIDIdx, TO);
-   // armExtensionMotor.configClosedloopRamp(0.25, TO);        //.25 seconds
-   // armExtensionMotor.configContinuousCurrentLimit(10, TO);  //amps
-
+   
     armRotationMotor.setSelectedSensorPosition(0);
     armRotationMotor.setIntegralAccumulator(0.0, PIDIdx, TO);
-    //armRotationMotor.configClosedloopRamp(0.50, TO);        //.50 seconds
-    //armRotationMotor.configContinuousCurrentLimit(10, TO);  //amps
   }
 
   /**
@@ -163,14 +162,14 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public void setExtension(double l) {
     double angle = getAngle();                     //current angle
     double compLen = ((angle - PHI0)*k_dl_dphi);   // ext due to rotation to compensate for
-    double len = (l - L0) - compLen;                // net len to command
+    double len = (l - L0) - compLen;               // net len to comman relative to start
 
     //Make sure we limit to the range of the extension is capable
-    if (len < EXTEND_MIN) {
+    if (len < (EXTEND_MIN - L0)) {
       System.out.println("Arm:Extension below minimum.");
     }
-
-    len = MathUtil.limit(len, EXTEND_MIN, EXTEND_MAX);
+    // we can't go above or below our adjust min/max based on starting L0
+    len = MathUtil.limit(len, EXTEND_MIN - L0, (EXTEND_MAX - L0));
     double c = len * kCounts_per_in;
     armExtensionMotor.set(ControlMode.Position, c);
   }
@@ -207,11 +206,21 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * Computes height of gripper and projection on floor from pivot, pivot is horizontal zero
    */
   public Position getArmPosition() {
-    double rads = Math.toRadians(getAngle());
-    double l = PIVOT_TO_FRONT + WRIST_LENGTH + getExtension();
+    double phi = getAngle();
+    double rads = Math.toRadians(phi);
+    double ext = getExtension();          //includes angle compensation
+    double l = ARM_BASE_LENGTH + WRIST_LENGTH + ext;
     position.height = ARM_PIVOT_HEIGHT + l*Math.cos(rads); 
     position.projection = l*Math.sin(rads);
     return position;
+  }
+
+  // Expected change in extension as a result of phi, phi in degrees
+  public double getCompLen(double phi)
+  {
+    //base + wrist + phi-rotation
+    double compLen =((phi - PHI0) * k_dl_dphi);
+    return (compLen);
   }
 
   @Override

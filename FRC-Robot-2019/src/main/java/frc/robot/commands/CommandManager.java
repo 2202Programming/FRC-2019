@@ -89,9 +89,9 @@ public class CommandManager {
     final Modes huntingModes[] = { Modes.HuntingHatch, Modes.HuntingCargo, Modes.HuntingFloor };
     int huntModeIdx = 0 ;  //starts at Hatch
 
-    // Initial gripper extension by huntModeIdx
+    // Initial gripper projections by huntModeIdx
     // Extension from pivot point.
-    final double gripperE_start[] = {22.0, 25.0, 30.};  //TODO: fix the numbers
+    final double projection[] = {22.0, 23.0, 22.0};  //TODO: fix the numbers
     
     // Data points - shares delheightidx, must be same length
     final double DeliveryCargoHeights[] = { 32.0, 60.0, 88.0 }; // TODO: fix the numbers
@@ -161,17 +161,20 @@ public class CommandManager {
 
         case HuntingFloor:
             gripperH_cmd = HuntHeights[2];
+            rr_ext.setState(projection[2]);    //rate_ext input to where we want
             nextCmd = huntingHFloorGrp;
             break;
 
         case HuntingCargo:
             gripperH_cmd = HuntHeights[1];
+            rr_ext.setState(projection[1]);    //rate_ext input to where we want
             nextCmd = huntingCargoGrp;
             break;
 
         case HuntingHatch:
             // move the height
             gripperH_cmd = HuntHeights[0];
+            rr_ext.setState(projection[0]);    //rate_ext input to where we want
             nextCmd = huntingHatchGrp;
             break;
 
@@ -250,24 +253,24 @@ public class CommandManager {
         delHeightIdx = (idx >= DeliveryCargoHeights.length) ? 0 : idx;
     }
 
-    Double wristTrackParallel() {
+    double wristTrackParallel() {
         double phi = Robot.arm.getAngle();
         return (phi - 90.0);
     }
 
-    Double wristTrackPerp() {
+    double wristTrackPerp() {
         //TODO: will need to account for phi on each side
         double phi = Robot.arm.getAngle();
         return (phi - 180.0);
     }
 
     // expose desired cup height to commands, set griperheight via state machine.
-    Double gripperHeight() {
+    double gripperHeight() {
 
         return gripperH_cmd;
     }
 
-    Double deliverGripperHeight() {
+    double deliverGripperHeight() {
          gripperH_cmd =(prevHuntMode == Modes.HuntingCargo) ? 
             DeliveryCargoHeights[delHeightIdx] : DeliveryHatchHeights[delHeightIdx];
         return gripperH_cmd;
@@ -278,18 +281,20 @@ public class CommandManager {
         return gripperE_cmd;
     }
 
-    public Double gripperExtension() {
+    public double gripperExtension() {
         double ext = rr_ext.get();    // rate & postion limited
         return ext;
     }
 
     // called every frame, reads inputs 
-    void execute() {
+    public void execute() {
         armPosition = Robot.arm.getArmPosition();
         //read inputs
         double capHeightIn = Robot.m_oi.captureHeightInput();  //trigger
         rr_ext.execute();
     }
+
+
 
     /**
      *  initialize the commands from the current position, sets the

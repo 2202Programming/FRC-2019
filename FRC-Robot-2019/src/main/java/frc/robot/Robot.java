@@ -131,7 +131,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    m_cmdMgr.execute();
     Scheduler.getInstance().run();
+
 
 //    if (serialSubsystem.isSerialEnabled()) //if serial was initalized, run periodic serial processing loop
 //    serialSubsystem.processSerial();
