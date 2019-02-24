@@ -169,6 +169,7 @@ public class Robot extends TimedRobot {
     limeLight.log(500); //tell limelight to post to dashboard every Xms
     serialSubsystem.log(507); //tell serial to post to dashboard every Xms
     arm.log(509);
+    m_cmdMgr.log(513);
   }
 
   private void resetAllDashBoardSensors() {
