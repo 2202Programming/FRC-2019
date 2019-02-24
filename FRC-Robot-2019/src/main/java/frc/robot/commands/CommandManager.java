@@ -10,6 +10,7 @@ import frc.robot.commands.arm.MoveArmAtHeight;
 import frc.robot.commands.arm.MoveDownToCapture;
 import frc.robot.commands.intake.VacuumCommand;
 import frc.robot.commands.intake.WristTrackFunction;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.util.RateLimiter;
 import frc.robot.commands.util.RateLimiter.InputModel;
 
@@ -20,6 +21,8 @@ import frc.robot.commands.util.RateLimiter.InputModel;
  */
 public class CommandManager {
     int logCnt=0;
+    private long logTimer;
+
     
     // Button Commands
     Command huntSelectCmd;
@@ -118,6 +121,8 @@ public class CommandManager {
         captureGrp = CmdFactoryCapture();
         deliveryGrp = CmdFactoryDelivery();
         ejectGrp = CmdFactoryEject();
+
+        logTimer = System.currentTimeMillis();
         armPosition = Robot.arm.getArmPosition();
 
         rr_ext = new RateLimiter(Robot.dT, 
@@ -435,11 +440,20 @@ public class CommandManager {
         }
     }
     
+    public void log(int interval){
+        if ((logTimer + interval) < System.currentTimeMillis()) { //only post to smartdashboard every interval ms
+            logTimer = System.currentTimeMillis();
+            SmartDashboard.putNumber("Command Mode", currentMode.get());
+        }
+    }
+
+    /*  changed to new log format JR
     public void log() {
         logCnt++;
         if (logCnt % 50 ==0 ) {
             System.out.println("CmdMod:"+currentMode);
         }
     }
+    */
 
 }

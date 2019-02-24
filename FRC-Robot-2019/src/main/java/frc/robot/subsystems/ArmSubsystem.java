@@ -78,6 +78,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
   final int PIDIdx = 0; //using pid 0 on talon
   final int TO = 30;    //timeout 30ms
 
+  private long logTimer;
+
   public class Position{
     public double height;
     public double projection;
@@ -111,6 +113,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
     armExtensionMotor.setIntegralAccumulator(0, 0, 30);
     armExtensionMotor.setSensorPhase(false);
     armExtensionMotor.setInverted(true);
+
+    logTimer = System.currentTimeMillis();
   }
 
   // Put methods for controlling this subsystem
@@ -238,19 +242,24 @@ public class ArmSubsystem extends ExtendedSubSystem {
     return new ArmZero();
   }
 
-  @Override
-  public void log() {
-    //SmartDashboard.putData((Sendable) armRotationMotor);
-    //SmartDashboard.putData((Sendable) armExtensionMotor);
-    SmartDashboard.putNumber("Arm:Phi(raw)", armRotationMotor.getSelectedSensorPosition());
-    SmartDashboard.putNumber("Arm:Phi(deg)", getAngle());
-    SmartDashboard.putNumber("Arm:Ext(raw)", armExtensionMotor. getSelectedSensorPosition());
-    SmartDashboard.putNumber("Arm:Ext(in)",  getExtension());
+  public void log(int interval) {
+    if ((logTimer + interval) < System.currentTimeMillis()) { //only post to smartdashboard every interval ms
+      logTimer = System.currentTimeMillis();
 
-    // don't have limit switches right now
-    //SmartDashboard.putBoolean("Arm:Ext@Min", extensionAtMin());
-    //SmartDashboard.putBoolean("Arm:Ext@Max", extensionAtMax());
+      //SmartDashboard.putData((Sendable) armRotationMotor);
+      //SmartDashboard.putData((Sendable) armExtensionMotor);
+      SmartDashboard.putNumber("Arm:Phi(raw)", armRotationMotor.getSelectedSensorPosition());
+      SmartDashboard.putNumber("Arm:Phi(deg)", getAngle());
+      SmartDashboard.putNumber("Arm:Ext(raw)", armExtensionMotor. getSelectedSensorPosition());
+      SmartDashboard.putNumber("Arm:Ext(in)",  getExtension());
+
+      // don't have limit switches right now
+      //SmartDashboard.putBoolean("Arm:Ext@Min", extensionAtMin());
+      //SmartDashboard.putBoolean("Arm:Ext@Max", extensionAtMax());
+    }
+    return;
   }
+
 
   /**
    * Logs the talons used in the arm subsystem, which are the rotation motor and the extension motor.

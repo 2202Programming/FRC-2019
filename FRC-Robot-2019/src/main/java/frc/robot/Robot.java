@@ -56,6 +56,7 @@ public class Robot extends TimedRobot {
     m_testRobot  = new RobotTest();
     m_cmdMgr = new CommandManager();
     m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function
+    limeLight.disableLED(); //disable blinding green LED that Trevor hates
   }
 
   /**
@@ -69,12 +70,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    logSmartDashboardSensors();
+    logSmartDashboardSensors(500); //call smartdashboard logging, 500ms update rate
     limeLight.populateLimelight();
-
-    if (serialSubsystem.isSerialEnabled()) {
-      serialSubsystem.processSerial();
-    }
+    serialSubsystem.processSerial();
   }
 
   /**
@@ -84,6 +82,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
+    limeLight.disableLED(); //disable blinding green LED that Trevor hates
   }
 
   @Override
@@ -106,6 +105,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     resetAllDashBoardSensors();
+    limeLight.enableLED(); //active limelight LED when operational
   }
 
   /**
@@ -124,6 +124,8 @@ public class Robot extends TimedRobot {
     // this line or comment it out.
     m_cmdMgr.setMode(Modes.SettingZeros);
     resetAllDashBoardSensors();
+    //m_cmdMgr.setMode(Modes.HuntingHatch);  
+    limeLight.enableLED(); //active limelight LED when operational 
   }
 
   /**
@@ -142,6 +144,7 @@ public class Robot extends TimedRobot {
    @Override
    public void testInit() {
      m_testRobot.initialize();
+     limeLight.enableLED(); //active limelight LED when operational
      Scheduler.getInstance().enable();   //### hack? or required?  Seems required otherwise nothing runs 
    }
 
@@ -154,32 +157,24 @@ public class Robot extends TimedRobot {
     m_testRobot.periodic();
   }
 
-  private void logSmartDashboardSensors() {
-    // SmartDashboard.putNumber("Left Encoder Count", driveTrain.getLeftEncoderTalon().getSelectedSensorPosition());
-    // SmartDashboard.putNumber("Left Encoder Rate", driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity());
-    // SmartDashboard.putNumber("Right Encoder Count", driveTrain.getRightEncoderTalon().getSelectedSensorPosition());
-    // SmartDashboard.putNumber("Right Encoder Rate", driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
-    // SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
+  private void logSmartDashboardSensors(int interval) {
+    //calls subsystem smartdashboard logging functions, instructs them to only update every interval # of ms
+    
+    //picking hopefully non-overlapping time intervals so all the logging isn't done at the same cycle
+    limeLight.log(interval); //tell limelight to post to dashboard every Xms
+    driveTrain.log(interval+3); //tell drivertrain to post to dashboard every Xms
+    serialSubsystem.log(interval+7); //tell serial to post to dashboard every Xms
+    arm.log(interval+11);
+    gearShifter.log(interval+17); //tell gearshifter to post to dashboard every Xms
+    m_cmdMgr.log(interval+23);
+    intake.log(interval+29);
 
-    
-    
-    
-    intake.log();   
-    arm.log();
-    /*
-    arm.logTalons();
-    m_cmdMgr.log();
 /*    
     SmartDashboard.putData(Scheduler.getInstance()); 
     //SmartDashboard.putData(driveTrain);
     //SmartDashboard.putData(gearShifter);
 */
-    
-
-    limeLight.log(100); //tell limelight to post to dashboard every 100ms
-    serialSubsystem.log(100); //tell serial to post to dashboard every 100ms
- 
-  }
+}
 
   private void resetAllDashBoardSensors() {
     driveTrain.getLeftEncoderTalon().setSelectedSensorPosition(0);

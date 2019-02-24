@@ -54,6 +54,7 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   public final double WristStraightDegrees = 0.0; // points near straight out
   public final double WristDistToPivot = 4.0; //inches
   public final double PumpSpeed = 1.0; // motor units
+  private long logTimer;
 
   // ### Servo range needs to be checked since the servo is modified with an
   // external
@@ -97,6 +98,8 @@ public class IntakeSubsystem extends ExtendedSubSystem {
       @Override
       protected void initDefaultCommand() {}  //none 
     };
+
+    logTimer = System.currentTimeMillis();
   }
 
   @Override
@@ -221,6 +224,7 @@ public class IntakeSubsystem extends ExtendedSubSystem {
     private final double kDefaultMaxServoPWM;
     private final double kDefaultMinServoPWM;
 
+    
     /**
      * Constructor.<br>
      *
@@ -300,6 +304,16 @@ public class IntakeSubsystem extends ExtendedSubSystem {
     public void initSendable(SendableBuilder builder) {
       builder.setSmartDashboardType("CustomServo");
       builder.addDoubleProperty("Value", this::getAngle, this::setAngle);
+    }
+  }
+
+  public void log(int interval) {
+
+    if ((logTimer + interval) < System.currentTimeMillis()) { //only post to smartdashboard every interval ms
+      logTimer = System.currentTimeMillis();
+
+      SmartDashboard.putNumber("In:Wr(deg)", getAngle());
+
     }
   }
 

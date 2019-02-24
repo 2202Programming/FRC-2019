@@ -55,6 +55,7 @@ public class DriveTrainSubsystem extends Subsystem {
   private final double RIGHT_SIDE_INVERT_MULTIPLIER = -1.0;
 
   private NetworkTableEntry cameraSelect;
+  private long logTimer;
 
   public DriveTrainSubsystem() {    
     addChild("Middle Left CIM", (Sendable) middleLeftMotor);
@@ -91,6 +92,19 @@ public class DriveTrainSubsystem extends Subsystem {
     inversionConstant = 1;
 
     cameraSelect = NetworkTableInstance.getDefault().getEntry("/PiSwitch");
+    logTimer = System.currentTimeMillis();
+  }
+
+  public void log(int interval) {
+
+    if ((logTimer + interval) < System.currentTimeMillis()) { //only post to smartdashboard every interval ms
+      logTimer = System.currentTimeMillis();
+
+      SmartDashboard.putNumber("Left Encoder Count", getLeftEncoderTalon().getSelectedSensorPosition());
+      SmartDashboard.putNumber("Left Encoder Rate", getLeftEncoderTalon().getSelectedSensorVelocity());
+      SmartDashboard.putNumber("Right Encoder Count", getRightEncoderTalon().getSelectedSensorPosition());
+      SmartDashboard.putNumber("Right Encoder Rate", getRightEncoderTalon().getSelectedSensorVelocity());
+    }
   }
 
   private void limitTalon(WPI_TalonSRX talon){
