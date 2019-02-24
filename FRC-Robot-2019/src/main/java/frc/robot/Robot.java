@@ -70,7 +70,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    logSmartDashboardSensors();
+    logSmartDashboardSensors(500); //call smartdashboard logging, 500ms update rate
     limeLight.populateLimelight();
     serialSubsystem.processSerial();
   }
@@ -155,27 +155,24 @@ public class Robot extends TimedRobot {
     m_testRobot.periodic();
   }
 
-  private void logSmartDashboardSensors() {
+  private void logSmartDashboardSensors(int interval) {
+    //calls subsystem smartdashboard logging functions, instructs them to only update every interval # of ms
+    
+    //picking hopefully non-overlapping time intervals so all the logging isn't done at the same cycle
+    limeLight.log(interval); //tell limelight to post to dashboard every Xms
+    driveTrain.log(interval+3); //tell drivertrain to post to dashboard every Xms
+    serialSubsystem.log(interval+7); //tell serial to post to dashboard every Xms
+    arm.log(interval+11);
+    gearShifter.log(interval+17); //tell gearshifter to post to dashboard every Xms
+    m_cmdMgr.log(interval+23);
+    intake.log(interval+29);
 
-    SmartDashboard.putNumber("In:Wr(deg)", intake.getAngle());
-   /*
-    intake.log();   //DPL 2/10/19 review this with Billy/Xander
-    arm.log();
-    arm.logTalons();
-    m_cmdMgr.log();
 /*    
     SmartDashboard.putData(Scheduler.getInstance()); 
     //SmartDashboard.putData(driveTrain);
     //SmartDashboard.putData(gearShifter);
 */
-    //picking hopefully non-overlapping time intervals so all the logging isn't done at the same cycle
-    gearShifter.log(511); //tell gearshifter to post to dashboard every Xms
-    driveTrain.log(503); //tell drivertrain to post to dashboard every Xms
-    limeLight.log(500); //tell limelight to post to dashboard every Xms
-    serialSubsystem.log(507); //tell serial to post to dashboard every Xms
-    arm.log(509);
-    m_cmdMgr.log(513);
-  }
+}
 
   private void resetAllDashBoardSensors() {
     driveTrain.getLeftEncoderTalon().setSelectedSensorPosition(0);
