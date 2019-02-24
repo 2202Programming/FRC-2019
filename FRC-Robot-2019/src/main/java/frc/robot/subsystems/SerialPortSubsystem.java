@@ -63,13 +63,13 @@ private long logTimer;
 
     if ((logTimer + interval) < System.currentTimeMillis()) { //only post to smartdashboard every interval ms
       logTimer = System.currentTimeMillis();
+      SmartDashboard.putBoolean("Serial Enabled?", isSerialEnabled());
       if (isSerialEnabled()) { //verify serial system was initalized before calling for results
         SmartDashboard.putNumber("Left Front LIDAR (mm)", getDistance(RobotMap.LEFT_FRONT_LIDAR));
         SmartDashboard.putNumber("Right Front LIDAR (mm)", getDistance(RobotMap.RIGHT_FRONT_LIDAR));
         SmartDashboard.putNumber("Left Back LIDAR (mm)", getDistance(RobotMap.LEFT_BACK_LIDAR));
         SmartDashboard.putNumber("Right Back LIDAR (mm)", getDistance(RobotMap.RIGHT_BACK_LIDAR));
         }
-        SmartDashboard.putBoolean("Serial Enabled?", isSerialEnabled());
     }
   }
 
