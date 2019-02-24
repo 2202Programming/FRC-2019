@@ -114,6 +114,7 @@ private long logTimer;
         }
         else { //Found an E, time to process message (without E at end)
           processMessage(serialResults);
+          serialResults.delete(0, serialResults.length()); //message processed, delete
         }
       }
     }
@@ -125,19 +126,16 @@ private long logTimer;
     int distance = 0;
 
     if(serialResults.length()<3) { //correct message is at least 3 char long
-      serialResults.delete(0, serialResults.length());
       System.out.println("Bad serial packet length, tossing.");
       return;
     }
 
     if(serialResults.charAt(0) != 'S') { //Correct statement starts with S
-      serialResults.delete(0, serialResults.length());
       System.out.println("Bad serial packet start char, tossing.");
       return;
     }
     
     if (!Character.isDigit(serialResults.charAt(1))) { // if 2nd byte is a number (it should be) this is the sensor #
-      serialResults.delete(0, serialResults.length());
       System.out.println("Bad serial packet sensor #, tossing.");
       return;
     }
@@ -145,12 +143,11 @@ private long logTimer;
     sensor = Character.getNumericValue(serialResults.charAt(1));
 
     if (!allDigits(serialResults.substring(2))) { //only convert to integer if everything left in the string are digits
-      serialResults.delete(0, serialResults.length());
       System.out.println("Bad serial packet distance #, tossing.");
       return;
     }
 
-    distance = Integer.parseInt(serialResults.substring(2));
+    distance = Integer.parseInt(serialResults.substring(2)); //read in everything after first two char as a distance (in mm)
 
     switch(sensor) { //set read distance to correct LIDAR based on read sensor ID
       case 1: distance1=distance;
@@ -162,7 +159,5 @@ private long logTimer;
       case 4: distance4=distance;
               break;
     }
-
-    serialResults.delete(0, serialResults.length()); //message processed, delete
   }
 }
