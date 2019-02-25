@@ -220,7 +220,7 @@ public class CommandManager {
     //Starts new group. 
     void installGroup(CommandGroup grp) {
         if (grp == null) return;
-        currentGrp.cancel();   // end methods are called
+        if (currentGrp != null) currentGrp.cancel();   // end methods are called
         currentGrp = grp;
         currentGrp.start();    // schedule our new work, initialize() then execute() are called
     }
