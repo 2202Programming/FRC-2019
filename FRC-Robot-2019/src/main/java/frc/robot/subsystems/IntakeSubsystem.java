@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PWM;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -49,7 +50,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 public class IntakeSubsystem extends ExtendedSubSystem {
   // Local Constants that define facts about the intake system
-  public final double WristMinDegrees = -103.0; // pointing down, relative to the arm //dpl hack
+  public final double WristMinDegrees = -100.0; // pointing down, relative to the arm //dpl hack
   public final double WristMaxDegrees = +100.0; // pointing up
   public final double WristStraightDegrees = 0.0; // points near straight out
   public final double WristDistToPivot = 4.0; //inches
@@ -63,22 +64,20 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   // HS-805MG - timings from https://www.servocity.com/hs-805mg-servo
   // specs are slightly wider than default which should give us full range of
   // servo.
-  final double kServoMinPWM = 0.553;
-  final double kServoMaxPWM = 2.455;
+  final double kServoMinPWM = 2.450; /// was    0.553;
+  final double kServoMaxPWM = 0.554; // 2.455;
 
   Subsystem intakeVacuum;
 
-  // ### confirm this is the way the solenoid is wired
+  // TODO: confirm this is the way the solenoid is wired
   final DoubleSolenoid.Value kVacuum = Value.kForward;
   final DoubleSolenoid.Value kRelease = Value.kReverse;
 
   // Physical devices
-  CustomServo wristServo = new CustomServo(RobotMap.INTAKE_WRIST_SERVO_PWM, WristMinDegrees, WristMaxDegrees,
-      kServoMinPWM, kServoMaxPWM);
-  DigitalInput cargoSwitch = new DigitalInput(RobotMap.INTAKE_CARGO_SWITCH_MXP_CH);
-  SpeedController vacuumPump = new Spark(RobotMap.INTAKE_VACUUM_SPARK_PWM);
-  DoubleSolenoid vacuumSol = new DoubleSolenoid(RobotMap.INTAKE_PCM_ID, RobotMap.INTAKE_RELEASE_SOLENOID_PCM,
-      RobotMap.INTAKE_HOLD_SOLENOID_PCM);
+  CustomServo wristServo;
+  DigitalInput cargoSwitch;
+  SpeedController vacuumPump;
+  DoubleSolenoid vacuumSol;
 
   // internal state tracking
   boolean vacuumCmdOn;
@@ -88,9 +87,17 @@ public class IntakeSubsystem extends ExtendedSubSystem {
    */
   public IntakeSubsystem() {
     super("Intake");
+    wristServo = new CustomServo(RobotMap.INTAKE_WRIST_SERVO_PWM, WristMinDegrees, WristMaxDegrees,
+    kServoMinPWM, kServoMaxPWM);
     wristServo.setName(this.getSubsystem(), "wrist");
-  //  addChild("In:Wrist", (Sendable) wristServo);
-   // addChild("In:VacPump", vacuumPump);
+
+    cargoSwitch = new DigitalInput(RobotMap.INTAKE_CARGO_SWITCH_MXP_CH);
+    vacuumPump = new Spark(RobotMap.INTAKE_VACUUM_SPARK_PWM);
+    vacuumSol = new DoubleSolenoid(RobotMap.INTAKE_PCM_ID, RobotMap.INTAKE_RELEASE_SOLENOID_PCM,
+    RobotMap.INTAKE_HOLD_SOLENOID_PCM);
+
+    // addChild("In:Wrist", (Sendable) wristServo);
+    // addChild("In:VacPump", vacuumPump);
     addChild("In:CargoSw", cargoSwitch);
     addChild("In:VacSol",  vacuumSol);
 
@@ -107,10 +114,12 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   }
 
   /**
-   * Wrist Controls
+   * Wrist Controls 
+   *                 +angle up
+   *                -angel down
    */
   public void setAngle(double degrees) {
-     wristServo.setAngle(-degrees); //TODO: Backwards direction, track that down
+     wristServo.setAngle(degrees); //TODO: Backwards direction, track that down
   }
 
   /**
@@ -143,13 +152,18 @@ public class IntakeSubsystem extends ExtendedSubSystem {
     vacuumCmdOn = false;
   }
 
+  public void vacuumOffHoldOn() {
+    vacuumSol.set(kVacuum);  
+    vacuumPump.stopMotor();
+    vacuumCmdOn = false;
+  }
+
   /**
    * Status and Sensor Methods
    */
 
   private void zeroIntake() {
     vacuumOff();
-    this.setAngle(WristStraightDegrees);  //TODO: check this position
   }
 
   /**
@@ -204,7 +218,7 @@ public class IntakeSubsystem extends ExtendedSubSystem {
    * has a wider PWM setting than the standard FIRST Servo Class. So that code was
    * modified to create a CustomServo that we can change the PWM controls on.
    * 
-   * We also change the Servo 0-180 to -100 to +100 which reflects the server
+   * We also changed the Servo 0-180 to -100 to +100 which reflects the server
    * travel and the Wrist axis with ~0.0 degrees being straight from arm.
    * 
    * The Servo class is further modified to only expose the methods that use the
@@ -223,8 +237,8 @@ public class IntakeSubsystem extends ExtendedSubSystem {
 
     private final double kDefaultMaxServoPWM;
     private final double kDefaultMinServoPWM;
-
-    
+    private double position;   // save the setting and use it to return a value if asked
+       
     /**
      * Constructor.<br>
      *
@@ -251,9 +265,8 @@ public class IntakeSubsystem extends ExtendedSubSystem {
       kDefaultMaxServoPWM = maxPWMuS;
       kDefaultMinServoPWM = minPWMuS;
       // compute range once
-      kServoRange = kMaxServoAngle - kMinServoAngle;
-
-      setBounds(kDefaultMaxServoPWM, 0, 0, 0, kDefaultMinServoPWM);
+      kServoRange = kMaxServoAngle - kMinServoAngle;  
+      setBounds(kDefaultMaxServoPWM, 0.0, 0.0, 0.0, kDefaultMinServoPWM);
       setPeriodMultiplier(PeriodMultiplier.k4X);
 
       HAL.report(tResourceType.kResourceType_Servo, getChannel());
@@ -283,7 +296,8 @@ public class IntakeSubsystem extends ExtendedSubSystem {
         degrees = kMaxServoAngle;
       }
 
-      setPosition(((degrees - kMinServoAngle)) / kServoRange);
+      position = (degrees - kMinServoAngle) / kServoRange;
+      setPosition(position);
     }
 
     /**
@@ -292,11 +306,14 @@ public class IntakeSubsystem extends ExtendedSubSystem {
      * <p>
      * Assume that the servo angle is linear with respect to the PWM value (big
      * assumption, need to test).
+     * 
+     * Derek L - getPosition() returns zero.  Fake a value with saved position. 2/24/2019
      *
      * @return The angle in degrees to which the servo is set.
      */
     public double getAngle() {
-      return getPosition() * kServoRange + kMinServoAngle;
+      // was return getPosition() * kServoRange + kMinServoAngle;
+      return position * kServoRange + kMinServoAngle;
     }
 
     // DPL - use only the get/set angle for CustomServo

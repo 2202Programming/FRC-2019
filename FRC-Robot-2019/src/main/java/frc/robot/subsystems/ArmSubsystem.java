@@ -47,11 +47,11 @@ public class ArmSubsystem extends ExtendedSubSystem {
   private WPI_TalonSRX armExtensionMotor = new WPI_TalonSRX(RobotMap.ARM_EXTENSTION_TALON_CAN_ID);
 
   // Constants used by commands as measured
-  public final double PHI0 = 157.0;    // degrees, starting position - encoder zero
-  public final double PHI_MAX = 157.0; //In Degrees, Positive is foward, bottom front
-  public final double PHI_MIN = 0.0;   //In Degrees, Near top front 
+  public final double PHI0 = 155.0;    // degrees, starting position - encoder zero
+  public final double PHI_MAX = 155.0; //In Degrees, Positive is foward, bottom front
+  public final double PHI_MIN = 37.0;   //In Degrees, Near top front 
   
-  private final double kCounts_per_deg = 824;  // 149.333;  // TODO:confirm //COUNT_MAX / (PHI_MAX - PHI_MIN);
+  private final double kCounts_per_deg = -600;  //measured 2/24/2019
   private final double kDeg_per_count = 1.0 / kCounts_per_deg;
   
   //Geometry of the arm's pivot point
@@ -60,19 +60,19 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public final double MAX_PROJECTION = PIVOT_TO_FRONT + Robot.kProjectConstraint; //
 
   // Extender phyiscal numbers 
-  public final double L0 = 6.0 ;                 // inches - starting point, encoder zero 
+  public final double L0 = 8.875 ;               // inches - starting point, encoder zero -set 2/24/2019
   public final double EXTEND_MIN = 0.0;          // inches
-  public final double EXTEND_MAX = 37.0;         // inches - measured practice bot
+  public final double EXTEND_MAX = 35.0;         // inches - measured practice bot
   public final double ARM_BASE_LENGTH = 18.0;    //inches - measured practice bot (from pivot center) xg 2/16/19
   public final double ARM_PIVOT_HEIGHT = 30.25;  //inches - measured practice bot
   public final double WRIST_LENGTH = 7.75;       //inches -measured practice bot
   
-  private final double EXTEND_COUNT_MAX = 22500; // measured practice bot
-  private final double kCounts_per_in = EXTEND_COUNT_MAX / EXTEND_MAX;
+  private final double kCounts_per_in = -600.0;   // measured practice bot 2/24/2019
   private final double kIn_per_count = 1.0 / kCounts_per_in;
 
   // Coupling between Phi and extension, as arm moves, so does d
-  private final double k_dl_dphi = 0.032639; // inches per degree (measured practice bot 2/17/19)
+  private final double k_dl_dphi = 0.033415;  //measured 2/24/2019 - practice bot new arm
+  // 0.032639; // inches per degree (measured practice bot 2/17/19)
 
   //talon controls
   final int PIDIdx = 0; //using pid 0 on talon
@@ -97,11 +97,11 @@ public class ArmSubsystem extends ExtendedSubSystem {
     addChild("Arm:Ext:Mtr", armExtensionMotor);
 
     // Set Talon postion mode gains
-    armRotationMotor.config_kP(0, 0.1 /* 0.8*/, 30); 
+    armRotationMotor.config_kP(0, 0.3/* 0.8*/, 30); 
     armRotationMotor.configPeakOutputForward(0.3);
     armRotationMotor.configPeakOutputReverse(-0.3);
 
-    armExtensionMotor.config_kP(0, 0.1 /*0.6*/, 30);
+    armExtensionMotor.config_kP(0, 0.4 /*0.6*/, 30);
     System.out.println("Warning - Arm motors have low values");
 
     // Arm
@@ -186,7 +186,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public double getExtension() {
     int counts = armExtensionMotor.getSelectedSensorPosition();
     //   L0  + phi correction
-    return (L0 + (getAngle() - PHI0) * k_dl_dphi) + (counts * kIn_per_count);
+    double l = (L0 + (getAngle() - PHI0) * k_dl_dphi) + (counts * kIn_per_count);
+    return l;
   }
 
   

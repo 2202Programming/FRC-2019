@@ -16,8 +16,8 @@ public class TestWristRateCommand extends Command {
                 this::getCmd, 
                 Robot.intake::getAngle, 
                 Robot.intake::setAngle,
-                Robot.intake.WristMinDegrees, 
-                Robot.intake.WristMaxDegrees, 
+                Robot.intake.WristMinDegrees -10, 
+                Robot.intake.WristMaxDegrees+ 10, 
                 -80.0, // dx_fall deg/sec 
                 180.0,  // dx_raise deg/ses
                 InputModel.Rate);

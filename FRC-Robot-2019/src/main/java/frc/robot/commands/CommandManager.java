@@ -10,9 +10,12 @@ import frc.robot.commands.arm.MoveArmAtHeight;
 import frc.robot.commands.arm.MoveDownToCapture;
 import frc.robot.commands.intake.VacuumCommand;
 import frc.robot.commands.intake.WristTrackFunction;
+import frc.robot.commands.intake.*;
+import frc.robot.commands.arm.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.util.RateLimiter;
 import frc.robot.commands.util.RateLimiter.InputModel;
+import frc.robot.commands.arm.tests.TestRotateArmToAngleCommand;
 
 /**
  * One class, singleton, to rule them all. Coordinates major modes of operation.
@@ -66,6 +69,7 @@ public class CommandManager {
 
     // Command Sets
     CommandGroup zeroRobotGrp;
+    CommandGroup huntGameStartGrp;
     CommandGroup huntingHatchGrp;
     CommandGroup huntingCargoGrp;
     CommandGroup huntingHFloorGrp;
@@ -100,7 +104,7 @@ public class CommandManager {
     final double DeliveryCargoHeights[] = { 32.0, 60.0, 88.0 }; // TODO: fix the numbers
     final double DeliveryHatchHeights[] = { 28.0, 56.0, 84.0 }; // TODO: fix the numbers
     final double Capture_dDown = 5.0;  //inches to move down for capture
-    final double HuntHeights[] = { 28.0, 17.0, Capture_dDown + 4.0 }; // height from floor, H,C,Floor TODO:fix numbers
+    final double HuntHeights[] = { 23.0, 16.0, Capture_dDown + 4.0 }; // height from floor, H,C,Floor TODO:fix numbers
 
     //Phyical values from sub-systems as needed
     Position armPosition;
@@ -115,6 +119,7 @@ public class CommandManager {
 
         // Construct our major modes from their command factories
         zeroRobotGrp = CmdFactoryZeroRobot();
+        huntGameStartGrp = CmdFactoryHuntGameStart();
         huntingHFloorGrp = CmdFactoryHuntHatchFloor();
         huntingHatchGrp = CmdFactoryHuntHatch();
         huntingCargoGrp = CmdFactoryHuntCargo();
@@ -162,6 +167,10 @@ public class CommandManager {
             
         case SettingZeros:
             nextCmd = zeroRobotGrp;
+            break;
+
+        case HuntGameStart:
+            nextCmd = huntGameStartGrp;
             break;
 
         case HuntingFloor:
@@ -333,8 +342,7 @@ public class CommandManager {
         /// grp.addParallel(Robot.climber.zeroSubsystem());
         /// grp.addParallel(Robot.cargoTrap.zeroSubsystem());
 
-        //TODO: this should goto initial hatch when we have that
-        grp.addSequential(new NextModeCmd(Modes.HuntingHatch));
+        grp.addSequential(new NextModeCmd(Modes.HuntGameStart));
         return grp;
     }
 
@@ -365,6 +373,14 @@ public class CommandManager {
     //
     private CommandGroup CmdFactoryHuntGameStart() {
         CommandGroup grp = new CommandGroup("HuntGameStart");
+        grp.addSequential(new VacuumCommand(true));
+        grp.addSequential(new RotateWristCommand(90.0, 2.0));  //these will wait, not timeout
+        grp.addSequential(new RotateWristCommand(80.0, 2.0));
+        grp.addSequential(new RotateWristCommand(95.0, 2.0));
+        grp.addSequential(new ExtendArmToPositionCommand(2.0));
+        grp.addSequential(new TestRotateArmToAngleCommand(145.0, 30.0));
+
+        grp.addSequential(new NextModeCmd(Modes.DeliverHatch));
         return grp;
     }
 

@@ -34,8 +34,8 @@ public class RobotTest {
     public RobotTest() {
         OI();
         // TESTING Commands, only get scheduled if we enter Test mode
-        testWristCmd = new  TestWristRateCommand();
-                            //TestWristPositionCommand();
+        testWristCmd = new  //TestWristRateCommand();
+                            TestWristPositionCommand();
         armTest = new TeleopArmControlCommand(this::leftJoyY, this::rightJoyY);
     }
 
@@ -46,7 +46,7 @@ public class RobotTest {
         Robot.arm.zeroArm();
         
         armTest.start();
-        // testArmCmd.start();
+        ///testArmCmd.start();
         testWristCmd.start();
     }
 
