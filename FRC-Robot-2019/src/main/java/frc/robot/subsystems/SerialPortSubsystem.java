@@ -89,13 +89,29 @@ private long logTimer;
     return;
   }
 
+  public void serialFlush(int bufferLimit) {
+    if(arduinoSerial.getBytesReceived() > bufferLimit) {
+      try{
+        byte[] temp = arduinoSerial.read(arduinoSerial.getBytesReceived()-bufferLimit);
+        System.out.println("Flushed " + (arduinoSerial.getBytesReceived()-bufferLimit) + " bytes from serial buffer");
+      } 
+      catch (UncleanStatusException e) {     //Catch uncleanstatusexception and restart serial port 
+        System.out.println("Serial Exception UncleanStatusException caught. Code:" + e.getStatus());
+        arduinoSerial.reset();
+        return;
+      }
+    }
+    return;
+  }
+
   public void processSerial() {
     String results;
     
     if (serialExists) {  //only run if serial port was correctly initalized
 
-      //reduce buffer size to last 1000 bytes to prevent loop time overrun
-      serialReduction(1000);
+      //reduce buffer size to last 500 bytes to prevent loop time overrun
+      //serialReduction(500);
+      serialFlush(500);
 
       //read buffer if available one char at a time
       while (arduinoSerial.getBytesReceived()>0) {
