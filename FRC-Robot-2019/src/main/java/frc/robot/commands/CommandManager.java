@@ -79,7 +79,7 @@ public class CommandManager {
     
     // Target States - think of this as desired command vector
     Modes currentMode; // what we think are doing now
-    Modes prevHuntMode;
+    Modes prevHuntMode = Modes.HuntingHatch;
     Modes prevMode;
 
     CommandGroup currentGrp; // what is running
@@ -139,9 +139,7 @@ public class CommandManager {
             10.0, //inches/sec 
             InputModel.Rate);
         rr_ext.setDeadZone(.5);
-        rr_ext.setRateGain(15.0);  // 15 in/sec max stick input
-
-        
+        rr_ext.setRateGain(15.0);  // 15 in/sec max stick input 
     }
 
     /**
@@ -170,25 +168,23 @@ public class CommandManager {
             break;
 
         case HuntGameStart:
+            prevHuntMode = Modes.HuntingHatch;  // change this if we start with Cargo
             nextCmd = huntGameStartGrp;
             break;
 
         case HuntingFloor:
-            gripperH_cmd = HuntHeights[2];
-            rr_ext.setState(projection[2]);    //rate_ext input to where we want
+            huntModeIdx = 2;
             nextCmd = huntingHFloorGrp;
             break;
 
         case HuntingCargo:
-            gripperH_cmd = HuntHeights[1];
-            rr_ext.setState(projection[1]);    //rate_ext input to where we want
+            huntModeIdx = 1;
             nextCmd = huntingCargoGrp;
             break;
 
         case HuntingHatch:
             // move the height
-            gripperH_cmd = HuntHeights[0];
-            rr_ext.setState(projection[0]);    //rate_ext input to where we want
+            huntModeIdx = 0;
             nextCmd = huntingHatchGrp;
             break;
 
@@ -200,20 +196,22 @@ public class CommandManager {
         // DeliveryModes
         case DeliverHatch: // based on what we captured
             delHeightIdx = 0;
-            gripperH_cmd = DeliveryHatchHeights[delHeightIdx];
             break;
 
         case DeliverCargo: // based on what we captured
-            delHeightIdx = 0;
-            gripperH_cmd = DeliveryCargoHeights[delHeightIdx];
+            delHeightIdx = 0; 
             break;
 
         case Ejecting:
             nextCmd = ejectGrp;
             break;
+
         default:
             break;
         }
+        // calculate the height and extension, set gripperH_cmd, and gripperE_cmd
+        setGripperPosition();
+
         // update states and start command group
         prevMode = currentMode;
         currentMode = mode;
@@ -222,9 +220,9 @@ public class CommandManager {
     //Starts new group. 
     void installGroup(CommandGroup grp) {
         if (grp == null) return;
-        //do we need this???### currentGrp.cancel(); // end methods are called
+        currentGrp.cancel();   // end methods are called
         currentGrp = grp;
-        currentGrp.start(); // schedule our new work, initialize() then execute() are called
+        currentGrp.start();    // schedule our new work, initialize() then execute() are called
     }
 
     public boolean isHunting() {
@@ -232,6 +230,11 @@ public class CommandManager {
             return true;
         }
         return false;
+    }
+
+    public boolean isDelivering() {
+        return ( (currentMode == Modes.DeliverCargo)  || 
+                 (currentMode == Modes.DeliverHatch) );
     }
 
     private void triggerCaptureRelease(){
@@ -248,6 +251,7 @@ public class CommandManager {
         // not hunting just ignore event
     }
 
+    // Select proper delivery mode based on what we were hunting.
     private int gotoDeliverMode() {
         //prevHunt mode saved on entering capturing mode... use it for hatch v cargo delivery
         Modes nextMode = (prevHuntMode == Modes.HuntingCargo) ? Modes.DeliverCargo : Modes.DeliverHatch;
@@ -278,21 +282,31 @@ public class CommandManager {
         return (phi - 180.0);
     }
 
+    /** 
+     * setGripperPositon()
+     * 
+     *  Called on mode change to set arm location. Sets the commanded height and extension
+     *  for the gripper when the mode changes.
+     * 
+     * */
+    void setGripperPosition() {
+        if (isHunting()) {
+            //Hunting, use the HuntHeights table and that height index
+            gripperH_cmd =  HuntHeights[huntHeightIdx];
+            rr_ext.setState(projection[huntHeightIdx]); 
+        }
+        else if (isDelivering()) {
+            //Delivering 
+            gripperH_cmd = (prevHuntMode == Modes.HuntingCargo) ? 
+                DeliveryCargoHeights[delHeightIdx] : DeliveryHatchHeights[delHeightIdx];
+            rr_ext.setState(projection[0]); 
+        }
+        // Other mode changes just stay where we ar at
+    }
+    
     // expose desired cup height to commands, set griperheight via state machine.
     double gripperHeight() {
-
         return gripperH_cmd;
-    }
-
-    double deliverGripperHeight() {
-         gripperH_cmd =(prevHuntMode == Modes.HuntingCargo) ? 
-            DeliveryCargoHeights[delHeightIdx] : DeliveryHatchHeights[delHeightIdx];
-        return gripperH_cmd;
-    }
-
-
-    double gripperECmd() {
-        return gripperE_cmd;
     }
 
     public double gripperExtension() {
@@ -394,7 +408,7 @@ public class CommandManager {
 
     private CommandGroup CmdFactoryDelivery() {
         CommandGroup grp = new CommandGroup("Deliver");
-        grp.addParallel(new MoveArmAtHeight(this::deliverGripperHeight, this::gripperExtension)); //use deliver gripper funct
+        grp.addParallel(new MoveArmAtHeight(this::gripperHeight, this::gripperExtension)); //use deliver gripper funct
         grp.addParallel(new WristTrackFunction(this::wristTrackParallel));
         return grp;
     }
