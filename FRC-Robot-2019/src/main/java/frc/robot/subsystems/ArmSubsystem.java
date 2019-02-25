@@ -113,6 +113,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
     armExtensionMotor.setIntegralAccumulator(0, 0, 30);
     armExtensionMotor.setSensorPhase(false);
     armExtensionMotor.setInverted(true);
+    armExtensionMotor.configPeakOutputForward(0.3);
+    armExtensionMotor.configPeakOutputReverse(-0.3);
 
     logTimer = System.currentTimeMillis();
   }
