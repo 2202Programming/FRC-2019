@@ -374,11 +374,11 @@ public class CommandManager {
     private CommandGroup CmdFactoryHuntGameStart() {
         CommandGroup grp = new CommandGroup("HuntGameStart");
         grp.addSequential(new VacuumCommand(true));
-        grp.addSequential(new RotateWristCommand(90.0, 2.0));  //these will wait, not timeout
-        grp.addSequential(new RotateWristCommand(80.0, 2.0));
+        grp.addSequential(new RotateWristCommand(90.0, 2.0));              //these will wait, not timeout, 
+        grp.addSequential(new RotateWristCommand(80.0, 2.0));              // wiggle wrist to grab hatch
         grp.addSequential(new RotateWristCommand(95.0, 2.0));
-        grp.addSequential(new ExtendArmToPositionCommand(2.0));
-        grp.addSequential(new TestRotateArmToAngleCommand(145.0, 30.0));
+        grp.addSequential(new ExtendArmToPositionCommand(2.0));            //pull in a bit before rotate, should have hatch
+        grp.addSequential(new TestRotateArmToAngleCommand(145.0, 30.0));   //rotate clear before going to delivery mode
 
         grp.addSequential(new NextModeCmd(Modes.DeliverHatch));
         return grp;
