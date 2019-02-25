@@ -3,8 +3,6 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PWM;
-import edu.wpi.first.wpilibj.Servo;
-import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Command;
@@ -64,8 +62,8 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   // HS-805MG - timings from https://www.servocity.com/hs-805mg-servo
   // specs are slightly wider than default which should give us full range of
   // servo.
-  final double kServoMinPWM = 2.450; /// was    0.553;
-  final double kServoMaxPWM = 0.554; // 2.455;
+  final double kServoMinPWM = 0.553;
+  final double kServoMaxPWM = 2.455;
 
   Subsystem intakeVacuum;
 
@@ -74,13 +72,10 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   final DoubleSolenoid.Value kRelease = Value.kReverse;
 
   // Physical devices
-  CustomServo wristServo;
-  DigitalInput cargoSwitch;
-  SpeedController vacuumPump;
-  DoubleSolenoid vacuumSol;
-
-  // internal state tracking
-  boolean vacuumCmdOn;
+  CustomServo wristServo;             // positive angle, wrist up, when arm is forward
+  DigitalInput cargoSwitch;           // true when cargo switch is pressed by ball
+  SpeedController vacuumPump;         // motor control for vacuum pump
+  DoubleSolenoid vacuumSol;           // solenoid to hold and relase ball/hatch
 
   /**
    * Creates an intake subsystem.
@@ -114,21 +109,18 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   }
 
   /**
-   * Wrist Controls 
-   *                 +angle up
-   *                -angel down
+   * Wrist Controls - With the Arm in front,
+   *                 positive -->angle up
+   *                 negitive -->angle down
+   *                 0.0 --> level with arm mount
    */
-  public void setAngle(double degrees) {
-     wristServo.setAngle(degrees); //TODO: Backwards direction, track that down
-  }
+  public void setAngle(double degrees) { wristServo.setAngle(-degrees);  }
 
   /**
-   * 
+   * -1*servo angle is correct by our convention.
    * @return wrist angle (degrees)
    */
-  public double getAngle() {
-    return wristServo.getAngle();
-  }
+  public double getAngle() {  return -wristServo.getAngle();  }
 
   /**
    *  Commands can used the vacuum subsystem without interferring with wrist.
@@ -143,19 +135,21 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   public void vacuumOn() {
     vacuumPump.set(PumpSpeed);
     vacuumSol.set(kVacuum);
-    vacuumCmdOn = true;
   }
 
   public void vacuumOff() {
     vacuumSol.set(kRelease);
     vacuumPump.stopMotor();
-    vacuumCmdOn = false;
   }
 
   public void vacuumOffHoldOn() {
-    vacuumSol.set(kVacuum);  
+    vacuumSol.set(kVacuum);   // keep the vacuum.  
     vacuumPump.stopMotor();
-    vacuumCmdOn = false;
+  }
+
+  public boolean isVacuum() {
+    boolean v =  (vacuumSol.get() == kVacuum);
+    return v;
   }
 
   /**
@@ -183,7 +177,6 @@ public class IntakeSubsystem extends ExtendedSubSystem {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    ///DPL is this the call to set servor to 103?
     //builder.setSmartDashboardType("CustomServo");
     //builder.addDoubleProperty("Value", this::getAngle, this::setAngle);
   }
@@ -312,8 +305,8 @@ public class IntakeSubsystem extends ExtendedSubSystem {
      * @return The angle in degrees to which the servo is set.
      */
     public double getAngle() {
-      // was return getPosition() * kServoRange + kMinServoAngle;
-      return position * kServoRange + kMinServoAngle;
+      double pos =  getPosition() * kServoRange + kMinServoAngle;
+      return pos;
     }
 
     // DPL - use only the get/set angle for CustomServo
