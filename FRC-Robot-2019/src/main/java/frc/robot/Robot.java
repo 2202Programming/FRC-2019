@@ -46,6 +46,8 @@ public class Robot extends TimedRobot {
   public static CommandManager m_cmdMgr;    //fix the public later
   private RobotTest m_testRobot;
 
+  boolean doneOnce = false;   //single execute our zero 
+
   /**
    * This function is run when the robot is first started up and should be used
    * for any initialization code.
@@ -55,7 +57,7 @@ public class Robot extends TimedRobot {
     // Create the test subsystem
     m_testRobot  = new RobotTest();
     m_cmdMgr = new CommandManager();
-    m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function
+    m_cmdMgr.setMode(Modes.Construction);   // schedules the mode's function
     limeLight.disableLED(); //disable blinding green LED that Trevor hates
   }
 
@@ -122,7 +124,10 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    m_cmdMgr.setMode(Modes.SettingZeros);
+    if (doneOnce == false ){
+      m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function
+      doneOnce = true;
+    }
     resetAllDashBoardSensors();
     //m_cmdMgr.setMode(Modes.HuntingHatch);  
     limeLight.enableLED(); //active limelight LED when operational 

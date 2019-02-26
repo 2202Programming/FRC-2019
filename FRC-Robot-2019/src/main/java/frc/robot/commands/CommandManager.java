@@ -98,7 +98,7 @@ public class CommandManager {
 
     // Initial gripper projections by huntModeIdx
     // Extension from pivot point.
-    final double projection[] = {22.0, 23.0, 22.0};  //TODO: fix the numbers
+    final double projection[] = {25.0, 25.0, 25.0};  //TODO: fix the numbers
     
     // Data points - shares delheightidx, must be same length
     final double DeliveryCargoHeights[] = { 32.0, 60.0, 88.0 }; // TODO: fix the numbers
@@ -196,10 +196,12 @@ public class CommandManager {
         // DeliveryModes
         case DeliverHatch: // based on what we captured
             delHeightIdx = 0;
+            nextCmd = deliveryGrp;
             break;
 
         case DeliverCargo: // based on what we captured
             delHeightIdx = 0; 
+            nextCmd = deliveryGrp;
             break;
 
         case Ejecting:
@@ -209,12 +211,12 @@ public class CommandManager {
         default:
             break;
         }
-        // calculate the height and extension, set gripperH_cmd, and gripperE_cmd
-        setGripperPosition();
 
         // update states and start command group
         prevMode = currentMode;
         currentMode = mode;
+        // calculate the height and extension, set gripperH_cmd, and gripperE_cmd
+        setGripperPosition();
         installGroup(nextCmd);
 }
     //Starts new group. 
@@ -247,6 +249,7 @@ public class CommandManager {
             int idx = huntModeIdx + 1;
             huntModeIdx = (idx >= huntingModes.length) ? 0 : idx;
             setMode(huntingModes[huntModeIdx]);
+            setGripperPosition();
         }
         // not hunting just ignore event
     }
@@ -269,6 +272,8 @@ public class CommandManager {
         int idx = delHeightIdx + 1; // next height
         // make sure index fits in array
         delHeightIdx = (idx >= DeliveryCargoHeights.length) ? 0 : idx;
+        setGripperPosition();
+
     }
 
     double wristTrackParallel() {
@@ -473,7 +478,9 @@ public class CommandManager {
     public void log(int interval){
         if ((logTimer + interval) < System.currentTimeMillis()) { //only post to smartdashboard every interval ms
             logTimer = System.currentTimeMillis();
-            SmartDashboard.putNumber("Command Mode", currentMode.get());
+            SmartDashboard.putString("Command Mode", currentMode.toString() + currentMode.get());
+            SmartDashboard.putNumber("GripHeightCmd", gripperH_cmd);
+            SmartDashboard.putNumber("GripExtCmd", rr_ext.get() );
         }
     }
 
