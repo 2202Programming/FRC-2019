@@ -22,7 +22,7 @@ public class MoveUpAfterCaptureCargo extends Command {
 
     public MoveUpAfterCaptureCargo(){
         requires(Robot.arm);
-        curProjection = (armInitialLength + Robot.arm.getExtension()) * Math.cos(Robot.arm.getAngle());
+        curProjection = (armInitialLength + Robot.arm.getExtension()) * Math.cos(Math.toRadians(Robot.arm.getAngle()));
         curCalcHeight = Math.sqrt((Robot.arm.getExtension() + armInitialLength) * (Robot.arm.getExtension() + armInitialLength) - curProjection * curProjection);
         endHeight = curCalcHeight - 5.0; //Move up 5 inches (increase bc decreasing distance from x-axis)
     }

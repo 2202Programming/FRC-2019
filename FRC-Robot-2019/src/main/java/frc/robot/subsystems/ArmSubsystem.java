@@ -138,7 +138,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   /**
    * Rotates the arm to a specific angle
    * 
-   * @param angle the angle to rotate the arm to
+   * @param angle the angle to rotate the arm to, in degrees
    */
   public void setAngle(double angle) {
     double counts = (angle - PHI0) * kCounts_per_deg;
@@ -147,7 +147,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
   /**
    * Gets the angle at which the arm subsystem is rotated.
-   * @return the angle of the arm, in radians.
+   * @return the angle of the arm, in degrees. TODO: Check that every use of this method takes this into account
    */
   public double getAngle() {
     //  return PHI_MAX - (rotationEncoder.getSelectedSensorPosition() / COUNT_MAX * (PHI_MAX - PHI_MIN));
