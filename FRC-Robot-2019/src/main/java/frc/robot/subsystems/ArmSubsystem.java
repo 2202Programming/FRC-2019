@@ -28,12 +28,11 @@ import frc.robot.commands.util.MathUtil;
  *                      double checked math with non-zero initial start positons
  * 
  * 
- * 
  *    Arm gearing
  *              M:7:E:7:3:shaft:(12->30)  where M=motor, 7= 7:1, 3= 3:1  ( 12->30 ) pulley teeth (2.5)
  *              E: encoder 1024 counts/rev quad encoder
  * 
- *              ---->> 149.3333 counts/(deg arm)  WTH? measured ~824
+ *              ---->> 149.3333 counts/(deg arm)  WTH? measured ~600
  * 
  *    Ext gearing 
  *              M:5:7:E:shaft:(42:22:36):5mm pitch   
@@ -63,9 +62,9 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public final double L0 = 8.875 ;               // inches - starting point, encoder zero -set 2/24/2019
   public final double EXTEND_MIN = 0.750;        // inches 0.0 physic, .75 soft stop
   public final double EXTEND_MAX = 35.0;         // inches - measured practice bot
-  public final double ARM_BASE_LENGTH = 18.0;    //inches - measured practice bot (from pivot center) xg 2/16/19
-  public final double ARM_PIVOT_HEIGHT = 30.25;  //inches - measured practice bot
-  public final double WRIST_LENGTH = 7.75;       //inches -measured practice bot
+  public final double ARM_BASE_LENGTH = 18.0;    // inches - measured practice bot (from pivot center) xg 2/16/19
+  public final double ARM_PIVOT_HEIGHT = 30.25;  // inches - measured practice bot
+  public final double WRIST_LENGTH = 7.75;       // inches - measured practice bot
   
   private final double kCounts_per_in = -600.0;   // measured practice bot 2/24/2019
   private final double kIn_per_count = 1.0 / kCounts_per_in;
@@ -96,26 +95,24 @@ public class ArmSubsystem extends ExtendedSubSystem {
     addChild("Arm:Rot:Mtr", armRotationMotor);
     addChild("Arm:Ext:Mtr", armExtensionMotor);
 
-    // Set Talon postion mode gains
-    armRotationMotor.config_kP(0, 0.3/* 0.8*/, 30); 
+    // Set Talon postion mode gains and power limits
+    //Arm
+    armRotationMotor.config_kP(0, 0.5 /*0.8*/, 30); 
     armRotationMotor.configPeakOutputForward(0.3);
     armRotationMotor.configPeakOutputReverse(-0.3);
-
-    armExtensionMotor.config_kP(0, 0.4 /*0.6*/, 30);
-    System.out.println("Warning - Arm motors have low values");
-
-    // Arm
     armRotationMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     armRotationMotor.setInverted(true);
     
-    // Extension on power will be out. 
+    // Extension on power will be out at L0. 
+    armExtensionMotor.config_kP(0, 0.5 /*0.6*/, 30);
     armExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     armExtensionMotor.setIntegralAccumulator(0, 0, 30);
     armExtensionMotor.setSensorPhase(false);
     armExtensionMotor.setInverted(true);
     armExtensionMotor.configPeakOutputForward(0.3);
     armExtensionMotor.configPeakOutputReverse(-0.3);
-
+    
+    System.out.println("Warning - Arm motors have moderate Kp values & reduced power 30% limits");
     logTimer = System.currentTimeMillis();
   }
 
@@ -232,8 +229,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
   @Override
   public void initDefaultCommand() {
-    //setDefaultCommand(new TeleopArmControlCommand());
-    //Xander and derek don't want any default commands
+    // no default commands, CommandManager will switch out the command groups
   }
 
   /**
