@@ -58,8 +58,9 @@ public class MoveArmAtHeight extends Command {
         //Roughly limit the extension based on game limits and robot geometry
         xProjection = MathUtil.limit(l_cmd, Robot.arm.MIN_PROJECTION, Robot.arm.MAX_PROJECTION);
 
+        double tanRatio = (belowPiv) ? h / xProjection : xProjection / h;
         // Rotate to maintain height as projection changes
-        double angle = Math.toDegrees(Math.atan(h / xProjection));
+        double angle = Math.toDegrees(Math.atan(tanRatio));
         angle += (belowPiv) ? 90.0 : 0.0;
         angle = MathUtil.limit(angle, Robot.arm.PHI_MIN, Robot.arm.PHI_MAX); 
         

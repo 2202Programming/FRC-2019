@@ -61,7 +61,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
   // Extender phyiscal numbers 
   public final double L0 = 8.875 ;               // inches - starting point, encoder zero -set 2/24/2019
-  public final double EXTEND_MIN = 0.0;          // inches
+  public final double EXTEND_MIN = 0.750;        // inches 0.0 physic, .75 soft stop
   public final double EXTEND_MAX = 35.0;         // inches - measured practice bot
   public final double ARM_BASE_LENGTH = 18.0;    //inches - measured practice bot (from pivot center) xg 2/16/19
   public final double ARM_PIVOT_HEIGHT = 30.25;  //inches - measured practice bot
