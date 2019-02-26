@@ -50,7 +50,7 @@ public class CommandManager {
         // DeliveryModes
         DeliverHatch(8),  // based on what we captured
         DeliverCargo(9),  // based on what we captured
-        Ejecting(10);     // Button:CaptureRelease
+        Releasing(10);    // Button:CaptureRelease
 
         private int v;
 
@@ -77,7 +77,7 @@ public class CommandManager {
     CommandGroup huntingHFloorGrp;
     CommandGroup captureGrp;
     CommandGroup deliveryGrp;
-    CommandGroup ejectGrp;
+    CommandGroup releaseGrp;
     
     // Target States - think of this as desired command vector
     Modes currentMode; // what we think are doing now
@@ -88,15 +88,16 @@ public class CommandManager {
 
     //gripper commanded postion - main output of the controls
     //RateLimiter rp_h;
-    RateLimiter rr_ext;
+    RateLimiter rr_ext;           // rate limited extenion output
     double gripperE_cmd = 0.0;    // (inches) Extension of arm/extender/wrist/cup
     double gripperH_cmd = 0.0;    // (inches) composite of arm/extender/wrist/cup
 
     // internal states
-    int delHeightIdx = 0; // used in delivery selection
-    int huntHeightIdx = 0;
+    int delHeightIdx = 0;         // used in delivery selection
+    int huntHeightIdx = 0;        // used for hunting height selection
+    // cycle the hunt mode the order below
     final Modes huntingModes[] = { Modes.HuntingHatch, Modes.HuntingCargo, Modes.HuntingFloor };
-    int huntModeIdx = 0 ;  //starts at Hatch
+    int huntModeIdx = 0 ;          //starts at Hatch
 
     // Initial gripper projections by huntModeIdx
     // Extension from pivot point.
@@ -104,10 +105,9 @@ public class CommandManager {
     
     // Data points - shares delheightidx, must be same length
     final double DeliveryCargoHeights[] = { 32.0, 60.0, 88.0 }; // TODO: fix the numbers
-    final double DeliveryHatchHeights[] = { 28.0, 56.0, 84.0 }; // TODO: fix the numbers
-    final double Capture_dDown = 5.0;  //inches to move down for capture
-    final double HuntHeights[] = { 23.0, 16.0, Capture_dDown + 4.0 }; // height from floor, H,C,Floor TODO:fix numbers
-
+    final double DeliveryHatchHeights[] = { 24.0, 56.0, 84.0 }; // TODO: fix the numbers
+    final double HuntHeights[] = { 22.0, 16.0, 4.0 };           // height from floor, H,C,Floor TODO:fix numbers
+ 
     //Phyical values from sub-systems as needed
     Position armPosition;
 
@@ -117,7 +117,7 @@ public class CommandManager {
         // bind commands to buttons
         Robot.m_oi.huntSelect.whenPressed(new CycleHuntModeCmd());
         Robot.m_oi.heightSelect.whenPressed(new CycleHeightModeCmd());
-        Robot.m_oi.captureRelease.whenPressed(new CaptureReleaseCmd());
+        Robot.m_oi.captureRelease.whenPressed(new NextModeCmd(Modes.HuntGameStart));
 
         // Construct our major modes from their command factories
         zeroRobotGrp = CmdFactoryZeroRobot();
@@ -127,7 +127,7 @@ public class CommandManager {
         huntingCargoGrp = CmdFactoryHuntCargo();
         captureGrp = CmdFactoryCapture();
         deliveryGrp = CmdFactoryDelivery();
-        ejectGrp = CmdFactoryEject();
+        releaseGrp = CmdFactoryRelease();
 
         logTimer = System.currentTimeMillis();
         armPosition = Robot.arm.getArmPosition();
@@ -140,8 +140,8 @@ public class CommandManager {
             -10.0, //inches/sec
             10.0, //inches/sec 
             InputModel.Rate);
-        rr_ext.setDeadZone(.5);
-        rr_ext.setRateGain(15.0);  // 15 in/sec max stick input 
+        rr_ext.setDeadZone(0.2);   // ignore .2 in/sec on stick
+        rr_ext.setRateGain(10.0);  // 10 in/sec max stick input 
     }
 
     /**
@@ -176,17 +176,19 @@ public class CommandManager {
 
         case HuntingFloor:
             huntModeIdx = 2;
+            prevHuntMode = Modes.HuntingFloor;
             nextCmd = huntingHFloorGrp;
             break;
 
         case HuntingCargo:
             huntModeIdx = 1;
+            prevHuntMode = Modes.HuntingCargo;
             nextCmd = huntingCargoGrp;
             break;
 
         case HuntingHatch:
-            // move the height
             huntModeIdx = 0;
+            prevHuntMode = Modes.HuntingHatch;
             nextCmd = huntingHatchGrp;
             break;
 
@@ -206,8 +208,8 @@ public class CommandManager {
             nextCmd = deliveryGrp;
             break;
 
-        case Ejecting:
-            nextCmd = ejectGrp;
+        case Releasing:
+            nextCmd = releaseGrp;
             break;
 
         default:
@@ -241,12 +243,12 @@ public class CommandManager {
                  (currentMode == Modes.DeliverHatch) );
     }
 
-    private void triggerCaptureRelease(){
-        //Change StateMachine in command Manger
-        setMode(Modes.Capturing);
+    private void triggerCaptureRelease() {
+        if (isHunting())  gotoDeliverMode();
+        else  setMode(Modes.Releasing);
     }
+
     private void cycleHuntMode() {
-        
         if (isHunting()) {
             int idx = huntModeIdx + 1;
             huntModeIdx = (idx >= huntingModes.length) ? 0 : idx;
@@ -264,10 +266,6 @@ public class CommandManager {
         return (nextMode.get());
     }
 
-    private int gotoHuntMode() {
-        Modes nextMode = Modes.HuntingHatch;
-        return  nextMode.get();
-    }
 
     private void cycleHeight() {
         if (isHunting()) return;  // if we are not delivery, just bail
@@ -275,7 +273,6 @@ public class CommandManager {
         // make sure index fits in array
         delHeightIdx = (idx >= DeliveryCargoHeights.length) ? 0 : idx;
         setGripperPosition();
-
     }
 
     double wristTrackParallel() {
@@ -370,6 +367,7 @@ public class CommandManager {
 
     private CommandGroup CmdFactoryHuntHatch() {
         CommandGroup grp = new CommandGroup("HuntHatch");
+        grp.addSequential(new VacuumCommand(true));
         grp.addParallel(new MoveArmAtHeight(this::gripperHeight, this::gripperExtension));
         grp.addParallel(new WristTrackFunction(this::wristTrackParallel));
         return grp;
@@ -377,6 +375,7 @@ public class CommandManager {
 
     private CommandGroup CmdFactoryHuntCargo() {
         CommandGroup grp = new CommandGroup("HuntCargo");
+        grp.addSequential(new VacuumCommand(true));
         grp.addParallel(new MoveArmAtHeight(this::gripperHeight, this::gripperExtension));
         grp.addParallel(new WristTrackFunction(this::wristTrackPerp));
         return grp;
@@ -384,6 +383,7 @@ public class CommandManager {
 
     private CommandGroup CmdFactoryHuntHatchFloor() {
         CommandGroup grp = new CommandGroup("HuntHatchFloor");
+        grp.addSequential(new VacuumCommand(true));
         grp.addParallel(new MoveArmAtHeight(this::gripperHeight, this::gripperExtension));
         grp.addParallel(new WristTrackFunction(this::wristTrackPerp));
         return grp;
@@ -396,8 +396,8 @@ public class CommandManager {
     private CommandGroup CmdFactoryHuntGameStart() {
         CommandGroup grp = new CommandGroup("HuntGameStart");
         grp.addSequential(new VacuumCommand(true));
-        grp.addSequential(new RotateWristCommand(90.0, 2.0));              //these will wait, not timeout, 
-        grp.addSequential(new RotateWristCommand(80.0, 2.0));              // wiggle wrist to grab hatch
+        grp.addSequential(new RotateWristCommand(95.0, 2.0));              //these will wait, not timeout, 
+        grp.addSequential(new RotateWristCommand(90.0, 2.0));              // wiggle wrist to grab hatch
         grp.addSequential(new RotateWristCommand(95.0, 2.0));
         grp.addSequential(new ExtendArmToPositionCommand(2.0));            //pull in a bit before rotate, should have hatch
         grp.addSequential(new TestRotateArmToAngleCommand(145.0, 30.0));   //rotate clear before going to delivery mode
@@ -408,8 +408,8 @@ public class CommandManager {
 
     private CommandGroup CmdFactoryCapture() {
         CommandGroup grp = new CommandGroup("Capture");
-        grp.addSequential(new VacuumCommand(true));                 /// new IntakeOnCommand() );    
-        grp.addSequential(new MoveDownToCapture(Capture_dDown), 3.5 );  //TODO: fix  3.5 seconds const
+        grp.addSequential(new VacuumCommand(true));                 
+        //grp.addSequential(new MoveDownToCapture(Capture_dDown), 3.5 );  //TODO: fix  3.5 seconds const
         grp.addSequential(new CallFunctionCmd(this::gotoDeliverMode));
         return grp;
     }
@@ -421,10 +421,12 @@ public class CommandManager {
         return grp;
     }
 
-    private CommandGroup CmdFactoryEject() {
-        CommandGroup grp = new CommandGroup("Eject");
+    private CommandGroup CmdFactoryRelease() {
+        CommandGroup grp = new CommandGroup("Release");
+        //grp.AddSequential(new Extend_Drive_To_Deliver());
         grp.addSequential(new VacuumCommand(false)); 
-        grp.addSequential(new CallFunctionCmd(this::gotoHuntMode));
+        //grp.AddSequential(new Delay(.0.3));  //maybe move the wrist??
+        grp.addSequential(new NextModeCmd(Modes.HuntingHatch));    // go back to hunting
         return grp;
     }
 

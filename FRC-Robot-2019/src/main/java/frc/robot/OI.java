@@ -4,18 +4,14 @@
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
-
 package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import frc.robot.input.XboxControllerButtonCode;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import frc.robot.commands.LimeLightArcadeDriveCommand;
-import frc.robot.commands.arm.*;
 import frc.robot.commands.drive.*;
 import frc.robot.commands.drive.shift.*;
-import frc.robot.commands.intake.*;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -68,24 +64,18 @@ public class OI {
     new JoystickButton(driver, XboxControllerButtonCode.X.getCode()).whenPressed(new InvertDriveControlsCommand());
     new JoystickButton(driver, XboxControllerButtonCode.LB.getCode()).whileHeld(new TankDriveCommand());
 
-    // setup buttons
+    // setup buttons for use in CommandManager
     huntSelect     = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
     heightSelect   = new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode());
-    captureRelease = new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode());
-    // Arm Commands
-    //new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode()).whileHeld(new ExtendArmCommand());
-    //new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whileHeld(new RetractArmCommand());
-    //new JoystickButton(assistant, XboxControllerButtonCode.X.getCode()).whenPressed(new TestRotateArmToAngleCommand(20));
-    //new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new TestRotateArmToAngleCommand(0));
+    captureRelease = new JoystickButton(assistant, XboxControllerButtonCode.A.getCode());
 
     //Intake Commands
-    new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new VacuumCommand(false));
-    new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whenPressed(new VacuumCommand(true));
+    //hack new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new VacuumCommand(false));
+    //hack new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whenPressed(new VacuumCommand(true));
     //new JoystickButton(assistant, XboxControllerButtonCode.START.getCode()).whenPressed(new RotateWristUpCommand());
     //new JoystickButton(assistant, XboxControllerButtonCode.BACK.getCode()).whenPressed(new RotateWristDownCommand());
 
     //Driver assist commands (macros)
-    
   }
 
   // Bind analog controls to functions to use by the commands
