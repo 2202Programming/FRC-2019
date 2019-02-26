@@ -90,10 +90,11 @@ private long logTimer;
   }
 
   public void serialFlush(int bufferLimit) {
-    if(arduinoSerial.getBytesReceived() > bufferLimit) {
+    int flushAmount = arduinoSerial.getBytesReceived()-bufferLimit;
+    if(flushAmount>0) {
       try{
-        byte[] temp = arduinoSerial.read(arduinoSerial.getBytesReceived()-bufferLimit);
-        System.out.println("Flushed " + (arduinoSerial.getBytesReceived()-bufferLimit) + " bytes from serial buffer");
+        byte[] temp = arduinoSerial.read(flushAmount);
+        System.out.println("Flushed " + (flushAmount) + " bytes from serial buffer");
       } 
       catch (UncleanStatusException e) {     //Catch uncleanstatusexception and restart serial port 
         System.out.println("Serial Exception UncleanStatusException caught. Code:" + e.getStatus());

@@ -96,6 +96,13 @@ public class RateLimiter {
     devPrev = devPos;
   }
 
+  //jumps to given output, good for initialize or new
+  // starting point for rateCommands
+  public void setState(double pos){
+    Xprev = pos;
+    X = pos;
+  }
+
   // designed to be called from FRC Command if needed, call once per frame
   // and no more because it does an integration in Rate mode.
   public void execute() {

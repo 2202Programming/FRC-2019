@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
 public class ExtendArmToPositionCommand extends Command {
-    final private double kTolerance = 2.0;
+    final private double kTolerance = 0.50;  //(inches)
     private double distance;
 
     public ExtendArmToPositionCommand(double distance) {

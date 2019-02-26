@@ -1,7 +1,6 @@
 package frc.robot;
 
 import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import frc.robot.input.XboxControllerButtonCode;
@@ -22,9 +21,9 @@ import frc.robot.commands.drive.shift.UpShiftCommand;
 
 
 public class RobotTest {
-    private XboxController driver = new XboxController(0);
-    private XboxController assistant = new XboxController(1);
-    private XboxController switchBoard = new XboxController(2);
+    private XboxController driver = Robot.m_oi.getDriverController();
+    private XboxController assistant = Robot.m_oi.getAssistantController();
+    private XboxController switchBoard = Robot.m_oi.getAssistantController();
 
     // TESTING Started in TestInit
     Command testWristCmd;
@@ -32,10 +31,15 @@ public class RobotTest {
     private Command armTest;
 
     public RobotTest() {
-        OI();
+        //Vacuum subsystem tests
+        new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whenPressed(new VacuumCommand(true));
+        new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new VacuumCommand(false));
+        //gearbox tests
+        new JoystickButton(assistant, XboxControllerButtonCode.X.getCode()).whenPressed(new DownShiftCommand());
+        new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
+
         // TESTING Commands, only get scheduled if we enter Test mode
-        testWristCmd = new  TestWristRateCommand();
-                            //TestWristPositionCommand();
+        testWristCmd = new  TestWristPositionCommand(this::Wrist_AssistLeftTrigger);
         armTest = new TeleopArmControlCommand(this::leftJoyY, this::rightJoyY);
     }
 
@@ -46,12 +50,27 @@ public class RobotTest {
         Robot.arm.zeroArm();
         
         armTest.start();
-        // testArmCmd.start();
         testWristCmd.start();
     }
 
     public void periodic() {
         logSmartDashboardSensors();
+    }
+
+    /**
+     * 
+     * Bind the Joystick control functions here and use DoubleSupplier function arguemnts to pass
+     * them into your test functions. 
+     * 
+     * This keeps all the Joystick bindings out of the bowels of the code and signals can be 
+     * modified as needed.  
+     * 
+     * 
+     */
+    private double Wrist_AssistLeftTrigger() {
+        //rescale as expected by wrist test
+        double temp = -1.0 +2.0*Robot.m_oi.getAssistantController().getTriggerAxis(Hand.kLeft);
+        return temp;
     }
 
     private double leftJoyY() {
@@ -61,17 +80,7 @@ public class RobotTest {
     private double rightJoyY() {
         return Math.abs(assistant.getY(Hand.kRight)) < 0.05? 0: -assistant.getY(Hand.kRight); 
     }
-    /**
-     * Bind any testing buttons/controls here
-     */
-    public void OI() {
-        //Vacuum subsystem
-        new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whenPressed(new VacuumCommand(true));
-        new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new VacuumCommand(false));
-
-        new JoystickButton(assistant, XboxControllerButtonCode.X.getCode()).whenPressed(new DownShiftCommand());
-        new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
-    }
+       
     private void logSmartDashboardSensors() {
         // SmartDashboard.putNumber("Left Encoder Count", driveTrain.getLeftEncoderTalon().getSelectedSensorPosition());
         // SmartDashboard.putNumber("Left Encoder Rate", driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity());

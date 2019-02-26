@@ -28,12 +28,11 @@ import frc.robot.commands.util.MathUtil;
  *                      double checked math with non-zero initial start positons
  * 
  * 
- * 
  *    Arm gearing
  *              M:7:E:7:3:shaft:(12->30)  where M=motor, 7= 7:1, 3= 3:1  ( 12->30 ) pulley teeth (2.5)
  *              E: encoder 1024 counts/rev quad encoder
  * 
- *              ---->> 149.3333 counts/(deg arm)  WTH? measured ~824
+ *              ---->> 149.3333 counts/(deg arm)  WTH? measured ~600
  * 
  *    Ext gearing 
  *              M:5:7:E:shaft:(42:22:36):5mm pitch   
@@ -47,11 +46,11 @@ public class ArmSubsystem extends ExtendedSubSystem {
   private WPI_TalonSRX armExtensionMotor = new WPI_TalonSRX(RobotMap.ARM_EXTENSTION_TALON_CAN_ID);
 
   // Constants used by commands as measured
-  public final double PHI0 = 157.0;    // degrees, starting position - encoder zero
-  public final double PHI_MAX = 157.0; //In Degrees, Positive is foward, bottom front
-  public final double PHI_MIN = 0.0;   //In Degrees, Near top front 
+  public final double PHI0 = 155.0;    // degrees, starting position - encoder zero
+  public final double PHI_MAX = 155.0; //In Degrees, Positive is foward, bottom front
+  public final double PHI_MIN = 25.0;   //In Degrees, Near top front 
   
-  private final double kCounts_per_deg = 824;  // 149.333;  // TODO:confirm //COUNT_MAX / (PHI_MAX - PHI_MIN);
+  private final double kCounts_per_deg = -600;  //measured 2/24/2019
   private final double kDeg_per_count = 1.0 / kCounts_per_deg;
   
   //Geometry of the arm's pivot point
@@ -60,19 +59,19 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public final double MAX_PROJECTION = PIVOT_TO_FRONT + Robot.kProjectConstraint; //
 
   // Extender phyiscal numbers 
-  public final double L0 = 7.69;                 // inches - starting point, encoder zero 
-  public final double EXTEND_MIN = 0.0;          // inches
-  public final double EXTEND_MAX = 37.0;         // inches - measured practice bot
-  public final double ARM_BASE_LENGTH = 18.0;    //inches - measured practice bot (from pivot center) xg 2/16/19
-  public final double ARM_PIVOT_HEIGHT = 30.25;  //inches - measured practice bot
-  public final double WRIST_LENGTH = 7.75;       //inches -measured practice bot
+  public final double L0 = 8.875 ;               // inches - starting point, encoder zero -set 2/24/2019
+  public final double EXTEND_MIN = 0.750;        // inches 0.0 physic, .75 soft stop
+  public final double EXTEND_MAX = 35.0;         // inches - measured practice bot
+  public final double ARM_BASE_LENGTH = 18.0;    // inches - measured practice bot (from pivot center) xg 2/16/19
+  public final double ARM_PIVOT_HEIGHT = 30.25;  // inches - measured practice bot
+  public final double WRIST_LENGTH = 7.75;       // inches - measured practice bot
   
-  private final double EXTEND_COUNT_MAX = 22500; // measured practice bot
-  private final double kCounts_per_in = EXTEND_COUNT_MAX / EXTEND_MAX;
+  private final double kCounts_per_in = -600.0;   // measured practice bot 2/24/2019
   private final double kIn_per_count = 1.0 / kCounts_per_in;
 
   // Coupling between Phi and extension, as arm moves, so does d
-  private final double k_dl_dphi = 0.032639; // inches per degree (measured practice bot 2/17/19)
+  private final double k_dl_dphi = 0.033415;  //measured 2/24/2019 - practice bot new arm
+  // 0.032639; // inches per degree (measured practice bot 2/17/19)
 
   //talon controls
   final int PIDIdx = 0; //using pid 0 on talon
@@ -96,21 +95,24 @@ public class ArmSubsystem extends ExtendedSubSystem {
     addChild("Arm:Rot:Mtr", armRotationMotor);
     addChild("Arm:Ext:Mtr", armExtensionMotor);
 
-    // Set Talon postion mode gains
-    armRotationMotor.config_kP(0, 0.05 /* 0.8*/, 30); 
-    armExtensionMotor.config_kP(0, 0.05 /*0.6*/, 30);
-    System.out.println("Warning - Arm motors have bogus values");
-
-    // Arm
+    // Set Talon postion mode gains and power limits
+    //Arm
+    armRotationMotor.config_kP(0, 0.5 /*0.8*/, 30); 
+    armRotationMotor.configPeakOutputForward(0.3);
+    armRotationMotor.configPeakOutputReverse(-0.3);
     armRotationMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     armRotationMotor.setInverted(true);
     
-    // Extension on power will be out. 
+    // Extension on power will be out at L0. 
+    armExtensionMotor.config_kP(0, 0.5 /*0.6*/, 30);
     armExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     armExtensionMotor.setIntegralAccumulator(0, 0, 30);
     armExtensionMotor.setSensorPhase(false);
     armExtensionMotor.setInverted(true);
-
+    armExtensionMotor.configPeakOutputForward(0.3);
+    armExtensionMotor.configPeakOutputReverse(-0.3);
+    
+    System.out.println("Warning - Arm motors have moderate Kp values & reduced power 30% limits");
     logTimer = System.currentTimeMillis();
   }
 
@@ -125,19 +127,15 @@ public class ArmSubsystem extends ExtendedSubSystem {
   {
     armExtensionMotor.setSelectedSensorPosition(0);
     armExtensionMotor.setIntegralAccumulator(0, PIDIdx, TO);
-   // armExtensionMotor.configClosedloopRamp(0.25, TO);        //.25 seconds
-   // armExtensionMotor.configContinuousCurrentLimit(10, TO);  //amps
-
+   
     armRotationMotor.setSelectedSensorPosition(0);
     armRotationMotor.setIntegralAccumulator(0.0, PIDIdx, TO);
-    //armRotationMotor.configClosedloopRamp(0.50, TO);        //.50 seconds
-    //armRotationMotor.configContinuousCurrentLimit(10, TO);  //amps
   }
 
   /**
    * Rotates the arm to a specific angle
    * 
-   * @param angle the angle to rotate the arm to
+   * @param angle the angle to rotate the arm to, in degrees
    */
   public void setAngle(double angle) {
     double counts = (angle - PHI0) * kCounts_per_deg;
@@ -146,7 +144,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
   /**
    * Gets the angle at which the arm subsystem is rotated.
-   * @return the angle of the arm, in radians.
+   * @return the angle of the arm, in degrees. TODO: Check that every use of this method takes this into account
    */
   public double getAngle() {
     //  return PHI_MAX - (rotationEncoder.getSelectedSensorPosition() / COUNT_MAX * (PHI_MAX - PHI_MIN));
@@ -167,14 +165,14 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public void setExtension(double l) {
     double angle = getAngle();                     //current angle
     double compLen = ((angle - PHI0)*k_dl_dphi);   // ext due to rotation to compensate for
-    double len = (l - L0) - compLen;                // net len to command
+    double len = (l - L0) - compLen;               // net len to comman relative to start
 
     //Make sure we limit to the range of the extension is capable
-    if (len < EXTEND_MIN) {
+    if (len < (EXTEND_MIN - L0)) {
       System.out.println("Arm:Extension below minimum.");
     }
-
-    len = MathUtil.limit(len, EXTEND_MIN, EXTEND_MAX);
+    // we can't go above or below our adjust min/max based on starting L0
+    len = MathUtil.limit(len, EXTEND_MIN - L0, (EXTEND_MAX - L0));
     double c = len * kCounts_per_in;
     armExtensionMotor.set(ControlMode.Position, c);
   }
@@ -187,7 +185,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public double getExtension() {
     int counts = armExtensionMotor.getSelectedSensorPosition();
     //   L0  + phi correction
-    return (L0 + (getAngle() - PHI0) * k_dl_dphi) + (counts * kIn_per_count);
+    double l = (L0 + (getAngle() - PHI0) * k_dl_dphi) + (counts * kIn_per_count);
+    return l;
   }
 
   
@@ -211,18 +210,26 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * Computes height of gripper and projection on floor from pivot, pivot is horizontal zero
    */
   public Position getArmPosition() {
-    double rads = Math.toRadians(getAngle());
-    double l = PIVOT_TO_FRONT + WRIST_LENGTH + getExtension();
+    double phi = getAngle();
+    double rads = Math.toRadians(phi);
+    double ext = getExtension();          //includes angle compensation
+    double l = ARM_BASE_LENGTH + WRIST_LENGTH + ext;
     position.height = ARM_PIVOT_HEIGHT + l*Math.cos(rads); 
     position.projection = l*Math.sin(rads);
     return position;
   }
 
+  // Expected change in extension as a result of phi, phi in degrees
+  public double getCompLen(double phi)
+  {
+    //base + wrist + phi-rotation
+    double compLen =((phi - PHI0) * k_dl_dphi);
+    return (compLen);
+  }
 
   @Override
   public void initDefaultCommand() {
-    //setDefaultCommand(new TeleopArmControlCommand());
-    //Xander and derek don't want any default commands
+    // no default commands, CommandManager will switch out the command groups
   }
 
   /**
