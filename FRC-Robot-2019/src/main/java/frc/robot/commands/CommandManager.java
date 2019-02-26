@@ -23,6 +23,8 @@ import frc.robot.commands.arm.tests.TestRotateArmToAngleCommand;
  * 
  */
 public class CommandManager {
+    public final double kCapHeight = 4.0; //inch/joy units  TODO: put in better place
+
     int logCnt=0;
     private long logTimer;
 
@@ -311,7 +313,9 @@ public class CommandManager {
     
     // expose desired cup height to commands, set griperheight via state machine.
     double gripperHeight() {
-        return gripperH_cmd;
+        double h_offset = kCapHeight* (Robot.m_oi.adjustHeightDown() - Robot.m_oi.adjustHeightUp());  //inches (always down)
+    
+        return gripperH_cmd - h_offset;
     }
 
     public double gripperExtension() {
@@ -323,7 +327,6 @@ public class CommandManager {
     public void execute() {
         armPosition = Robot.arm.getArmPosition();
         //read inputs
-        double capHeightIn = Robot.m_oi.captureHeightInput();  //trigger
         rr_ext.execute();
     }
 

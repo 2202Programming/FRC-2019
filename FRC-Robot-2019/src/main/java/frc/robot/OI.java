@@ -71,7 +71,7 @@ public class OI {
     // setup buttons
     huntSelect     = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
     heightSelect   = new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode());
-    captureRelease = new JoystickButton(assistant, XboxControllerButtonCode.A.getCode());
+    captureRelease = new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode());
     // Arm Commands
     //new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode()).whileHeld(new ExtendArmCommand());
     //new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whileHeld(new RetractArmCommand());
@@ -79,7 +79,8 @@ public class OI {
     //new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new TestRotateArmToAngleCommand(0));
 
     //Intake Commands
-    //new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode()).whenPressed(new OuttakeCommand());
+    new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new VacuumCommand(false));
+    new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whenPressed(new VacuumCommand(true));
     //new JoystickButton(assistant, XboxControllerButtonCode.START.getCode()).whenPressed(new RotateWristUpCommand());
     //new JoystickButton(assistant, XboxControllerButtonCode.BACK.getCode()).whenPressed(new RotateWristDownCommand());
 
@@ -89,7 +90,11 @@ public class OI {
 
   // Bind analog controls to functions to use by the commands
   // this way we only change it key/stick assignemnts once.
-  public double captureHeightInput() {
+  public double adjustHeightDown() {
+    return Robot.m_oi.assistant.getTriggerAxis(Hand.kLeft);
+  }
+
+  public double adjustHeightUp() {
     return Robot.m_oi.assistant.getTriggerAxis(Hand.kRight);
   }
 
