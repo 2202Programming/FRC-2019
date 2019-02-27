@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap;
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.List;
 import java.util.ArrayList;
 
 //Listens on USB Serial port for LIDAR distance data from the arduino
@@ -17,7 +16,7 @@ public class SerialPortSubsystem extends Subsystem {
 
 private int[] distanceArray = new int[4];
 private ArrayList<Deque> distanceAvgArray;
-private StringBuilder serialResults =new StringBuilder();
+private StringBuilder serialResults = new StringBuilder();
 private SerialPort arduinoSerial;
 private boolean serialExists = true;
 private long logTimer;
@@ -31,7 +30,7 @@ private long logTimer;
     }
 
     logTimer = System.currentTimeMillis();
-    distanceAvgArray = new ArrayList<Deque>();
+    distanceAvgArray = new ArrayList<Deque>(); //4 elements, each is a Deque for 10 elements of distance
     distanceAvgArray.add(0, new ArrayDeque<Integer>());
     distanceAvgArray.add(1, new ArrayDeque<Integer>());
     distanceAvgArray.add(2, new ArrayDeque<Integer>());
@@ -93,10 +92,11 @@ private long logTimer;
       logTimer = System.currentTimeMillis();
       SmartDashboard.putBoolean("Serial Enabled?", isSerialEnabled());
       if (isSerialEnabled()) { //verify serial system was initalized before calling for results
-        SmartDashboard.putNumber("Left Front LIDAR (mm)", getDistance(RobotMap.LEFT_FRONT_LIDAR));
+        /*SmartDashboard.putNumber("Left Front LIDAR (mm)", getDistance(RobotMap.LEFT_FRONT_LIDAR));
         SmartDashboard.putNumber("Right Front LIDAR (mm)", getDistance(RobotMap.RIGHT_FRONT_LIDAR));
         SmartDashboard.putNumber("Left Back LIDAR (mm)", getDistance(RobotMap.LEFT_BACK_LIDAR));
         SmartDashboard.putNumber("Right Back LIDAR (mm)", getDistance(RobotMap.RIGHT_BACK_LIDAR));
+        */
 
         SmartDashboard.putNumber("Avg Left Front LIDAR (mm)", getDistanceAvg(RobotMap.LEFT_FRONT_LIDAR));
         SmartDashboard.putNumber("Avg Right Front LIDAR (mm)", getDistanceAvg(RobotMap.RIGHT_FRONT_LIDAR));
@@ -203,7 +203,7 @@ private long logTimer;
     distanceAvgArray.get(sensor).add(distance);//add to rolling average array
     if(distanceAvgArray.get(sensor).size() > 10)//keep most recent 10 valuse in array
     {
-      distanceAvgArray.get(sensor).remove();
+      distanceAvgArray.get(sensor).remove(); //remove oldest reading (queue)
     }
   }
 }
