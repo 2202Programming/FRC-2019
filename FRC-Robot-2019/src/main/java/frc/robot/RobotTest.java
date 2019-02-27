@@ -32,6 +32,16 @@ public class RobotTest {
     private Command armTest;
 
     public RobotTest() {
+    }
+
+    public void initialize() {
+        // Set commands here so they override the OI 
+
+        // remove defaultCommands so only testing is being done.
+        Robot.intake.setDefaultCommand(null);
+        Robot.gearShifter.setDefaultCommand(null);
+        Robot.arm.zeroArm();
+
         //Vacuum subsystem tests
         new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whenPressed(new IntakeTestCommand(false));
         //gearbox tests
@@ -41,13 +51,6 @@ public class RobotTest {
         // TESTING Commands, only get scheduled if we enter Test mode
         testWristCmd = new  TestWristPositionCommand(this::Wrist_AssistLeftTrigger);
         armTest = new TeleopArmControlCommand(this::leftJoyY, this::rightJoyY);
-    }
-
-    public void initialize() {
-        // remove defaultCommands so only testing is being done.
-        Robot.intake.setDefaultCommand(null);
-        Robot.gearShifter.setDefaultCommand(null);
-        Robot.arm.zeroArm();
         
         //armTest.start();
         //testWristCmd.start();
