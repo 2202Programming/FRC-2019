@@ -16,7 +16,6 @@ import frc.robot.commands.arm.*;
 import frc.robot.commands.drive.*;
 import frc.robot.commands.drive.shift.*;
 import frc.robot.commands.intake.*;
-import frc.robot.commands.intake.tests.IntakeTestCommand;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -80,7 +79,8 @@ public class OI {
     //new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new TestRotateArmToAngleCommand(0));
 
     //Intake Commands
-    new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whenPressed(new IntakeTestCommand(false));
+    new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new VacuumCommand(false));
+    new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whenPressed(new VacuumCommand(true));
     //new JoystickButton(assistant, XboxControllerButtonCode.START.getCode()).whenPressed(new RotateWristUpCommand());
     //new JoystickButton(assistant, XboxControllerButtonCode.BACK.getCode()).whenPressed(new RotateWristDownCommand());
 

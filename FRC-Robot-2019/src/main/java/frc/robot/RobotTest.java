@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.arm.TeleopArmControlCommand;
 import frc.robot.commands.arm.tests.TestArmRateCmd;
 import frc.robot.commands.intake.tests.TestWristRateCommand;
+import frc.robot.commands.intake.tests.IntakeTestCommand;
 import frc.robot.commands.intake.tests.TestWristPositionCommand;
 import frc.robot.commands.intake.VacuumCommand;
 import frc.robot.commands.drive.shift.DownShiftCommand;
@@ -32,8 +33,7 @@ public class RobotTest {
 
     public RobotTest() {
         //Vacuum subsystem tests
-        new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whenPressed(new VacuumCommand(true));
-        new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new VacuumCommand(false));
+        new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whenPressed(new IntakeTestCommand(false));
         //gearbox tests
         new JoystickButton(assistant, XboxControllerButtonCode.X.getCode()).whenPressed(new DownShiftCommand());
         new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
@@ -49,8 +49,8 @@ public class RobotTest {
         Robot.gearShifter.setDefaultCommand(null);
         Robot.arm.zeroArm();
         
-        armTest.start();
-        testWristCmd.start();
+        //armTest.start();
+        //testWristCmd.start();
     }
 
     public void periodic() {
