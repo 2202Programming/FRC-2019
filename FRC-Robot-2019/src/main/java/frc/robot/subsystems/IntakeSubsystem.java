@@ -134,6 +134,14 @@ public class IntakeSubsystem extends ExtendedSubSystem {
     vacuumSol.set(state);
   }
 
+  public void setVacuum(boolean on) {
+    if(on) {
+      vacuumPump.set(PumpSpeed);
+    } else {
+      vacuumPump.stopMotor();
+    }
+  }
+
   /**
    * Vacuum Controls
    */

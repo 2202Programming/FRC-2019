@@ -17,6 +17,8 @@ import frc.robot.commands.drive.*;
 import frc.robot.commands.drive.shift.*;
 import frc.robot.commands.intake.*;
 import frc.robot.commands.intake.tests.IntakeTestCommand;
+import frc.robot.commands.intake.tests.SolenoidTestCommand;
+import frc.robot.commands.intake.tests.VacuumTestCommand;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -98,9 +100,16 @@ public class OI {
   public void bindTestButtons() {
     //Vacuum subsystem tests
     new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whenPressed(new IntakeTestCommand(false));
+    new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new SolenoidTestCommand(false));
+    new JoystickButton(assistant, XboxControllerButtonCode.X.getCode()).whenPressed(new VacuumTestCommand(false));
     //gearbox tests
     new JoystickButton(assistant, XboxControllerButtonCode.X.getCode()).whenPressed(new DownShiftCommand());
     new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
+
+     // setup buttons
+     huntSelect     = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
+     heightSelect   = new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode());
+     captureRelease = new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode());
   }
 
   // Bind analog controls to functions to use by the commands
