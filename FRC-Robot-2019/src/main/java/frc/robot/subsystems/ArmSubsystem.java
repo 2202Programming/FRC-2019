@@ -64,7 +64,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public final double EXTEND_MAX = 35.0;         // inches - measured practice bot
   public final double ARM_BASE_LENGTH = 18.0;    // inches - measured practice bot (from pivot center) xg 2/16/19
   public final double ARM_PIVOT_HEIGHT = 30.25;  // inches - measured practice bot
-  public final double WRIST_LENGTH = 7.75;       // inches - measured practice bot
+  public final double WRIST_LENGTH = 4.5;        // inches - measured practice bot 2/26/19
   
   private final double kCounts_per_in = -600.0;   // measured practice bot 2/24/2019
   private final double kIn_per_count = 1.0 / kCounts_per_in;
@@ -165,14 +165,15 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public void setExtension(double l) {
     double angle = getAngle();                     //current angle
     double compLen = ((angle - PHI0)*k_dl_dphi);   // ext due to rotation to compensate for
-    double len = (l - L0) - compLen;               // net len to comman relative to start
+    double len = (l - L0) - compLen;               // net len to command relative to start
 
     //Make sure we limit to the range of the extension is capable
     if (len < (EXTEND_MIN - L0)) {
       System.out.println("Arm:Extension below minimum.");
     }
+    //todo:not sure if this is the right way to limit
     // we can't go above or below our adjust min/max based on starting L0
-    len = MathUtil.limit(len, EXTEND_MIN - L0, (EXTEND_MAX - L0));
+    len = MathUtil.limit(len, EXTEND_MIN - L0, EXTEND_MAX);
     double c = len * kCounts_per_in;
     armExtensionMotor.set(ControlMode.Position, c);
   }
