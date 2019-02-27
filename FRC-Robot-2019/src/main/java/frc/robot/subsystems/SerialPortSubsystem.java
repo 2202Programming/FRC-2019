@@ -6,6 +6,8 @@ import edu.wpi.first.hal.util.UncleanStatusException;
 import java.lang.StringBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 //Listens on USB Serial port for LIDAR distance data from the arduino
 
@@ -21,6 +23,11 @@ private StringBuilder serialResults =new StringBuilder();
 private SerialPort arduinoSerial;
 private boolean serialExists = true;
 private long logTimer;
+
+private Deque<Integer> distance1Array = new ArrayDeque<Integer>();
+private Deque<Integer> distance2Array = new ArrayDeque<Integer>();
+private Deque<Integer> distance3Array = new ArrayDeque<Integer>();
+private Deque<Integer> distance4Array = new ArrayDeque<Integer>();
 
   public SerialPortSubsystem() {
     try {
@@ -51,6 +58,76 @@ private long logTimer;
     return 0;
   }
 
+  public Integer getDistanceAvg(int sensor) {
+    Integer tempArray[];
+    Integer average = 0;
+    Integer sum = 0;
+    Integer max = 0;
+    Integer min = 10000;
+    switch(sensor) { //choses array based on sensor then finds 'Olympic Rolling Avg' of past 10 sensor inputs
+    
+      case 1: tempArray = distance1Array.toArray(new Integer[0]);
+              for (int i = 0; i<=distance1Array.size(); i++) {
+                if(tempArray[i] > max)
+                {
+                  max = tempArray[i];
+                }
+                if(tempArray[i] < min)
+                {
+                  min = tempArray[i];
+                }
+                sum = sum + tempArray[i];
+              }
+              average = (sum-max-min) / (distance1Array.size()-2);
+              break;
+      case 2: tempArray = distance2Array.toArray(new Integer[0]);
+              for (int i = 0; i<=distance2Array.size(); i++) {
+                if(tempArray[i] > max)
+                {
+                  max = tempArray[i];
+                }
+                if(tempArray[i] < min)
+                {
+                  min = tempArray[i];
+                }
+                sum = sum + tempArray[i];
+              }
+              average = (sum-max-min) / (distance2Array.size()-2);
+              break;
+      case 3: tempArray = distance3Array.toArray(new Integer[0]);
+              for (int i = 0; i<=distance3Array.size(); i++) {
+                if(tempArray[i] > max)
+                {
+                  max = tempArray[i];
+                }
+                if(tempArray[i] < min)
+                {
+                  min = tempArray[i];
+                }
+                sum = sum + tempArray[i];
+              }
+              average = (sum-max-min) / (distance3Array.size()-2);
+              break;
+      case 4: tempArray = distance4Array.toArray(new Integer[0]);
+              for (int i = 0; i<=distance4Array.size(); i++) {
+                if(tempArray[i] > max)
+                {
+                  max = tempArray[i];
+                }
+                if(tempArray[i] < min)
+                {
+                  min = tempArray[i];
+                }
+                sum = sum + tempArray[i];
+              }
+              average = (sum-max-min) / (distance4Array.size()-2);
+              break;
+      }
+
+      return average; 
+    }
+
+
   public Boolean allDigits(String tempString) {
     for (int i = 0; i<tempString.length(); i++) { //check all chars to make sure they are all digits
       if (!Character.isDigit(tempString.charAt(i)))
@@ -69,6 +146,11 @@ private long logTimer;
         SmartDashboard.putNumber("Right Front LIDAR (mm)", getDistance(RobotMap.RIGHT_FRONT_LIDAR));
         SmartDashboard.putNumber("Left Back LIDAR (mm)", getDistance(RobotMap.LEFT_BACK_LIDAR));
         SmartDashboard.putNumber("Right Back LIDAR (mm)", getDistance(RobotMap.RIGHT_BACK_LIDAR));
+
+        SmartDashboard.putNumber("Avg Left Front LIDAR (mm)", getDistanceAvg(RobotMap.LEFT_FRONT_LIDAR));
+        SmartDashboard.putNumber("Avg Right Front LIDAR (mm)", getDistanceAvg(RobotMap.RIGHT_FRONT_LIDAR));
+        SmartDashboard.putNumber("Avg Left Back LIDAR (mm)", getDistanceAvg(RobotMap.LEFT_BACK_LIDAR));
+        SmartDashboard.putNumber("Avg Right Back LIDAR (mm)", getDistanceAvg(RobotMap.RIGHT_BACK_LIDAR));
         }
     }
   }
@@ -168,12 +250,28 @@ private long logTimer;
 
     switch(sensor) { //set read distance to correct LIDAR based on read sensor ID
       case 1: distance1=distance;
+              distance1Array.push(distance1);
+              if (distance1Array.size()>10) { //keep most recent 10 valuse in array
+                distance1Array.pop();
+              }
               break;
       case 2: distance2=distance;
+              distance2Array.push(distance2);
+              if (distance2Array.size()>10) {//keep most recent 10 valuse in array
+                distance2Array.pop();
+              }
               break;
       case 3: distance3=distance;
+              distance3Array.push(distance3);
+              if (distance3Array.size()>10) {//keep most recent 10 valuse in array
+                distance3Array.pop();
+              }
               break;
       case 4: distance4=distance;
+              distance4Array.push(distance4);
+              if (distance4Array.size()>10) {//keep most recent 10 valuse in array
+                distance4Array.pop();
+              }
               break;
     }
   }
