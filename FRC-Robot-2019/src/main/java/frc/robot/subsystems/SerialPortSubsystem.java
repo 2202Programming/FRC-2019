@@ -59,7 +59,7 @@ private Deque<Integer> distance4Array = new ArrayDeque<Integer>();
   }
 
   public Integer getDistanceAvg(int sensor) {
-    Integer tempArray[];
+    Integer[] tempArray;
     Integer average = 0;
     Integer sum = 0;
     Integer max = 0;
@@ -67,7 +67,7 @@ private Deque<Integer> distance4Array = new ArrayDeque<Integer>();
     switch(sensor) { //choses array based on sensor then finds 'Olympic Rolling Avg' of past 10 sensor inputs
     
       case 1: tempArray = distance1Array.toArray(new Integer[0]);
-              for (int i = 0; i<=distance1Array.size(); i++) {
+              for (int i = 0; i<distance1Array.size(); i++) {
                 if(tempArray[i] > max)
                 {
                   max = tempArray[i];
@@ -81,7 +81,7 @@ private Deque<Integer> distance4Array = new ArrayDeque<Integer>();
               average = (sum-max-min) / (distance1Array.size()-2);
               break;
       case 2: tempArray = distance2Array.toArray(new Integer[0]);
-              for (int i = 0; i<=distance2Array.size(); i++) {
+              for (int i = 0; i<distance2Array.size(); i++) {
                 if(tempArray[i] > max)
                 {
                   max = tempArray[i];
@@ -95,7 +95,7 @@ private Deque<Integer> distance4Array = new ArrayDeque<Integer>();
               average = (sum-max-min) / (distance2Array.size()-2);
               break;
       case 3: tempArray = distance3Array.toArray(new Integer[0]);
-              for (int i = 0; i<=distance3Array.size(); i++) {
+              for (int i = 0; i<distance3Array.size(); i++) {
                 if(tempArray[i] > max)
                 {
                   max = tempArray[i];
@@ -109,7 +109,7 @@ private Deque<Integer> distance4Array = new ArrayDeque<Integer>();
               average = (sum-max-min) / (distance3Array.size()-2);
               break;
       case 4: tempArray = distance4Array.toArray(new Integer[0]);
-              for (int i = 0; i<=distance4Array.size(); i++) {
+              for (int i = 0; i<distance4Array.size(); i++) {
                 if(tempArray[i] > max)
                 {
                   max = tempArray[i];
@@ -250,27 +250,27 @@ private Deque<Integer> distance4Array = new ArrayDeque<Integer>();
 
     switch(sensor) { //set read distance to correct LIDAR based on read sensor ID
       case 1: distance1=distance;
-              distance1Array.push(distance1);
+              distance1Array.add(distance1);
               if (distance1Array.size()>10) { //keep most recent 10 valuse in array
-                distance1Array.pop();
+                distance1Array.remove();
               }
               break;
       case 2: distance2=distance;
-              distance2Array.push(distance2);
+              distance2Array.add(distance2);
               if (distance2Array.size()>10) {//keep most recent 10 valuse in array
-                distance2Array.pop();
+                distance2Array.remove();
               }
               break;
       case 3: distance3=distance;
-              distance3Array.push(distance3);
+              distance3Array.add(distance3);
               if (distance3Array.size()>10) {//keep most recent 10 valuse in array
-                distance3Array.pop();
+                distance3Array.remove();
               }
               break;
       case 4: distance4=distance;
-              distance4Array.push(distance4);
+              distance4Array.add(distance4);
               if (distance4Array.size()>10) {//keep most recent 10 valuse in array
-                distance4Array.pop();
+                distance4Array.remove();
               }
               break;
     }
