@@ -16,6 +16,7 @@ import frc.robot.commands.arm.*;
 import frc.robot.commands.drive.*;
 import frc.robot.commands.drive.shift.*;
 import frc.robot.commands.intake.*;
+import frc.robot.commands.intake.tests.IntakeTestCommand;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -59,8 +60,15 @@ public class OI {
   public JoystickButton captureRelease;     // used in delivery modes to go back to hunting
 
   @SuppressWarnings({ "resource", })
-  public OI() {
-    
+  public OI(boolean isTesting) {
+    if(isTesting) {
+      bindTestButtons();
+    } else {
+      bindFieldButtons();
+    }
+  }
+
+  private void bindFieldButtons() {
     // Drive Train Commands
     new JoystickButton(driver, XboxControllerButtonCode.A.getCode()).whenPressed(new DownShiftCommand());
     new JoystickButton(driver, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
@@ -85,7 +93,14 @@ public class OI {
     //new JoystickButton(assistant, XboxControllerButtonCode.BACK.getCode()).whenPressed(new RotateWristDownCommand());
 
     //Driver assist commands (macros)
-    
+  }
+
+  public void bindTestButtons() {
+    //Vacuum subsystem tests
+    new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whenPressed(new IntakeTestCommand(false));
+    //gearbox tests
+    new JoystickButton(assistant, XboxControllerButtonCode.X.getCode()).whenPressed(new DownShiftCommand());
+    new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
   }
 
   // Bind analog controls to functions to use by the commands

@@ -36,17 +36,11 @@ public class RobotTest {
 
     public void initialize() {
         // Set commands here so they override the OI 
-
+        Scheduler.getInstance().removeAll();
         // remove defaultCommands so only testing is being done.
         Robot.intake.setDefaultCommand(null);
         Robot.gearShifter.setDefaultCommand(null);
         Robot.arm.zeroArm();
-
-        //Vacuum subsystem tests
-        new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whenPressed(new IntakeTestCommand(false));
-        //gearbox tests
-        new JoystickButton(assistant, XboxControllerButtonCode.X.getCode()).whenPressed(new DownShiftCommand());
-        new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
 
         // TESTING Commands, only get scheduled if we enter Test mode
         testWristCmd = new  TestWristPositionCommand(this::Wrist_AssistLeftTrigger);
