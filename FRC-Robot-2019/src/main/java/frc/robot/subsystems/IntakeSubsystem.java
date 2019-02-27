@@ -72,10 +72,10 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   final DoubleSolenoid.Value kRelease = Value.kReverse;
 
   // Physical devices
-  CustomServo wristServo;             // positive angle, wrist up, when arm is forward
-  DigitalInput cargoSwitch;           // true when cargo switch is pressed by ball
-  SpeedController vacuumPump;         // motor control for vacuum pump
-  DoubleSolenoid vacuumSol;           // solenoid to hold and relase ball/hatch
+  protected CustomServo wristServo;             // positive angle, wrist up, when arm is forward
+  protected DigitalInput cargoSwitch;           // true when cargo switch is pressed by ball
+  protected SpeedController vacuumPump;         // motor control for vacuum pump
+  protected DoubleSolenoid vacuumSol;           // solenoid to hold and relase ball/hatch
 
   /**
    * Creates an intake subsystem.
@@ -129,17 +129,22 @@ public class IntakeSubsystem extends ExtendedSubSystem {
     return this.intakeVacuum;
   }
 
+  public void releaseSolenoid(boolean release) {
+    DoubleSolenoid.Value state = release? kRelease: kVacuum;
+    vacuumSol.set(state);
+  }
+
   /**
    * Vacuum Controls
    */
   public void vacuumOn() {
     vacuumPump.set(PumpSpeed);
-    vacuumSol.set(kVacuum);
+    releaseSolenoid(false);
   }
 
   public void vacuumOff() {
-    vacuumSol.set(kRelease);
     vacuumPump.stopMotor();
+    releaseSolenoid(true);
   }
 
   public void vacuumOffHoldOn() {
