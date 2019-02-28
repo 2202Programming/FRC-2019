@@ -49,19 +49,19 @@ private long logTimer;
   }
 
   public int getDistance(int sensor) { //return last distance measure for LIDAR sensor
-    return distanceArray[sensor];
+    return distanceArray[sensor-1];
   }
 
   public Integer getDistanceAvg(int sensor) { //return olympic average of last 10 readings of LIDAR sensor
     
-    Deque<Integer> tempDeque = distanceAvgArray.get(sensor);
+    Deque<Integer> tempDeque = distanceAvgArray.get(sensor-1);
     Integer[] tempArray = tempDeque.toArray(new Integer[0]); //switch from ArrayDeque to actual array so we can get each element
     Integer average = 0;
     Integer sum = 0;
     Integer max = 0;
     Integer min = 10000;
 
-    for (int i = 0; i<distanceAvgArray.get(sensor).size(); i++) {
+    for (int i = 0; i<distanceAvgArray.get(sensor-1).size(); i++) {
       if(tempArray[i] > max)
       {
         max = tempArray[i];
@@ -72,7 +72,7 @@ private long logTimer;
       }
       sum = sum + tempArray[i];
     }
-    average = (sum-max-min) / (distanceAvgArray.get(sensor).size()-2); //return average, not including max or min reading (olympic)  
+    average = (sum-max-min) / (distanceAvgArray.get(sensor-1).size()-2); //return average, not including max or min reading (olympic)  
 
     return average; 
     }
@@ -199,11 +199,11 @@ private long logTimer;
 
     distance = Integer.parseInt(serialResults.substring(2)); //read in everything after first two char as a distance (in mm)
 
-    distanceArray[sensor]=distance;//set read distance to correct LIDAR based on read sensor ID
-    distanceAvgArray.get(sensor).add(distance);//add to rolling average array
-    if(distanceAvgArray.get(sensor).size() > 10)//keep most recent 10 valuse in array
+    distanceArray[sensor-1]=distance;//set read distance to correct LIDAR based on read sensor ID
+    distanceAvgArray.get(sensor-1).add(distance);//add to rolling average array
+    if(distanceAvgArray.get(sensor-1).size() > 10)//keep most recent 10 valuse in array
     {
-      distanceAvgArray.get(sensor).remove(); //remove oldest reading (queue)
+      distanceAvgArray.get(sensor-1).remove(); //remove oldest reading (queue)
     }
   }
 }
