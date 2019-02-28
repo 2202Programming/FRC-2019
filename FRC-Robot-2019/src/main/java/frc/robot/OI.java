@@ -81,7 +81,7 @@ public class OI {
     huntSelect     = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
     heightSelect   = new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode());
     captureRelease = new JoystickButton(assistant, XboxControllerButtonCode.A.getCode());
-    flip           = new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode());
+    flip           = new JoystickButton(assistant, XboxControllerButtonCode.X.getCode());
 
     //Intake Commands
     //hack new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new VacuumCommand(false));
