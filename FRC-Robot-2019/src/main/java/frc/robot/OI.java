@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import frc.robot.input.XboxControllerButtonCode;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import frc.robot.commands.LimeLightArcadeDriveCommand;
 import frc.robot.commands.climb.tests.ClimbSolenoidTestCmd;
 import frc.robot.commands.drive.*;
 import frc.robot.commands.drive.shift.*;
@@ -75,6 +76,7 @@ public class OI {
     new JoystickButton(driver, XboxControllerButtonCode.B.getCode()).whenPressed(new ToggleAutomaticGearShiftingCommand());
     new JoystickButton(driver, XboxControllerButtonCode.X.getCode()).whenPressed(new InvertDriveControlsCommand());
     new JoystickButton(driver, XboxControllerButtonCode.LB.getCode()).whileHeld(new TankDriveCommand());
+    new JoystickButton(driver, XboxControllerButtonCode.RB.getCode()).whileHeld(new LimeLightArcadeDriveCommand());    
 
     // setup buttons for use in CommandManager
     huntSelect     = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());

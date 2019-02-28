@@ -96,10 +96,10 @@ public class DriveTrainSubsystem extends Subsystem {
   }
 
   public void log(int interval) {
-
     if ((logTimer + interval) < System.currentTimeMillis()) { //only post to smartdashboard every interval ms
       logTimer = System.currentTimeMillis();
 
+      SmartDashboard.putData(this);
       SmartDashboard.putNumber("Left Encoder Count", getLeftEncoderTalon().getSelectedSensorPosition());
       SmartDashboard.putNumber("Left Encoder Rate", getLeftEncoderTalon().getSelectedSensorVelocity());
       SmartDashboard.putNumber("Right Encoder Count", getRightEncoderTalon().getSelectedSensorPosition());
