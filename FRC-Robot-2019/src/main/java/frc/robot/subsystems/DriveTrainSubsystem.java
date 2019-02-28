@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -54,6 +55,7 @@ public class DriveTrainSubsystem extends Subsystem {
   private final double RIGHT_SIDE_INVERT_MULTIPLIER = -1.0;
 
   private NetworkTableEntry cameraSelect;
+  private long logTimer;
 
   public DriveTrainSubsystem() {    
     addChild("Middle Left CIM", (Sendable) middleLeftMotor);
@@ -90,6 +92,19 @@ public class DriveTrainSubsystem extends Subsystem {
     inversionConstant = 1;
 
     cameraSelect = NetworkTableInstance.getDefault().getEntry("/PiSwitch");
+    logTimer = System.currentTimeMillis();
+  }
+
+  public void log(int interval) {
+
+    if ((logTimer + interval) < System.currentTimeMillis()) { //only post to smartdashboard every interval ms
+      logTimer = System.currentTimeMillis();
+
+      SmartDashboard.putNumber("Left Encoder Count", getLeftEncoderTalon().getSelectedSensorPosition());
+      SmartDashboard.putNumber("Left Encoder Rate", getLeftEncoderTalon().getSelectedSensorVelocity());
+      SmartDashboard.putNumber("Right Encoder Count", getRightEncoderTalon().getSelectedSensorPosition());
+      SmartDashboard.putNumber("Right Encoder Rate", getRightEncoderTalon().getSelectedSensorVelocity());
+    }
   }
 
   private void limitTalon(WPI_TalonSRX talon){
@@ -98,6 +113,7 @@ public class DriveTrainSubsystem extends Subsystem {
     talon.configContinuousCurrentLimit(30, 10);
     talon.enableCurrentLimit(true);
     talon.configOpenloopRamp(0.08, 10);
+    talon.setNeutralMode(NeutralMode.Brake);
   }
 
   @Override
@@ -213,6 +229,13 @@ public class DriveTrainSubsystem extends Subsystem {
   }
   public double velRight() {
     return (rightEncoder.getSelectedSensorVelocity()* kSamplePeriod * ENCODER_RIGHT_DISTANCE_PER_PULSE);
+  }
+
+  /**
+   * Deadband in inches/sec
+   */
+  public boolean isMoving(double deadband) {
+    return Math.abs(velLeft()) < deadband || Math.abs(velRight()) < deadband;
   }
 
   /**

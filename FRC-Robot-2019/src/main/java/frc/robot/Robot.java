@@ -40,11 +40,14 @@ public class Robot extends TimedRobot {
   public static IntakeSubsystem intake = new IntakeSubsystem();
   public static CargoTrapSubsystem cargoTrap = new CargoTrapSubsystem();
   public static ArmSubsystem arm = new ArmSubsystem();
+  public static ClimberSubsystem climber = new ClimberSubsystem();
   public static SerialPortSubsystem serialSubsystem = new SerialPortSubsystem();
-  public static OI m_oi = new OI(); //OI Depends on the subsystems and must be last
+  public static OI m_oi = new OI(true); //OI Depends on the subsystems and must be last (boolean is whether we are testing or not)
 
   public static CommandManager m_cmdMgr;    //fix the public later
   private RobotTest m_testRobot;
+
+  boolean doneOnce = false;   //single execute our zero 
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -54,14 +57,9 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Create the test subsystem
     m_testRobot  = new RobotTest();
-
-
-    //serialSubsystem = new SerialPortSubsystem();
     m_cmdMgr = new CommandManager();
-    m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's functions
-
-   /// TODO: confirm this. DPL should be covered by SettingZeros mode Robot.intake.zeroSubsystem();
-    
+    m_cmdMgr.setMode(Modes.Construction);   // schedules the mode's function
+    limeLight.disableLED(); //disable blinding green LED that Trevor hates
   }
 
   /**
@@ -75,12 +73,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    logSmartDashboardSensors();
+    logSmartDashboardSensors(500); //call smartdashboard logging, 500ms update rate
     limeLight.populateLimelight();
-    
-    if (serialSubsystem.isSerialEnabled()) {
-      serialSubsystem.processSerial();
-    }
+    serialSubsystem.processSerial();
   }
 
   /**
@@ -90,6 +85,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
+    limeLight.disableLED(); //disable blinding green LED that Trevor hates
   }
 
   @Override
@@ -112,6 +108,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     resetAllDashBoardSensors();
+    limeLight.enableLED(); //active limelight LED when operational
   }
 
   /**
@@ -120,7 +117,6 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     Scheduler.getInstance().run();
-    logSmartDashboardSensors();
   }
 
   @Override
@@ -129,11 +125,13 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    
+    if (doneOnce == false ){
+      m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function
+      doneOnce = true;
+    }
     resetAllDashBoardSensors();
-    m_cmdMgr.setMode(Modes.HuntingHatch);   
-
-
+    //m_cmdMgr.setMode(Modes.HuntingHatch);  
+    limeLight.enableLED(); //active limelight LED when operational 
   }
 
   /**
@@ -141,7 +139,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    m_cmdMgr.execute();
     Scheduler.getInstance().run();
+
 
 //    if (serialSubsystem.isSerialEnabled()) //if serial was initalized, run periodic serial processing loop
 //    serialSubsystem.processSerial();
@@ -150,6 +150,7 @@ public class Robot extends TimedRobot {
    @Override
    public void testInit() {
      m_testRobot.initialize();
+     limeLight.enableLED(); //active limelight LED when operational
      Scheduler.getInstance().enable();   //### hack? or required?  Seems required otherwise nothing runs 
    }
 
@@ -162,39 +163,24 @@ public class Robot extends TimedRobot {
     m_testRobot.periodic();
   }
 
-  private void logSmartDashboardSensors() {
-    // SmartDashboard.putNumber("Left Encoder Count", driveTrain.getLeftEncoderTalon().getSelectedSensorPosition());
-    // SmartDashboard.putNumber("Left Encoder Rate", driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity());
-    // SmartDashboard.putNumber("Right Encoder Count", driveTrain.getRightEncoderTalon().getSelectedSensorPosition());
-    // SmartDashboard.putNumber("Right Encoder Rate", driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
-    // SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
+  private void logSmartDashboardSensors(int interval) {
+    //calls subsystem smartdashboard logging functions, instructs them to only update every interval # of ms
+    
+    //picking hopefully non-overlapping time intervals so all the logging isn't done at the same cycle
+    limeLight.log(interval); //tell limelight to post to dashboard every Xms
+    driveTrain.log(interval+3); //tell drivertrain to post to dashboard every Xms
+    serialSubsystem.log(interval+7); //tell serial to post to dashboard every Xms
+    arm.log(interval+11);
+    gearShifter.log(interval+17); //tell gearshifter to post to dashboard every Xms
+    m_cmdMgr.log(interval+23);
+    intake.log(interval+29);
 
-    
-    
-    SmartDashboard.putNumber("In:Wr(deg)", intake.getAngle());
-   /*
-    intake.log();   //DPL 2/10/19 review this with Billy/Xander
-    arm.log();
-    arm.logTalons();
-    m_cmdMgr.log();
 /*    
     SmartDashboard.putData(Scheduler.getInstance()); 
     //SmartDashboard.putData(driveTrain);
     //SmartDashboard.putData(gearShifter);
-    
-    SmartDashboard.putNumber("LimelightX", limeLight.getX());
-    SmartDashboard.putNumber("LimelightY", limeLight.getY());
-    SmartDashboard.putNumber("LimelightArea", limeLight.getArea());
-    SmartDashboard.putBoolean("LimeTarget", limeLight.hasTarget());
 */
-    if (serialSubsystem.isSerialEnabled()) { //verify serial system was initalized before calling for results
-    SmartDashboard.putNumber("Left Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.LEFT_FRONT_LIDAR));
-    SmartDashboard.putNumber("Right Front LIDAR (mm)", serialSubsystem.getDistance(RobotMap.RIGHT_FRONT_LIDAR));
-    SmartDashboard.putNumber("Left Back LIDAR (mm)", serialSubsystem.getDistance(RobotMap.LEFT_BACK_LIDAR));
-    SmartDashboard.putNumber("Right Back LIDAR (mm)", serialSubsystem.getDistance(RobotMap.RIGHT_BACK_LIDAR));
-    }
- 
-  }
+}
 
   private void resetAllDashBoardSensors() {
     driveTrain.getLeftEncoderTalon().setSelectedSensorPosition(0);
