@@ -30,9 +30,10 @@ public class LimeLightArcadeDriveCommand extends Command {
   @Override
   protected void initialize() {
     driveTrain.stop();
+    controller.reset();
     controller.setInputRange(-25.0, 25.0);
     controller.setOutputRange(-1, 1);
-    controller.setPercentTolerance(2);
+    controller.setPercentTolerance(1);
     controller.setContinuous(true);
     controller.enable();
   }
