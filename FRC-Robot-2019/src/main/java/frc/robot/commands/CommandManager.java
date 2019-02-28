@@ -134,6 +134,7 @@ public class CommandManager {
         captureGrp = CmdFactoryCapture();
         deliveryGrp = CmdFactoryDelivery();
         releaseGrp = CmdFactoryRelease();
+        flipGrp = CmdFactoryFlip();
 
         logTimer = System.currentTimeMillis();
         armPosition = Robot.arm.getArmPosition();
@@ -148,7 +149,6 @@ public class CommandManager {
             InputModel.Rate);
         rr_ext.setDeadZone(0.2);   // ignore .2 in/sec on stick
         rr_ext.setRateGain(10.0);  // 10 in/sec max stick input 
-        flipGrp = CmdFactoryFlip();
     }
 
     /**
@@ -231,7 +231,7 @@ public class CommandManager {
         // calculate the height and extension, set gripperH_cmd, and gripperE_cmd
         setGripperPosition();
         installGroup(nextCmd);
-}
+    }
     //Starts new group. 
     void installGroup(CommandGroup grp) {
         if (grp == null) return;
@@ -259,8 +259,8 @@ public class CommandManager {
 
 
     private void flip() {
-        setMode(Modes.Flipping);
         Robot.arm.invert(); //TODO: Find right place to do this...
+        setMode(Modes.Flipping);
     }
     private void cycleHuntMode() {
         if (isHunting()) {
