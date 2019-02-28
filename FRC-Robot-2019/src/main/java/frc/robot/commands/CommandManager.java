@@ -422,7 +422,6 @@ public class CommandManager {
         grp.addSequential(new VacuumCommand(true));
         grp.addSequential(new RotateWristCommand(95.0, 2.0));              //these will wait, not timeout, 
         grp.addSequential(new RotateWristCommand(90.0, 2.0));              // wiggle wrist to grab hatch
-        grp.addSequential(new RotateWristCommand(95.0, 2.0));
         grp.addSequential(new ExtendArmToPositionCommand(2.0));            //pull in a bit before rotate, should have hatch
         grp.addSequential(new TestRotateArmToAngleCommand(145.0, 30.0));   //rotate clear before going to delivery mode
 
@@ -448,8 +447,8 @@ public class CommandManager {
     private CommandGroup CmdFactoryRelease() {
         CommandGroup grp = new CommandGroup("Release");
         //grp.AddSequential(new Extend_Drive_To_Deliver());
-        grp.addSequential(new VacuumCommand(false)); 
-        //grp.AddSequential(new Delay(.0.3));  //maybe move the wrist??
+        grp.addSequential(new VacuumCommand(false));
+        grp.addSequential(new WaitCommand(.50));                  //maybe move the wrist??
         grp.addSequential(new NextModeCmd(Modes.HuntingHatch));    // go back to hunting
         return grp;
     }
@@ -484,11 +483,31 @@ public class CommandManager {
     }
 
     class CaptureReleaseCmd extends InstantCommand {
-        
         @Override
         protected void execute() {
             triggerCaptureRelease();
         }
+    }
+
+    class WaitCommand extends Command {
+        double timeout;
+        WaitCommand(double timeout) {
+            this.timeout = timeout;
+        }
+
+        @Override
+        protected void initialize()  {
+            setTimeout(timeout);
+        }
+        @Override
+        protected boolean isFinished() {
+            return isTimedOut();
+        }
+
+        @Override
+        protected void execute() { //do nothing 
+        }
+
     }
 
     class CallFunctionCmd extends InstantCommand {
