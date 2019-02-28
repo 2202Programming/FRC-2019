@@ -58,6 +58,7 @@ public class OI {
   public JoystickButton huntSelect;         // used in hunting modes
   public JoystickButton heightSelect;       // used in delivery modes
   public JoystickButton captureRelease;     // used in delivery modes to go back to hunting
+  public JoystickButton flip;               // used to flip
 
   @SuppressWarnings({ "resource", })
   public OI(boolean isTesting) {
@@ -80,6 +81,7 @@ public class OI {
     huntSelect     = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
     heightSelect   = new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode());
     captureRelease = new JoystickButton(assistant, XboxControllerButtonCode.A.getCode());
+    flip           = new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode());
 
     //Intake Commands
     //hack new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new VacuumCommand(false));

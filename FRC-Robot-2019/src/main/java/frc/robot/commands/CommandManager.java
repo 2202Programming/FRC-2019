@@ -123,6 +123,7 @@ public class CommandManager {
         Robot.m_oi.huntSelect.whenPressed(new CycleHuntModeCmd());
         Robot.m_oi.heightSelect.whenPressed(new CycleHeightModeCmd());
         Robot.m_oi.captureRelease.whenPressed(new NextModeCmd(Modes.HuntGameStart));
+        Robot.m_oi.flip.whenPressed(new FlipCmd());
 
         // Construct our major modes from their command factories
         zeroRobotGrp = CmdFactoryZeroRobot();
