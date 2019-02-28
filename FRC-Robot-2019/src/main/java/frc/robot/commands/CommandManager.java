@@ -53,7 +53,7 @@ public class CommandManager {
         // DeliveryModes
         DeliverHatch(8),  // based on what we captured
         DeliverCargo(9),  // based on what we captured
-        Releasing(10);    // Button:CaptureRelease
+        Releasing(10),    // Button:CaptureRelease
         Flipping(11);     // Button:FlipArm
 
         private int v;

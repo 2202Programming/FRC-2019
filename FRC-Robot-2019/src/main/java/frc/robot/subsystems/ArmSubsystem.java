@@ -116,7 +116,6 @@ public class ArmSubsystem extends ExtendedSubSystem {
     
     System.out.println("Warning - Arm motors have moderate Kp values & reduced power 30% limits");
     logTimer = System.currentTimeMillis();
-  }
 
     zeroArm();  // will also get called on transition to teleOp, should arms be moved 
 
@@ -222,7 +221,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * Computes height of gripper and projection on floor from pivot, pivot is horizontal zero
    */
   public Position getArmPosition() {
-    double phi = getAngle();
+    double phi = getAbsoluteAngle();
     double rads = Math.toRadians(phi);
     double ext = getExtension();          //includes angle compensation
     double l = ARM_BASE_LENGTH + WRIST_LENGTH + ext;
@@ -268,7 +267,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
       //SmartDashboard.putData((Sendable) armRotationMotor);
       //SmartDashboard.putData((Sendable) armExtensionMotor);
       SmartDashboard.putNumber("Arm:Phi(raw)", armRotationMotor.getSelectedSensorPosition());
-      SmartDashboard.putNumber("Arm:Phi(deg)", getAngle());
+      SmartDashboard.putNumber("Arm:Phi(deg)", getRealAngle());
       SmartDashboard.putNumber("Arm:Ext(raw)", armExtensionMotor. getSelectedSensorPosition());
       SmartDashboard.putNumber("Arm:Ext(in)",  getExtension());
 

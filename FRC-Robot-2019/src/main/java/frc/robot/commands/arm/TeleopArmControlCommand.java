@@ -48,7 +48,7 @@ public class TeleopArmControlCommand extends Command {
         double heightAbovePivot = height_cmd - arm.ARM_PIVOT_HEIGHT;
         double curAngle = -Math.toDegrees(Math.atan(heightAbovePivot / projection_cmd)) + 90;
         //double extensionLength = limit(0, arm.EXTEND_MAX, Math.sqrt(heightAbovePivot * heightAbovePivot + projection_cmd * projection_cmd) - arm.ARM_BASE_LENGTH - arm.WRIST_LENGTH);
-        double calculatedExtension = (projection_cmd / Math.cos(Math.toRadians(90 - arm.getAngle()))) - arm.ARM_BASE_LENGTH - arm.WRIST_LENGTH;
+        double calculatedExtension = (projection_cmd / Math.cos(Math.toRadians(90 - arm.getAbsoluteAngle()))) - arm.ARM_BASE_LENGTH - arm.WRIST_LENGTH;
         double extensionLength = MathUtil.limit(calculatedExtension, arm.EXTEND_MIN, arm.EXTEND_MAX);
         
         SmartDashboard.putNumber("Current Height : ", height_cmd);
