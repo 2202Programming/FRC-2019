@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import frc.robot.input.XboxControllerButtonCode;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import frc.robot.commands.climb.tests.ClimbSolenoidTestCmd;
 import frc.robot.commands.drive.*;
 import frc.robot.commands.drive.shift.*;
 import frc.robot.commands.intake.*;
@@ -92,11 +93,15 @@ public class OI {
   public void bindTestButtons() {
     //Vacuum subsystem tests
     new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whenPressed(new IntakeTestCommand(false));
-    new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new SolenoidTestCommand(false));
+    //new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new SolenoidTestCommand(false));
     new JoystickButton(assistant, XboxControllerButtonCode.X.getCode()).whenPressed(new VacuumTestCommand(false));
+
+    //Climber solenoid test
+    new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new ClimbSolenoidTestCmd(false));
+
     //gearbox tests
-    new JoystickButton(assistant, XboxControllerButtonCode.X.getCode()).whenPressed(new DownShiftCommand());
-    new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
+    new JoystickButton(driver, XboxControllerButtonCode.X.getCode()).whenPressed(new DownShiftCommand());
+    new JoystickButton(driver, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
 
      // setup buttons
      huntSelect     = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());

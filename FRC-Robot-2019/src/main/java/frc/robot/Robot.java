@@ -40,6 +40,7 @@ public class Robot extends TimedRobot {
   public static IntakeSubsystem intake = new IntakeSubsystem();
   public static CargoTrapSubsystem cargoTrap = new CargoTrapSubsystem();
   public static ArmSubsystem arm = new ArmSubsystem();
+  public static ClimberSubsystem climber = new ClimberSubsystem();
   public static SerialPortSubsystem serialSubsystem = new SerialPortSubsystem();
   public static OI m_oi = new OI(true); //OI Depends on the subsystems and must be last (boolean is whether we are testing or not)
 
