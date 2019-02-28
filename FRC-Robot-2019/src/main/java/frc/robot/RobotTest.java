@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.arm.TeleopArmControlCommand;
 import frc.robot.commands.arm.tests.TestArmRateCmd;
 import frc.robot.commands.intake.tests.TestWristRateCommand;
+import frc.robot.commands.intake.tests.IntakeTestCommand;
 import frc.robot.commands.intake.tests.TestWristPositionCommand;
 import frc.robot.commands.intake.VacuumCommand;
 import frc.robot.commands.drive.shift.DownShiftCommand;
@@ -31,26 +32,22 @@ public class RobotTest {
     private Command armTest;
 
     public RobotTest() {
-        //Vacuum subsystem tests
-        new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whenPressed(new VacuumCommand(true));
-        new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new VacuumCommand(false));
-        //gearbox tests
-        new JoystickButton(assistant, XboxControllerButtonCode.X.getCode()).whenPressed(new DownShiftCommand());
-        new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
-
-        // TESTING Commands, only get scheduled if we enter Test mode
-        testWristCmd = new  TestWristPositionCommand(this::Wrist_AssistLeftTrigger);
-        armTest = new TeleopArmControlCommand(this::leftJoyY, this::rightJoyY);
     }
 
     public void initialize() {
+        // Set commands here so they override the OI 
+        Scheduler.getInstance().removeAll();
         // remove defaultCommands so only testing is being done.
         Robot.intake.setDefaultCommand(null);
         Robot.gearShifter.setDefaultCommand(null);
         Robot.arm.zeroArm();
+
+        // TESTING Commands, only get scheduled if we enter Test mode
+        testWristCmd = new  TestWristPositionCommand(this::Wrist_AssistLeftTrigger);
+        armTest = new TeleopArmControlCommand(this::leftJoyY, this::rightJoyY);
         
-        armTest.start();
-        testWristCmd.start();
+        //armTest.start();
+        //testWristCmd.start();
     }
 
     public void periodic() {
