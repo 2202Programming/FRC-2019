@@ -10,8 +10,14 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import frc.robot.input.XboxControllerButtonCode;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import frc.robot.commands.LimeLightArcadeDriveCommand;
+import frc.robot.commands.climb.tests.ClimbSolenoidTestCmd;
 import frc.robot.commands.drive.*;
 import frc.robot.commands.drive.shift.*;
+import frc.robot.commands.intake.*;
+import frc.robot.commands.intake.tests.IntakeTestCommand;
+import frc.robot.commands.intake.tests.SolenoidTestCommand;
+import frc.robot.commands.intake.tests.VacuumTestCommand;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -55,14 +61,22 @@ public class OI {
   public JoystickButton captureRelease;     // used in delivery modes to go back to hunting
 
   @SuppressWarnings({ "resource", })
-  public OI() {
-    
+  public OI(boolean isTesting) {
+    if(isTesting) {
+      bindTestButtons();
+    } else {
+      bindFieldButtons();
+    }
+  }
+
+  private void bindFieldButtons() {
     // Drive Train Commands
     new JoystickButton(driver, XboxControllerButtonCode.A.getCode()).whenPressed(new DownShiftCommand());
     new JoystickButton(driver, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
     new JoystickButton(driver, XboxControllerButtonCode.B.getCode()).whenPressed(new ToggleAutomaticGearShiftingCommand());
     new JoystickButton(driver, XboxControllerButtonCode.X.getCode()).whenPressed(new InvertDriveControlsCommand());
     new JoystickButton(driver, XboxControllerButtonCode.LB.getCode()).whileHeld(new TankDriveCommand());
+    new JoystickButton(driver, XboxControllerButtonCode.RB.getCode()).whileHeld(new LimeLightArcadeDriveCommand());    
 
     // setup buttons for use in CommandManager
     huntSelect     = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
@@ -76,6 +90,25 @@ public class OI {
     //new JoystickButton(assistant, XboxControllerButtonCode.BACK.getCode()).whenPressed(new RotateWristDownCommand());
 
     //Driver assist commands (macros)
+  }
+
+  public void bindTestButtons() {
+    //Vacuum subsystem tests
+    new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whenPressed(new IntakeTestCommand(false));
+    //new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new SolenoidTestCommand(false));
+    new JoystickButton(assistant, XboxControllerButtonCode.X.getCode()).whenPressed(new VacuumTestCommand(false));
+
+    //Climber solenoid test
+    new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new ClimbSolenoidTestCmd(false));
+
+    //gearbox tests
+    new JoystickButton(driver, XboxControllerButtonCode.X.getCode()).whenPressed(new DownShiftCommand());
+    new JoystickButton(driver, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
+
+     // setup buttons
+     huntSelect     = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
+     heightSelect   = new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode());
+     captureRelease = new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode());
   }
 
   // Bind analog controls to functions to use by the commands
@@ -104,7 +137,4 @@ public class OI {
   public XboxController getSwitchBoard() {
     return switchBoard;
   }
-
-  
-
 }

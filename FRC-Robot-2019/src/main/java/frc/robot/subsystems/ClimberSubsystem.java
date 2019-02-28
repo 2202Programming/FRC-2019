@@ -41,7 +41,7 @@ public class ClimberSubsystem extends Subsystem {
     DoubleSolenoid ratchet = new DoubleSolenoid(RobotMap.CLIMB_RATCHET_PCM_ID, RobotMap.CLIMB_RATCHET_UP_PCM,
             RobotMap.CLIMB_RATCHET_DOWN_PCM);
 
-    Spark footExtender = new Spark(RobotMap.CLIMB_ROLLER_SPARK_PWM);
+    Spark footExtender = new Spark(RobotMap.CLIMB_FOOT_SPARK_PWM);
     Spark roller = new Spark(RobotMap.CLIMB_ROLLER_SPARK_PWM);
 
     void init() {
