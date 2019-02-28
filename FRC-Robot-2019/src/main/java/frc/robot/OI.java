@@ -55,9 +55,9 @@ public class OI {
   private XboxController switchBoard = new XboxController(2);
 
   // OI - operator inputs
-  public JoystickButton huntSelect;         // used in hunting modes
-  public JoystickButton heightSelect;       // used in delivery modes
-  public JoystickButton captureRelease;     // used in delivery modes to go back to hunting
+  public JoystickButton heightDownSelect;   // used in hunting/delivery modes
+  public JoystickButton heightUpSelect;     // used in hunting/delivery
+  public JoystickButton captureRelease;     // flips hunt/deliver mode
 
   @SuppressWarnings({ "resource", })
   public OI(boolean isTesting) {
@@ -77,9 +77,9 @@ public class OI {
     new JoystickButton(driver, XboxControllerButtonCode.LB.getCode()).whileHeld(new TankDriveCommand());
 
     // setup buttons for use in CommandManager
-    huntSelect     = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
-    heightSelect   = new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode());
-    captureRelease = new JoystickButton(assistant, XboxControllerButtonCode.A.getCode());
+    heightDownSelect = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
+    heightUpSelect   = new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode());
+    captureRelease   = new JoystickButton(assistant, XboxControllerButtonCode.A.getCode());
 
     //Intake Commands
     //hack new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new VacuumCommand(false));
@@ -104,9 +104,9 @@ public class OI {
     new JoystickButton(driver, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
 
      // setup buttons
-     huntSelect     = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
-     heightSelect   = new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode());
-     captureRelease = new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode());
+     heightDownSelect = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
+     heightUpSelect   = new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode());
+     captureRelease   = new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode());
   }
 
   // Bind analog controls to functions to use by the commands
