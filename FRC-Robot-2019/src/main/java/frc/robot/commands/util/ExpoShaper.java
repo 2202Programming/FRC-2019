@@ -6,7 +6,7 @@ public class ExpoShaper {
     double kExpo;          // 0.0 to 1.0 for flatness 0 -> straight curve
     double kCexpo;         // complement to expo 
 
-    ExpoShaper(double kExpo) {
+    public ExpoShaper(double kExpo) {
         setExpo(kExpo);
     }
 
