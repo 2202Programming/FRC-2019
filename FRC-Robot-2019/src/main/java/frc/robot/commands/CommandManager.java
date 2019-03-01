@@ -359,7 +359,7 @@ public class CommandManager {
     // Uses state machine and driver input
     private double get_gripperH_cmd() {
         double h_driverOffset = kCapHeight * Robot.m_oi.adjustHeight();  //driver contrib from triggers
-        double h = gripperH_cmd + h_driverOffset;    //state machine + driver so both are rate filtered
+        double h = gripperH_cmd - h_driverOffset;    //state machine + driver so both are rate filtered
         return h;
     }
     //private double get_gripperX_cmd() {return gripperX_cmd;} uses .setForward()
