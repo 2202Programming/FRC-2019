@@ -18,6 +18,7 @@ import frc.robot.commands.intake.*;
 import frc.robot.commands.intake.tests.IntakeTestCommand;
 import frc.robot.commands.intake.tests.SolenoidTestCommand;
 import frc.robot.commands.intake.tests.VacuumTestCommand;
+import frc.robot.commands.util.ExpoShaper;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -59,6 +60,9 @@ public class OI {
   public JoystickButton heightDownSelect;   // used in hunting/delivery modes
   public JoystickButton heightUpSelect;     // used in hunting/delivery
   public JoystickButton captureRelease;     // flips hunt/deliver mode
+
+  private ExpoShaper rotateShaper = new ExpoShaper(.7);    //fairly flat curve
+
 
   @SuppressWarnings({ "resource", })
   public OI(boolean isTesting) {
@@ -124,6 +128,14 @@ public class OI {
   {
     return Robot.m_oi.assistant.getY(Hand.kRight);
   }
+  //assistant rotation input
+  public double rotationInput() 
+  {
+    double in = Robot.m_oi.assistant.getY(Hand.kRight); 
+    double out = rotateShaper.expo(in);
+    return out;
+  }
+
 
   public XboxController getDriverController() {
     return driver;
