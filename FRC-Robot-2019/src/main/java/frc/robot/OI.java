@@ -18,7 +18,6 @@ import frc.robot.commands.intake.*;
 import frc.robot.commands.intake.tests.IntakeTestCommand;
 import frc.robot.commands.intake.tests.SolenoidTestCommand;
 import frc.robot.commands.intake.tests.VacuumTestCommand;
-import frc.robot.commands.util.ExpoShaper;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -57,12 +56,9 @@ public class OI {
   private XboxController switchBoard = new XboxController(2);
 
   // OI - operator inputs
-  public JoystickButton heightDownSelect;   // used in hunting/delivery modes
-  public JoystickButton heightUpSelect;     // used in hunting/delivery
-  public JoystickButton captureRelease;     // flips hunt/deliver mode
-
-  private ExpoShaper rotateShaper = new ExpoShaper(.7);    //fairly flat curve
-
+  public JoystickButton huntSelect;         // used in hunting modes
+  public JoystickButton heightSelect;       // used in delivery modes
+  public JoystickButton captureRelease;     // used in delivery modes to go back to hunting
 
   @SuppressWarnings({ "resource", })
   public OI(boolean isTesting) {
@@ -83,9 +79,9 @@ public class OI {
     new JoystickButton(driver, XboxControllerButtonCode.RB.getCode()).whileHeld(new LimeLightArcadeDriveCommand());    
 
     // setup buttons for use in CommandManager
-    heightDownSelect = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
-    heightUpSelect   = new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode());
-    captureRelease   = new JoystickButton(assistant, XboxControllerButtonCode.A.getCode());
+    huntSelect     = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
+    heightSelect   = new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode());
+    captureRelease = new JoystickButton(assistant, XboxControllerButtonCode.A.getCode());
 
     //Intake Commands
     //hack new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new VacuumCommand(false));
@@ -110,32 +106,25 @@ public class OI {
     new JoystickButton(driver, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
 
      // setup buttons
-     heightDownSelect = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
-     heightUpSelect   = new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode());
-     captureRelease   = new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode());
+     huntSelect     = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
+     heightSelect   = new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode());
+     captureRelease = new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode());
   }
 
   // Bind analog controls to functions to use by the commands
   // this way we only change it key/stick assignemnts once.
+  public double adjustHeightDown() {
+    return Robot.m_oi.assistant.getTriggerAxis(Hand.kLeft);
+  }
 
-  // Use Triggers to directly make small adustments to the arm, raw stick units converted in
-  // the CommandManager
-  public double adjustHeight() {
-    return Robot.m_oi.assistant.getTriggerAxis(Hand.kLeft) - Robot.m_oi.assistant.getTriggerAxis(Hand.kRight);
+  public double adjustHeightUp() {
+    return Robot.m_oi.assistant.getTriggerAxis(Hand.kRight);
   }
 
   public double extensionInput() 
   {
     return Robot.m_oi.assistant.getY(Hand.kRight);
   }
-  //assistant rotation input
-  public double rotationInput() 
-  {
-    double in = Robot.m_oi.assistant.getY(Hand.kRight); 
-    double out = rotateShaper.expo(in);
-    return out;
-  }
-
 
   public XboxController getDriverController() {
     return driver;

@@ -4,22 +4,17 @@ import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveTrainSubsystem;
-import frc.robot.commands.util.ExpoShaper;
+
 /**
  * An example command. You can replace me with your own command.
  */
 public class ArcadeDriveCommand extends Command {
   private DriveTrainSubsystem driveTrain;
-  private ExpoShaper speedShaper;
-  private ExpoShaper rotationShaper;
 
   public ArcadeDriveCommand() {
     // Use requires() here to declare subsystem dependencies
     requires(Robot.driveTrain);
     driveTrain = Robot.driveTrain;
-
-    speedShaper = new ExpoShaper(0.5);        //0 no change,  1.0 max flatness
-    rotationShaper = new ExpoShaper(0.5);
   }
 
   // Called just before this Command runs the first time
@@ -35,9 +30,7 @@ public class ArcadeDriveCommand extends Command {
   @Override
   protected void execute() {
     //Robot.driveTrain.ArcadeDrive(0.90, 0, true);
-    double s = speedShaper.expo(Robot.m_oi.getDriverController().getY(Hand.kLeft));
-    double rot = rotationShaper.expo(Robot.m_oi.getDriverController().getX(Hand.kRight));
-    Robot.driveTrain.ArcadeDrive(s, rot, true);
+    Robot.driveTrain.ArcadeDrive(Robot.m_oi.getDriverController().getY(Hand.kLeft), Robot.m_oi.getDriverController().getX(Hand.kRight), true);
   }
 
   @Override

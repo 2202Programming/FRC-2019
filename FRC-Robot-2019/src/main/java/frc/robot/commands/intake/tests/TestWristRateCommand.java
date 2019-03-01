@@ -15,6 +15,7 @@ public class TestWristRateCommand extends Command {
         wristRC = new RateLimiter(Robot.dT,
                 this::getCmd, 
                 Robot.intake::getAngle, 
+                Robot.intake::setAngle,
                 Robot.intake.WristMinDegrees -10, 
                 Robot.intake.WristMaxDegrees+ 10, 
                 -80.0, // dx_fall deg/sec 
@@ -39,7 +40,6 @@ public class TestWristRateCommand extends Command {
     
     protected void execute() {
         wristRC.execute();
-        Robot.intake.setAngle(wristRC.get());
     }
 
     // This is just a test, it doesn't finish. Enjoy moving the write with the
