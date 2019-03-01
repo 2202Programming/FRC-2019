@@ -113,12 +113,11 @@ public class OI {
 
   // Bind analog controls to functions to use by the commands
   // this way we only change it key/stick assignemnts once.
-  public double adjustHeightDown() {
-    return Robot.m_oi.assistant.getTriggerAxis(Hand.kLeft);
-  }
 
-  public double adjustHeightUp() {
-    return Robot.m_oi.assistant.getTriggerAxis(Hand.kRight);
+  // Use Triggers to directly make small adustments to the arm, raw stick units converted in
+  // the CommandManager
+  public double adjustHeight() {
+    return Robot.m_oi.assistant.getTriggerAxis(Hand.kLeft) - Robot.m_oi.assistant.getTriggerAxis(Hand.kRight);
   }
 
   public double extensionInput() 
