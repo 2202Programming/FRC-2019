@@ -1,6 +1,6 @@
 package frc.robot.commands.util;
 
-import java.util.function.DoubleConsumer;
+
 import java.util.function.DoubleSupplier;
 
 /** 
@@ -35,7 +35,6 @@ public class RateLimiter {
   double x_max; // max command value for device (device units)
   double x_min; // min command value for device (device units)
   final DoubleSupplier inFunct;   // function input X
-  final DoubleConsumer devSetter; // function to write device being controlled
   final DoubleSupplier devGetter; // function to read device being controlled
 
   // input vars - read on execute() and init()
@@ -51,7 +50,6 @@ public class RateLimiter {
   public RateLimiter(final Double dT,
       final DoubleSupplier inFunct, 
       final DoubleSupplier getter, // optional
-      final DoubleConsumer setter, // optional
       double x_min, 
       double x_max, 
       double dx_fall,  
@@ -60,7 +58,6 @@ public class RateLimiter {
   {
     this.dT = dT;
     devGetter = getter;
-    devSetter = setter;
     this.inFunct = inFunct;
     this.x_max = x_max;
     this.x_min = x_min;
@@ -103,14 +100,13 @@ public class RateLimiter {
   // designed to be called from FRC Command if needed, call once per frame
   // and no more because it does an integration in Rate mode.
   public void execute() {
-    getInputs();          // reads input command and device
-    double dX = dX();     // computs a dX (rate limited, deadzoned)
+    getInputs();                 // reads input command and device
+    double dX = dX();            // computs a dX (rate limited, deadzoned)
     double x = Xprev + dX * dT;  // integrate the dX desired rate limited X
     
     // update output vars
-    X =limit(x, x_min, x_max);  // apply end limits
-    Xprev = X;
-    putOutput();                // output to the device if required 
+    Xprev = X;                   //save last frame
+    X = limit(x, x_min, x_max);  // apply end limits
   }
   
   // set dz values and compute correcting scales so we get max deflections
@@ -128,7 +124,7 @@ public class RateLimiter {
       // This way we can limit X's growth rate and position.
       //rates need dz on inputs, typically joysticks
       double cmdDz = deadZone(kc);
-      dX = limit(cmdDz, dx_fall, dx_raise);
+      dX = limit(cmdDz, dx_fall, dx_raise);  
       // add the forward and the integrated rate command 
       // to ensure we don't exceed total rates.  
       // This deals with step functions on the xforward input.
@@ -159,13 +155,9 @@ public class RateLimiter {
 
   // Read input functions for cmd and device if we have them
   private void getInputs() {
+    devPosPrev = devPos;
     devPos = (devGetter != null)  ? devGetter.getAsDouble() : Double.NaN;
     cmd = (inFunct != null)       ? inFunct.getAsDouble()   : 0.0;
   };
 
-  // send the restult if we can
-  private void putOutput() {
-    if (devSetter != null)
-      devSetter.accept(X);
-  }
 }

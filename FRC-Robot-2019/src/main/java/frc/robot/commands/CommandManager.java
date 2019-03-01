@@ -130,7 +130,6 @@ public class CommandManager {
         xprojRL = new RateLimiter(Robot.dT, 
             Robot.m_oi::extensionInput,    //inputFunc
             this::measProjection,          //phy position func
-            null,                          //setter funct optinal
             Robot.arm.MIN_PROJECTION,      //output min
             Robot.arm.MAX_PROJECTION,      //output max
             -7.0, //inches/sec             // falling rate limit
@@ -142,7 +141,6 @@ public class CommandManager {
         heightRL = new RateLimiter(Robot.dT,
             this::get_gripperH_cmd,        // gripperH_cmd var as set by this module
             this::measHeight,              //phy position func
-            null,                          //setter funct optinal
             kHeightMin,                    //output min
             kHeightMax,                    //output max
             -10.0,  //inches/sec            // falling rate limit
@@ -435,8 +433,8 @@ public class CommandManager {
         grp.addSequential(new VacuumCommand(true));
         grp.addSequential(new RotateWristCommand(95.0, 1.0));              //these will wait, not timeout, 
         grp.addSequential(new RotateWristCommand(90.0, 1.0));              // wiggle wrist to grab hatch
-        grp.addSequential(new ExtendArmToPositionCommand(2.0));            //pull in a bit before rotate, should have hatch
-        grp.addSequential(new TestRotateArmToAngleCommand(145.0, 30.0));   //rotate clear before going to delivery mode
+        grp.addSequential(new ExtendArmToPositionCommand(5.0));            //pull in a bit before rotate, should have hatch
+        grp.addSequential(new TestRotateArmToAngleCommand(150.0, 30.0));   //rotate clear before going to delivery mode
 
         grp.addSequential(new NextModeCmd(Modes.DeliverHatch));
         return grp;
