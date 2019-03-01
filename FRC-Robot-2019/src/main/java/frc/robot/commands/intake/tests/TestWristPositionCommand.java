@@ -14,8 +14,7 @@ public class TestWristPositionCommand extends Command {
         requires(Robot.intake);
         wristPC = new RateLimiter(Robot.dT,
                 getter, 
-                Robot.intake::getAngle, 
-                Robot.intake::setAngle,
+                Robot.intake::getAngle,
                 Robot.intake.WristMinDegrees, 
                 Robot.intake.WristMaxDegrees, 
                -60.0,   // dx_fall deg/sec 
@@ -34,6 +33,7 @@ public class TestWristPositionCommand extends Command {
 
     protected void execute() {
         wristPC.execute();
+        Robot.intake.setAngle(wristPC.get());
     }
 
     // This is just a test, it doesn't finish. Enjoy moving the wrist with the controller.
