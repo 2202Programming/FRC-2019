@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.Robot;
 import frc.robot.subsystems.ArmSubsystem.Position;
 import frc.robot.commands.arm.MoveArmAtHeight;
-import frc.robot.commands.arm.MoveDownToCapture;
 import frc.robot.commands.intake.VacuumCommand;
 import frc.robot.commands.intake.WristTrackFunction;
 import frc.robot.commands.intake.*;
@@ -17,6 +16,7 @@ import frc.robot.commands.util.RateLimiter;
 import frc.robot.commands.util.RateLimiter.InputModel;
 import frc.robot.commands.arm.tests.TestRotateArmToAngleCommand;
 import frc.robot.commands.util.MathUtil;
+
 
 /**
  * One class, singleton, to rule them all. Coordinates major modes of operation.
@@ -94,16 +94,14 @@ public class CommandManager {
     // internal states
     int delHeightIdx = 0;         // used in Delivery<Cargo/Hatch>Heights[]
 
-    // Initial gripper projections by huntModeIdx
-    // Extension from pivot point onto floor
-    final double projection[] = {25.0, 25.0, 32.0};  //TODO: fix the numbers
-    
     // Data points - shares delheightidx, must be same length
-    final double DeliveryCargoHeights[] = { 32.0, 60.0, 88.0 }; // TODO: fix the numbers
-    final double DeliveryHatchHeights[] = { 24.0, 56.0, 81.5 }; // TODO: fix the numbers
-    
+    final double DeliveryCargoHeights[] = { 28.0, 56.0, 84.0 };  // TODO: fix the numbers
+    final double DeliveryHatchHeights[] = { 24.0, 52.0, 81.5 };  // TODO: fix the numbers
+    final double deliveryProjection[] =  {25.0, 25.0, 40.0};     //TODO: fix the numbers
+
     final Modes huntingModes[] = { Modes.HuntingFloor, Modes.HuntingCargo, Modes.HuntingHatch};
-    final double HuntHeights[] = { 4.0, 17.5, 22.0 };           // height from floor, H,C,Floor TODO:fix numbers 
+    final double HuntHeights[] = { 5.0, 17.5, 24.0 };    // height from floor, H,C,Floor TODO:fix numbers 
+    final double huntProjection[] = {21.0, 22.0, 24.0};  //TODO: fix the numbers
     int huntModeIdx = 2;  //hatch
 
     //Phyical values from sub-systems as needed
@@ -132,11 +130,10 @@ public class CommandManager {
         xprojRL = new RateLimiter(Robot.dT, 
             Robot.m_oi::extensionInput,    //inputFunc
             this::measProjection,          //phy position func
-            null,                          //setter funct optinal
             Robot.arm.MIN_PROJECTION,      //output min
             Robot.arm.MAX_PROJECTION,      //output max
-            -5.0, //inches/sec             // falling rate limit
-             5.0,  //inches/sec            //raising rate limit
+            -7.0, //inches/sec             // falling rate limit
+             7.0,  //inches/sec            //raising rate limit
             InputModel.Rate);
         xprojRL.setDeadZone(0.2);   // ignore .2 in/sec on stick
         xprojRL.setRateGain(-10.0);  // -10 in/sec (neg is stick forward)
@@ -144,7 +141,6 @@ public class CommandManager {
         heightRL = new RateLimiter(Robot.dT,
             this::get_gripperH_cmd,        // gripperH_cmd var as set by this module
             this::measHeight,              //phy position func
-            null,                          //setter funct optinal
             kHeightMin,                    //output min
             kHeightMax,                    //output max
             -10.0,  //inches/sec            // falling rate limit
@@ -320,14 +316,14 @@ public class CommandManager {
         if (isHunting()) {
             //Hunting, use the HuntHeights table and that height index
             gripperH_cmd = HuntHeights[huntModeIdx];
-            gripperX_cmd = projection[huntModeIdx];
+            gripperX_cmd = huntProjection[huntModeIdx];
             xprojRL.setForward(gripperX_cmd);      //xproj is rate controlled so it uses a forward val
         }
         else if (isDelivering()) {
             //Delivering 
             gripperH_cmd = (prevHuntMode == Modes.HuntingCargo) ? 
                 DeliveryCargoHeights[delHeightIdx] : DeliveryHatchHeights[delHeightIdx];
-            gripperX_cmd = projection[delHeightIdx];
+            gripperX_cmd = deliveryProjection[delHeightIdx];
             xprojRL.setForward(gripperX_cmd);      //xproj is rate controlled so it uses a forward val
         }
         // Other mode changes just stay where we are at
@@ -338,9 +334,7 @@ public class CommandManager {
      * Expose desired gripper height & extension with double supplier functions
      */
     double gripperHeightOut() {
-        // allow the operator direct position offsets, no rate filtering as changes will be small
-        double h_offset = kCapHeight* (Robot.m_oi.adjustHeightDown() - Robot.m_oi.adjustHeightUp());  
-        return heightRL.get() - h_offset; 
+        return heightRL.get(); 
     }
 
     public double gripperXProjectionOut() {
@@ -352,12 +346,20 @@ public class CommandManager {
     // called every frame, reads inputs 
     public void execute() {
         armPosition = Robot.arm.getArmPosition();
+        // allow the operator direct position offsets, no rate filtering as changes will be small
+        
         //read inputs, apply rate limits to commands 
         xprojRL.execute();
         heightRL.execute();
     }
 
-    private double get_gripperH_cmd() {return gripperH_cmd;}
+    // called by rateLimiter as input for height command to arm
+    // Uses state machine and driver input
+    private double get_gripperH_cmd() {
+        double h_driverOffset = kCapHeight * Robot.m_oi.adjustHeight();  //driver contrib from triggers
+        double h = gripperH_cmd - h_driverOffset;    //state machine + driver so both are rate filtered
+        return h;
+    }
     //private double get_gripperX_cmd() {return gripperX_cmd;} uses .setForward()
 
     /**
@@ -431,8 +433,8 @@ public class CommandManager {
         grp.addSequential(new VacuumCommand(true));
         grp.addSequential(new RotateWristCommand(95.0, 1.0));              //these will wait, not timeout, 
         grp.addSequential(new RotateWristCommand(90.0, 1.0));              // wiggle wrist to grab hatch
-        grp.addSequential(new ExtendArmToPositionCommand(2.0));            //pull in a bit before rotate, should have hatch
-        grp.addSequential(new TestRotateArmToAngleCommand(145.0, 30.0));   //rotate clear before going to delivery mode
+        grp.addSequential(new ExtendArmToPositionCommand(5.0));            //pull in a bit before rotate, should have hatch
+        grp.addSequential(new TestRotateArmToAngleCommand(150.0, 30.0));   //rotate clear before going to delivery mode
 
         grp.addSequential(new NextModeCmd(Modes.DeliverHatch));
         return grp;
