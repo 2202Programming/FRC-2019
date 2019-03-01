@@ -16,6 +16,8 @@ import frc.robot.commands.util.RateLimiter;
 import frc.robot.commands.util.RateLimiter.InputModel;
 import frc.robot.commands.arm.tests.TestRotateArmToAngleCommand;
 import frc.robot.commands.util.MathUtil;
+import frc.robot.commands.util.LimitedIntegrator;
+import frc.robot.commands.util.ExpoShaper;
 
 
 /**
@@ -35,6 +37,10 @@ public class CommandManager {
     Command huntSelectCmd;
     Command heightSelectCmd;
     Command captRelCmd;
+
+    // takes a stick input and uses as a rate command.
+    ExpoShaper  xprojShaper;
+    LimitedIntegrator xprojStick;
 
     // Modes of behavior
     public enum Modes {
@@ -128,15 +134,13 @@ public class CommandManager {
         armPosition = Robot.arm.getArmPosition();
 
         xprojRL = new RateLimiter(Robot.dT, 
-            Robot.m_oi::extensionInput,    //inputFunc
+            this::get_gripperX_cmd,        //inputFunc gripperX_cmd
             this::measProjection,          //phy position func
             Robot.arm.MIN_PROJECTION,      //output min
             Robot.arm.MAX_PROJECTION,      //output max
             -7.0, //inches/sec             // falling rate limit
              7.0,  //inches/sec            //raising rate limit
-            InputModel.Rate);
-        xprojRL.setDeadZone(0.2);   // ignore .2 in/sec on stick
-        xprojRL.setRateGain(-10.0);  // -10 in/sec (neg is stick forward)
+            InputModel.Position);
 
         heightRL = new RateLimiter(Robot.dT,
             this::get_gripperH_cmd,        // gripperH_cmd var as set by this module
@@ -145,7 +149,17 @@ public class CommandManager {
             kHeightMax,                    //output max
             -10.0,  //inches/sec            // falling rate limit
              10.0,  //inches/sec            //raising rate limit
-            InputModel.Position);
+            InputModel.Position); 
+        //
+        xprojShaper = new ExpoShaper(0.5, Robot.m_oi::extensionInput);     //joystick defined in m_oi.
+        xprojStick = new LimitedIntegrator(Robot.dT, 
+                xprojShaper::get,   // shaped joystick input
+                -5.0,   // kGain, 5 in/sec on the joystick (neg. gain, forward stick is neg.)
+                -12.0,  // xmin inches
+                12.0,   // x_max inches
+                -3.0,   // dx_falling rate inch/sec
+                3.0);   // dx_raise rate inch/sec
+            xprojStick.setDeadZone(0.1);  // in/sec deadzone
     }
 
     /**
@@ -317,14 +331,12 @@ public class CommandManager {
             //Hunting, use the HuntHeights table and that height index
             gripperH_cmd = HuntHeights[huntModeIdx];
             gripperX_cmd = huntProjection[huntModeIdx];
-            xprojRL.setForward(gripperX_cmd);      //xproj is rate controlled so it uses a forward val
         }
         else if (isDelivering()) {
             //Delivering 
             gripperH_cmd = (prevHuntMode == Modes.HuntingCargo) ? 
                 DeliveryCargoHeights[delHeightIdx] : DeliveryHatchHeights[delHeightIdx];
             gripperX_cmd = deliveryProjection[delHeightIdx];
-            xprojRL.setForward(gripperX_cmd);      //xproj is rate controlled so it uses a forward val
         }
         // Other mode changes just stay where we are at
     }
@@ -338,30 +350,20 @@ public class CommandManager {
     }
 
     public double gripperXProjectionOut() {
-        double xproj = xprojRL.get();    // rate & postion limited
+        double xproj = xprojRL.get(); 
         return xproj;
     }
     /************************************************************************************************************/
 
-    // called every frame, reads inputs 
+    // called every frame, reads inputs, does rate limiting
     public void execute() {
         armPosition = Robot.arm.getArmPosition();
-        // allow the operator direct position offsets, no rate filtering as changes will be small
-        
+        xprojStick.execute();   // reads joystick, sets co-driver xprojection offset
         //read inputs, apply rate limits to commands 
         xprojRL.execute();
         heightRL.execute();
     }
-
-    // called by rateLimiter as input for height command to arm
-    // Uses state machine and driver input
-    private double get_gripperH_cmd() {
-        double h_driverOffset = kCapHeight * Robot.m_oi.adjustHeight();  //driver contrib from triggers
-        double h = gripperH_cmd - h_driverOffset;    //state machine + driver so both are rate filtered
-        return h;
-    }
-    //private double get_gripperX_cmd() {return gripperX_cmd;} uses .setForward()
-
+    
     /**
      *  initialize the commands from the current position, sets the
      *  gripper[EH]_cmd to where they are right now. 
@@ -372,12 +374,34 @@ public class CommandManager {
         armPosition = Robot.arm.getArmPosition();   //update position
         gripperX_cmd = armPosition.projection;
         gripperH_cmd = armPosition.height;
+        xprojStick.initialize();
         xprojRL.initialize();
-        xprojRL.setForward(armPosition.projection);
         heightRL.initialize(); 
         return 0;
     }
 
+    /**
+     * 
+     * get_gripper[HX]_cmd() - these functions return our commanded height and x projection 
+     * we want from the arm. 
+     * 
+     * The values are largely determined by the state machine, but also from some driver 
+     * inputs from the triggers or joystick.
+     * 
+     * */
+    private double get_gripperH_cmd() {
+        double h_driverOffset = kCapHeight * Robot.m_oi.adjustHeight();  //driver contrib from triggers
+        double h = gripperH_cmd - h_driverOffset;    //state machine + driver so both are rate filtered
+        return h;
+    }
+
+    private double get_gripperX_cmd() {
+        double x_driverOffset = xprojStick.get();   // co-driver's offset.
+        double x = gripperX_cmd + x_driverOffset;
+        return x;
+    }
+
+    
     /****************************************************************************************/
     // physical postions at this point in time as measured this frame
     double measProjection() { return armPosition.projection;  }
