@@ -133,6 +133,16 @@ public class CommandManager {
         logTimer = System.currentTimeMillis();
         armPosition = Robot.arm.getArmPosition();
 
+        xprojShaper = new ExpoShaper(0.5, Robot.m_oi::extensionInput);     //joystick defined in m_oi.
+        xprojStick = new LimitedIntegrator(Robot.dT, 
+                xprojShaper::get,   // shaped joystick input
+                -5.0,   // kGain, 5 in/sec on the joystick (neg. gain, forward stick is neg.)
+                -12.0,  // xmin inches
+                12.0,   // x_max inches
+                -3.0,   // dx_falling rate inch/sec
+                3.0);   // dx_raise rate inch/sec
+        xprojStick.setDeadZone(0.1);  // in/sec deadzone
+    
         xprojRL = new RateLimiter(Robot.dT, 
             this::get_gripperX_cmd,        //inputFunc gripperX_cmd
             this::measProjection,          //phy position func
@@ -150,17 +160,8 @@ public class CommandManager {
             -10.0,  //inches/sec            // falling rate limit
              10.0,  //inches/sec            //raising rate limit
             InputModel.Position); 
-        //
-        xprojShaper = new ExpoShaper(0.5, Robot.m_oi::extensionInput);     //joystick defined in m_oi.
-        xprojStick = new LimitedIntegrator(Robot.dT, 
-                xprojShaper::get,   // shaped joystick input
-                -5.0,   // kGain, 5 in/sec on the joystick (neg. gain, forward stick is neg.)
-                -12.0,  // xmin inches
-                12.0,   // x_max inches
-                -3.0,   // dx_falling rate inch/sec
-                3.0);   // dx_raise rate inch/sec
-            xprojStick.setDeadZone(0.1);  // in/sec deadzone
-    }
+    
+    }    
 
     /**
      *   Handle the state transitions, set any state vars and setup next command group.
