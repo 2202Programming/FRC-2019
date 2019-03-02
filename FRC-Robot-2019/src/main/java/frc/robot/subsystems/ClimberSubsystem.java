@@ -1,7 +1,12 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Sendable;
+import edu.wpi.first.wpilibj.Solenoid;
 //import edu.wpi.first.wpilibj.Sendable;
 //import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -39,40 +44,34 @@ public class ClimberSubsystem extends Subsystem {
     final DoubleSolenoid.Value Retract = Value.kReverse;
 
     // physical devices
-    DoubleSolenoid ratchet = new DoubleSolenoid(RobotMap.CLIMB_RATCHET_PCM_ID, RobotMap.CLIMB_RATCHET_UP_PCM,
-            RobotMap.CLIMB_RATCHET_DOWN_PCM);
+    Solenoid pawl = new Solenoid(RobotMap.CLIMB_PCM_ID, RobotMap.CLIMB_PAWL_PCM);
+    Solenoid drawerSlide = new Solenoid(RobotMap.CLIMB_PCM_ID, RobotMap.CLIMB_SLIDE_PCM);
 
-    Spark footExtender = new Spark(RobotMap.CLIMB_FOOT_SPARK_PWM);
-    Spark roller = new Spark(RobotMap.CLIMB_ROLLER_SPARK_PWM);
+    CANSparkMax footExtender = new CANSparkMax(RobotMap.CLIMB_FOOT_SPARK_MAX_CAN_ID, MotorType.kBrushless);
+    CANSparkMax roller = new CANSparkMax(RobotMap.CLIMB_ROLLER_SPARK_MAX_CAN_ID, MotorType.kBrushed);
 
     //think we need to add an encoder
-    int placeHolder1 = 0; //place holders for channels
-    int placeHolder2 = 0;
-    Encoder extensionEncoder = new Encoder(placeHolder1, placeHolder2);
 
-    DoubleSolenoid drawerSlide = new DoubleSolenoid(placeHolder1, placeHolder2);
-
-    public Encoder getExtentionEncoder()
+    public void setDrawerSlide(boolean on)
     {
-        return extensionEncoder;
+        drawerSlide.set(on);
     }
 
-    public void setDrawerSlide(DoubleSolenoid.Value value)
-    {
-        drawerSlide.set(value);
+    public void setPawl(boolean on) {
+        pawl.set(on);
     }
 
     void init() {
         roller.disable();
         footExtender.disable();
-        ratchet.set(Retract);
     }
 
     public ClimberSubsystem() {
         init();
-        addChild("Climber-ratchet", ratchet);
-        addChild("Climber-foot", footExtender);
-        addChild("Climber-roller", roller);
+        addChild("Climber-ratchet", pawl);
+        addChild("Climber-slide", drawerSlide);
+        addChild("Climber-foot", (Sendable) footExtender);
+        addChild("Climber-roller", (Sendable) roller);
     }
 
     public void setExtenderSpeed(double speed) {
@@ -91,15 +90,6 @@ public class ClimberSubsystem extends Subsystem {
         return roller.get();
     }
 
-    public void setRatchetExtend(boolean extend) {
-        if (extend)  { ratchet.set(Extend);  } 
-        else         { ratchet.set(Retract); }
-    }
-
-    public boolean getRatchetExtend() {
-        return (Extend == ratchet.get()); 
-        }
-
     @Override
     protected void initDefaultCommand() {
     }
@@ -108,7 +98,6 @@ public class ClimberSubsystem extends Subsystem {
         builder.setSmartDashboardType("ClimberSubsystem");
         builder.addDoubleProperty("ExtenderSpeed", this::getExtenderSpeed, this::setExtenderSpeed);
         builder.addDoubleProperty("FootSpeed", this::getRollerSpeed, this::setRollerSpeed);
-        builder.addBooleanProperty("RatchetExtend", this::getRatchetExtend, this::setRatchetExtend);
     }
 
     public void log() {
