@@ -82,6 +82,10 @@ public class ClimberSubsystem extends Subsystem {
         return footExtender.get();
     }
 
+    public double getExtension() {
+        return footExtender.getEncoder().getPosition();
+    }
+
     public void setRollerSpeed(double speed) {
         roller.set(speed);
     }
