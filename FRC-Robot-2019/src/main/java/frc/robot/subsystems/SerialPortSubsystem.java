@@ -79,7 +79,7 @@ private long logTimer;
     else return 0;
   }
 
-    public Boolean isReliable(int sensor, float percent){ //check sensor to see if last 10 measurements are within a certain deviation
+    public Boolean isReliable(int sensor, double percent){ //check sensor to see if last 10 measurements are within a certain deviation
       Integer max = 0;
       Integer min = 10000;
       Deque<Integer> tempDeque = distanceAvgArray.get(sensor-1);

@@ -187,4 +187,64 @@ public class Robot extends TimedRobot {
     driveTrain.getRightEncoderTalon().setSelectedSensorPosition(0);
   }
 
+  private double getDistanceFront() //returns distance from target (either from Front Lydar or from lime light depending on reliability)
+  {
+    double distance=9999;
+    double distance2 = 9999;
+    double conversion = 0.001; //area to range in mm conversion
+    double areaMax = 3;
+    
+
+    if(limeLight.hasTargetReliable() == true && limeLight.getAreaAvg() >= areaMax){
+
+      if(serialSubsystem.isReliable(RobotMap.LEFT_FRONT_LIDAR, 0.9) == true && serialSubsystem.isReliable(RobotMap.RIGHT_FRONT_LIDAR, 0.9) == true)
+      {
+        distance = Double.valueOf(serialSubsystem.getDistanceAvg(RobotMap.LEFT_FRONT_LIDAR));
+        distance2 = Double.valueOf(serialSubsystem.getDistanceAvg(RobotMap.RIGHT_FRONT_LIDAR));
+
+        
+
+        return (distance+distance2)/2; //error cuz it returns an Integer and it is a float (???)
+      }
+      else{
+
+        return limeLight.getAreaAvg() * conversion;
+      }
+    }
+    else{
+
+      if(serialSubsystem.isReliable(RobotMap.LEFT_FRONT_LIDAR, 0.9) == true && serialSubsystem.isReliable(RobotMap.RIGHT_FRONT_LIDAR, 0.9) == true)
+      {
+        distance = Double.valueOf(serialSubsystem.getDistanceAvg(RobotMap.LEFT_FRONT_LIDAR));
+        distance2 = Double.valueOf(serialSubsystem.getDistanceAvg(RobotMap.RIGHT_FRONT_LIDAR));
+
+        
+
+        return (distance+distance2)/2; 
+      }
+      else{
+      return -1; 
+      }
+    }
+
+  }
+
+  private double getDistanceBack() //returns distance from target using back Lydar
+  {
+    double distance=9999;
+    double distance2=9999;
+
+      if(serialSubsystem.isReliable(RobotMap.LEFT_BACK_LIDAR, 0.9) && serialSubsystem.isReliable(RobotMap.RIGHT_BACK_LIDAR, 0.9))
+      {
+        distance = Double.valueOf(serialSubsystem.getDistanceAvg(RobotMap.LEFT_BACK_LIDAR));
+        distance2 = Double.valueOf(serialSubsystem.getDistanceAvg(RobotMap.RIGHT_BACK_LIDAR));
+
+        return (distance+distance2)/2; 
+      }
+      else{
+      return -1; 
+      }
+
+  }
+
 }
