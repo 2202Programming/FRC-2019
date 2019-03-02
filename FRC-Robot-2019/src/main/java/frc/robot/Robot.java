@@ -193,11 +193,12 @@ public class Robot extends TimedRobot {
     double distance2 = 9999;
     double conversion = 0.001; //area to range in mm conversion
     double areaMax = 3;
+    double errorConstant = 0.9;
     
 
     if(limeLight.hasTargetReliable() == true && limeLight.getAreaAvg() >= areaMax){
 
-      if(serialSubsystem.isReliable(RobotMap.LEFT_FRONT_LIDAR, 0.9) == true && serialSubsystem.isReliable(RobotMap.RIGHT_FRONT_LIDAR, 0.9) == true)
+      if(serialSubsystem.isReliable(RobotMap.LEFT_FRONT_LIDAR, errorConstant) && serialSubsystem.isReliable(RobotMap.RIGHT_FRONT_LIDAR, errorConstant))
       {
         distance = Double.valueOf(serialSubsystem.getDistanceAvg(RobotMap.LEFT_FRONT_LIDAR));
         distance2 = Double.valueOf(serialSubsystem.getDistanceAvg(RobotMap.RIGHT_FRONT_LIDAR));
@@ -213,7 +214,7 @@ public class Robot extends TimedRobot {
     }
     else{
 
-      if(serialSubsystem.isReliable(RobotMap.LEFT_FRONT_LIDAR, 0.9) == true && serialSubsystem.isReliable(RobotMap.RIGHT_FRONT_LIDAR, 0.9) == true)
+      if(serialSubsystem.isReliable(RobotMap.LEFT_FRONT_LIDAR, errorConstant)&& serialSubsystem.isReliable(RobotMap.RIGHT_FRONT_LIDAR, errorConstant))
       {
         distance = Double.valueOf(serialSubsystem.getDistanceAvg(RobotMap.LEFT_FRONT_LIDAR));
         distance2 = Double.valueOf(serialSubsystem.getDistanceAvg(RobotMap.RIGHT_FRONT_LIDAR));
@@ -233,8 +234,9 @@ public class Robot extends TimedRobot {
   {
     double distance=9999;
     double distance2=9999;
+    double errorConstant = 0.9;
 
-      if(serialSubsystem.isReliable(RobotMap.LEFT_BACK_LIDAR, 0.9) && serialSubsystem.isReliable(RobotMap.RIGHT_BACK_LIDAR, 0.9))
+      if(serialSubsystem.isReliable(RobotMap.LEFT_BACK_LIDAR, errorConstant) && serialSubsystem.isReliable(RobotMap.RIGHT_BACK_LIDAR, errorConstant))
       {
         distance = Double.valueOf(serialSubsystem.getDistanceAvg(RobotMap.LEFT_BACK_LIDAR));
         distance2 = Double.valueOf(serialSubsystem.getDistanceAvg(RobotMap.RIGHT_BACK_LIDAR));
