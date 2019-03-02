@@ -126,7 +126,7 @@ public class CommandManager {
         Robot.m_oi.heightDownSelect.whenPressed(new CallFunctionCmd(this::cycleDown));
         Robot.m_oi.heightUpSelect.whenPressed(new CallFunctionCmd(this::cycleUp));
         Robot.m_oi.captureRelease.whenPressed(new CallFunctionCmd(this::triggerCaptureRelease));
-        Robot.m_oi.endDriveMode.whenPressed()
+        Robot.m_oi.endDriveMode.whenPressed(new CallFunctionCmd(this::endDriveState));
 
         // Construct our major modes from their command factories
         zeroRobotGrp = CmdFactoryZeroRobot();
@@ -282,10 +282,18 @@ public class CommandManager {
         return 0;
     }
 
-    private void endDriveState() {
+    private int endDriveState() {
         if(isDriving()) {
-            
+            if(prevMode == Modes.Releasing) {
+                setMode(Modes.HuntingHatch);
+                return 0;
+            } else if((prevMode.get() > Modes.HuntGameStart.get()) && (prevMode.get() < Modes.Capturing.get())) {
+                //If we came to driving after a hunt
+                gotoDeliverMode();
+                return 0;
+            }
         }
+        return -1;
     }
 
     /**************************************************************************************************
