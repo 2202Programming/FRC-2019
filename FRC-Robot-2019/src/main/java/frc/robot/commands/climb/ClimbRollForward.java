@@ -11,15 +11,15 @@ public class ClimbRollForward extends Command {
 
     protected void execute() {
         Robot.climber.setRollerSpeed(0.5);
-        Robot.climber.setDrawerSlide(Value.kForward); //activates the drawer slide piston
+        Robot.climber.setDrawerSlide(true); //activates the drawer slide piston
     }
 
     protected void end() {
         Robot.climber.setRollerSpeed(0);
-        Robot.climber.setDrawerSlide(Value.kOff);
+        Robot.climber.setDrawerSlide(false);
     }
 
     protected boolean isFinished() {
-        return false; //TODO: Find good way to stop moving forward (Timer for macro)
+        return isTimedOut();
     }
 }
