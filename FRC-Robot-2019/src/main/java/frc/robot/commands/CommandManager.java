@@ -132,17 +132,35 @@ public class CommandManager {
         logTimer = System.currentTimeMillis();
         armPosition = Robot.arm.getArmPosition();
 
-        rr_ext = new RateLimiter(Robot.dT, 
-            Robot.m_oi::extensionInput,
-            this::armExtension, null,
-            Robot.arm.EXTEND_MIN,
-            Robot.arm.EXTEND_MAX,
-            -10.0, //inches/sec
-            10.0, //inches/sec 
-            InputModel.Rate);
-        rr_ext.setDeadZone(0.2);   // ignore .2 in/sec on stick
-        rr_ext.setRateGain(10.0);  // 10 in/sec max stick input 
-    }
+        xprojShaper = new ExpoShaper(0.5, Robot.m_oi::extensionInput);     //joystick defined in m_oi.
+        xprojStick = new LimitedIntegrator(Robot.dT, 
+                xprojShaper::get,   // shaped joystick input
+                -6.0,   // kGain, 5 in/sec on the joystick (neg. gain, forward stick is neg.)
+                -15.0,  // xmin inches
+                 15.0,   // x_max inches
+                -6.0,   // dx_falling rate inch/sec
+                 6.0);   // dx_raise rate inch/sec
+        xprojStick.setDeadZone(0.1);  // in/sec deadzone
+    
+        xprojRL = new RateLimiter(Robot.dT, 
+            this::get_gripperX_cmd,        //inputFunc gripperX_cmd
+            this::measProjection,          //phy position func
+            Robot.arm.MIN_PROJECTION,      //output min
+            Robot.arm.MAX_PROJECTION,      //output max
+            -10.0, //inches/sec             // falling rate limit
+             10.0,  //inches/sec            //raising rate limit
+            InputModel.Position);
+
+        heightRL = new RateLimiter(Robot.dT,
+            this::get_gripperH_cmd,        // gripperH_cmd var as set by this module
+            this::measHeight,              //phy position func
+            kHeightMin,                    //output min
+            kHeightMax,                    //output max
+            -10.0,  //inches/sec            // falling rate limit
+             10.0,  //inches/sec            //raising rate limit
+            InputModel.Position); 
+    
+    }    
 
     /**
      *   Handle the state transitions, set any state vars and setup next command group.
