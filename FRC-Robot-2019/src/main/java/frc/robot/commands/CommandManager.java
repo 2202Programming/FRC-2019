@@ -467,8 +467,8 @@ public class CommandManager {
         grp.addSequential(new VacuumCommand(true));
         grp.addSequential(new RotateWristCommand(95.0, 1.0));              //these will wait, not timeout, 
         grp.addSequential(new RotateWristCommand(90.0, 1.0));              // wiggle wrist to grab hatch
-        grp.addSequential(new GripperPosition(5.0, 13.25, 0.5, 2.0));      // mv h up, keep start xproj
-        grp.addSequential(new GripperPosition(20.0, 20.0, 0.5, 5.0));      // now rotate out and move up
+        grp.addSequential(new GripperPositionCommand(5.0, 13.25, 0.5, 2.0));      // mv h up, keep start xproj
+        grp.addSequential(new GripperPositionCommand(20.0, 20.0, 0.5, 5.0));      // now rotate out and move up
         grp.addSequential(new NextModeCmd(Modes.DeliverHatch));    //todo: goto billy's drive mode
         return grp;
     }
@@ -510,14 +510,14 @@ public class CommandManager {
         }
     }
 
-    class GripperPosition extends Command {
+    class GripperPositionCommand extends Command {
         double timeout;
         double height;
         double projx;
         double error;
 
 
-        public GripperPosition(double height, double projx, double error, double timeout) {
+        public GripperPositionCommand(double height, double projx, double error, double timeout) {
             this.height = height; 
             this.projx = projx;
             this.timeout = timeout;
