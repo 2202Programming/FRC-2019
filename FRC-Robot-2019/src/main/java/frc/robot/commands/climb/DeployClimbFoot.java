@@ -18,6 +18,7 @@ public class DeployClimbFoot extends Command {
     }
 
     protected boolean isFinished() {
-        return false; //TODO: Choose good way to stop the extender
+        int x = 1; //will be value for 19 inches
+        return Robot.climber.getExtentionEncoder().get() >= x; //TODO: stop when it extends 19 inches
     }
 }

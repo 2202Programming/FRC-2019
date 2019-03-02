@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Encoder;
 //import edu.wpi.first.wpilibj.Sendable;
 //import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -43,6 +44,23 @@ public class ClimberSubsystem extends Subsystem {
 
     Spark footExtender = new Spark(RobotMap.CLIMB_FOOT_SPARK_PWM);
     Spark roller = new Spark(RobotMap.CLIMB_ROLLER_SPARK_PWM);
+
+    //think we need to add an encoder
+    int placeHolder1 = 0; //place holders for channels
+    int placeHolder2 = 0;
+    Encoder extensionEncoder = new Encoder(placeHolder1, placeHolder2);
+
+    DoubleSolenoid drawerSlide = new DoubleSolenoid(placeHolder1, placeHolder2);
+
+    public Encoder getExtentionEncoder()
+    {
+        return extensionEncoder;
+    }
+
+    public void setDrawerSlide(DoubleSolenoid.Value value)
+    {
+        drawerSlide.set(value);
+    }
 
     void init() {
         roller.disable();
