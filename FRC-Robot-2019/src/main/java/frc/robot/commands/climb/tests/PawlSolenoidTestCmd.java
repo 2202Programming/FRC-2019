@@ -19,16 +19,16 @@ public class PawlSolenoidTestCmd extends InstantCommand {
 
     @Override
     protected void initialize() {
-        Robot.climber.setRatchetExtend(enabled);
+        Robot.climber.setPawl(enabled);
     }
 
     @Override
     protected void execute() {
-        Robot.climber.setRatchetExtend(enabled);
+        Robot.climber.setPawl(enabled);
     }
 
     @Override
     protected void end() {
-        Robot.climber.setRatchetExtend(!enabled);        
+        Robot.climber.setPawl(!enabled);        
     }
 }
