@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import frc.robot.input.XboxControllerButtonCode;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import frc.robot.commands.LimeLightArcadeDriveCommand;
 import frc.robot.commands.climb.tests.ClimbSolenoidTestCmd;
 import frc.robot.commands.drive.*;
 import frc.robot.commands.drive.shift.*;
@@ -17,6 +18,7 @@ import frc.robot.commands.intake.*;
 import frc.robot.commands.intake.tests.IntakeTestCommand;
 import frc.robot.commands.intake.tests.SolenoidTestCommand;
 import frc.robot.commands.intake.tests.VacuumTestCommand;
+import frc.robot.commands.util.ExpoShaper;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -55,10 +57,13 @@ public class OI {
   private XboxController switchBoard = new XboxController(2);
 
   // OI - operator inputs
-  public JoystickButton huntSelect;         // used in hunting modes
-  public JoystickButton heightSelect;       // used in delivery modes
-  public JoystickButton captureRelease;     // used in delivery modes to go back to hunting
+  public JoystickButton heightDownSelect;   // used in hunting/delivery modes
+  public JoystickButton heightUpSelect;     // used in hunting/delivery
+  public JoystickButton captureRelease;     // flips hunt/deliver mode
   public JoystickButton flip;               // used to flip
+
+  private ExpoShaper rotateShaper = new ExpoShaper(.7);    //fairly flat curve
+
 
   @SuppressWarnings({ "resource", })
   public OI(boolean isTesting) {
@@ -76,11 +81,12 @@ public class OI {
     new JoystickButton(driver, XboxControllerButtonCode.B.getCode()).whenPressed(new ToggleAutomaticGearShiftingCommand());
     new JoystickButton(driver, XboxControllerButtonCode.X.getCode()).whenPressed(new InvertDriveControlsCommand());
     new JoystickButton(driver, XboxControllerButtonCode.LB.getCode()).whileHeld(new TankDriveCommand());
+    new JoystickButton(driver, XboxControllerButtonCode.RB.getCode()).whileHeld(new LimeLightArcadeDriveCommand());    
 
     // setup buttons for use in CommandManager
-    huntSelect     = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
-    heightSelect   = new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode());
-    captureRelease = new JoystickButton(assistant, XboxControllerButtonCode.A.getCode());
+    heightDownSelect = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
+    heightUpSelect   = new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode());
+    captureRelease   = new JoystickButton(assistant, XboxControllerButtonCode.A.getCode());
     flip           = new JoystickButton(assistant, XboxControllerButtonCode.X.getCode());
 
     //Intake Commands
@@ -106,25 +112,32 @@ public class OI {
     new JoystickButton(driver, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
 
      // setup buttons
-     huntSelect     = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
-     heightSelect   = new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode());
-     captureRelease = new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode());
+     heightDownSelect = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
+     heightUpSelect   = new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode());
+     captureRelease   = new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode());
   }
 
   // Bind analog controls to functions to use by the commands
   // this way we only change it key/stick assignemnts once.
-  public double adjustHeightDown() {
-    return Robot.m_oi.assistant.getTriggerAxis(Hand.kLeft);
-  }
 
-  public double adjustHeightUp() {
-    return Robot.m_oi.assistant.getTriggerAxis(Hand.kRight);
+  // Use Triggers to directly make small adustments to the arm, raw stick units converted in
+  // the CommandManager
+  public double adjustHeight() {
+    return Robot.m_oi.assistant.getTriggerAxis(Hand.kLeft) - Robot.m_oi.assistant.getTriggerAxis(Hand.kRight);
   }
 
   public double extensionInput() 
   {
     return Robot.m_oi.assistant.getY(Hand.kRight);
   }
+  //assistant rotation input
+  public double rotationInput() 
+  {
+    double in = Robot.m_oi.assistant.getY(Hand.kRight); 
+    double out = rotateShaper.expo(in);
+    return out;
+  }
+
 
   public XboxController getDriverController() {
     return driver;

@@ -64,7 +64,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public final double EXTEND_MAX = 35.0;         // inches - measured practice bot
   public final double ARM_BASE_LENGTH = 18.0;    // inches - measured practice bot (from pivot center) xg 2/16/19
   public final double ARM_PIVOT_HEIGHT = 30.25;  // inches - measured practice bot
-  public final double WRIST_LENGTH = 7.75;       // inches - measured practice bot
+  public final double WRIST_LENGTH = 4.5;        // inches - measured practice bot 2/26/19
   
   private final double kCounts_per_in = -600.0;   // measured practice bot 2/24/2019
   private final double kIn_per_count = 1.0 / kCounts_per_in;
@@ -100,21 +100,21 @@ public class ArmSubsystem extends ExtendedSubSystem {
     // Set Talon postion mode gains and power limits
     //Arm
     armRotationMotor.config_kP(0, 0.5 /*0.8*/, 30); 
-    armRotationMotor.configPeakOutputForward(0.3);
-    armRotationMotor.configPeakOutputReverse(-0.3);
+    armRotationMotor.configPeakOutputForward(0.4);
+    armRotationMotor.configPeakOutputReverse(-0.4);
     armRotationMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     armRotationMotor.setInverted(true);
     
     // Extension on power will be out at L0. 
-    armExtensionMotor.config_kP(0, 0.5 /*0.6*/, 30);
+    armExtensionMotor.config_kP(0, 0.6 /*0.6*/, 30);
     armExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     armExtensionMotor.setIntegralAccumulator(0, 0, 30);
     armExtensionMotor.setSensorPhase(false);
     armExtensionMotor.setInverted(true);
-    armExtensionMotor.configPeakOutputForward(0.3);
-    armExtensionMotor.configPeakOutputReverse(-0.3);
+    armExtensionMotor.configPeakOutputForward(0.5);
+    armExtensionMotor.configPeakOutputReverse(-0.5);
     
-    System.out.println("Warning - Arm motors have moderate Kp values & reduced power 30% limits");
+    System.out.println("Warning - Arm s have moderate Kp values & reduced power 30% limits");
     logTimer = System.currentTimeMillis();
 
     zeroArm();  // will also get called on transition to teleOp, should arms be moved 
@@ -150,7 +150,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
   /**
    * Gets the angle at which the arm subsystem is rotated.
-   * @return the angle of the arm, in degrees.
+   * @return the angle of the arm, in degrees. 
    */
   public double getRealAngle() {
     //  return PHI_MAX - (rotationEncoder.getSelectedSensorPosition()  / COUNT_MAX * (PHI_MAX - PHI_MIN));
@@ -177,14 +177,15 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public void setExtension(double l) {
     double angle = getRealAngle();                     //current angle
     double compLen = ((angle - PHI0)*k_dl_dphi);   // ext due to rotation to compensate for
-    double len = (l - L0) - compLen;               // net len to comman relative to start
+    double len = (l - L0) - compLen;               // net len to command relative to start
 
     //Make sure we limit to the range of the extension is capable
     if (len < (EXTEND_MIN - L0)) {
       System.out.println("Arm:Extension below minimum.");
     }
+    //todo:not sure if this is the right way to limit
     // we can't go above or below our adjust min/max based on starting L0
-    len = MathUtil.limit(len, EXTEND_MIN - L0, (EXTEND_MAX - L0));
+    len = MathUtil.limit(len, EXTEND_MIN - L0, EXTEND_MAX);
     double c = len * kCounts_per_in;
     armExtensionMotor.set(ControlMode.Position, c);
   }
