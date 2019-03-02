@@ -7,16 +7,16 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystems.DriveTrainSubsystem;
-import frc.robot.subsystems.GearShifterSubsystem;;
-import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.*;
+import frc.robot.RobotMap;
+
+import frc.robot.commands.CommandManager;
+import frc.robot.commands.CommandManager.Modes;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -26,13 +26,28 @@ import frc.robot.subsystems.ClimberSubsystem;
  * project.
  */
 public class Robot extends TimedRobot {
-  public static ClimberSubsystem climber = new ClimberSubsystem();
-  public static OI m_oi;
+  //common constants for robot
+  public static double dT = kDefaultPeriod;  // Robots sample period (seconds) 
+  //THis years bounding box beyond frame of robot. Use this in limit calcs in subsystems.
+  public static double kProjectConstraint = 30.0; //inches from frame
+  //public static double kForwardProjectMin = 18.0; //inches from arm pivot x-axis to bumper
+  //public static double kReverseProjectMin = 18.0; //inches from arm pivot x-axis to bumper
+  
+  //physical devices and subsystems
   public static DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
-  public static GearShifterSubsystem gearShifter = new GearShifterSubsystem();
+  public static GearShifterSubsystem gearShifter = new GearShifterSubsystem(driveTrain.kShiftPoint);
+  public static LimeLightSubsystem limeLight = new LimeLightSubsystem();
+  public static IntakeSubsystem intake = new IntakeSubsystem();
+  public static CargoTrapSubsystem cargoTrap = new CargoTrapSubsystem();
+  public static ArmSubsystem arm = new ArmSubsystem();
+  public static ClimberSubsystem climber = new ClimberSubsystem();
+  public static SerialPortSubsystem serialSubsystem = new SerialPortSubsystem();
+  public static OI m_oi = new OI(false); //OI Depends on the subsystems and must be last (boolean is whether we are testing or not)
 
-  Command m_autonomousCommand;
-  SendableChooser<Command> m_chooser = new SendableChooser<>();
+  public static CommandManager m_cmdMgr;    //fix the public later
+  private RobotTest m_testRobot;
+
+  boolean doneOnce = false;   //single execute our zero 
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -40,9 +55,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    m_oi = new OI();
-    // chooser.addOption("My Auto", new MyAutoCommand());
-    SmartDashboard.putData("Auto mode", m_chooser);
+    // Create the test subsystem
+    m_testRobot  = new RobotTest();
+    m_cmdMgr = new CommandManager();
+    m_cmdMgr.setMode(Modes.Construction);   // schedules the mode's function
+    limeLight.disableLED(); //disable blinding green LED that Trevor hates
   }
 
   /**
@@ -56,7 +73,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    logSmartDashboardSensors();
+    logSmartDashboardSensors(500); //call smartdashboard logging, 500ms update rate
+    limeLight.populateLimelight();
+    serialSubsystem.processSerial();
   }
 
   /**
@@ -66,6 +85,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
+    limeLight.disableLED(); //disable blinding green LED that Trevor hates
   }
 
   @Override
@@ -87,20 +107,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_chooser.getSelected();
-
-    /*
-     * String autoSelected = SmartDashboard.getString("Auto Selector", "Default");
-     * switch(autoSelected) { case "My Auto": autonomousCommand = new
-     * MyAutoCommand(); break; case "Default Auto": default: autonomousCommand = new
-     * ExampleCommand(); break; }
-     */
-
-    // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.start();
-    }
     resetAllDashBoardSensors();
+    limeLight.enableLED(); //active limelight LED when operational
   }
 
   /**
@@ -109,7 +117,6 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     Scheduler.getInstance().run();
-    logSmartDashboardSensors();
   }
 
   @Override
@@ -118,10 +125,13 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
+    if (doneOnce == false ){
+      m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function
+      doneOnce = true;
     }
     resetAllDashBoardSensors();
+    //m_cmdMgr.setMode(Modes.HuntingHatch);  
+    limeLight.enableLED(); //active limelight LED when operational 
   }
 
   /**
@@ -129,29 +139,52 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    m_cmdMgr.execute();
     Scheduler.getInstance().run();
+
+
+//    if (serialSubsystem.isSerialEnabled()) //if serial was initalized, run periodic serial processing loop
+//    serialSubsystem.processSerial();
   }
+
+   @Override
+   public void testInit() {
+     m_testRobot.initialize();
+     limeLight.enableLED(); //active limelight LED when operational
+     Scheduler.getInstance().enable();   //### hack? or required?  Seems required otherwise nothing runs 
+   }
 
   /**
    * This function is called periodically during test mode.
    */
   @Override
   public void testPeriodic() {
+    Scheduler.getInstance().run();
+    m_testRobot.periodic();
   }
 
-  private void logSmartDashboardSensors() {
-    SmartDashboard.putNumber("Left Encoder Count", driveTrain.getLeftEncoderTalon().getSelectedSensorPosition());
-    SmartDashboard.putNumber("Left Encoder Rate", driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity());
-    SmartDashboard.putNumber("Right Encoder Count", driveTrain.getRightEncoderTalon().getSelectedSensorPosition());
-    SmartDashboard.putNumber("Right Encoder Rate", driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
-    SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
+  private void logSmartDashboardSensors(int interval) {
+    //calls subsystem smartdashboard logging functions, instructs them to only update every interval # of ms
+    
+    //picking hopefully non-overlapping time intervals so all the logging isn't done at the same cycle
+    limeLight.log(interval); //tell limelight to post to dashboard every Xms
+    driveTrain.log(interval+3); //tell drivertrain to post to dashboard every Xms
+    serialSubsystem.log(interval+7); //tell serial to post to dashboard every Xms
+    arm.log(interval+11);
+    gearShifter.log(interval+17); //tell gearshifter to post to dashboard every Xms
+    m_cmdMgr.log(interval+23);
+    intake.log(interval+29);
+
+/*    
     SmartDashboard.putData(Scheduler.getInstance()); 
-    SmartDashboard.putData(driveTrain);
-    SmartDashboard.putData(gearShifter);
-  }
+    //SmartDashboard.putData(driveTrain);
+    //SmartDashboard.putData(gearShifter);
+*/
+}
 
   private void resetAllDashBoardSensors() {
     driveTrain.getLeftEncoderTalon().setSelectedSensorPosition(0);
     driveTrain.getRightEncoderTalon().setSelectedSensorPosition(0);
   }
+
 }

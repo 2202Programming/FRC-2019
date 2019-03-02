@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.drive;
 
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
@@ -8,10 +8,10 @@ import frc.robot.subsystems.DriveTrainSubsystem;
 /**
  * An example command. You can replace me with your own command.
  */
-public class TankDriveCommand extends Command {
+public class ArcadeDriveCommand extends Command {
   private DriveTrainSubsystem driveTrain;
 
-  public TankDriveCommand() {
+  public ArcadeDriveCommand() {
     // Use requires() here to declare subsystem dependencies
     requires(Robot.driveTrain);
     driveTrain = Robot.driveTrain;
@@ -29,7 +29,8 @@ public class TankDriveCommand extends Command {
   // Temporary until we get the XboxController wrapper for joystick
   @Override
   protected void execute() {
-    Robot.driveTrain.tankDrive(Robot.m_oi.getController0().getY(Hand.kLeft), Robot.m_oi.getController0().getY(Hand.kRight));
+    //Robot.driveTrain.ArcadeDrive(0.90, 0, true);
+    Robot.driveTrain.ArcadeDrive(Robot.m_oi.getDriverController().getY(Hand.kLeft), Robot.m_oi.getDriverController().getX(Hand.kRight), true);
   }
 
   @Override
@@ -40,10 +41,5 @@ public class TankDriveCommand extends Command {
   @Override
   protected void end() {
     driveTrain.stop();
-  }
-
-  @Override
-  protected void interrupted() {
-    return;
   }
 }
