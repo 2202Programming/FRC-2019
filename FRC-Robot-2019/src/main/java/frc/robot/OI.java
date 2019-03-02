@@ -102,9 +102,6 @@ public class OI {
     //new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new SolenoidTestCommand(false));
     new JoystickButton(assistant, XboxControllerButtonCode.X.getCode()).whenPressed(new VacuumTestCommand(false));
 
-    //Climber solenoid test
-    new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new ClimbSolenoidTestCmd(false));
-
     //gearbox tests
     new JoystickButton(driver, XboxControllerButtonCode.X.getCode()).whenPressed(new DownShiftCommand());
     new JoystickButton(driver, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
