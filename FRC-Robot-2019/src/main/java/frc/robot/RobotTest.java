@@ -32,6 +32,7 @@ public class RobotTest {
     private Command armTest;
 
     public RobotTest() {
+        System.out.println("IN TEST MODE");
     }
 
     public void initialize() {

@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.LimeLightArcadeDriveCommand;
 import frc.robot.commands.climb.tests.CharonSolenoidTestCmd;
 import frc.robot.commands.climb.tests.ClimbMotorTestCmd;
-import frc.robot.commands.climb.tests.ClimbSolenoidTestCmd;
 import frc.robot.commands.climb.tests.PawlSolenoidTestCmd;
 import frc.robot.commands.climb.tests.RollerMotorTestCmd;
 import frc.robot.commands.drive.*;
