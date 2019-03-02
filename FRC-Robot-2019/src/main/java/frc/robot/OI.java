@@ -106,10 +106,11 @@ public class OI {
     new JoystickButton(driver, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
 
     //Climber tests
-    new JoystickButton(switchBoard, 7).whileActive(new PawlSolenoidTestCmd(true));
-    new JoystickButton(switchBoard, 8).whileActive(new ClimbMotorTestCmd(0.1));
-    new JoystickButton(switchBoard, 9).whileActive(new CharonSolenoidTestCmd(true));
-    new JoystickButton(switchBoard, 10).whileActive(new RollerMotorTestCmd(0.1));
+    new JoystickButton(switchBoard, 7).whenPressed(new PawlSolenoidTestCmd(true));
+    new JoystickButton(switchBoard, 8).whileActive(new ClimbMotorTestCmd(0.3));
+    new JoystickButton(switchBoard, 9).whenPressed(new CharonSolenoidTestCmd(true));
+    new JoystickButton(switchBoard, 10).whileActive(new RollerMotorTestCmd(0.5));
+    new JoystickButton(switchBoard, 11).whileActive(new ClimbMotorTestCmd(-0.3));
 
 
      // setup buttons

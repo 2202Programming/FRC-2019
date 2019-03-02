@@ -1,6 +1,6 @@
 package frc.robot.commands.climb.tests;
 
-import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
 /**
@@ -8,7 +8,7 @@ import frc.robot.Robot;
  * 
  * Instantiate with one or other for what you need.
  */
-public class RollerMotorTestCmd extends InstantCommand {
+public class RollerMotorTestCmd extends Command {
     // On state
     double speed;
 
@@ -19,16 +19,24 @@ public class RollerMotorTestCmd extends InstantCommand {
 
     @Override
     protected void initialize() {
-        Robot.climber.setExtenderSpeed(speed);
+        Robot.climber.setRollerSpeed(speed);
+        System.out.println("Initialize Roller");
     }
 
     @Override
     protected void execute() {
-        Robot.climber.setExtenderSpeed(speed);
+        Robot.climber.setRollerSpeed(speed);
+        System.out.println("Initialize Execute");
     }
 
     @Override
     protected void end() {
-        Robot.climber.setExtenderSpeed(0);        
+        Robot.climber.setRollerSpeed(0);        
+        System.out.println("Initialize End");
+    }
+
+    @Override
+    protected boolean isFinished() {
+        return false;
     }
 }
