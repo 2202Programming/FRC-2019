@@ -102,7 +102,7 @@ public class ClimberSubsystem extends Subsystem {
     }
 
     public void log() {
-        SmartDashboard.putData(this);
+        SmartDashboard.putNumber("Climber counts", getExtension());
     }
 
 }
