@@ -100,8 +100,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
     // Set Talon postion mode gains and power limits
     //Arm
     armRotationMotor.config_kP(0, 0.5 /*0.8*/, 30); 
-    armRotationMotor.configPeakOutputForward(0.4);
-    armRotationMotor.configPeakOutputReverse(-0.4);
+    armRotationMotor.configPeakOutputForward(0.2);
+    armRotationMotor.configPeakOutputReverse(-0.2);
     armRotationMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     armRotationMotor.setInverted(true);
     

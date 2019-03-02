@@ -175,11 +175,11 @@ public class Robot extends TimedRobot {
     m_cmdMgr.log(interval+23);
     intake.log(interval+29);
 
-/*    
+    
     SmartDashboard.putData(Scheduler.getInstance()); 
     //SmartDashboard.putData(driveTrain);
     //SmartDashboard.putData(gearShifter);
-*/
+
 }
 
   private void resetAllDashBoardSensors() {

@@ -519,7 +519,7 @@ public class CommandManager {
         CommandGroup grp = new CommandGroup("Flip");
         grp.addParallel(new WristTrackFunction(this::wristTrackZero));
         int tempFlipLength = 10; //TODO: Find actual extension to flip
-        grp.addParallel(new ExtendArmToPositionCommand(tempFlipLength));
+        grp.addSequential(new ExtendArmToPositionCommand(tempFlipLength));
         grp.addSequential(new TestRotateArmToAngleCommand(0)); //TODO: Maybe rotate to a diff specific angle
         grp.addSequential(new PrevCmd());
         return grp;

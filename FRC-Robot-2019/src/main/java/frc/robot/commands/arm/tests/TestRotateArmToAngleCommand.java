@@ -16,7 +16,7 @@ public class TestRotateArmToAngleCommand extends Command {
     
     public TestRotateArmToAngleCommand(double angle)
     {
-        this(angle, 0.0);
+        this(angle, 10);
     }
 
     @Override
