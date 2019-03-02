@@ -61,7 +61,7 @@ public class CommandManager {
         DeliverDriver(8),  // Unused, Richard suggest we tuck in with game piece until ready
         DeliverHatch(9),   // based on what we captured
         DeliverCargo(10),  // based on what we captured
-        Releasing(20);     // Button:CaptureRelease
+        Releasing(20),     // Button:CaptureRelease
         Flipping(11);     // Button:FlipArm
 
         private int v;
@@ -319,8 +319,8 @@ public class CommandManager {
     }
     
     double wristTrackParallel() {
-        double phi = Robot.arm.getAngle();
-        return (phi - 90.0);
+        double phi = Robot.arm.getAbsoluteAngle();
+        return Robot.arm.getInversion() * (phi - 90.0);
     }
 
     double wristTrackPerp() {
