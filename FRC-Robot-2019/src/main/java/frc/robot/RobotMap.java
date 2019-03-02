@@ -70,9 +70,10 @@ public class RobotMap {
   public static final int CLIMB_FOOT_SPARK_MAX_CAN_ID = 23;
   public static final int CLIMB_ROLLER_SPARK_MAX_CAN_ID = 22;
   public static final int CLIMB_PCM_ID = CAN_PCM1_ID;  //Second PCM
-  public static final int CLIMB_SLIDE_PCM = 4;
-  public static final int CLIMB_PAWL_PCM = 2;
-
+  public static final int CLIMB_PAWL_RELEASE_PCM = 2;
+  public static final int CLIMB_PAWL_ENGAGE_PCM = 3;
+  public static final int CLIMB_SLIDE_PULL_PCM = 4;
+  public static final int CLIMB_SLIDE_RELEASE_PCM = 5;
 
   //LIDAR sensors
   public static final int LEFT_FRONT_LIDAR = 3;
