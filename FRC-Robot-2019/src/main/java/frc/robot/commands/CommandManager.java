@@ -472,7 +472,7 @@ public class CommandManager {
         grp.addSequential(new RotateWristCommand(95.0, 1.0));              //these will wait, not timeout, 
         grp.addSequential(new RotateWristCommand(90.0, 1.0));              // wiggle wrist to grab hatch
         grp.addSequential(new ExtendArmToPositionCommand(5.0));            //pull in a bit before rotate, should have hatch
-        grp.addSequential(new TestRotateArmToAngleCommand(150.0, 30.0));   //rotate clear before going to delivery mode
+        grp.addSequential(new TestRotateArmToAngleCommand(140.0, 30.0));   //rotate clear before going to delivery mode
 
         grp.addSequential(new NextModeCmd(Modes.DeliverHatch));
         return grp;
@@ -517,9 +517,9 @@ public class CommandManager {
 
     private CommandGroup CmdFactoryFlip() {
         CommandGroup grp = new CommandGroup("Flip");
-        grp.addSequential(new WristTrackFunction(this::wristTrackZero));
+        grp.addParallel(new WristTrackFunction(this::wristTrackZero));
         int tempFlipLength = 10; //TODO: Find actual extension to flip
-        grp.addSequential(new ExtendArmToPositionCommand(tempFlipLength));
+        grp.addParallel(new ExtendArmToPositionCommand(tempFlipLength));
         grp.addSequential(new TestRotateArmToAngleCommand(0)); //TODO: Maybe rotate to a diff specific angle
         grp.addSequential(new PrevCmd());
         return grp;

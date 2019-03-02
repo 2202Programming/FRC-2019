@@ -50,7 +50,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public final double PHI_MAX = 155.0; //In Degrees, Positive is foward, bottom front
   public final double PHI_MIN = 25.0;   //In Degrees, Near top front 
   
-  private final double kCounts_per_deg = -600;  //measured 2/24/2019
+  private final double kCounts_per_deg = 600;  //measured 2/24/2019
   private final double kDeg_per_count = 1.0 / kCounts_per_deg;
   
   //Geometry of the arm's pivot point

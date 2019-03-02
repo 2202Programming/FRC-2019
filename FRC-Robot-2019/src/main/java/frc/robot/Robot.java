@@ -41,7 +41,7 @@ public class Robot extends TimedRobot {
   public static CargoTrapSubsystem cargoTrap = new CargoTrapSubsystem();
   public static ArmSubsystem arm = new ArmSubsystem();
   public static ClimberSubsystem climber = new ClimberSubsystem();
-  public static SerialPortSubsystem serialSubsystem = new SerialPortSubsystem();
+  //public static SerialPortSubsystem serialSubsystem = new SerialPortSubsystem();
   public static OI m_oi = new OI(false); //OI Depends on the subsystems and must be last (boolean is whether we are testing or not)
 
   public static CommandManager m_cmdMgr;    //fix the public later
@@ -75,7 +75,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     logSmartDashboardSensors(500); //call smartdashboard logging, 500ms update rate
     limeLight.populateLimelight();
-    serialSubsystem.processSerial();
+    //serialSubsystem.processSerial();
   }
 
   /**
@@ -169,7 +169,7 @@ public class Robot extends TimedRobot {
     //picking hopefully non-overlapping time intervals so all the logging isn't done at the same cycle
     limeLight.log(interval); //tell limelight to post to dashboard every Xms
     driveTrain.log(interval+3); //tell drivertrain to post to dashboard every Xms
-    serialSubsystem.log(interval+7); //tell serial to post to dashboard every Xms
+    //serialSubsystem.log(interval+7); //tell serial to post to dashboard every Xms
     arm.log(interval+11);
     gearShifter.log(interval+17); //tell gearshifter to post to dashboard every Xms
     m_cmdMgr.log(interval+23);
