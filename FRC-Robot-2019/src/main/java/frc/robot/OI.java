@@ -11,7 +11,11 @@ import edu.wpi.first.wpilibj.GenericHID.Hand;
 import frc.robot.input.XboxControllerButtonCode;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.LimeLightArcadeDriveCommand;
+import frc.robot.commands.climb.tests.CharonSolenoidTestCmd;
+import frc.robot.commands.climb.tests.ClimbMotorTestCmd;
 import frc.robot.commands.climb.tests.ClimbSolenoidTestCmd;
+import frc.robot.commands.climb.tests.PawlSolenoidTestCmd;
+import frc.robot.commands.climb.tests.RollerMotorTestCmd;
 import frc.robot.commands.drive.*;
 import frc.robot.commands.drive.shift.*;
 import frc.robot.commands.intake.*;
@@ -104,6 +108,13 @@ public class OI {
     //gearbox tests
     new JoystickButton(driver, XboxControllerButtonCode.X.getCode()).whenPressed(new DownShiftCommand());
     new JoystickButton(driver, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
+
+    //Climber tests
+    new JoystickButton(switchBoard, 7).whileActive(new PawlSolenoidTestCmd(true));
+    new JoystickButton(switchBoard, 8).whileActive(new ClimbMotorTestCmd(0.3));
+    new JoystickButton(switchBoard, 9).whileActive(new CharonSolenoidTestCmd(true));
+    new JoystickButton(switchBoard, 10).whileActive(new RollerMotorTestCmd(0.3));
+
 
      // setup buttons
      huntSelect     = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
