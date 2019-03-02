@@ -72,11 +72,12 @@ private long logTimer;
       }
       sum = sum + tempArray[i];
     }
+    if ((distanceAvgArray.get(sensor-1).size()-2)!=0) {
     average = (sum-max-min) / (distanceAvgArray.get(sensor-1).size()-2); //return average, not including max or min reading (olympic)  
-
     return average; 
     }
-
+    else return 0;
+  }
 
   public Boolean allDigits(String tempString) {
     for (int i = 0; i<tempString.length(); i++) { //check all chars to make sure they are all digits
