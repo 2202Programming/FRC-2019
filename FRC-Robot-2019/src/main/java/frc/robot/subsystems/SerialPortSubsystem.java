@@ -77,6 +77,41 @@ private long logTimer;
     return average; 
     }
 
+    public Boolean isReliable(int sensor, float percent){ //check sensor to see if last 10 measurements are within a certain deviation
+      Integer max = 0;
+      Integer min = 10000;
+      Deque<Integer> tempDeque = distanceAvgArray.get(sensor-1);
+      Integer[] tempArray = tempDeque.toArray(new Integer[0]);
+
+      for (int i = 0; i<distanceAvgArray.get(sensor-1).size(); i++) {
+        if(tempArray[i] > max)
+        {
+          max = tempArray[i];
+        }
+        if(tempArray[i] < min)
+        {
+          min = tempArray[i];
+        }
+      }
+
+      if(max != 0)
+      {
+        if(min/max >= percent)
+        {
+          return true;
+        }
+        else
+        {
+          return false; 
+        }
+      }
+      else
+      {
+        return false;
+      }
+
+    }
+
 
   public Boolean allDigits(String tempString) {
     for (int i = 0; i<tempString.length(); i++) { //check all chars to make sure they are all digits

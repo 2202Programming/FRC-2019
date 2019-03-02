@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -15,6 +17,12 @@ public class LimeLightSubsystem extends Subsystem {
     private double target;
     private NetworkTable table;
     private long logTimer;
+
+    private Deque<Double> xArray = new ArrayDeque<Double>();
+    private Deque<Double> yArray = new ArrayDeque<Double>();
+    private Deque<Double> areaArray = new ArrayDeque<Double>();
+    private Deque<Double> targetArray = new ArrayDeque<Double>();
+
     
     public LimeLightSubsystem() {
         logTimer = System.currentTimeMillis();
@@ -35,6 +43,13 @@ public class LimeLightSubsystem extends Subsystem {
           SmartDashboard.putNumber("LimelightArea", getArea());
           SmartDashboard.putBoolean("LimeTarget", hasTarget());
 
+          SmartDashboard.putNumber("Avg Limelight X", getXAvg());
+          SmartDashboard.putNumber("Avg Limelight Y", getYAvg());
+          SmartDashboard.putNumber("Avg Limelight Area", getAreaAvg());
+          SmartDashboard.putBoolean("Target Reliability", hasTargetReliable());
+
+
+
         }
       }
 
@@ -51,6 +66,31 @@ public class LimeLightSubsystem extends Subsystem {
         y = ty.getDouble(0.0);
         area = ta.getDouble(0.0);
         target = tv.getDouble(0.0);
+
+        xArray.add(x);//add to rolling average array
+        if(xArray.size() > 10)//keep most recent 10 valuse in array
+        {
+          xArray.remove(); //remove oldest reading (queue)
+        }
+
+        yArray.add(y);//add to rolling average array
+        if(yArray.size() > 10)//keep most recent 10 valuse in array
+        {
+          yArray.remove(); //remove oldest reading (queue)
+        }
+
+        areaArray.add(area);//add to rolling average array
+        if(areaArray.size() > 10)//keep most recent 10 valuse in array
+        {
+          areaArray.remove(); //remove oldest reading (queue)
+        }
+
+        targetArray.add(target);//add to rolling average array
+        if(targetArray.size() > 10)//keep most recent 10 valuse in array
+        {
+          targetArray.remove(); //remove oldest reading (queue)
+        }
+
 
         //put cameraselect value into network tables
         if(Robot.driveTrain.getInversionConstant()>0) cameraSelect.setBoolean(true);
@@ -73,19 +113,113 @@ public class LimeLightSubsystem extends Subsystem {
 
     public double getX() {
         return x;
+    } 
+
+    public double getXAvg() { //gets olympic avg of x coordinate lydar
+        Integer average = 0;
+        Integer sum = 0;
+        Integer max = 0;
+        Integer min = 10000;
+        Integer[] tempArray = xArray.toArray(new Integer[0]);
+    
+        for (int i = 0; i< xArray.size(); i++) {//gets min and max (so it can remove min and max)
+          if(tempArray[i] > max)
+          {
+            max = tempArray[i];
+          }
+          if(tempArray[i] < min)
+          {
+            min = tempArray[i];
+          }
+          sum = sum + tempArray[i];
+        }
+        if ((xArray.size()-2)!=0) {
+            average = (sum-max-min) / (xArray.size()-2); //return average, not including max or min reading (olympic)  
+            return average; 
+        }
+            else return 0;
+
+        
     }
 
     public double getY() {
          return y;
     }
 
+    public double getYAvg() {//gets olympic avg of y coordinate lydar
+        Integer average = 0;
+        Integer sum = 0;
+        Integer max = 0;
+        Integer min = 10000;
+        Integer[] tempArray = yArray.toArray(new Integer[0]);
+    
+        for (int i = 0; i< yArray.size(); i++) {
+          if(tempArray[i] > max)
+          {
+            max = tempArray[i];
+          }
+          if(tempArray[i] < min)
+          {
+            min = tempArray[i];
+          }
+          sum = sum + tempArray[i];
+        }
+        average = (sum-max-min) / (yArray.size()-2); //return average, not including max or min reading (olympic)  
+    
+        if ((yArray.size()-2)!=0) {
+            average = (sum-max-min) / (yArray.size()-2); //return average, not including max or min reading (olympic)  
+            return average; 
+            }
+            else return 0;        
+    }
+
     public double getArea() {
         return area;
     }
 
+    public double getAreaAvg() {//get area olypmic average
+        Integer average = 0;
+        Integer sum = 0;
+        Integer max = 0;
+        Integer min = 10000;
+        Integer[] tempArray = areaArray.toArray(new Integer[0]);
+    
+        for (int i = 0; i< areaArray.size(); i++) {
+          if(tempArray[i] > max)
+          {
+            max = tempArray[i];
+          }
+          if(tempArray[i] < min)
+          {
+            min = tempArray[i];
+          }
+          sum = sum + tempArray[i];
+        }
+        if ((areaArray.size()-2)!=0) {
+        average = (sum-max-min) / (areaArray.size()-2); //return average, not including max or min reading (olympic)  
+        return average; 
+        }
+        else return 0;
+        
+    } 
     public Boolean hasTarget() {
         if (target < 1) return false;
         else return true;
+
+    }
+
+    public Boolean hasTargetReliable() { //determines how reliable target is; if any of the values are 0 it isn't reliable
+        Integer[] tempArray = targetArray.toArray(new Integer[0]);
+
+        for (int i = 0; i < targetArray.size(); i++)
+        {
+            if(tempArray[i] == 0)
+            {
+                return false;
+            }
+        }
+        return true; 
+
     }
 
 }
