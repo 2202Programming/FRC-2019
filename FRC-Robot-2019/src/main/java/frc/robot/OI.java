@@ -111,9 +111,9 @@ public class OI {
 
     //Climber tests
     new JoystickButton(switchBoard, 7).whileActive(new PawlSolenoidTestCmd(true));
-    new JoystickButton(switchBoard, 8).whileActive(new ClimbMotorTestCmd(0.3));
+    new JoystickButton(switchBoard, 8).whileActive(new ClimbMotorTestCmd(0.1));
     new JoystickButton(switchBoard, 9).whileActive(new CharonSolenoidTestCmd(true));
-    new JoystickButton(switchBoard, 10).whileActive(new RollerMotorTestCmd(0.3));
+    new JoystickButton(switchBoard, 10).whileActive(new RollerMotorTestCmd(0.1));
 
 
      // setup buttons
