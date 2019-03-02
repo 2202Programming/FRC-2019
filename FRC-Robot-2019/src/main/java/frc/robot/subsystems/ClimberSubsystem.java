@@ -65,16 +65,10 @@ public class ClimberSubsystem extends Subsystem {
     }
 
     void init() {
-        roller.disable();
-        footExtender.disable();
     }
 
     public ClimberSubsystem() {
         init();
-        addChild("Climber-ratchet", pawl);
-        addChild("Climber-slide", drawerSlide);
-        addChild("Climber-foot", (Sendable) footExtender);
-        addChild("Climber-roller", (Sendable) roller);
     }
 
     public void setExtenderSpeed(double speed) {
