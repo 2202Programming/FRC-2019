@@ -74,9 +74,9 @@ public class RobotMap {
   public static final int CLIMB_RATCHET_UP_PCM = 1;
 
   //LIDAR sensors
-  public static final int LEFT_FRONT_LIDAR = 1;
-  public static final int RIGHT_FRONT_LIDAR = 2;
-  public static final int LEFT_BACK_LIDAR = 3;
-  public static final int RIGHT_BACK_LIDAR = 4;
+  public static final int LEFT_FRONT_LIDAR = 3;
+  public static final int RIGHT_FRONT_LIDAR = 4;
+  public static final int LEFT_BACK_LIDAR = 1;
+  public static final int RIGHT_BACK_LIDAR = 2;
   
 }
