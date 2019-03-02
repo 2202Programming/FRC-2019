@@ -381,6 +381,11 @@ public class CommandManager {
         return 0;
     }
 
+
+    public void setPosition(double h, double x) {
+        //place holder
+    }
+
     /**
      * 
      * get_gripper[HX]_cmd() - these functions return our commanded height and x projection 
