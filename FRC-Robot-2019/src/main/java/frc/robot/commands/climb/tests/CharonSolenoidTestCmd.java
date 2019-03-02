@@ -18,17 +18,8 @@ public class CharonSolenoidTestCmd extends InstantCommand {
     }
 
     @Override
-    protected void initialize() {
-        Robot.climber.setDrawerSlide(enabled);
-    }
-
-    @Override
     protected void execute() {
         Robot.climber.setDrawerSlide(enabled);
-    }
-
-    @Override
-    protected void end() {
-        Robot.climber.setDrawerSlide(!enabled);        
+        enabled = !enabled;
     }
 }
