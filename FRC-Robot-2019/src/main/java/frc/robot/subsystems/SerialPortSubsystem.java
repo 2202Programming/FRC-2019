@@ -72,10 +72,12 @@ private long logTimer;
       }
       sum = sum + tempArray[i];
     }
+    if ((distanceAvgArray.get(sensor-1).size()-2)!=0) {
     average = (sum-max-min) / (distanceAvgArray.get(sensor-1).size()-2); //return average, not including max or min reading (olympic)  
-
     return average; 
     }
+    else return 0;
+  }
 
     public Boolean isReliable(int sensor, float percent){ //check sensor to see if last 10 measurements are within a certain deviation
       Integer max = 0;
