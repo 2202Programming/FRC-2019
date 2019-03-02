@@ -60,6 +60,7 @@ public class OI {
   public JoystickButton heightDownSelect;   // used in hunting/delivery modes
   public JoystickButton heightUpSelect;     // used in hunting/delivery
   public JoystickButton captureRelease;     // flips hunt/deliver mode
+  public JoystickButton endDriveMode;     // Switches state out of drive 
 
   private ExpoShaper rotateShaper = new ExpoShaper(.7);    //fairly flat curve
 
@@ -86,6 +87,8 @@ public class OI {
     heightDownSelect = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
     heightUpSelect   = new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode());
     captureRelease   = new JoystickButton(assistant, XboxControllerButtonCode.A.getCode());
+    endDriveMode   = new JoystickButton(assistant, XboxControllerButtonCode.B.getCode());
+
 
     //Intake Commands
     //hack new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new VacuumCommand(false));
