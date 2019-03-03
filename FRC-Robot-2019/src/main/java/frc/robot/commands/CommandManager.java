@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import java.util.Arrays;
 import java.util.function.IntSupplier;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
@@ -116,7 +117,7 @@ public class CommandManager {
     private int driveIdx = 1;
     // Declare Drive Positions: First element is Height, second is projection
     public final double[][] DrivePositions = { { 0.5, Robot.arm.MIN_PROJECTION }, { 25, Robot.arm.MIN_PROJECTION },
-            { 60, Robot.arm.MIN_PROJECTION } }; // TODO: Find real values
+            { 84, Robot.arm.MIN_PROJECTION } }; // TODO: Find real values
 
     // Phyical values from sub-systems as needed
     Position armPosition;
@@ -324,16 +325,11 @@ public class CommandManager {
             setGripperPosition();
             return delHeightIdx;
         } else if (isDriving()) {
-            int idx = delHeightIdx + direction; // next height
+            int idx = driveIdx + direction; // next height
             driveIdx = MathUtil.limit(idx, 0, DrivePositions.length - 1); // make sure index fits in array
-            
-            if(driveIdx == 1) {
-                // If we are moving to Drive State
-                setMode(Modes.Drive);
-            } else {
-                setMode(Modes.Defense);
-            }
             setGripperPosition();
+
+            return driveIdx;
         }
         return (-1);
         // todo: drive delivery here???
@@ -550,8 +546,7 @@ public class CommandManager {
 
     private CommandGroup CmdFactoryDelivery() {
         CommandGroup grp = new CommandGroup("Deliver");
-        grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut)); // use deliver
-                                                                                                   // gripper funct
+        grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut)); 
         grp.addParallel(new WristTrackFunction(this::wristTrackParallel));
         return grp;
     }
@@ -561,7 +556,7 @@ public class CommandManager {
         // grp.AddSequential(new Extend_Drive_To_Deliver());
         grp.addSequential(new VacuumCommand(false));
         grp.addSequential(new WaitCommand(1.0)); // maybe move the wrist??
-        grp.addSequential(new NextModeCmd(Modes.HuntingHatch)); // go back to hunting
+        grp.addSequential(new NextModeCmd(Modes.Drive)); // go back to driving
         return grp;
     }
 
