@@ -41,8 +41,8 @@ public class Robot extends TimedRobot {
   public static CargoTrapSubsystem cargoTrap = new CargoTrapSubsystem();
   public static ArmSubsystem arm = new ArmSubsystem();
   public static ClimberSubsystem climber = new ClimberSubsystem();
-  public static SerialPortSubsystem serialSubsystem = new SerialPortSubsystem();
-  public static OI m_oi = new OI(false); //OI Depends on the subsystems and must be last (boolean is whether we are testing or not)
+  //public static SerialPortSubsystem serialSubsystem = new SerialPortSubsystem();
+  public static OI m_oi = new OI(); //OI Depends on the subsystems and must be last (boolean is whether we are testing or not)
 
   public static CommandManager m_cmdMgr;    //fix the public later
   private RobotTest m_testRobot;
@@ -75,7 +75,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     logSmartDashboardSensors(500); //call smartdashboard logging, 500ms update rate
     limeLight.populateLimelight();
-    serialSubsystem.processSerial();
+    //serialSubsystem.processSerial();
   }
 
   /**
@@ -130,7 +130,6 @@ public class Robot extends TimedRobot {
       doneOnce = true;
     }
     resetAllDashBoardSensors();
-    //m_cmdMgr.setMode(Modes.HuntingHatch);  
     limeLight.enableLED(); //active limelight LED when operational 
   }
 
@@ -169,17 +168,17 @@ public class Robot extends TimedRobot {
     //picking hopefully non-overlapping time intervals so all the logging isn't done at the same cycle
     limeLight.log(interval); //tell limelight to post to dashboard every Xms
     driveTrain.log(interval+3); //tell drivertrain to post to dashboard every Xms
-    serialSubsystem.log(interval+7); //tell serial to post to dashboard every Xms
+    //serialSubsystem.log(interval+7); //tell serial to post to dashboard every Xms
     arm.log(interval+11);
     gearShifter.log(interval+17); //tell gearshifter to post to dashboard every Xms
     m_cmdMgr.log(interval+23);
     intake.log(interval+29);
 
-/*    
+    
     SmartDashboard.putData(Scheduler.getInstance()); 
-    //SmartDashboard.putData(driveTrain);
-    //SmartDashboard.putData(gearShifter);
-*/
+    SmartDashboard.putData(arm);
+    SmartDashboard.putData(intake);
+
 }
 
   private void resetAllDashBoardSensors() {

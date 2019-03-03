@@ -10,25 +10,22 @@ import frc.robot.Robot;
  */
 public class IntakeTestCommand extends InstantCommand {
     // Current state
-    boolean enabled;
+    boolean vacuumOn;
 
-    public IntakeTestCommand(boolean enabled) {
+    public IntakeTestCommand(boolean vacuumOn) {
         requires(Robot.intake.getVacuumSubsystem());
-        this.setName("vac=" + enabled);
-        this.enabled = enabled;
+        this.setName("vac=" + vacuumOn);
+        this.vacuumOn = vacuumOn;
     }
 
     @Override
     protected void execute() {
-        if (enabled) {
+        if (vacuumOn) {
             // Transition to Off
-            Robot.intake.vacuumOff();
-            Robot.intake.releaseSolenoid(true);
+            Robot.intake.vacuumOn();
         } else {
             // Transition to On
-            Robot.intake.vacuumOn();
-            Robot.intake.releaseSolenoid(false);
+            Robot.intake.vacuumOff();
         }
-        enabled = !enabled;
     }
 }

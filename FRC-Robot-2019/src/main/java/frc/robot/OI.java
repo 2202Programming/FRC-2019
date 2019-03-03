@@ -8,10 +8,16 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import frc.robot.input.JoystickTrigger;
 import frc.robot.input.XboxControllerButtonCode;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.LimeLightArcadeDriveCommand;
-import frc.robot.commands.climb.tests.ClimbSolenoidTestCmd;
+import frc.robot.commands.cargo.tests.IntakeTestCmd;
+import frc.robot.commands.cargo.tests.OuttakeTestCmd;
+import frc.robot.commands.climb.tests.CharonSolenoidTestCmd;
+import frc.robot.commands.climb.tests.ClimbMotorTestCmd;
+import frc.robot.commands.climb.tests.PawlSolenoidTestCmd;
+import frc.robot.commands.climb.tests.RollerMotorTestCmd;
 import frc.robot.commands.drive.*;
 import frc.robot.commands.drive.shift.*;
 import frc.robot.commands.intake.*;
@@ -60,14 +66,16 @@ public class OI {
   public JoystickButton heightDownSelect;   // used in hunting/delivery modes
   public JoystickButton heightUpSelect;     // used in hunting/delivery
   public JoystickButton captureRelease;     // flips hunt/deliver mode
+  public JoystickButton flip;               // used to flip
   public JoystickButton endDriveMode;     // Switches state out of drive 
 
   private ExpoShaper rotateShaper = new ExpoShaper(.7);    //fairly flat curve
 
 
   @SuppressWarnings({ "resource", })
-  public OI(boolean isTesting) {
-    if(isTesting) {
+  public OI() {
+    // If the Test Button on the switchboard is activeSSSsS
+    if(switchBoard.getRawButton(12)) {
       bindTestButtons();
     } else {
       bindFieldButtons();
@@ -82,11 +90,14 @@ public class OI {
     new JoystickButton(driver, XboxControllerButtonCode.X.getCode()).whenPressed(new InvertDriveControlsCommand());
     new JoystickButton(driver, XboxControllerButtonCode.LB.getCode()).whileHeld(new TankDriveCommand());
     new JoystickButton(driver, XboxControllerButtonCode.RB.getCode()).whileHeld(new LimeLightArcadeDriveCommand());    
+    new JoystickTrigger(driver, XboxControllerButtonCode.TRIGGER_LEFT.getCode(), 0.75).whileHeld(new IntakeTestCmd(0.4));
+    new JoystickTrigger(driver, XboxControllerButtonCode.TRIGGER_RIGHT.getCode(), 0.75).whileHeld(new OuttakeTestCmd(0.4));
 
     // setup buttons for use in CommandManager
     heightDownSelect = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
     heightUpSelect   = new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode());
     captureRelease   = new JoystickButton(assistant, XboxControllerButtonCode.A.getCode());
+    flip           = new JoystickButton(assistant, XboxControllerButtonCode.X.getCode());
     endDriveMode   = new JoystickButton(assistant, XboxControllerButtonCode.B.getCode());
 
 
@@ -105,12 +116,19 @@ public class OI {
     //new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new SolenoidTestCommand(false));
     new JoystickButton(assistant, XboxControllerButtonCode.X.getCode()).whenPressed(new VacuumTestCommand(false));
 
-    //Climber solenoid test
-    new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new ClimbSolenoidTestCmd(false));
-
     //gearbox tests
-    new JoystickButton(driver, XboxControllerButtonCode.X.getCode()).whenPressed(new DownShiftCommand());
+    new JoystickButton(driver, XboxControllerButtonCode.A.getCode()).whenPressed(new DownShiftCommand());
     new JoystickButton(driver, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
+    new JoystickButton(driver, XboxControllerButtonCode.B.getCode()).whileHeld(new IntakeTestCmd(0.4));
+    new JoystickButton(driver, XboxControllerButtonCode.X.getCode()).whileHeld(new OuttakeTestCmd(0.4));
+
+    //Climber tests
+    new JoystickButton(switchBoard, 7).whenPressed(new PawlSolenoidTestCmd(true));
+    new JoystickButton(switchBoard, 8).whileActive(new ClimbMotorTestCmd(0.3));
+    new JoystickButton(switchBoard, 9).whenPressed(new CharonSolenoidTestCmd(true));
+    new JoystickButton(switchBoard, 10).whileActive(new RollerMotorTestCmd(0.5));
+    new JoystickButton(switchBoard, 11).whileActive(new ClimbMotorTestCmd(-0.3));
+
 
      // setup buttons
      heightDownSelect = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
