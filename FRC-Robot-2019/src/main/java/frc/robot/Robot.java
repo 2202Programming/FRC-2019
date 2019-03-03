@@ -130,7 +130,6 @@ public class Robot extends TimedRobot {
       doneOnce = true;
     }
     resetAllDashBoardSensors();
-    //m_cmdMgr.setMode(Modes.HuntingHatch);  
     limeLight.enableLED(); //active limelight LED when operational 
   }
 

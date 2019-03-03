@@ -7,26 +7,21 @@ import frc.robot.Robot;
  * VacuumCommand (enable) true - turn it on false - turn it off
  * 
  * Instantiate with one or other for what you need.
+ *  Use Robot.intake.kRelease or kVacuum 
+ * 
  */
 public class SolenoidTestCommand extends InstantCommand {
     // Current state
-    boolean enabled;
+    boolean vacuumCmd;
 
-    public SolenoidTestCommand(boolean enabled) {
+    public SolenoidTestCommand(boolean vacuumCmd) {
         requires(Robot.intake.getVacuumSubsystem());
-        this.setName("vac=" + enabled);
-        this.enabled = enabled;
+        this.setName("solenoidTest=" + vacuumCmd);
+        this.vacuumCmd = vacuumCmd;
     }
 
     @Override
     protected void execute() {
-        if (enabled) {
-            // Transition to Off
-            Robot.intake.releaseSolenoid(true);
-        } else {
-            // Transition to On
-            Robot.intake.releaseSolenoid(false);
-        }
-        enabled = !enabled;
+        Robot.intake.releaseSolenoid(vacuumCmd);
     }
 }
