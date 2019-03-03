@@ -282,7 +282,7 @@ public class CommandManager {
     private int triggerCaptureRelease() {
         if (isHunting()) {
             prevHuntMode = currentMode;
-            gotoDeliverMode();
+            setMode(Modes.Drive);
         } else
             setMode(Modes.Releasing);
         return 0;
@@ -543,8 +543,7 @@ public class CommandManager {
 
     private CommandGroup CmdFactoryDrive() {
         CommandGroup grp = new CommandGroup("Drive");
-        grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut)); // use deliver
-                                                                                                   // gripper funct
+        grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
         grp.addParallel(new WristTrackFunction(this::wristTrackParallel));
         return grp;
     }
