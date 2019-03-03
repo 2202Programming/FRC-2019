@@ -57,8 +57,8 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Create the test subsystem
     m_testRobot  = new RobotTest();
-    //m_cmdMgr = new CommandManager();
-    //m_cmdMgr.setMode(Modes.Construction);   // schedules the mode's function
+    m_cmdMgr = new CommandManager();
+    m_cmdMgr.setMode(Modes.Construction);   // schedules the mode's function
     limeLight.disableLED(); //disable blinding green LED that Trevor hates
   }
 
@@ -126,11 +126,11 @@ public class Robot extends TimedRobot {
     // continue until interrupted by another command, remove
     // this line or comment it out.
     if (doneOnce == false ){
-      //m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function
+      m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function
       doneOnce = true;
     }
     resetAllDashBoardSensors();
-    //m_cmdMgr.setMode(Modes.HuntingHatch);  
+    m_cmdMgr.setMode(Modes.HuntingHatch);  
     limeLight.enableLED(); //active limelight LED when operational 
   }
 
@@ -139,7 +139,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    //m_cmdMgr.execute();
+    m_cmdMgr.execute();
     Scheduler.getInstance().run();
 
 
@@ -172,7 +172,7 @@ public class Robot extends TimedRobot {
     serialSubsystem.log(interval+7); //tell serial to post to dashboard every Xms
     arm.log(interval+11);
     gearShifter.log(interval+17); //tell gearshifter to post to dashboard every Xms
-    //m_cmdMgr.log(interval+23);
+    m_cmdMgr.log(interval+23);
     intake.log(interval+29);
 
 /*    
