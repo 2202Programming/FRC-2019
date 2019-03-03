@@ -54,8 +54,7 @@ public class RobotMap {
   public static final int TRAP_PCM_ID = CAN_PCM2_ID;
   public static final int TRAP_DEPLOY_PCM = 2; 
   public static final int TRAP_RETRACT_PCM = 3;
-  public static final int TRAP_ARMS_OPEN_PCM = 4; 
-  public static final int TRAP_ARMS_CLOSE_PCM = 5;
+  public static final int TRAP_INTAKE_MOTOR_PIN = 2;
   public static final int TRAP_CARGO_SENSOR_DIO = 30;
 
   //End Effector IntakeSubsystem

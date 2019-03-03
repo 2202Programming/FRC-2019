@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.RobotMap;
@@ -23,15 +24,11 @@ import frc.robot.commands.cargo.AutoTrapCargoCommand;
  */
 public class CargoTrapSubsystem extends Subsystem {
     
-    static final DoubleSolenoid.Value kOpenArms = Value.kForward;
-    static final DoubleSolenoid.Value kCloseArms = Value.kReverse;  //off may work too
-    
     static final DoubleSolenoid.Value kDeploy = Value.kForward;
     static final DoubleSolenoid.Value kRetract = Value.kReverse;  
 
     // Physical Devices and Controls
-    DoubleSolenoid armsPiston = new DoubleSolenoid(RobotMap.TRAP_PCM_ID,
-        RobotMap.TRAP_ARMS_OPEN_PCM, RobotMap.TRAP_ARMS_CLOSE_PCM);
+    Spark intakeMotors = new Spark(RobotMap.TRAP_INTAKE_MOTOR_PIN);
                                            
     DoubleSolenoid deployPiston = new DoubleSolenoid(RobotMap.TRAP_PCM_ID,
          RobotMap.TRAP_DEPLOY_PCM, RobotMap.TRAP_RETRACT_PCM);
@@ -41,9 +38,6 @@ public class CargoTrapSubsystem extends Subsystem {
 
     public CargoTrapSubsystem() {
         retractTrap();
-        closeTrapArms();
-
-        addChild("CargoTrap", armsPiston);
         addChild("Trap Deployment Solenoid", deployPiston);
     }
 
@@ -55,12 +49,8 @@ public class CargoTrapSubsystem extends Subsystem {
     /**
      * Access for Commands.
      */
-    public void closeTrapArms() {
-        armsPiston.set(kCloseArms);
-    }
-
-    public void openTrapArms() {
-        armsPiston.set(kOpenArms);
+    public void setIntake(double speed) {
+        intakeMotors.set(speed);
     }
 
     public void deployTrap() {

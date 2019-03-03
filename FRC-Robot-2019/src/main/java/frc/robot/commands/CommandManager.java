@@ -430,6 +430,17 @@ public class CommandManager {
         return grp;
     }
 
+    private CommandGroup CmdFactoryFlip() {
+        CommandGroup grp = new CommandGroup("Flip");
+        grp.addParallel(new WristTrackFunction(this::wristTrackZero));
+        int tempFlipLength = 10; //TODO: Find actual extension to flip
+        grp.addSequential(new ExtendArmToPositionCommand(tempFlipLength));
+        grp.addSequential(new TestRotateArmToAngleCommand(0)); //TODO: Maybe rotate to a diff specific angle
+        grp.addSequential(new GripperPositionCommand(5.0, 0.0, 0.5, 6.0));
+        grp.addSequential(new PrevCmd());
+        return grp;
+    }
+
     //Used at the end of a command group to jump to next mode
     class NextModeCmd extends InstantCommand {
         Modes mode2set;
