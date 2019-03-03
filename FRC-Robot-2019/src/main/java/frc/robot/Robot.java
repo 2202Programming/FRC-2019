@@ -42,9 +42,9 @@ public class Robot extends TimedRobot {
   public static ArmSubsystem arm = new ArmSubsystem();
   public static ClimberSubsystem climber = new ClimberSubsystem();
   public static SerialPortSubsystem serialSubsystem = new SerialPortSubsystem();
-  public static OI m_oi = new OI(true); //OI Depends on the subsystems and must be last (boolean is whether we are testing or not)
+  public static OI m_oi = new OI(false); //OI Depends on the subsystems and must be last (boolean is whether we are testing or not)
 
-  //public static CommandManager m_cmdMgr;    //fix the public later
+  public static CommandManager m_cmdMgr;    //fix the public later
   private RobotTest m_testRobot;
 
   boolean doneOnce = false;   //single execute our zero 
