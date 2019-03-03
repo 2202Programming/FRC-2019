@@ -1,10 +1,10 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.SpeedController;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+//import edu.wpi.first.wpilibj.Solenoid.Value;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -29,6 +29,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
  *                  Use DoubleSolenoid.
  *                  
  * 2/17/2019   DPL  Split vacuum into own subsystem, but contained here
+ * 3/3/2019    DPL  Removed the DoubleSolenoid for a single one.
+ *                  Vacuum is applied on un-powered(default), pressure on powered
  * 
  */
 /**
@@ -67,15 +69,15 @@ public class IntakeSubsystem extends ExtendedSubSystem {
 
   Subsystem intakeVacuum;
 
-  // TODO: confirm this is the way the solenoid is wired
-  final DoubleSolenoid.Value kVacuum = Value.kForward;
-  final DoubleSolenoid.Value kRelease = Value.kReverse;
+  // Vacuum mode is the default for the solenoid, power it to drop the payload
+  public final boolean kRelease = true;
+  public final boolean kVacuum = false;
 
   // Physical devices
   protected CustomServo wristServo;             // positive angle, wrist up, when arm is forward
   protected DigitalInput cargoSwitch;           // true when cargo switch is pressed by ball
   protected SpeedController vacuumPump;         // motor control for vacuum pump
-  protected DoubleSolenoid vacuumSol;           // solenoid to hold and relase ball/hatch
+  protected Solenoid vacuumSol;                 // solenoid to hold and relase ball/hatch
 
   /**
    * Creates an intake subsystem.
@@ -88,9 +90,8 @@ public class IntakeSubsystem extends ExtendedSubSystem {
 
     cargoSwitch = new DigitalInput(RobotMap.INTAKE_CARGO_SWITCH_MXP_CH);
     vacuumPump = new Spark(RobotMap.INTAKE_VACUUM_SPARK_PWM);
-    vacuumSol = new DoubleSolenoid(RobotMap.INTAKE_PCM_ID, RobotMap.INTAKE_RELEASE_SOLENOID_PCM,
-    RobotMap.INTAKE_HOLD_SOLENOID_PCM);
-
+    vacuumSol = new Solenoid(RobotMap.INTAKE_PCM_ID, RobotMap.INTAKE_RELEASE_SOLENOID_PCM);
+  
     // addChild("In:Wrist", (Sendable) wristServo);
     // addChild("In:VacPump", vacuumPump);
     addChild("In:CargoSw", cargoSwitch);
@@ -129,9 +130,8 @@ public class IntakeSubsystem extends ExtendedSubSystem {
     return this.intakeVacuum;
   }
 
-  public void releaseSolenoid(boolean release) {
-    DoubleSolenoid.Value state = release? kRelease: kVacuum;
-    vacuumSol.set(state);
+  public void releaseSolenoid(boolean direction) {
+    vacuumSol.set(direction);
   }
 
   public void setVacuum(boolean on) {
@@ -147,12 +147,12 @@ public class IntakeSubsystem extends ExtendedSubSystem {
    */
   public void vacuumOn() {
     vacuumPump.set(PumpSpeed);
-    releaseSolenoid(false);
+    releaseSolenoid(kVacuum);
   }
 
   public void vacuumOff() {
     vacuumPump.stopMotor();
-    releaseSolenoid(true);
+    releaseSolenoid(kRelease);
   }
 
   public void vacuumOffHoldOn() {

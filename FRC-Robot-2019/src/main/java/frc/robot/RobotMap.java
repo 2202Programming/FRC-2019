@@ -13,6 +13,7 @@ package frc.robot;
  *                      Intake Release/Hold moved to PCM 5/6 to better organize wires
  *                      GearShift PCM 0-1
  * 2/11/2019 Derek L    PDP must be 0.
+ * 3/3/2019  Derek L    Intake switched to Can=2, Single Solenoid , PCM-2 port 0
  * 
  */
 public class RobotMap {
@@ -61,9 +62,9 @@ public class RobotMap {
   public static final int INTAKE_WRIST_SERVO_PWM = 0;
   public static final int INTAKE_VACUUM_SPARK_PWM = 1;    
   public static final int INTAKE_CARGO_SWITCH_MXP_CH = 11;
-  public static final int INTAKE_PCM_ID = CAN_PCM1_ID;
-  public static final int INTAKE_RELEASE_SOLENOID_PCM = 6;   
-  public static final int INTAKE_HOLD_SOLENOID_PCM = 7;      
+  public static final int INTAKE_PCM_ID = CAN_PCM2_ID;       
+  public static final int INTAKE_RELEASE_SOLENOID_PCM = 0;   // DPL switched to single Solenoid
+ 
 
   //Climber
   public static final int CLIMB_FOOT_SPARK_MAX_CAN_ID = 23;
