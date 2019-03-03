@@ -1,6 +1,8 @@
 package frc.robot.commands;
 
 import java.util.function.IntSupplier;
+
+import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.CommandGroup;
@@ -279,7 +281,6 @@ public class CommandManager {
 
 
     private void flip() {
-        Robot.arm.invert(); //TODO: Find right place to do this...
         setMode(Modes.Flipping);
     }
     private int cycleHeightMode(int direction) {
@@ -525,10 +526,18 @@ public class CommandManager {
 
     private CommandGroup CmdFactoryFlip() {
         CommandGroup grp = new CommandGroup("Flip");
-        grp.addParallel(new WristTrackFunction(this::wristTrackZero));
-        int tempFlipLength = 10; //TODO: Find actual extension to flip
-        grp.addSequential(new ExtendArmToPositionCommand(tempFlipLength));
+        grp.addParallel(new WristTrackFunction(this::wristTrackZero)); 
+        grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
+        grp.addSequential(new GripperPositionCommand(66, 13.25, 1.0, 10.0));
+        grp.addSequential(new GripperPositionCommand(66,  1.0, 1.0, 6.0)); 
+        grp.addSequential(new CallFunctionCmd(Robot.arm::invert));
+        grp.addSequential(new GripperPositionCommand(66, 1.0, 1.0, 6.0)); 
+        grp.addSequential(new GripperPositionCommand(66, 13.25, 1.0, 8.0)); 
+
+       /* grp.addSequential(new ExtendArmToPositionCommand(tempFlipLength));
         grp.addSequential(new TestRotateArmToAngleCommand(0)); //TODO: Maybe rotate to a diff specific angle
+        */
+        grp.addSequential(new WristTrackFunction(this::wristTrackParallel)); 
         grp.addSequential(new PrevCmd());
         return grp;
     }
@@ -594,7 +603,7 @@ public class CommandManager {
     class PrevCmd extends InstantCommand {
         @Override
         protected void execute() {
-            gotoPrevMode();
+            setMode(prevMode);
         }
     }
 

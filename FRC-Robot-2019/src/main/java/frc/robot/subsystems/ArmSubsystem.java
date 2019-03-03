@@ -179,6 +179,9 @@ public class ArmSubsystem extends ExtendedSubSystem {
     double compLen = ((angle - PHI0)*k_dl_dphi);   // ext due to rotation to compensate for
     double len = (l - L0) - compLen;               // net len to command relative to start
 
+    SmartDashboard.putNumber("Extension Compensation", compLen);
+    SmartDashboard.putNumber("Extension Calculated", len);
+
     //Make sure we limit to the range of the extension is capable
     if (len < (EXTEND_MIN - L0)) {
       System.out.println("Arm:Extension below minimum.");
@@ -186,6 +189,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
     //todo:not sure if this is the right way to limit
     // we can't go above or below our adjust min/max based on starting L0
     len = MathUtil.limit(len, EXTEND_MIN - L0, EXTEND_MAX);
+    SmartDashboard.putNumber("Extension Set", len);
+
     double c = len * kCounts_per_in;
     armExtensionMotor.set(ControlMode.Position, c);
   }
@@ -221,7 +226,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
   /**
    * Computes height of gripper and projection on floor from pivot, pivot is horizontal zero
    */
-  public Position getArmPosition() {
+  public Position 
+  getArmPosition() {
     double phi = getAbsoluteAngle();
     double rads = Math.toRadians(phi);
     double ext = getExtension();          //includes angle compensation
@@ -253,8 +259,9 @@ public class ArmSubsystem extends ExtendedSubSystem {
     return new ArmZero();
   }
 
-  public void invert() {
+  public int invert() {
     inversionConstant *= -1;
+    return inversionConstant;
   }
 
   public short getInversion() {
@@ -271,6 +278,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
       SmartDashboard.putNumber("Arm:Phi(deg)", getRealAngle());
       SmartDashboard.putNumber("Arm:Ext(raw)", armExtensionMotor. getSelectedSensorPosition());
       SmartDashboard.putNumber("Arm:Ext(in)",  getExtension());
+      SmartDashboard.putNumber("Arm:Gripper Projection", getArmPosition().projection);
+      SmartDashboard.putNumber("Arm:Gripper Height", getArmPosition().height);
 
       // don't have limit switches right now
       //SmartDashboard.putBoolean("Arm:Ext@Min", extensionAtMin());
