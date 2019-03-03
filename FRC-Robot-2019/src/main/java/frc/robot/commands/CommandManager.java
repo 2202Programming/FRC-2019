@@ -337,16 +337,16 @@ public class CommandManager {
      * 
      * */
     void setGripperPosition() {
+        double h;
         if (isHunting()) {
             //Hunting, use the HuntHeights table and that height index
-            gripperH_cmd = HuntHeights[huntModeIdx];
-            gripperX_cmd = huntProjection[huntModeIdx];
+            cmdPosition(HuntHeights[huntModeIdx], huntProjection[huntModeIdx]);
         }
         else if (isDelivering()) {
             //Delivering 
-            gripperH_cmd = (prevHuntMode == Modes.HuntingCargo) ? 
+            h = (prevHuntMode == Modes.HuntingCargo) ? 
                 DeliveryCargoHeights[delHeightIdx] : DeliveryHatchHeights[delHeightIdx];
-            gripperX_cmd = deliveryProjection[delHeightIdx];
+            cmdPosition(h, deliveryProjection[delHeightIdx]);
         }
         // Other mode changes just stay where we are at
     }
@@ -386,12 +386,21 @@ public class CommandManager {
      */
     int  initialize() {
         armPosition = Robot.arm.getArmPosition();   //update position
-        gripperX_cmd = armPosition.projection;
-        gripperH_cmd = armPosition.height;
+        cmdPosition(armPosition.height, armPosition.projection);
         xprojStick.initialize();
         xprojRL.initialize();
         heightRL.initialize(); 
         return 0;
+    }
+
+    /**
+     * cmdPosition(h,x) - allow external systems to command the arm H and projection x.
+     * @param h
+     * @param x
+     */
+    public void cmdPosition(double h, double x) {
+        gripperH_cmd = h;
+        gripperX_cmd = x;
     }
 
     /**
@@ -471,10 +480,9 @@ public class CommandManager {
         grp.addSequential(new VacuumCommand(true));
         grp.addSequential(new RotateWristCommand(95.0, 1.0));              //these will wait, not timeout, 
         grp.addSequential(new RotateWristCommand(90.0, 1.0));              // wiggle wrist to grab hatch
-        grp.addSequential(new ExtendArmToPositionCommand(5.0));            //pull in a bit before rotate, should have hatch
-        grp.addSequential(new TestRotateArmToAngleCommand(140.0, 30.0));   //rotate clear before going to delivery mode
-
-        grp.addSequential(new NextModeCmd(Modes.DeliverHatch));
+        grp.addSequential(new GripperPositionCommand(5.0, 13.25, 0.5, 2.0));      // mv h up, keep start xproj
+        grp.addSequential(new GripperPositionCommand(20.0, 20.0, 0.5, 5.0));      // now rotate out and move up
+        grp.addSequential(new NextModeCmd(Modes.DeliverHatch));    //todo: goto billy's drive mode
         return grp;
     }
 
@@ -524,6 +532,40 @@ public class CommandManager {
         grp.addSequential(new PrevCmd());
         return grp;
     }
+
+    class GripperPositionCommand extends Command {
+        double timeout;
+        double height;
+        double projx;
+        double error;
+
+
+        public GripperPositionCommand(double height, double projx, double error, double timeout) {
+            this.height = height; 
+            this.projx = projx;
+            this.timeout = timeout;
+            this.error = error;
+        }
+        @Override
+        protected void initialize() {
+            setTimeout(timeout);
+            cmdPosition(height, projx);    //sets the CommandManagers h/x output
+        }
+
+        @Override
+        protected void execute() {
+            cmdPosition(height, projx);    //once should be fine
+        }
+
+        @Override
+        protected boolean isFinished() {
+            double h_err = Math.abs(armPosition.height  - height);
+            double x_err = Math.abs(armPosition.projection - projx);
+            boolean posGood = (h_err < error) && (x_err < error);
+            return posGood || isTimedOut();
+        }
+    }
+
 
     /**
      * Very complex command that does nothing, but waits for it.
