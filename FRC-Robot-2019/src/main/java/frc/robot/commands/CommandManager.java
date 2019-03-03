@@ -113,6 +113,7 @@ public class CommandManager {
     final double huntProjection[] = { 21.0, 22.0, 24.0 }; // TODO: fix the numbers
     int huntModeIdx = 2; // hatch
 
+    private int driveIdx = 1;
     // Declare Drive Positions: First element is Height, second is projection
     public final double[][] DrivePositions = { { 0.5, Robot.arm.MIN_PROJECTION }, { 25, Robot.arm.MIN_PROJECTION },
             { 60, Robot.arm.MIN_PROJECTION } }; // TODO: Find real values
@@ -218,6 +219,10 @@ public class CommandManager {
             nextCmd = captureGrp;
             break;
         case Drive:
+            driveIdx = 1;
+            nextCmd = driveGrp;
+            break;
+        case Defense:
             nextCmd = driveGrp;
             break;
         // DeliveryModes
@@ -232,6 +237,7 @@ public class CommandManager {
             break;
 
         case Releasing:
+            prevHuntMode = Modes.Releasing; // Reset the prevHuntMode
             nextCmd = releaseGrp;
             break;
 
@@ -283,12 +289,13 @@ public class CommandManager {
     }
 
     private int endDriveState() {
-        if(isDriving()) {
-            if(prevMode == Modes.Releasing) {
+        if (isDriving()) {
+            if (prevHuntMode == Modes.Releasing) {
+                // If we came to driving after a delivery
                 setMode(Modes.HuntingHatch);
                 return 0;
-            } else if((prevMode.get() > Modes.HuntGameStart.get()) && (prevMode.get() < Modes.Capturing.get())) {
-                //If we came to driving after a hunt
+            } else {
+                // If we came to driving after a hunt
                 gotoDeliverMode();
                 return 0;
             }
@@ -316,6 +323,17 @@ public class CommandManager {
             delHeightIdx = MathUtil.limit(idx, 0, DeliveryCargoHeights.length - 1);
             setGripperPosition();
             return delHeightIdx;
+        } else if (isDriving()) {
+            int idx = delHeightIdx + direction; // next height
+            driveIdx = MathUtil.limit(idx, 0, DrivePositions.length - 1); // make sure index fits in array
+            
+            if(driveIdx == 1) {
+                // If we are moving to Drive State
+                setMode(Modes.Drive);
+            } else {
+                setMode(Modes.Defense);
+            }
+            setGripperPosition();
         }
         return (-1);
         // todo: drive delivery here???
@@ -362,14 +380,15 @@ public class CommandManager {
     void setGripperPosition() {
         double h;
         if (isHunting()) {
-            //Hunting, use the HuntHeights table and that height index
+            // Hunting, use the HuntHeights table and that height index
             cmdPosition(HuntHeights[huntModeIdx], huntProjection[huntModeIdx]);
-        }
-        else if (isDelivering()) {
-            //Delivering 
-            h = (prevHuntMode == Modes.HuntingCargo) ? 
-                DeliveryCargoHeights[delHeightIdx] : DeliveryHatchHeights[delHeightIdx];
+        } else if (isDelivering()) {
+            // Delivering
+            h = (prevHuntMode == Modes.HuntingCargo) ? DeliveryCargoHeights[delHeightIdx]
+                    : DeliveryHatchHeights[delHeightIdx];
             cmdPosition(h, deliveryProjection[delHeightIdx]);
+        } else if(isDriving()) {
+            cmdPosition(DrivePositions[driveIdx][0], DrivePositions[driveIdx][1]);
         }
         // Other mode changes just stay where we are at
     }
@@ -404,8 +423,8 @@ public class CommandManager {
      * 
      * Return only needed because it's invokeds as a FunctionCommand
      */
-    int  initialize() {
-        armPosition = Robot.arm.getArmPosition();   //update position
+    int initialize() {
+        armPosition = Robot.arm.getArmPosition(); // update position
         cmdPosition(armPosition.height, armPosition.projection);
         xprojStick.initialize();
         xprojRL.initialize();
@@ -414,7 +433,9 @@ public class CommandManager {
     }
 
     /**
-     * cmdPosition(h,x) - allow external systems to command the arm H and projection x.
+     * cmdPosition(h,x) - allow external systems to command the arm H and projection
+     * x.
+     * 
      * @param h
      * @param x
      */
@@ -503,11 +524,11 @@ public class CommandManager {
     private CommandGroup CmdFactoryHuntGameStart() {
         CommandGroup grp = new CommandGroup("HuntGameStart");
         grp.addSequential(new VacuumCommand(true));
-        grp.addSequential(new RotateWristCommand(95.0, 1.0));              //these will wait, not timeout, 
-        grp.addSequential(new RotateWristCommand(90.0, 1.0));              // wiggle wrist to grab hatch
-        grp.addSequential(new GripperPositionCommand(5.0, 13.25, 0.5, 2.0));      // mv h up, keep start xproj
-        grp.addSequential(new GripperPositionCommand(20.0, 20.0, 0.5, 5.0));      // now rotate out and move up
-        grp.addSequential(new NextModeCmd(Modes.DeliverHatch));    //todo: goto billy's drive mode
+        grp.addSequential(new RotateWristCommand(95.0, 1.0)); // these will wait, not timeout,
+        grp.addSequential(new RotateWristCommand(90.0, 1.0)); // wiggle wrist to grab hatch
+        grp.addSequential(new GripperPositionCommand(5.0, 13.25, 0.5, 2.0)); // mv h up, keep start xproj
+        grp.addSequential(new GripperPositionCommand(20.0, 20.0, 0.5, 5.0)); // now rotate out and move up
+        grp.addSequential(new NextModeCmd(Modes.Drive)); 
         return grp;
     }
 
@@ -565,33 +586,32 @@ public class CommandManager {
         double projx;
         double error;
 
-
         public GripperPositionCommand(double height, double projx, double error, double timeout) {
-            this.height = height; 
+            this.height = height;
             this.projx = projx;
             this.timeout = timeout;
             this.error = error;
         }
+
         @Override
         protected void initialize() {
             setTimeout(timeout);
-            cmdPosition(height, projx);    //sets the CommandManagers h/x output
+            cmdPosition(height, projx); // sets the CommandManagers h/x output
         }
 
         @Override
         protected void execute() {
-            cmdPosition(height, projx);    //once should be fine
+            cmdPosition(height, projx); // once should be fine
         }
 
         @Override
         protected boolean isFinished() {
-            double h_err = Math.abs(armPosition.height  - height);
+            double h_err = Math.abs(armPosition.height - height);
             double x_err = Math.abs(armPosition.projection - projx);
             boolean posGood = (h_err < error) && (x_err < error);
             return posGood || isTimedOut();
         }
     }
-
 
     /**
      * Very complex command that does nothing, but waits for it. Useful to ensure a
