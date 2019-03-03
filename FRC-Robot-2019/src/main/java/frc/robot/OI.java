@@ -66,13 +66,15 @@ public class OI {
   public JoystickButton heightDownSelect;   // used in hunting/delivery modes
   public JoystickButton heightUpSelect;     // used in hunting/delivery
   public JoystickButton captureRelease;     // flips hunt/deliver mode
+  public JoystickButton flip;               // used to flip
 
   private ExpoShaper rotateShaper = new ExpoShaper(.7);    //fairly flat curve
 
 
   @SuppressWarnings({ "resource", })
-  public OI(boolean isTesting) {
-    if(isTesting) {
+  public OI() {
+    // If the Test Button on the switchboard is activeSSSsS
+    if(switchBoard.getRawButton(12)) {
       bindTestButtons();
     } else {
       bindFieldButtons();
@@ -94,6 +96,7 @@ public class OI {
     heightDownSelect = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
     heightUpSelect   = new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode());
     captureRelease   = new JoystickButton(assistant, XboxControllerButtonCode.A.getCode());
+    flip           = new JoystickButton(assistant, XboxControllerButtonCode.X.getCode());
 
     //Intake Commands
     //hack new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new VacuumCommand(false));

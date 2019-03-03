@@ -50,7 +50,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public final double PHI_MAX = 155.0; //In Degrees, Positive is foward, bottom front
   public final double PHI_MIN = 25.0;   //In Degrees, Near top front 
   
-  private final double kCounts_per_deg = -600;  //measured 2/24/2019
+  private final double kCounts_per_deg = 600;  //measured 2/24/2019
   private final double kDeg_per_count = 1.0 / kCounts_per_deg;
   
   //Geometry of the arm's pivot point
@@ -87,6 +87,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
   //outputs in robot coordinates h,ext (inches)
   Position position = new Position();
   
+  private short inversionConstant;
+
   /**
    * Creates a new arm/lift subsystem.
    */
@@ -98,8 +100,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
     // Set Talon postion mode gains and power limits
     //Arm
     armRotationMotor.config_kP(0, 0.5 /*0.8*/, 30); 
-    armRotationMotor.configPeakOutputForward(0.4);
-    armRotationMotor.configPeakOutputReverse(-0.4);
+    armRotationMotor.configPeakOutputForward(0.2);
+    armRotationMotor.configPeakOutputReverse(-0.2);
     armRotationMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     armRotationMotor.setInverted(true);
     
@@ -114,8 +116,11 @@ public class ArmSubsystem extends ExtendedSubSystem {
     
     System.out.println("Warning - Arm s have moderate Kp values & reduced power 30% limits");
     logTimer = System.currentTimeMillis();
-  }
 
+    zeroArm();  // will also get called on transition to teleOp, should arms be moved 
+
+    inversionConstant = 1;
+  }
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
 
@@ -138,7 +143,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * @param angle the angle to rotate the arm to, in degrees
    */
   public void setAngle(double angle) {
-    double counts = (angle - PHI0) * kCounts_per_deg;
+    //If inverted, translate based on max angle backwards
+    double counts = (PHI0 - inversionConstant*angle) * kCounts_per_deg;
     armRotationMotor.set(ControlMode.Position, counts);
   }
 
@@ -146,11 +152,17 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * Gets the angle at which the arm subsystem is rotated.
    * @return the angle of the arm, in degrees. 
    */
-  public double getAngle() {
-    //  return PHI_MAX - (rotationEncoder.getSelectedSensorPosition() / COUNT_MAX * (PHI_MAX - PHI_MIN));
+  public double getRealAngle() {
+    //  return PHI_MAX - (rotationEncoder.getSelectedSensorPosition()  / COUNT_MAX * (PHI_MAX - PHI_MIN));
     double counts = armRotationMotor.getSelectedSensorPosition();
-    double angle = counts*kDeg_per_count +  PHI0;
+    double angle = PHI0 - counts * kDeg_per_count;
     return angle;
+  }
+
+  public double getAbsoluteAngle() {
+    double counts = armRotationMotor.getSelectedSensorPosition();
+    double angle = PHI0 - counts * kDeg_per_count;
+    return inversionConstant * angle;
   }
 
   /**
@@ -163,10 +175,12 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * @param extendInch  (inches) to set the arm.
    */
   public void setExtension(double l) {
-    double angle = getAngle();                     //current angle
-
+    double angle = getRealAngle();                     //current angle
     double compLen = ((angle - PHI0)*k_dl_dphi);   // ext due to rotation to compensate for
     double len = (l - L0) - compLen;               // net len to command relative to start
+
+    SmartDashboard.putNumber("Extension Compensation", compLen);
+    SmartDashboard.putNumber("Extension Calculated", len);
 
     //Make sure we limit to the range of the extension is capable
     if (len < (EXTEND_MIN - L0)) {
@@ -175,6 +189,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
     //todo:not sure if this is the right way to limit
     // we can't go above or below our adjust min/max based on starting L0
     len = MathUtil.limit(len, EXTEND_MIN - L0, EXTEND_MAX);
+    SmartDashboard.putNumber("Extension Set", len);
+
     double c = len * kCounts_per_in;
     armExtensionMotor.set(ControlMode.Position, c);
   }
@@ -187,8 +203,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public double getExtension() {
     int counts = armExtensionMotor.getSelectedSensorPosition();
     //   L0  + phi correction
-    double l = (L0 + (getAngle() - PHI0) * k_dl_dphi) + (counts * kIn_per_count);
-    return l;
+    return (L0 + (getRealAngle() - PHI0) * k_dl_dphi) + (counts * kIn_per_count);
   }
 
   
@@ -211,8 +226,9 @@ public class ArmSubsystem extends ExtendedSubSystem {
   /**
    * Computes height of gripper and projection on floor from pivot, pivot is horizontal zero
    */
-  public Position getArmPosition() {
-    double phi = getAngle();
+  public Position 
+  getArmPosition() {
+    double phi = getAbsoluteAngle();
     double rads = Math.toRadians(phi);
     double ext = getExtension();          //includes angle compensation
     double l = ARM_BASE_LENGTH + WRIST_LENGTH + ext;
@@ -243,6 +259,15 @@ public class ArmSubsystem extends ExtendedSubSystem {
     return new ArmZero();
   }
 
+  public int invert() {
+    inversionConstant *= -1;
+    return inversionConstant;
+  }
+
+  public short getInversion() {
+    return inversionConstant;
+  }
+
   public void log(int interval) {
     if ((logTimer + interval) < System.currentTimeMillis()) { //only post to smartdashboard every interval ms
       logTimer = System.currentTimeMillis();
@@ -250,9 +275,11 @@ public class ArmSubsystem extends ExtendedSubSystem {
       //SmartDashboard.putData((Sendable) armRotationMotor);
       //SmartDashboard.putData((Sendable) armExtensionMotor);
       SmartDashboard.putNumber("Arm:Phi(raw)", armRotationMotor.getSelectedSensorPosition());
-      SmartDashboard.putNumber("Arm:Phi(deg)", getAngle());
+      SmartDashboard.putNumber("Arm:Phi(deg)", getRealAngle());
       SmartDashboard.putNumber("Arm:Ext(raw)", armExtensionMotor. getSelectedSensorPosition());
       SmartDashboard.putNumber("Arm:Ext(in)",  getExtension());
+      SmartDashboard.putNumber("Arm:Gripper Projection", getArmPosition().projection);
+      SmartDashboard.putNumber("Arm:Gripper Height", getArmPosition().height);
 
       // don't have limit switches right now
       //SmartDashboard.putBoolean("Arm:Ext@Min", extensionAtMin());

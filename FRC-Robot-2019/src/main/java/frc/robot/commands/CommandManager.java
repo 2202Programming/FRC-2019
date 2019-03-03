@@ -1,11 +1,14 @@
 package frc.robot.commands;
 
 import java.util.function.IntSupplier;
+
+import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.Robot;
 import frc.robot.subsystems.ArmSubsystem.Position;
+import frc.robot.commands.arm.ExtendArmToPositionCommand;
 import frc.robot.commands.arm.MoveArmAtHeight;
 import frc.robot.commands.intake.VacuumCommand;
 import frc.robot.commands.intake.WristTrackFunction;
@@ -37,6 +40,7 @@ public class CommandManager {
     Command huntSelectCmd;
     Command heightSelectCmd;
     Command captRelCmd;
+    Command flipCmd;
 
     // takes a stick input and uses as a rate command.
     ExpoShaper  xprojShaper;
@@ -59,7 +63,8 @@ public class CommandManager {
         DeliverDriver(8),  // Unused, Richard suggest we tuck in with game piece until ready
         DeliverHatch(9),   // based on what we captured
         DeliverCargo(10),  // based on what we captured
-        Releasing(20);     // Button:CaptureRelease
+        Releasing(20),     // Button:CaptureRelease
+        Flipping(11);     // Button:FlipArm
 
         private int v;
 
@@ -81,6 +86,7 @@ public class CommandManager {
     CommandGroup captureGrp;
     CommandGroup deliveryGrp;
     CommandGroup releaseGrp;
+    CommandGroup flipGrp;
     
     // Target States - think of this as desired command vector
     Modes currentMode; // what we think are doing now
@@ -119,6 +125,7 @@ public class CommandManager {
         Robot.m_oi.heightDownSelect.whenPressed(new CallFunctionCmd(this::cycleDown));
         Robot.m_oi.heightUpSelect.whenPressed(new CallFunctionCmd(this::cycleUp));
         Robot.m_oi.captureRelease.whenPressed(new CallFunctionCmd(this::triggerCaptureRelease));
+        Robot.m_oi.flip.whenPressed(new FlipCmd());
 
         // Construct our major modes from their command factories
         zeroRobotGrp = CmdFactoryZeroRobot();
@@ -129,6 +136,7 @@ public class CommandManager {
         captureGrp = CmdFactoryCapture();
         deliveryGrp = CmdFactoryDelivery();
         releaseGrp = CmdFactoryRelease();
+        flipGrp = CmdFactoryFlip();
 
         logTimer = System.currentTimeMillis();
         armPosition = Robot.arm.getArmPosition();
@@ -225,7 +233,9 @@ public class CommandManager {
         case Releasing:
             nextCmd = releaseGrp;
             break;
-
+        case Flipping:
+            nextCmd = flipGrp;
+            break;
         default:
             break;
         }
@@ -236,7 +246,7 @@ public class CommandManager {
         // calculate the height and extension, set gripperH_cmd, and gripperE_cmd
         setGripperPosition();
         installGroup(nextCmd);
-}
+    }
     //Starts new group. 
     void installGroup(CommandGroup grp) {
         if (grp == null) return;
@@ -270,13 +280,10 @@ public class CommandManager {
     }
 
 
-    /**************************************************************************************************
-     *  Used for both hunting and delivering, called by LB/RB on assistant controller
-     * @param direction  1--> go up   -1 --> go down 
-     * @return
-     */    
+    private void flip() {
+        setMode(Modes.Flipping);
+    }
     private int cycleHeightMode(int direction) {
-
         if (isHunting()) {
             int idx = huntModeIdx + direction;
             prevHuntMode = huntingModes[huntModeIdx];
@@ -308,16 +315,19 @@ public class CommandManager {
         return (nextMode.get());
     }
 
+    private void gotoPrevMode() {
+        setMode(prevMode);
+    }
     
     double wristTrackParallel() {
-        double phi = Robot.arm.getAngle();
-        return (phi - 90.0);
+        double phi = Robot.arm.getAbsoluteAngle();
+        return Robot.arm.getInversion() * (phi - 90.0);
     }
 
     double wristTrackPerp() {
         //TODO: will need to account for phi on each side
-        double phi = Robot.arm.getAngle();
-        return (phi - 180.0);
+        double phi = Robot.arm.getAbsoluteAngle();
+        return Robot.arm.getInversion() * (phi - 180.0);
     }
 
     /** 
@@ -342,6 +352,10 @@ public class CommandManager {
         // Other mode changes just stay where we are at
     }
     
+    Double wristTrackZero() {
+        return 0.0;
+    }
+
     /**************************************************************************************************************/
     /**
      * Expose desired gripper height & extension with double supplier functions
@@ -510,6 +524,20 @@ public class CommandManager {
         }
     }
 
+    //TODO: Check for working w/ higher speeds
+    private CommandGroup CmdFactoryFlip() {
+        CommandGroup grp = new CommandGroup("Flip");
+        grp.addParallel(new WristTrackFunction(this::wristTrackZero)); 
+        grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
+        grp.addSequential(new GripperPositionCommand(66, 20, 1.0, 8.0));
+        grp.addSequential(new GripperPositionCommand(70,  3, 1.0, 6.0)); 
+        grp.addSequential(new CallFunctionCmd(Robot.arm::invert));
+        grp.addSequential(new GripperPositionCommand(70, 3, 1.0, 6.0)); 
+        grp.addSequential(new GripperPositionCommand(66, 20, 1.0, 8.0));
+        grp.addSequential(new PrevCmd());
+        return grp;
+    }
+
     class GripperPositionCommand extends Command {
         double timeout;
         double height;
@@ -559,6 +587,20 @@ public class CommandManager {
         protected boolean isFinished() {return isTimedOut();    }
         @Override
         protected void execute() { /*nothing */ }
+    }
+
+    class FlipCmd extends InstantCommand {
+        @Override
+        protected void execute() {
+            flip();
+        }
+    }
+
+    class PrevCmd extends InstantCommand {
+        @Override
+        protected void execute() {
+            setMode(prevMode);
+        }
     }
 
     // Turn any function into an instant command. Return value not really used.
