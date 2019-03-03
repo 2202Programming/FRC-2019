@@ -164,6 +164,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
    */
   public void setExtension(double l) {
     double angle = getAngle();                     //current angle
+
     double compLen = ((angle - PHI0)*k_dl_dphi);   // ext due to rotation to compensate for
     double len = (l - L0) - compLen;               // net len to command relative to start
 
