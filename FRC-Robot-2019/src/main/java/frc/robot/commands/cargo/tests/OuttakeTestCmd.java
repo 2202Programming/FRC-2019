@@ -13,23 +13,23 @@ public class OuttakeTestCmd extends Command {
     double speed;
 
     public OuttakeTestCmd(double speed) {
-        this.setName("Climb Motor=" + -Math.abs(speed));
+        this.setName("Cargo Motor=" + -Math.abs(speed));
         this.speed = -Math.abs(speed);
     }
 
     @Override
     protected void initialize() {
-        Robot.climber.setIntake(speed);
+        Robot.cargoTrap.setIntake(speed);
     }
 
     @Override
     protected void execute() {
-        Robot.climber.setIntake(speed);
+        Robot.cargoTrap.setIntake(speed);
     }
 
     @Override
     protected void end() {
-        Robot.climber.setIntake(0);        
+        Robot.cargoTrap.setIntake(0);        
     }
 
     @Override

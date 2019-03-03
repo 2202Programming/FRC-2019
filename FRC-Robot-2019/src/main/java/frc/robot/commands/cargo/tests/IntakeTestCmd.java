@@ -19,17 +19,17 @@ public class IntakeTestCmd extends Command {
 
     @Override
     protected void initialize() {
-        Robot.climber.setIntake(speed);
+        Robot.cargoTrap.setIntake(speed);
     }
 
     @Override
     protected void execute() {
-        Robot.climber.setIntake(speed);
+        Robot.cargoTrap.setIntake(speed);
     }
 
     @Override
     protected void end() {
-        Robot.climber.setIntake(0);        
+        Robot.cargoTrap.setIntake(0);        
     }
 
     @Override
