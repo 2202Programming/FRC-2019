@@ -66,8 +66,9 @@ public class OI {
 
 
   @SuppressWarnings({ "resource", })
-  public OI(boolean isTesting) {
-    if(isTesting) {
+  public OI() {
+    // If the Test Button on the switchboard is activeSSSsS
+    if(switchBoard.getRawButton(12)) {
       bindTestButtons();
     } else {
       bindFieldButtons();
