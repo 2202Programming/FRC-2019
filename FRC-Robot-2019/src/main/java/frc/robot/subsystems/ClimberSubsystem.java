@@ -1,6 +1,12 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Sendable;
+import edu.wpi.first.wpilibj.Solenoid;
 //import edu.wpi.first.wpilibj.Sendable;
 //import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -34,27 +40,35 @@ import frc.robot.RobotMap;
 public class ClimberSubsystem extends Subsystem {
     // constants
     // DPL ### check the settings for Extend/Retract
-    final DoubleSolenoid.Value Extend = Value.kForward;
-    final DoubleSolenoid.Value Retract = Value.kReverse;
+    final DoubleSolenoid.Value Engage = Value.kForward;
+    final DoubleSolenoid.Value Release = Value.kReverse;
+    final DoubleSolenoid.Value PullIn = Value.kForward;
 
     // physical devices
-    DoubleSolenoid ratchet = new DoubleSolenoid(RobotMap.CLIMB_RATCHET_PCM_ID, RobotMap.CLIMB_RATCHET_UP_PCM,
-            RobotMap.CLIMB_RATCHET_DOWN_PCM);
+    DoubleSolenoid pawl = new DoubleSolenoid(RobotMap.CLIMB_PCM_ID, RobotMap.CLIMB_PAWL_ENGAGE_PCM, RobotMap.CLIMB_PAWL_RELEASE_PCM);
+    DoubleSolenoid drawerSlide = new DoubleSolenoid(RobotMap.CLIMB_PCM_ID, RobotMap.CLIMB_SLIDE_PULL_PCM, RobotMap.CLIMB_SLIDE_RELEASE_PCM);
 
-    Spark footExtender = new Spark(RobotMap.CLIMB_FOOT_SPARK_PWM);
-    Spark roller = new Spark(RobotMap.CLIMB_ROLLER_SPARK_PWM);
+    CANSparkMax footExtender = new CANSparkMax(RobotMap.CLIMB_FOOT_SPARK_MAX_CAN_ID, MotorType.kBrushless);
+    CANSparkMax roller = new CANSparkMax(RobotMap.CLIMB_ROLLER_SPARK_MAX_CAN_ID, MotorType.kBrushed);
+
+    //think we need to add an encoder
+
+    public void setDrawerSlide(boolean on)
+    {
+        if (on) drawerSlide.set(Engage);
+        else drawerSlide.set(Release);
+    }
+
+    public void setPawl(boolean on) {
+        if (on) pawl.set(PullIn);
+        else pawl.set(Release);
+    }
 
     void init() {
-        roller.disable();
-        footExtender.disable();
-        ratchet.set(Retract);
     }
 
     public ClimberSubsystem() {
         init();
-        addChild("Climber-ratchet", ratchet);
-        addChild("Climber-foot", footExtender);
-        addChild("Climber-roller", roller);
     }
 
     public void setExtenderSpeed(double speed) {
@@ -65,6 +79,10 @@ public class ClimberSubsystem extends Subsystem {
         return footExtender.get();
     }
 
+    public double getExtension() {
+        return footExtender.getEncoder().getPosition();
+    }
+
     public void setRollerSpeed(double speed) {
         roller.set(speed);
     }
@@ -72,15 +90,6 @@ public class ClimberSubsystem extends Subsystem {
     public double getRollerSpeed() {
         return roller.get();
     }
-
-    public void setRatchetExtend(boolean extend) {
-        if (extend)  { ratchet.set(Extend);  } 
-        else         { ratchet.set(Retract); }
-    }
-
-    public boolean getRatchetExtend() {
-        return (Extend == ratchet.get()); 
-        }
 
     @Override
     protected void initDefaultCommand() {
@@ -90,11 +99,10 @@ public class ClimberSubsystem extends Subsystem {
         builder.setSmartDashboardType("ClimberSubsystem");
         builder.addDoubleProperty("ExtenderSpeed", this::getExtenderSpeed, this::setExtenderSpeed);
         builder.addDoubleProperty("FootSpeed", this::getRollerSpeed, this::setRollerSpeed);
-        builder.addBooleanProperty("RatchetExtend", this::getRatchetExtend, this::setRatchetExtend);
     }
 
     public void log() {
-        SmartDashboard.putData(this);
+        SmartDashboard.putNumber("Climber counts", getExtension());
     }
 
 }

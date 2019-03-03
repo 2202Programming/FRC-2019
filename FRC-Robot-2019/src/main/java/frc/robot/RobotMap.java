@@ -51,11 +51,10 @@ public class RobotMap {
   public static final int ARM_EXTENSION_ENCODER_PIN_1 = 9;
   
   //Cargo Trap
-  public static final int TRAP_PCM_ID = CAN_PCM1_ID;
+  public static final int TRAP_PCM_ID = CAN_PCM2_ID;
   public static final int TRAP_DEPLOY_PCM = 2; 
   public static final int TRAP_RETRACT_PCM = 3;
-  public static final int TRAP_ARMS_OPEN_PCM = 4; 
-  public static final int TRAP_ARMS_CLOSE_PCM = 5;
+  public static final int TRAP_INTAKE_MOTOR_PIN = 2;
   public static final int TRAP_CARGO_SENSOR_DIO = 30;
 
   //End Effector IntakeSubsystem
@@ -67,11 +66,13 @@ public class RobotMap {
   public static final int INTAKE_HOLD_SOLENOID_PCM = 7;      
 
   //Climber
-  public static final int CLIMB_FOOT_SPARK_PWM = 2;
-  public static final int CLIMB_ROLLER_SPARK_PWM = 3;
-  public static final int CLIMB_RATCHET_PCM_ID = CAN_PCM2_ID;  //Second PCM
-  public static final int CLIMB_RATCHET_DOWN_PCM = 0;
-  public static final int CLIMB_RATCHET_UP_PCM = 1;
+  public static final int CLIMB_FOOT_SPARK_MAX_CAN_ID = 23;
+  public static final int CLIMB_ROLLER_SPARK_MAX_CAN_ID = 22;
+  public static final int CLIMB_PCM_ID = CAN_PCM1_ID;  //Second PCM
+  public static final int CLIMB_PAWL_RELEASE_PCM = 2;
+  public static final int CLIMB_PAWL_ENGAGE_PCM = 3;
+  public static final int CLIMB_SLIDE_PULL_PCM = 4;
+  public static final int CLIMB_SLIDE_RELEASE_PCM = 5;
 
   //LIDAR sensors
   public static final int LEFT_FRONT_LIDAR = 3;

@@ -42,9 +42,9 @@ public class Robot extends TimedRobot {
   public static ArmSubsystem arm = new ArmSubsystem();
   public static ClimberSubsystem climber = new ClimberSubsystem();
   public static SerialPortSubsystem serialSubsystem = new SerialPortSubsystem();
-  public static OI m_oi = new OI(false); //OI Depends on the subsystems and must be last (boolean is whether we are testing or not)
+  public static OI m_oi = new OI(true); //OI Depends on the subsystems and must be last (boolean is whether we are testing or not)
 
-  public static CommandManager m_cmdMgr;    //fix the public later
+  //public static CommandManager m_cmdMgr;    //fix the public later
   private RobotTest m_testRobot;
 
   boolean doneOnce = false;   //single execute our zero 
@@ -57,8 +57,8 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Create the test subsystem
     m_testRobot  = new RobotTest();
-    m_cmdMgr = new CommandManager();
-    m_cmdMgr.setMode(Modes.Construction);   // schedules the mode's function
+    //m_cmdMgr = new CommandManager();
+    //m_cmdMgr.setMode(Modes.Construction);   // schedules the mode's function
     limeLight.disableLED(); //disable blinding green LED that Trevor hates
   }
 
@@ -126,7 +126,7 @@ public class Robot extends TimedRobot {
     // continue until interrupted by another command, remove
     // this line or comment it out.
     if (doneOnce == false ){
-      m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function
+      //m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function
       doneOnce = true;
     }
     resetAllDashBoardSensors();
@@ -139,7 +139,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    m_cmdMgr.execute();
+    //m_cmdMgr.execute();
     Scheduler.getInstance().run();
 
 
@@ -172,7 +172,7 @@ public class Robot extends TimedRobot {
     serialSubsystem.log(interval+7); //tell serial to post to dashboard every Xms
     arm.log(interval+11);
     gearShifter.log(interval+17); //tell gearshifter to post to dashboard every Xms
-    m_cmdMgr.log(interval+23);
+    //m_cmdMgr.log(interval+23);
     intake.log(interval+29);
 
 /*    

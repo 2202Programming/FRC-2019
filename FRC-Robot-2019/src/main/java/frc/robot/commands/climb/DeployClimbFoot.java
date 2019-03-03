@@ -9,15 +9,17 @@ public class DeployClimbFoot extends Command {
     }
 
     protected void execute() {
-        Robot.climber.setRatchetExtend(true);
+        Robot.climber.setPawl(true);
         Robot.climber.setExtenderSpeed(0.3);
     }
 
     protected void end() {
+        Robot.climber.setPawl(false);
         Robot.climber.setExtenderSpeed(0);
     }
 
     protected boolean isFinished() {
-        return false; //TODO: Choose good way to stop the extender
+        int x = -1; //will be value for 19 inches
+        return Robot.climber.getExtension() >= x; //TODO: stop when it extends 19 inches
     }
 }
