@@ -524,20 +524,16 @@ public class CommandManager {
         }
     }
 
+    //TODO: Check for working w/ higher speeds
     private CommandGroup CmdFactoryFlip() {
         CommandGroup grp = new CommandGroup("Flip");
         grp.addParallel(new WristTrackFunction(this::wristTrackZero)); 
         grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
-        grp.addSequential(new GripperPositionCommand(66, 13.25, 1.0, 10.0));
-        grp.addSequential(new GripperPositionCommand(66,  1.0, 1.0, 6.0)); 
+        grp.addSequential(new GripperPositionCommand(66, 20, 1.0, 8.0));
+        grp.addSequential(new GripperPositionCommand(70,  3, 1.0, 6.0)); 
         grp.addSequential(new CallFunctionCmd(Robot.arm::invert));
-        grp.addSequential(new GripperPositionCommand(66, 1.0, 1.0, 6.0)); 
-        grp.addSequential(new GripperPositionCommand(66, 13.25, 1.0, 8.0)); 
-
-       /* grp.addSequential(new ExtendArmToPositionCommand(tempFlipLength));
-        grp.addSequential(new TestRotateArmToAngleCommand(0)); //TODO: Maybe rotate to a diff specific angle
-        */
-        grp.addSequential(new WristTrackFunction(this::wristTrackParallel)); 
+        grp.addSequential(new GripperPositionCommand(70, 3, 1.0, 6.0)); 
+        grp.addSequential(new GripperPositionCommand(66, 20, 1.0, 8.0));
         grp.addSequential(new PrevCmd());
         return grp;
     }
