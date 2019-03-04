@@ -1,5 +1,6 @@
 package frc.robot.commands.climb.tests;
 
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import frc.robot.Robot;
 
@@ -8,7 +9,7 @@ import frc.robot.Robot;
  * 
  * Instantiate with one or other for what you need.
  */
-public class CharonSolenoidTestCmd extends InstantCommand {
+public class CharonSolenoidTestCmd extends Command {
     // On state
     boolean enabled;
 
@@ -24,6 +25,12 @@ public class CharonSolenoidTestCmd extends InstantCommand {
 
     @Override
     protected void end() {
+        System.out.println("Entered End of Command");
         Robot.climber.setDrawerSlide(!enabled);
+    }
+
+    @Override
+    protected boolean isFinished() {
+        return false;
     }
 }

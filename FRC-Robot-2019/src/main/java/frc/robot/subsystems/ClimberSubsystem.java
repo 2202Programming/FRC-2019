@@ -40,31 +40,39 @@ import frc.robot.RobotMap;
 public class ClimberSubsystem extends Subsystem {
     // constants
     // DPL ### check the settings for Extend/Retract
-    final DoubleSolenoid.Value Engage = Value.kForward;
-    final DoubleSolenoid.Value Release = Value.kReverse;
-    final DoubleSolenoid.Value PullIn = Value.kForward;
+    final DoubleSolenoid.Value Extend = Value.kForward;
+    final DoubleSolenoid.Value Retract = Value.kReverse;
+    final DoubleSolenoid.Value PullIn = Value.kReverse;
+    final DoubleSolenoid.Value Release = Value.kForward;
 
     // physical devices
-    DoubleSolenoid pawl = new DoubleSolenoid(RobotMap.CLIMB_PCM_ID, RobotMap.CLIMB_PAWL_ENGAGE_PCM, RobotMap.CLIMB_PAWL_RELEASE_PCM);
-    DoubleSolenoid drawerSlide = new DoubleSolenoid(RobotMap.CLIMB_PCM_ID, RobotMap.CLIMB_SLIDE_PULL_PCM, RobotMap.CLIMB_SLIDE_RELEASE_PCM);
+    DoubleSolenoid pawl = new DoubleSolenoid(RobotMap.CLIMB_PCM_ID, RobotMap.CLIMB_PAWL_ENGAGE_PCM,
+            RobotMap.CLIMB_PAWL_RELEASE_PCM);
+    DoubleSolenoid drawerSlide = new DoubleSolenoid(RobotMap.CLIMB_PCM_ID, RobotMap.CLIMB_SLIDE_PULL_PCM,
+            RobotMap.CLIMB_SLIDE_RELEASE_PCM);
 
     CANSparkMax footExtender = new CANSparkMax(RobotMap.CLIMB_FOOT_SPARK_MAX_CAN_ID, MotorType.kBrushless);
     CANSparkMax roller = new CANSparkMax(RobotMap.CLIMB_ROLLER_SPARK_MAX_CAN_ID, MotorType.kBrushed);
 
-    //think we need to add an encoder
+    // think we need to add an encoder
 
-    public void setDrawerSlide(boolean on)
-    {
-        if (on) drawerSlide.set(Engage);
-        else drawerSlide.set(Release);
+    public void setDrawerSlide(boolean on) {
+        if (on)
+            drawerSlide.set(Extend);
+        else
+            drawerSlide.set(Retract);
     }
 
     public void setPawl(boolean on) {
-        if (on) pawl.set(PullIn);
-        else pawl.set(Release);
+        if (on)
+            pawl.set(PullIn);
+        else
+            pawl.set(Release);
     }
 
-    void init() {
+    public void init() {
+        setPawl(false);
+        setDrawerSlide(false);
     }
 
     public ClimberSubsystem() {

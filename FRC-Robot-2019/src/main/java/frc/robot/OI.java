@@ -60,7 +60,7 @@ public class OI {
   // button.whenReleased(new ExampleCommand());
   private XboxController driver = new XboxController(0);
   private XboxController assistant = new XboxController(1);
-  private XboxController switchBoard = new XboxController(2);
+  private XboxController switchBoard;
 
   // OI - operator inputs
   public JoystickButton heightDownSelect;   // used in hunting/delivery modes
@@ -74,11 +74,15 @@ public class OI {
 
   @SuppressWarnings({ "resource", })
   public OI() {
+    switchBoard = new XboxController(2);
+    System.out.println(switchBoard.getRawButton(11));
     // If the Test Button on the switchboard is activeSSSsS
-    if(switchBoard.getRawButton(12)) {
+    if(true) {
       bindTestButtons();
+      System.out.println("Using Test OI");
     } else {
       bindFieldButtons();
+      System.out.println("Using Field OI");
     }
   }
 
@@ -123,9 +127,9 @@ public class OI {
     new JoystickButton(driver, XboxControllerButtonCode.X.getCode()).whileHeld(new OuttakeTestCmd(0.4));
 
     //Climber tests
-    new JoystickButton(switchBoard, 7).whenPressed(new PawlSolenoidTestCmd(true));
+    new JoystickButton(switchBoard, 7).whileHeld(new PawlSolenoidTestCmd(true));
     new JoystickButton(switchBoard, 8).whileActive(new ClimbMotorTestCmd(0.3));
-    new JoystickButton(switchBoard, 9).whenPressed(new CharonSolenoidTestCmd(true));
+    new JoystickButton(switchBoard, 9).whileHeld(new CharonSolenoidTestCmd(true));
     new JoystickButton(switchBoard, 10).whileActive(new RollerMotorTestCmd(0.5));
     new JoystickButton(switchBoard, 11).whileActive(new ClimbMotorTestCmd(-0.3));
 
