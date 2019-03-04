@@ -75,7 +75,7 @@ public class OI {
     switchBoard = new XboxController(2);
     System.out.println(switchBoard.getRawButton(11));
     // If the Test Button on the switchboard is activeSSSsS
-    if(true) {
+    if(false) {
       bindTestButtons();
       System.out.println("Using Test OI");
     } else {

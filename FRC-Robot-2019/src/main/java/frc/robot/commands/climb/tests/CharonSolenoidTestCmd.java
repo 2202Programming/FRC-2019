@@ -1,7 +1,6 @@
 package frc.robot.commands.climb.tests;
 
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.InstantCommand;
 import frc.robot.Robot;
 
 /**
