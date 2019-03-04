@@ -21,9 +21,7 @@ import frc.robot.commands.climb.tests.RollerMotorTestCmd;
 import frc.robot.commands.drive.*;
 import frc.robot.commands.drive.shift.*;
 import frc.robot.commands.intake.*;
-import frc.robot.commands.intake.tests.IntakeTestCommand;
-import frc.robot.commands.intake.tests.SolenoidTestCommand;
-import frc.robot.commands.intake.tests.VacuumTestCommand;
+import frc.robot.commands.intake.tests.*;
 import frc.robot.commands.util.ExpoShaper;
 
 /**

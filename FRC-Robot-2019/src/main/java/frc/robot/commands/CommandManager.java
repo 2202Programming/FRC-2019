@@ -1,24 +1,17 @@
 package frc.robot.commands;
 
-import java.util.Arrays;
 import java.util.function.IntSupplier;
 
-import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.Robot;
 import frc.robot.subsystems.ArmSubsystem.Position;
-import frc.robot.commands.arm.ExtendArmToPositionCommand;
-import frc.robot.commands.arm.MoveArmAtHeight;
-import frc.robot.commands.intake.VacuumCommand;
-import frc.robot.commands.intake.WristTrackFunction;
 import frc.robot.commands.intake.*;
 import frc.robot.commands.arm.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.util.RateLimiter;
 import frc.robot.commands.util.RateLimiter.InputModel;
-import frc.robot.commands.arm.tests.TestRotateArmToAngleCommand;
 import frc.robot.commands.util.MathUtil;
 import frc.robot.commands.util.LimitedIntegrator;
 import frc.robot.commands.util.ExpoShaper;
@@ -66,8 +59,8 @@ public class CommandManager {
         Defense(9), // Unused, for when we need to go to the other side
         DeliverHatch(10), // based on what we captured
         DeliverCargo(11), // based on what we captured
+        Flipping(12),
         Releasing(20); // Button:CaptureRelease
-        Flipping(11);     // Button:FlipArm
 
         private int v;
 
@@ -368,10 +361,6 @@ public class CommandManager {
         return (nextMode.get());
     }
 
-    private void gotoPrevMode() {
-        setMode(prevMode);
-    }
-    
     double wristTrackParallel() {
         double phi = Robot.arm.getAbsoluteAngle();
         return Robot.arm.getInversion() * (phi - 90.0);

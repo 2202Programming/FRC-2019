@@ -1,24 +1,13 @@
 package frc.robot;
 
-import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
-import frc.robot.input.XboxControllerButtonCode;
-import frc.robot.subsystems.ArmSubsystem;
-import frc.robot.subsystems.DriveTrainSubsystem;
-import frc.robot.subsystems.GearShifterSubsystem;
-import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.arm.TeleopArmControlCommand;
 import frc.robot.commands.arm.tests.TestArmRateCmd;
-import frc.robot.commands.intake.tests.TestWristRateCommand;
-import frc.robot.commands.intake.tests.IntakeTestCommand;
 import frc.robot.commands.intake.tests.TestWristPositionCommand;
-import frc.robot.commands.intake.VacuumCommand;
-import frc.robot.commands.drive.shift.DownShiftCommand;
-import frc.robot.commands.drive.shift.UpShiftCommand;
 
 
 public class RobotTest {
