@@ -2,21 +2,10 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.RobotMap;
-import frc.robot.commands.cargo.AutoTrapCargoCommand;
-/**
- * Author: Alexander Ge
- *         Billy Haung
- *         Derek Laufenberg
- *  
- * Changes:  
- * 2/10/2019   DPL  Added constantants, improved naming conventions.
- *                  Use DoubleSolenoid.
- *                  
- */
 
 /**
  * This is still TBD, we may use a roller style.

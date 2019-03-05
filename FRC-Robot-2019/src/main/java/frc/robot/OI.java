@@ -6,10 +6,8 @@
 /*----------------------------------------------------------------------------*/
 package frc.robot;
 
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
-import frc.robot.input.JoystickTrigger;
-import frc.robot.input.XboxControllerButtonCode;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.LimeLightArcadeDriveCommand;
 import frc.robot.commands.cargo.tests.IntakeTestCmd;
@@ -18,11 +16,16 @@ import frc.robot.commands.climb.tests.CharonSolenoidTestCmd;
 import frc.robot.commands.climb.tests.ClimbMotorTestCmd;
 import frc.robot.commands.climb.tests.PawlSolenoidTestCmd;
 import frc.robot.commands.climb.tests.RollerMotorTestCmd;
-import frc.robot.commands.drive.*;
-import frc.robot.commands.drive.shift.*;
-import frc.robot.commands.intake.*;
-import frc.robot.commands.intake.tests.*;
+import frc.robot.commands.drive.InvertDriveControlsCommand;
+import frc.robot.commands.drive.TankDriveCommand;
+import frc.robot.commands.drive.shift.DownShiftCommand;
+import frc.robot.commands.drive.shift.ToggleAutomaticGearShiftingCommand;
+import frc.robot.commands.drive.shift.UpShiftCommand;
+import frc.robot.commands.intake.tests.IntakeTestCommand;
+import frc.robot.commands.intake.tests.VacuumTestCommand;
 import frc.robot.commands.util.ExpoShaper;
+import frc.robot.input.JoystickTrigger;
+import frc.robot.input.XboxControllerButtonCode;
 
 /**
  * This class is the glue that binds the controls on the physical operator
