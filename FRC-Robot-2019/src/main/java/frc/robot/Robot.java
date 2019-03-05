@@ -14,6 +14,7 @@ import frc.robot.subsystems.*;
 
 import frc.robot.commands.CommandManager;
 import frc.robot.commands.CommandManager.Modes;
+import edu.wpi.first.networktables.*;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -57,6 +58,8 @@ public class Robot extends TimedRobot {
     m_cmdMgr = new CommandManager();
     m_cmdMgr.setMode(Modes.Construction);   // schedules the mode's function
     limeLight.disableLED(); //disable blinding green LED that Trevor hates
+    NetworkTableEntry cameraSelect = NetworkTableInstance.getDefault().getEntry("/PiSwitch");
+    cameraSelect.setDouble(1);
   }
 
   /**
