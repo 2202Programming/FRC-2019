@@ -72,9 +72,14 @@ public class OI {
 
   @SuppressWarnings({ "resource", })
   public OI() {
-    // Wait until we get the first switchboard input
-    while (!switchBoard.getRawButton(10)) {
+    // Wait until we get the first switchboard input - hack we know.
+    try {
+      Thread.sleep(250); }
+    catch ( InterruptedException e) {
+      //don't care - won't happen
     }
+
+
     // If the Test Button on the switchboard is activeSSSsS
     if (switchBoard.getRawButton(11)) {
       bindTestButtons();
@@ -142,7 +147,7 @@ public class OI {
     new JoystickButton(switchBoard, 10).whileActive(new RollerMotorTestCmd(0.5));
     new JoystickButton(switchBoard, 11).whileActive(new ClimbMotorTestCmd(-0.3));
 
-    // setup buttons
+    // setup buttons - required for Control Manager construction, but not really used.
     heightDownSelect = new JoystickButton(phantom, XboxControllerButtonCode.LB.getCode());
     heightUpSelect = new JoystickButton(phantom, XboxControllerButtonCode.RB.getCode());
     captureRelease = new JoystickButton(phantom, XboxControllerButtonCode.Y.getCode());
