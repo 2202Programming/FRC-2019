@@ -105,7 +105,8 @@ public class CommandManager {
 
     // Data points - shares delheightidx, must be same length
     final double DeliveryCargoHeights[] = { 28.0, 56.0, 84.0 }; // TODO: fix the numbers
-    final double DeliveryHatchHeights[] = { 24.0, 52.0, 81.5 }; // TODO: fix the numbers
+    final double DeliveryHatchHeights[] = { 24.0, 52.0, 
+     }; // TODO: fix the numbers
     final double deliveryProjection[] = { 25.0, 25.0, 40.0 }; // TODO: fix the numbers
 
     final Modes huntingModes[] = { Modes.HuntingFloor, Modes.HuntingCargo, Modes.HuntingHatch };
@@ -115,7 +116,7 @@ public class CommandManager {
 
     private int driveIdx = 1;
     // Declare Drive Positions: First element is Height, second is projection
-    public final double[][] DrivePositions = { { 5, 12 }, { 14, 49.5 } }; // TODO: Find real values
+    public final double[][] DrivePositions = { { 5, 12 }, { 49.5, 14 } }; // TODO: Find real values
 
     // Phyical values from sub-systems as needed
     Position armPosition;
@@ -147,26 +148,26 @@ public class CommandManager {
         xprojShaper = new ExpoShaper(0.5, Robot.m_oi::extensionInput); // joystick defined in m_oi.
         xprojStick = new LimitedIntegrator(Robot.dT, xprojShaper::get, // shaped joystick input
                 -6.0, // kGain, 5 in/sec on the joystick (neg. gain, forward stick is neg.)
-                -15.0, // xmin inches
-                15.0, // x_max inches
-                -6.0, // dx_falling rate inch/sec
-                6.0); // dx_raise rate inch/sec
+                -20.0, // xmin inches
+                 20.0, // x_max inches
+                -12.0, // dx_falling rate inch/sec
+                 12.0); // dx_raise rate inch/sec
         xprojStick.setDeadZone(0.1); // in/sec deadzone
 
         xprojRL = new RateLimiter(Robot.dT, this::get_gripperX_cmd, // inputFunc gripperX_cmd
                 this::measProjection, // phy position func
                 Robot.arm.MIN_PROJECTION, // output min
                 Robot.arm.MAX_PROJECTION, // output max
-                -10.0, // inches/sec // falling rate limit
-                10.0, // inches/sec //raising rate limit
+                -20.0, // inches/sec // falling rate limit
+                20.0, // inches/sec //raising rate limit
                 InputModel.Position);
 
         heightRL = new RateLimiter(Robot.dT, this::get_gripperH_cmd, // gripperH_cmd var as set by this module
                 this::measHeight, // phy position func
                 kHeightMin, // output min
                 kHeightMax, // output max
-                -10.0, // inches/sec // falling rate limit
-                10.0, // inches/sec //raising rate limit
+                -20.0, // inches/sec // falling rate limit
+                20.0, // inches/sec //raising rate limit
                 InputModel.Position);
 
     }
@@ -383,13 +384,16 @@ public class CommandManager {
         if (isHunting()) {
             // Hunting, use the HuntHeights table and that height index
             cmdPosition(HuntHeights[huntModeIdx], huntProjection[huntModeIdx]);
+            xprojStick.setX(0.0);
         } else if (isDelivering()) {
             // Delivering
             h = (prevHuntMode == Modes.HuntingCargo) ? DeliveryCargoHeights[delHeightIdx]
                     : DeliveryHatchHeights[delHeightIdx];
             cmdPosition(h, deliveryProjection[delHeightIdx]);
+            xprojStick.setX(0.0);      //reset to baseline extension
         } else if (isDriving()) {
             cmdPosition(DrivePositions[driveIdx][0], DrivePositions[driveIdx][1]);
+            xprojStick.setX(0.0);
         }
         // Other mode changes just stay where we are at
     }
