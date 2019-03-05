@@ -141,11 +141,11 @@ public class OI {
     new JoystickButton(driver, XboxControllerButtonCode.X.getCode()).whileHeld(new OuttakeTestCmd(0.4));
 
     // Climber tests
-    new JoystickButton(switchBoard, 7).whileHeld(new PawlSolenoidTestCmd(true));
-    new JoystickButton(switchBoard, 8).whileActive(new ClimbMotorTestCmd(0.3));
-    new JoystickButton(switchBoard, 9).whileHeld(new CharonSolenoidTestCmd(true));
-    new JoystickButton(switchBoard, 10).whileActive(new RollerMotorTestCmd(0.5));
-    new JoystickButton(switchBoard, 11).whileActive(new ClimbMotorTestCmd(-0.3));
+    new JoystickButton(switchBoard, 1).whileHeld(new PawlSolenoidTestCmd(true));
+    new JoystickButton(switchBoard, 2).whileActive(new ClimbMotorTestCmd(0.3));
+    new JoystickButton(switchBoard, 3).whileHeld(new CharonSolenoidTestCmd(true));
+    new JoystickButton(switchBoard, 4).whileActive(new RollerMotorTestCmd(0.5));
+    new JoystickButton(switchBoard, 5).whileActive(new ClimbMotorTestCmd(-0.3));
 
     // setup buttons - required for Control Manager construction, but not really used.
     heightDownSelect = new JoystickButton(phantom, XboxControllerButtonCode.LB.getCode());
