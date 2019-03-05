@@ -693,5 +693,51 @@ public class CommandManager {
             SmartDashboard.putNumber("GripXCmd", gripperX_cmd);
             SmartDashboard.putNumber("GripX_RL", xprojRL.get());
         }
+        SmartDashboard.putString("Current Position/Mode", logCurHeight());
+    }
+
+    public String logCurHeight() {
+        String position = "";
+        String[] delivery = {"Low", "Middle", "High"};
+        switch (currentMode) {
+        case Construction:
+            break;
+        case SettingZeros:
+            break;
+        case HuntGameStart:
+            position = "Starting up";
+            break;
+        case HuntingHatch:
+            position = "Hunting hatch";
+            break;
+        case HuntingCargo:
+            position = "Hunting cargo";
+            break;
+        case HuntingFloor:
+            position = "Hunting floor hatch";
+            break;
+        case Drive:
+            position = "Driving";
+            break;
+        case Defense:
+            position = "Defending";
+            break;
+        case DeliverHatch:
+            position = "Delivering Hatch " + delivery[delHeightIdx];
+            break;
+        case DeliverCargo:
+            position = "Delivering Cargo " + delivery[delHeightIdx];
+            break;
+        case Flipping:
+            position = "Flipping";
+            break;
+        case Releasing:
+            position = "Capturing or Releasing";
+            break;
+        default:
+            position = "???";
+            break;
+        }
+        return position;
     }
 }
