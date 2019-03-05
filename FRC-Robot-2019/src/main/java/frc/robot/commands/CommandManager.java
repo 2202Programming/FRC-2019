@@ -59,8 +59,7 @@ public class CommandManager {
         Defense(9), // Unused, for when we need to go to the other side
         DeliverHatch(10), // based on what we captured
         DeliverCargo(11), // based on what we captured
-        Flipping(12),
-        Releasing(20); // Button:CaptureRelease
+        Flipping(12), Releasing(20); // Button:CaptureRelease
 
         private int v;
 
@@ -83,7 +82,7 @@ public class CommandManager {
     CommandGroup deliveryGrp;
     CommandGroup releaseGrp;
     CommandGroup flipGrp;
-    
+
     CommandGroup driveGrp;
 
     // Target States - think of this as desired command vector
@@ -116,8 +115,7 @@ public class CommandManager {
 
     private int driveIdx = 1;
     // Declare Drive Positions: First element is Height, second is projection
-    public final double[][] DrivePositions = { { 0.5, Robot.arm.MIN_PROJECTION }, { 25, Robot.arm.MIN_PROJECTION },
-            { 28.0, 24.0 } }; // TODO: Find real values
+    public final double[][] DrivePositions = { { 5, 12 }, { 14, 49.5 } }; // TODO: Find real values
 
     // Phyical values from sub-systems as needed
     Position armPosition;
@@ -311,6 +309,7 @@ public class CommandManager {
     private void flip() {
         setMode(Modes.Flipping);
     }
+
     /**************************************************************************************************
      * Used for both hunting and delivering, called by LB/RB on assistant controller
      * 
@@ -367,7 +366,7 @@ public class CommandManager {
     }
 
     double wristTrackPerp() {
-        //TODO: will need to account for phi on each side
+        // TODO: will need to account for phi on each side
         double phi = Robot.arm.getAbsoluteAngle();
         return Robot.arm.getInversion() * (phi - 180.0);
     }
@@ -389,12 +388,12 @@ public class CommandManager {
             h = (prevHuntMode == Modes.HuntingCargo) ? DeliveryCargoHeights[delHeightIdx]
                     : DeliveryHatchHeights[delHeightIdx];
             cmdPosition(h, deliveryProjection[delHeightIdx]);
-        } else if(isDriving()) {
+        } else if (isDriving()) {
             cmdPosition(DrivePositions[driveIdx][0], DrivePositions[driveIdx][1]);
         }
         // Other mode changes just stay where we are at
     }
-    
+
     Double wristTrackZero() {
         return 0.0;
     }
@@ -534,7 +533,7 @@ public class CommandManager {
         grp.addSequential(new RotateWristCommand(90.0, 1.0)); // wiggle wrist to grab hatch
         grp.addSequential(new GripperPositionCommand(5.0, 13.25, 0.5, 2.0)); // mv h up, keep start xproj
         grp.addSequential(new GripperPositionCommand(20.0, 20.0, 0.5, 5.0)); // now rotate out and move up
-        grp.addSequential(new NextModeCmd(Modes.Drive)); 
+        grp.addSequential(new NextModeCmd(Modes.Drive));
         return grp;
     }
 
@@ -556,7 +555,7 @@ public class CommandManager {
 
     private CommandGroup CmdFactoryDelivery() {
         CommandGroup grp = new CommandGroup("Deliver");
-        grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut)); 
+        grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
         grp.addParallel(new WristTrackFunction(this::wristTrackParallel));
         return grp;
     }
@@ -584,15 +583,15 @@ public class CommandManager {
         }
     }
 
-    //TODO: Check for working w/ higher speeds
+    // TODO: Check for working w/ higher speeds
     private CommandGroup CmdFactoryFlip() {
         CommandGroup grp = new CommandGroup("Flip");
-        grp.addParallel(new WristTrackFunction(this::wristTrackZero)); 
+        grp.addParallel(new WristTrackFunction(this::wristTrackZero));
         grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
         grp.addSequential(new GripperPositionCommand(66, 20, 1.0, 8.0));
-        grp.addSequential(new GripperPositionCommand(70,  3, 1.0, 6.0)); 
+        grp.addSequential(new GripperPositionCommand(70, 3, 1.0, 6.0));
         grp.addSequential(new CallFunctionCmd(Robot.arm::invert));
-        grp.addSequential(new GripperPositionCommand(70, 3, 1.0, 6.0)); 
+        grp.addSequential(new GripperPositionCommand(70, 3, 1.0, 6.0));
         grp.addSequential(new GripperPositionCommand(66, 20, 1.0, 8.0));
         grp.addSequential(new PrevCmd());
         return grp;
