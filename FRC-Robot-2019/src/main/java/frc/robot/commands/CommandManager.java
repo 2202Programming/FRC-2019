@@ -569,6 +569,20 @@ public class CommandManager {
         return grp;
     }
 
+    // TODO: Check for working w/ higher speeds
+    private CommandGroup CmdFactoryFlip() {
+        CommandGroup grp = new CommandGroup("Flip");
+        grp.addParallel(new WristTrackFunction(this::wristTrackZero));
+        grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
+        grp.addSequential(new GripperPositionCommand(66, 18, 1.0, 6.0));
+        grp.addSequential(new GripperPositionCommand(70, 1, 1.0, 5.0));
+        grp.addSequential(new CallFunctionCmd(Robot.arm::invert));
+        grp.addSequential(new GripperPositionCommand(70, 1, 1.0, 5.0));
+        grp.addSequential(new GripperPositionCommand(66, 18, 1.0, 6.0));
+        grp.addSequential(new PrevCmd());
+        return grp;
+    }
+
     // Used at the end of a command group to jump to next mode
     class NextModeCmd extends InstantCommand {
         Modes mode2set;
@@ -581,20 +595,6 @@ public class CommandManager {
         protected void execute() {
             setMode(mode2set);
         }
-    }
-
-    // TODO: Check for working w/ higher speeds
-    private CommandGroup CmdFactoryFlip() {
-        CommandGroup grp = new CommandGroup("Flip");
-        grp.addParallel(new WristTrackFunction(this::wristTrackZero));
-        grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
-        grp.addSequential(new GripperPositionCommand(66, 20, 1.0, 8.0));
-        grp.addSequential(new GripperPositionCommand(70, 3, 1.0, 6.0));
-        grp.addSequential(new CallFunctionCmd(Robot.arm::invert));
-        grp.addSequential(new GripperPositionCommand(70, 3, 1.0, 6.0));
-        grp.addSequential(new GripperPositionCommand(66, 20, 1.0, 8.0));
-        grp.addSequential(new PrevCmd());
-        return grp;
     }
 
     class GripperPositionCommand extends Command {
