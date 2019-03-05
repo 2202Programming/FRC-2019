@@ -117,7 +117,7 @@ public class CommandManager {
     private int driveIdx = 1;
     // Declare Drive Positions: First element is Height, second is projection
     public final double[][] DrivePositions = { { 0.5, Robot.arm.MIN_PROJECTION }, { 25, Robot.arm.MIN_PROJECTION },
-            { 84, Robot.arm.MIN_PROJECTION } }; // TODO: Find real values
+            { 28.0, 24.0 } }; // TODO: Find real values
 
     // Phyical values from sub-systems as needed
     Position armPosition;
