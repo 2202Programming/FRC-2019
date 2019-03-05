@@ -21,9 +21,7 @@ import frc.robot.commands.climb.tests.RollerMotorTestCmd;
 import frc.robot.commands.drive.*;
 import frc.robot.commands.drive.shift.*;
 import frc.robot.commands.intake.*;
-import frc.robot.commands.intake.tests.IntakeTestCommand;
-import frc.robot.commands.intake.tests.SolenoidTestCommand;
-import frc.robot.commands.intake.tests.VacuumTestCommand;
+import frc.robot.commands.intake.tests.*;
 import frc.robot.commands.util.ExpoShaper;
 
 /**
@@ -61,23 +59,34 @@ public class OI {
   private XboxController driver = new XboxController(0);
   private XboxController assistant = new XboxController(1);
   private XboxController switchBoard = new XboxController(2);
+  private XboxController phantom = new XboxController(3);
 
   // OI - operator inputs
-  public JoystickButton heightDownSelect;   // used in hunting/delivery modes
-  public JoystickButton heightUpSelect;     // used in hunting/delivery
-  public JoystickButton captureRelease;     // flips hunt/deliver mode
-  public JoystickButton flip;               // used to flip
+  public JoystickButton heightDownSelect; // used in hunting/delivery modes
+  public JoystickButton heightUpSelect; // used in hunting/delivery
+  public JoystickButton captureRelease; // flips hunt/deliver mode
+  public JoystickButton flip; // used to flip
+  public JoystickButton endDriveMode; // Switches state out of drive
 
-  private ExpoShaper rotateShaper = new ExpoShaper(.7);    //fairly flat curve
-
+  private ExpoShaper rotateShaper = new ExpoShaper(.7); // fairly flat curve
 
   @SuppressWarnings({ "resource", })
   public OI() {
+    // Wait until we get the first switchboard input - hack we know.
+    try {
+      Thread.sleep(250); }
+    catch ( InterruptedException e) {
+      //don't care - won't happen
+    }
+
+
     // If the Test Button on the switchboard is activeSSSsS
-    if(switchBoard.getRawButton(12)) {
+    if (switchBoard.getRawButton(11)) {
       bindTestButtons();
+      System.out.println("Using Test OI");
     } else {
       bindFieldButtons();
+      System.out.println("Using Field OI");
     }
   }
 
@@ -85,75 +94,87 @@ public class OI {
     // Drive Train Commands
     new JoystickButton(driver, XboxControllerButtonCode.A.getCode()).whenPressed(new DownShiftCommand());
     new JoystickButton(driver, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
-    new JoystickButton(driver, XboxControllerButtonCode.B.getCode()).whenPressed(new ToggleAutomaticGearShiftingCommand());
+    new JoystickButton(driver, XboxControllerButtonCode.B.getCode())
+        .whenPressed(new ToggleAutomaticGearShiftingCommand());
     new JoystickButton(driver, XboxControllerButtonCode.X.getCode()).whenPressed(new InvertDriveControlsCommand());
     new JoystickButton(driver, XboxControllerButtonCode.LB.getCode()).whileHeld(new TankDriveCommand());
-    new JoystickButton(driver, XboxControllerButtonCode.RB.getCode()).whileHeld(new LimeLightArcadeDriveCommand());    
-    new JoystickTrigger(driver, XboxControllerButtonCode.TRIGGER_LEFT.getCode(), 0.75).whileHeld(new IntakeTestCmd(0.4));
-    new JoystickTrigger(driver, XboxControllerButtonCode.TRIGGER_RIGHT.getCode(), 0.75).whileHeld(new OuttakeTestCmd(0.4));
+    new JoystickButton(driver, XboxControllerButtonCode.RB.getCode()).whileHeld(new LimeLightArcadeDriveCommand());
+    new JoystickTrigger(driver, XboxControllerButtonCode.TRIGGER_LEFT.getCode(), 0.75)
+        .whileHeld(new IntakeTestCmd(0.4));
+    new JoystickTrigger(driver, XboxControllerButtonCode.TRIGGER_RIGHT.getCode(), 0.75)
+        .whileHeld(new OuttakeTestCmd(0.4));
 
     // setup buttons for use in CommandManager
     heightDownSelect = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
-    heightUpSelect   = new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode());
-    captureRelease   = new JoystickButton(assistant, XboxControllerButtonCode.A.getCode());
-    flip           = new JoystickButton(assistant, XboxControllerButtonCode.X.getCode());
+    heightUpSelect = new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode());
+    captureRelease = new JoystickButton(assistant, XboxControllerButtonCode.A.getCode());
+    flip = new JoystickButton(assistant, XboxControllerButtonCode.X.getCode());
+    endDriveMode = new JoystickButton(assistant, XboxControllerButtonCode.B.getCode());
 
-    //Intake Commands
-    //hack new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new VacuumCommand(false));
-    //hack new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whenPressed(new VacuumCommand(true));
-    //new JoystickButton(assistant, XboxControllerButtonCode.START.getCode()).whenPressed(new RotateWristUpCommand());
-    //new JoystickButton(assistant, XboxControllerButtonCode.BACK.getCode()).whenPressed(new RotateWristDownCommand());
+    // Intake Commands
+    // hack new JoystickButton(assistant,
+    // XboxControllerButtonCode.B.getCode()).whenPressed(new VacuumCommand(false));
+    // hack new JoystickButton(assistant,
+    // XboxControllerButtonCode.A.getCode()).whenPressed(new VacuumCommand(true));
+    // new JoystickButton(assistant,
+    // XboxControllerButtonCode.START.getCode()).whenPressed(new
+    // RotateWristUpCommand());
+    // new JoystickButton(assistant,
+    // XboxControllerButtonCode.BACK.getCode()).whenPressed(new
+    // RotateWristDownCommand());
 
-    //Driver assist commands (macros)
+    // Driver assist commands (macros)
   }
 
   public void bindTestButtons() {
-    //Vacuum subsystem tests
+    // Vacuum subsystem tests
     new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whenPressed(new IntakeTestCommand(false));
-    //new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new SolenoidTestCommand(false));
+    // new JoystickButton(assistant,
+    // XboxControllerButtonCode.B.getCode()).whenPressed(new
+    // SolenoidTestCommand(false));
     new JoystickButton(assistant, XboxControllerButtonCode.X.getCode()).whenPressed(new VacuumTestCommand(false));
 
-    //gearbox tests
+    // gearbox tests
     new JoystickButton(driver, XboxControllerButtonCode.A.getCode()).whenPressed(new DownShiftCommand());
     new JoystickButton(driver, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
     new JoystickButton(driver, XboxControllerButtonCode.B.getCode()).whileHeld(new IntakeTestCmd(0.4));
     new JoystickButton(driver, XboxControllerButtonCode.X.getCode()).whileHeld(new OuttakeTestCmd(0.4));
 
-    //Climber tests
-    new JoystickButton(switchBoard, 7).whenPressed(new PawlSolenoidTestCmd(true));
+    // Climber tests
+    new JoystickButton(switchBoard, 7).whileHeld(new PawlSolenoidTestCmd(true));
     new JoystickButton(switchBoard, 8).whileActive(new ClimbMotorTestCmd(0.3));
-    new JoystickButton(switchBoard, 9).whenPressed(new CharonSolenoidTestCmd(true));
+    new JoystickButton(switchBoard, 9).whileHeld(new CharonSolenoidTestCmd(true));
     new JoystickButton(switchBoard, 10).whileActive(new RollerMotorTestCmd(0.5));
     new JoystickButton(switchBoard, 11).whileActive(new ClimbMotorTestCmd(-0.3));
 
-
-     // setup buttons
-     heightDownSelect = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
-     heightUpSelect   = new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode());
-     captureRelease   = new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode());
+    // setup buttons - required for Control Manager construction, but not really used.
+    heightDownSelect = new JoystickButton(phantom, XboxControllerButtonCode.LB.getCode());
+    heightUpSelect = new JoystickButton(phantom, XboxControllerButtonCode.RB.getCode());
+    captureRelease = new JoystickButton(phantom, XboxControllerButtonCode.Y.getCode());
+    flip = new JoystickButton(phantom, XboxControllerButtonCode.X.getCode());
+    endDriveMode = new JoystickButton(phantom, XboxControllerButtonCode.B.getCode());
   }
 
   // Bind analog controls to functions to use by the commands
   // this way we only change it key/stick assignemnts once.
 
-  // Use Triggers to directly make small adustments to the arm, raw stick units converted in
+  // Use Triggers to directly make small adustments to the arm, raw stick units
+  // converted in
   // the CommandManager
   public double adjustHeight() {
     return Robot.m_oi.assistant.getTriggerAxis(Hand.kLeft) - Robot.m_oi.assistant.getTriggerAxis(Hand.kRight);
   }
 
-  public double extensionInput() 
-  {
+  public double extensionInput() {
     return Robot.m_oi.assistant.getY(Hand.kRight);
   }
-  //assistant rotation input
-  public double rotationInput() 
-  {
-    double in = Robot.m_oi.assistant.getY(Hand.kRight); 
+
+  // assistant rotation input
+  public double rotationInput() {
+    double in = Robot.m_oi.assistant.getY(Hand.kRight);
     double out = rotateShaper.expo(in);
     return out;
   }
-
 
   public XboxController getDriverController() {
     return driver;
