@@ -59,7 +59,8 @@ public class Robot extends TimedRobot {
     m_cmdMgr.setMode(Modes.Construction);   // schedules the mode's function
     limeLight.disableLED(); //disable blinding green LED that Trevor hates
     NetworkTableEntry cameraSelect = NetworkTableInstance.getDefault().getEntry("/PiSwitch");
-    cameraSelect.setDouble(1);
+    // 0=front cam, 1= rear cam, 2 = arm  (pi camera server defines this - could change)
+    cameraSelect.setDouble(0);    
   }
 
   /**
