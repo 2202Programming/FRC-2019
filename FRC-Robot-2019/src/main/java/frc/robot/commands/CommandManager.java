@@ -107,11 +107,11 @@ public class CommandManager {
     // Data points - shares delheightidx, must be same length
     final double DeliveryCargoHeights[] = { 28.0, 56.0, 84.0 }; // TODO: fix the numbers
     final double DeliveryHatchHeights[] = { 24.0, 52.0, 81.5 }; // TODO: fix the numbers
-    final double deliveryProjection[] = { 25.0, 25.0, 40.0 }; // TODO: fix the numbers
+    final double deliveryProjection[] = { 25.0, 25.0, 25.0 }; // TODO: fix the numbers
 
     final Modes huntingModes[] = { Modes.HuntingFloor, Modes.HuntingCargo, Modes.HuntingHatch };
     final double HuntHeights[] = { 5.0, 17.5, 24.0 }; // height from floor, H,C,Floor TODO:fix numbers
-    final double huntProjection[] = { 21.0, 22.0, 24.0 }; // TODO: fix the numbers
+    final double huntProjection[] = { 24.0, 24.0, 24.0 }; // TODO: fix the numbers
     int huntModeIdx = 2; // hatch
 
     private int driveIdx = 1;
@@ -147,7 +147,7 @@ public class CommandManager {
 
         xprojShaper = new ExpoShaper(0.5, Robot.m_oi::extensionInput); // joystick defined in m_oi.
         xprojStick = new LimitedIntegrator(Robot.dT, xprojShaper::get, // shaped joystick input
-                -6.0, // kGain, 5 in/sec on the joystick (neg. gain, forward stick is neg.)
+                -12.0, // kGain, 5 in/sec on the joystick (neg. gain, forward stick is neg.)
                 -20.0, // xmin inches
                  20.0, // x_max inches
                 -12.0, // dx_falling rate inch/sec
