@@ -46,8 +46,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
   private WPI_TalonSRX armExtensionMotor = new WPI_TalonSRX(RobotMap.ARM_EXTENSTION_TALON_CAN_ID);
 
   // Constants used by commands as measured
-  public final double PHI0 = 155.0;    // degrees, starting position - encoder zero
-  public final double PHI_MAX = 155.0; //In Degrees, Positive is foward, bottom front
+  public final double PHI0 = 158.0;    // degrees, starting position - encoder zero
+  public final double PHI_MAX = 158.0; //In Degrees, Positive is foward, bottom front
   public final double PHI_MIN = 25.0;   //In Degrees, Near top front 
   
   private final double kCounts_per_deg = 600;  //measured 2/24/2019
