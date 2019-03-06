@@ -169,7 +169,7 @@ public class OI {
   }
 
   public double extensionInput() {
-    return Robot.m_oi.assistant.getY(Hand.kRight);
+    return Robot.m_oi.assistant.getY(Hand.kLeft);
   }
 
   // assistant rotation input
