@@ -671,7 +671,7 @@ public class CommandManager {
             SmartDashboard.putNumber("GripXCmd", gripperX_cmd);
             SmartDashboard.putNumber("GripX_RL", xprojRL.get());
         }
-        SmartDashboard.putString("Current Position/Mode", logCurHeight());
+        SmartDashboard.putString("Current Position", logCurHeight());
     }
 
     public String logCurHeight() {
