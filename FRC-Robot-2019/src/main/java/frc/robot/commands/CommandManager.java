@@ -579,11 +579,11 @@ public class CommandManager {
         CommandGroup grp = new CommandGroup("Flip");
         grp.addParallel(new WristTrackFunction(this::wristTrackZero));
         grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
-        grp.addSequential(new GripperPositionCommand(66, 18, 1.0, 6.0));
-        grp.addSequential(new GripperPositionCommand(70, 1, 1.0, 5.0));
+        grp.addSequential(new GripperPositionCommand(66, 18, 1.0, 3.0));
+        grp.addSequential(new GripperPositionCommand(70, 0.5, 1.0, 4.0));
         grp.addSequential(new CallFunctionCmd(Robot.arm::invert));
-        grp.addSequential(new GripperPositionCommand(70, 1, 1.0, 5.0));
-        grp.addSequential(new GripperPositionCommand(66, 18, 1.0, 6.0));
+        grp.addSequential(new GripperPositionCommand(70, 0.5, 1.0, 4.0));
+        grp.addSequential(new GripperPositionCommand(66, 18, 1.0, 3.0));
         grp.addSequential(new PrevCmd());
         return grp;
     }

@@ -92,6 +92,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledPeriodic() {
     Scheduler.getInstance().run();
+    limeLight.disableLED(); //disable blinding green LED that Trevor hates
   }
 
   /**
