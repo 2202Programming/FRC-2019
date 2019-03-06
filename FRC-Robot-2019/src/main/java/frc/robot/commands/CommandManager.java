@@ -4,6 +4,7 @@ import java.util.function.IntSupplier;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.command.WaitCommand;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.Robot;
 import frc.robot.subsystems.ArmSubsystem.Position;
@@ -503,7 +504,7 @@ public class CommandManager {
 
     private CommandGroup CmdFactoryHuntHatch() {
         CommandGroup grp = new CommandGroup("HuntHatch");
-        grp.addSequential(new VacuumCommand(true));
+        grp.addSequential(new VacuumCommand(true, 0.0));
         grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
         grp.addParallel(new WristTrackFunction(this::wristTrackParallel));
         return grp;
@@ -511,7 +512,7 @@ public class CommandManager {
 
     private CommandGroup CmdFactoryHuntCargo() {
         CommandGroup grp = new CommandGroup("HuntCargo");
-        grp.addSequential(new VacuumCommand(true));
+        grp.addSequential(new VacuumCommand(true, 0.0));
         grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
         grp.addParallel(new WristTrackFunction(this::wristTrackPerp));
         return grp;
@@ -519,7 +520,7 @@ public class CommandManager {
 
     private CommandGroup CmdFactoryHuntHatchFloor() {
         CommandGroup grp = new CommandGroup("HuntHatchFloor");
-        grp.addSequential(new VacuumCommand(true));
+        grp.addSequential(new VacuumCommand(true, 0.0));
         grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
         grp.addParallel(new WristTrackFunction(this::wristTrackPerp));
         return grp;
@@ -531,7 +532,7 @@ public class CommandManager {
     //
     private CommandGroup CmdFactoryHuntGameStart() {
         CommandGroup grp = new CommandGroup("HuntGameStart");
-        grp.addSequential(new VacuumCommand(true));
+        grp.addSequential(new VacuumCommand(true, 0.0));   // no timeout
         grp.addSequential(new RotateWristCommand(95.0, 1.0)); // these will wait, not timeout,
         grp.addSequential(new RotateWristCommand(90.0, 1.0)); // wiggle wrist to grab hatch
         grp.addSequential(new GripperPositionCommand(5.0, 13.25, 0.5, 2.0)); // mv h up, keep start xproj
@@ -542,7 +543,7 @@ public class CommandManager {
 
     private CommandGroup CmdFactoryCapture() {
         CommandGroup grp = new CommandGroup("Capture");
-        grp.addSequential(new VacuumCommand(true));
+        grp.addSequential(new VacuumCommand(true, 0.0));  //no timeout
         // grp.addSequential(new MoveDownToCapture(Capture_dDown), 3.5 ); //TODO: fix
         // 3.5 seconds const
         grp.addSequential(new CallFunctionCmd(this::gotoDeliverMode));
@@ -566,9 +567,9 @@ public class CommandManager {
     private CommandGroup CmdFactoryRelease() {
         CommandGroup grp = new CommandGroup("Release");
         // grp.AddSequential(new Extend_Drive_To_Deliver());
-        grp.addSequential(new VacuumCommand(false));
-        grp.addSequential(new WaitCommand(1.0)); // maybe move the wrist??
-        grp.addSequential(new NextModeCmd(Modes.Drive)); // go back to driving
+        grp.addSequential(new VacuumCommand(false, 2.0));    //will run for 2.0 seconds
+        //grp.addSequential(new WaitCommand(1.0)); // maybe move the wrist??
+        grp.addSequential(new NextModeCmd(Modes.Drive)); // go back to driving configuration
         return grp;
     }
 
@@ -577,11 +578,11 @@ public class CommandManager {
         CommandGroup grp = new CommandGroup("Flip");
         grp.addParallel(new WristTrackFunction(this::wristTrackZero));
         grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
-        grp.addSequential(new GripperPositionCommand(66, 18, 1.0, 6.0));
-        grp.addSequential(new GripperPositionCommand(70, 1, 1.0, 5.0));
+        grp.addSequential(new GripperPositionCommand(66, 18, 1.0, 3.0));
+        grp.addSequential(new GripperPositionCommand(70, 0.5, 1.0, 4.0));
         grp.addSequential(new CallFunctionCmd(Robot.arm::invert));
-        grp.addSequential(new GripperPositionCommand(70, 1, 1.0, 5.0));
-        grp.addSequential(new GripperPositionCommand(66, 18, 1.0, 6.0));
+        grp.addSequential(new GripperPositionCommand(70, 0.5, 1.0, 4.0));
+        grp.addSequential(new GripperPositionCommand(66, 18, 1.0, 3.0));
         grp.addSequential(new PrevCmd());
         return grp;
     }
@@ -631,32 +632,6 @@ public class CommandManager {
             boolean posGood = (h_err < error) && (x_err < error);
             return posGood || isTimedOut();
         }
-    }
-
-    /**
-     * Very complex command that does nothing, but waits for it. Useful to ensure a
-     * command group waits a period before finishing.
-     */
-    class WaitCommand extends Command {
-        double timeout;
-
-        WaitCommand(double timeout) {
-            this.timeout = timeout;
-        }
-
-        @Override
-        protected void initialize() {
-            setTimeout(timeout);
-        }
-
-        @Override
-        protected boolean isFinished() {
-            return isTimedOut();
-        }
-
-        @Override
-        protected void execute() {
-            /* nothing */ }
     }
 
     class FlipCmd extends InstantCommand {
