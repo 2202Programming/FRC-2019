@@ -105,8 +105,8 @@ public class CommandManager {
     int delHeightIdx = 0; // used in Delivery<Cargo/Hatch>Heights[]
 
     // Data points - shares delheightidx, must be same length
-    final double DeliveryCargoHeights[] = { 28.0, 56.0, 84.0 }; // TODO: fix the numbers
-    final double DeliveryHatchHeights[] = { 24.0, 52.0, 81.5 }; // TODO: fix the numbers
+    final double DeliveryCargoHeights[] = { 32.0, 59.0, 84.0 }; // TODO: fix the numbers
+    final double DeliveryHatchHeights[] = { 28.0, 55.0, 82.0 }; 
     final double deliveryProjection[] = { 25.0, 25.0, 25.0 }; // TODO: fix the numbers
 
     final Modes huntingModes[] = { Modes.HuntingFloor, Modes.HuntingCargo, Modes.HuntingHatch };
