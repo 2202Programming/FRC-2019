@@ -611,7 +611,7 @@ public class CommandManager {
             this.height = height;
             this.projx = projx;
             this.timeout = timeout;
-            this.error = error;
+            this.error = Math.abs(error);
         }
 
         @Override
