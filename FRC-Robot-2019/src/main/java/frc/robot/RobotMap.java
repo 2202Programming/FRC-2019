@@ -61,6 +61,7 @@ public class RobotMap {
   //End Effector IntakeSubsystem
   public static final int INTAKE_WRIST_SERVO_PWM = 0;
   public static final int INTAKE_VACUUM_SPARK_PWM = 1;    
+  public static final int INTAKE_VACCUM_SPARK_PDP = 7;
   public static final int INTAKE_CARGO_SWITCH_MXP_CH = 11;
   public static final int INTAKE_PCM_ID = CAN_PCM2_ID;       
   public static final int INTAKE_RELEASE_SOLENOID_PCM = 0;   // DPL switched to single Solenoid
