@@ -47,7 +47,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public final double PHI_MAX = 158.0; // In Degrees, Positive is foward, bottom front
   public final double PHI_MIN = 25.0; // In Degrees, Near top front
 
-  private final double kCounts_per_deg = 600; // measured 2/24/2019
+  private final double kCounts_per_deg = 843; // measured 3/7/2019 on competition bot
   private final double kDeg_per_count = 1.0 / kCounts_per_deg;
 
   // Geometry of the arm's pivot point
@@ -236,8 +236,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
     double rads = Math.toRadians(90 - phi);
     double ext = getExtension(); // includes angle compensation
     double l = ARM_BASE_LENGTH + WRIST_LENGTH + ext;
-    position.height = ARM_PIVOT_HEIGHT + l * Math.cos(rads);
-    position.projection = l * Math.sin(rads);
+    position.height = ARM_PIVOT_HEIGHT + l * Math.sin(rads);
+    position.projection = l * Math.cos(rads);
     return position;
   }
 
