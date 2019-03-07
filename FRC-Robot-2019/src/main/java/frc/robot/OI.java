@@ -21,6 +21,7 @@ import frc.robot.commands.drive.TankDriveCommand;
 import frc.robot.commands.drive.shift.DownShiftCommand;
 import frc.robot.commands.drive.shift.ToggleAutomaticGearShiftingCommand;
 import frc.robot.commands.drive.shift.UpShiftCommand;
+import frc.robot.commands.intake.VacuumCommand;
 import frc.robot.commands.intake.tests.IntakeTestCommand;
 import frc.robot.commands.intake.tests.VacuumTestCommand;
 import frc.robot.commands.util.ExpoShaper;
@@ -84,7 +85,7 @@ public class OI {
 
 
     // If the Test Button on the switchboard is activeSSSsS
-    if (switchBoard.getRawButton(11)) {
+    if (false/*switchBoard.getRawButton(11)*/) {
       bindTestButtons();
       System.out.println("Using Test OI");
     } else {
@@ -131,11 +132,11 @@ public class OI {
 
   public void bindTestButtons() {
     // Vacuum subsystem tests
-    new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whenPressed(new IntakeTestCommand(false));
     // new JoystickButton(assistant,
     // XboxControllerButtonCode.B.getCode()).whenPressed(new
     // SolenoidTestCommand(false));
-    new JoystickButton(assistant, XboxControllerButtonCode.X.getCode()).whenPressed(new VacuumTestCommand(false));
+    new JoystickButton(assistant, XboxControllerButtonCode.A.getCode()).whenPressed(new VacuumCommand(true, 2.0));
+    new JoystickButton(assistant, XboxControllerButtonCode.B.getCode()).whenPressed(new VacuumCommand(false, 2.0));
 
     // gearbox tests
     new JoystickButton(driver, XboxControllerButtonCode.A.getCode()).whenPressed(new DownShiftCommand());

@@ -33,10 +33,10 @@ public class RobotTest {
         Robot.arm.zeroArm();
 
         // TESTING Commands, only get scheduled if we enter Test mode
-        testWristCmd = new  TestWristPositionCommand(this::Wrist_AssistLeftTrigger);
+        //testWristCmd = new  TestWristPositionCommand(this::Wrist_AssistLeftTrigger);
         armTest = new TeleopArmControlCommand(this::leftJoyY, this::rightJoyY);
         
-        //armTest.start();
+        armTest.start();
         //testWristCmd.start();
     }
 

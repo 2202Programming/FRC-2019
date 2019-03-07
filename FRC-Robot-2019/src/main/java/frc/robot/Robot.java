@@ -109,6 +109,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    if (doneOnce == false ){
+      m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function
+      doneOnce = true;
+    }
     resetAllDashBoardSensors();
     limeLight.enableLED(); //active limelight LED when operational
   }
@@ -118,6 +122,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
+    m_cmdMgr.execute();
     Scheduler.getInstance().run();
   }
 
