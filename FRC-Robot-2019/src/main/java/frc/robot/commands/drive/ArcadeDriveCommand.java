@@ -18,7 +18,7 @@ public class ArcadeDriveCommand extends Command {
     requires(Robot.driveTrain);
     driveTrain = Robot.driveTrain;
 
-    speedShaper = new ExpoShaper(0.5);        //0 no change,  1.0 max flatness
+    speedShaper = new ExpoShaper(0.6);        //0 no change,  1.0 max flatness
     rotationShaper = new ExpoShaper(0.5);
   }
 
