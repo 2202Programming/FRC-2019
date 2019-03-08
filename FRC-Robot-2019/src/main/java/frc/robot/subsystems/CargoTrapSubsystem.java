@@ -33,6 +33,7 @@ public class CargoTrapSubsystem extends Subsystem {
     @Override
     public void initDefaultCommand() {
         //setDefaultCommand(new AutoTrapCargoCommand());
+        retractTrap();
     }
 
     /**

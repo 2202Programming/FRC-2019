@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.LimeLightArcadeDriveCommand;
+import frc.robot.commands.cargo.DeployCargoTrapCommand;
+import frc.robot.commands.cargo.RetractCargoTrapCommand;
 import frc.robot.commands.cargo.tests.IntakeTestCmd;
 import frc.robot.commands.cargo.tests.OuttakeTestCmd;
 import frc.robot.commands.climb.tests.CharonSolenoidTestCmd;
@@ -107,6 +109,8 @@ public class OI {
         .whileHeld(new IntakeTestCmd(0.4));
     new JoystickTrigger(driver, XboxControllerButtonCode.TRIGGER_RIGHT.getCode(), 0.75)
         .whileHeld(new OuttakeTestCmd(0.4));
+      new JoystickButton(switchBoard, 1).whenPressed(new DeployCargoTrapCommand());
+      new JoystickButton(switchBoard, 2).whenPressed(new RetractCargoTrapCommand());
 
     // setup buttons for use in CommandManager
     heightDownSelect = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());

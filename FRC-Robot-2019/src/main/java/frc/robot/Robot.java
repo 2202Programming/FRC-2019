@@ -28,7 +28,7 @@ public class Robot extends TimedRobot {
   //common constants for robot
   public static double dT = kDefaultPeriod;  // Robots sample period (seconds) 
   //THis years bounding box beyond frame of robot. Use this in limit calcs in subsystems.
-  public static double kProjectConstraint = 30.0; //inches from frame
+  public static double kProjectConstraint = 26.0; //inches from frame (accounting for the suction cup length)
   //public static double kForwardProjectMin = 18.0; //inches from arm pivot x-axis to bumper
   //public static double kReverseProjectMin = 18.0; //inches from arm pivot x-axis to bumper
   
@@ -95,6 +95,7 @@ public class Robot extends TimedRobot {
   public void disabledPeriodic() {
     Scheduler.getInstance().run();
     limeLight.disableLED(); //disable blinding green LED that Trevor hates
+    intake.releaseSolenoid(intake.kRelease);
   }
 
   /**
