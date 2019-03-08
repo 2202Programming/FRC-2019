@@ -352,9 +352,10 @@ public class CommandManager {
     }
 
     private int goToPrevMode() {
-        if(currentMode == Modes.Drive {
+        if(currentMode == Modes.Drive) {
             if ((prevMode.get() > Modes.HuntGameStart.get()) && (prevMode.get() < Modes.Capturing.get())) {
                 setMode(prevMode);
+                prevMode = Modes.Releasing; // Intentially overriding the previous to Releasing if we go back
                 return prevMode.get();
             }
         }
