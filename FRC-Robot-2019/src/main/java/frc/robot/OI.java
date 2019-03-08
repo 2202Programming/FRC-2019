@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.LimeLightArcadeDriveCommand;
+import frc.robot.commands.cargo.AutoCargoIntakeCommand;
 import frc.robot.commands.cargo.DeployCargoTrapCommand;
 import frc.robot.commands.cargo.RetractCargoTrapCommand;
 import frc.robot.commands.cargo.tests.IntakeTestCmd;
@@ -106,7 +107,7 @@ public class OI {
     new JoystickButton(driver, XboxControllerButtonCode.LB.getCode()).whileHeld(new TankDriveCommand());
     new JoystickButton(driver, XboxControllerButtonCode.RB.getCode()).whileHeld(new LimeLightArcadeDriveCommand());
     new JoystickTrigger(driver, XboxControllerButtonCode.TRIGGER_LEFT.getCode(), 0.75)
-        .whileHeld(new IntakeTestCmd(0.4));
+        .whileHeld(new AutoCargoIntakeCommand(0.4));
     new JoystickTrigger(driver, XboxControllerButtonCode.TRIGGER_RIGHT.getCode(), 0.75)
         .whileHeld(new OuttakeTestCmd(0.4));
       new JoystickButton(switchBoard, 1).whenPressed(new DeployCargoTrapCommand());
