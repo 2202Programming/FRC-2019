@@ -74,6 +74,7 @@ public class OI {
   public JoystickButton captureRelease; // flips hunt/deliver mode
   public JoystickButton flip; // used to flip
   public JoystickButton endDriveMode; // Switches state out of drive
+  public JoystickButton goToPrevMode; // Goes to previous state (only works for recapturing)
 
   private ExpoShaper rotateShaper = new ExpoShaper(.7); // fairly flat curve
 
@@ -119,6 +120,7 @@ public class OI {
     captureRelease = new JoystickButton(assistant, XboxControllerButtonCode.A.getCode());
     flip = new JoystickButton(assistant, XboxControllerButtonCode.X.getCode());
     endDriveMode = new JoystickButton(assistant, XboxControllerButtonCode.B.getCode());
+    goToPrevMode = new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode());
 
     // Intake Commands
     // hack new JoystickButton(assistant,

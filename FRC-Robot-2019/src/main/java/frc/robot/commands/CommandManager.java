@@ -129,6 +129,7 @@ public class CommandManager {
         Robot.m_oi.captureRelease.whenPressed(new CallFunctionCmd(this::triggerCaptureRelease));
         Robot.m_oi.flip.whenPressed(new FlipCmd());
         Robot.m_oi.endDriveMode.whenPressed(new CallFunctionCmd(this::endDriveState));
+        Robot.m_oi.goToPrevMode.whenPressed(new CallFunctionCmd(this::goToPrevMode));
 
         // Construct our major modes from their command factories
         zeroRobotGrp = CmdFactoryZeroRobot();
@@ -350,6 +351,15 @@ public class CommandManager {
         return cycleHeightMode(-1);
     }
 
+    private int goToPrevMode() {
+        if(currentMode == Modes.Drive {
+            if ((prevMode.get() > Modes.HuntGameStart.get()) && (prevMode.get() < Modes.Capturing.get())) {
+                setMode(prevMode);
+                return prevMode.get();
+            }
+        }
+        return 0;
+    }
     /******************************************************************************************** */
 
     // Select proper delivery mode based on what we were hunting.
