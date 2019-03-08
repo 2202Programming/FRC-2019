@@ -100,13 +100,14 @@ public class CommandManager {
     // step command values used as inputs to RateLimiters, inches these get smoothed
     double gripperX_cmd = 0.0; // (inches) Projection of arm/extender/wrist/cup
     double gripperH_cmd = 0.0; // (inches) composite of arm/extender/wrist/cup
+    double wristOffset = 0.0;
 
     // internal states
     int delHeightIdx = 0; // used in Delivery<Cargo/Hatch>Heights[]
 
     // Data points - shares delheightidx, must be same length
     final double DeliveryCargoHeights[] = { 32.0, 59.0, 84.0 }; // TODO: fix the numbers
-    final double DeliveryHatchHeights[] = { 28.0, 55.0, 82.0 }; 
+    final double DeliveryHatchHeights[] = { 27.5, 55.0, 82.0 }; 
     final double deliveryProjection[] = { 25.0, 25.0, 25.0 }; // TODO: fix the numbers
 
     final Modes huntingModes[] = { Modes.HuntingFloor, Modes.HuntingCargo, Modes.HuntingHatch };
@@ -201,50 +202,61 @@ public class CommandManager {
 
         case HuntGameStart:
             prevHuntMode = Modes.HuntingHatch; // change this if we start with Cargo
+            wristOffset = 7.0;
             nextCmd = huntGameStartGrp;
             break;
 
         case HuntingFloor:
             nextCmd = huntingHFloorGrp;
+            wristOffset = 0.0;
             break;
 
         case HuntingCargo:
             nextCmd = huntingCargoGrp;
+            wristOffset = 0.0;
             break;
 
         case HuntingHatch:
             huntModeIdx = 2;
             nextCmd = huntingHatchGrp;
+            wristOffset = 0.0;
             break;
 
         case Capturing: // moving from hunting to picking it up. Button:Capture
             prevHuntMode = currentMode; // this is what we captured
             nextCmd = captureGrp;
+            wristOffset = 0.0;
             break;
         case Drive:
             driveIdx = 1;
             nextCmd = driveGrp;
+            wristOffset = 0.0;
             break;
         case Defense:
             nextCmd = driveGrp;
+            wristOffset = 0.0;
             break;
         // DeliveryModes
         case DeliverHatch: // based on what we captured
             delHeightIdx = 0; // start at lowest
+            wristOffset = 7.0;
             nextCmd = deliveryGrp;
             break;
 
         case DeliverCargo: // based on what we captured
             delHeightIdx = 0;
+            wristOffset = 0.0;
             nextCmd = deliveryGrp;
             break;
 
         case Releasing:
             prevHuntMode = Modes.Releasing; // Reset the prevHuntMode
             nextCmd = releaseGrp;
+            wristOffset = 0.0;
             break;
         case Flipping:
             nextCmd = flipGrp;
+            wristOffset = 0.0;
             break;
         default:
             break;
@@ -370,6 +382,10 @@ public class CommandManager {
         Modes nextMode = (prevHuntMode == Modes.HuntingCargo) ? Modes.DeliverCargo : Modes.DeliverHatch;
         setMode(nextMode);
         return (nextMode.get());
+    }
+
+    double wristTrackOffset() {
+        return this.wristOffset;
     }
 
     double wristTrackParallel() {
@@ -571,7 +587,7 @@ public class CommandManager {
     private CommandGroup CmdFactoryDelivery() {
         CommandGroup grp = new CommandGroup("Deliver");
         grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
-        grp.addParallel(new WristTrackFunction(this::wristTrackParallel));
+        grp.addParallel(new WristTrackFunction(this::wristTrackParallel, this::wristTrackOffset));
         return grp;
     }
 
