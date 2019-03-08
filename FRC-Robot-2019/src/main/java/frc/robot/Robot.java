@@ -15,6 +15,9 @@ import frc.robot.subsystems.*;
 
 import frc.robot.commands.CommandManager;
 import frc.robot.commands.CommandManager.Modes;
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.*;
 
 /**
@@ -63,6 +66,14 @@ public class Robot extends TimedRobot {
     NetworkTableEntry cameraSelect = NetworkTableInstance.getDefault().getEntry("/PiSwitch");
     // 0=front cam, 1= rear cam, 2 = arm  (pi camera server defines this - could change)
     cameraSelect.setDouble(1);    
+    
+    UsbCamera frontDrive = CameraServer.getInstance().startAutomaticCapture(0);
+    frontDrive.setResolution(320, 240);
+    frontDrive.setFPS(30);
+
+    UsbCamera armCamera = CameraServer.getInstance().startAutomaticCapture(1);
+    armCamera.setResolution(320, 240);
+    armCamera.setFPS(30);
   }
 
   /**
