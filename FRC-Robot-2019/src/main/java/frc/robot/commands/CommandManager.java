@@ -167,8 +167,8 @@ public class CommandManager {
                 this::measHeight, // phy position func
                 kHeightMin, // output min
                 kHeightMax, // output max
-                -20.0, // inches/sec // falling rate limit
-                20.0, // inches/sec //raising rate limit
+                -40.0, // inches/sec // falling rate limit
+                40.0, // inches/sec //raising rate limit
                 InputModel.Position);
 
     }
