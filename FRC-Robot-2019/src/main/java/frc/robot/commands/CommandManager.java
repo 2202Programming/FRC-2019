@@ -202,7 +202,7 @@ public class CommandManager {
 
         case HuntGameStart:
             prevHuntMode = Modes.HuntingHatch; // change this if we start with Cargo
-            wristOffset = 7.0;
+            wristOffset = 14.0;
             nextCmd = huntGameStartGrp;
             break;
 
@@ -560,11 +560,13 @@ public class CommandManager {
     private CommandGroup CmdFactoryHuntGameStart() {
         CommandGroup grp = new CommandGroup("HuntGameStart");
         grp.addSequential(new VacuumCommand(true, 0.0));   // no timeout
-        grp.addSequential(new RotateWristCommand(95.0, 0.0)); // these will wait, not timeout,
-       // grp.addSequential(new RotateWristCommand(90.0, 1.0)); // wiggle wrist to grab hatch
-        grp.addSequential(new GripperPositionCommand(5.0, 13.25, 0.5, 0.0)); // mv h up, keep start xproj
-       // grp.addSequential(new GripperPositionCommand(20.0, 20.0, 0.5, 2.0)); // now rotate out and move up
-        grp.addSequential(new NextModeCmd(Modes.HuntingCargo));
+        grp.addParallel(new WristTrackFunction(this::wristTrackParallel, this::wristTrackOffset));
+        grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
+        grp.addSequential(new GripperPositionCommand(6, 11.5, 0.05, 0.5)); // Move arm up and back to avoid moving hatch
+        grp.addSequential(new GripperPositionCommand(6, 14.5, 0.05, 1.0)); // Move arm into hatch and intake
+        grp.addSequential(new WaitCommand("Hatch Vaccum", 1.0));
+        grp.addParallel(new WristTrackFunction(this::wristTrackParallel));
+        grp.addSequential(new NextModeCmd(Modes.HuntingHatch));
         return grp;
     }
 
