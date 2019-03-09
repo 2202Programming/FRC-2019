@@ -108,7 +108,6 @@ public class IntakeSubsystem extends ExtendedSubSystem {
 
   @Override
   public void initDefaultCommand() {
-    releaseSolenoid(kRelease);
   }
 
   /**
