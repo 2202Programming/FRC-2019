@@ -34,13 +34,13 @@ public class LimeLightArcadeDriveCommand extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    driveTrain.stop();
     controller.reset();
     controller.setInputRange(-25.0, 25.0);
     controller.setOutputRange(-1, 1);
     controller.setPercentTolerance(1);
     controller.setContinuous(true);
     controller.enable();
+    execute();
   }
 
   // Read Controller Input from two joysticks.

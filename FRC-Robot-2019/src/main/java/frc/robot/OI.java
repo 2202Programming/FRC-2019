@@ -18,6 +18,7 @@ import frc.robot.commands.climb.tests.CharonSolenoidTestCmd;
 import frc.robot.commands.climb.tests.ClimbMotorTestCmd;
 import frc.robot.commands.climb.tests.PawlSolenoidTestCmd;
 import frc.robot.commands.climb.tests.RollerMotorTestCmd;
+import frc.robot.commands.drive.CopilotControlCommand;
 import frc.robot.commands.drive.InvertDriveControlsCommand;
 import frc.robot.commands.drive.LimeLightArcadeDriveCommand;
 import frc.robot.commands.drive.TankDriveCommand;
@@ -25,6 +26,7 @@ import frc.robot.commands.drive.shift.DownShiftCommand;
 import frc.robot.commands.drive.shift.ToggleAutomaticGearShiftingCommand;
 import frc.robot.commands.drive.shift.UpShiftCommand;
 import frc.robot.commands.intake.VacuumCommand;
+import frc.robot.commands.util.DPadButton;
 import frc.robot.commands.util.ExpoShaper;
 import frc.robot.input.JoystickTrigger;
 import frc.robot.input.XboxControllerButtonCode;
@@ -80,14 +82,13 @@ public class OI {
   public OI() {
     // Wait until we get the first switchboard input - hack we know.
     try {
-      Thread.sleep(250); }
-    catch ( InterruptedException e) {
-      //don't care - won't happen
+      Thread.sleep(250);
+    } catch (InterruptedException e) {
+      // don't care - won't happen
     }
 
-
     // If the Test Button on the switchboard is activeSSSsS
-    if (false/*switchBoard.getRawButton(11)*/) {
+    if (false/* switchBoard.getRawButton(11) */) {
       bindTestButtons();
       System.out.println("Using Test OI");
     } else {
@@ -109,8 +110,9 @@ public class OI {
         .whileHeld(new AutoCargoIntakeCommand(0.4));
     new JoystickTrigger(driver, XboxControllerButtonCode.TRIGGER_RIGHT.getCode(), 0.75)
         .whileHeld(new OuttakeTestCmd(0.4));
-      new JoystickButton(switchBoard, 1).whenPressed(new DeployCargoTrapCommand());
-      new JoystickButton(switchBoard, 2).whenPressed(new RetractCargoTrapCommand());
+    new DPadButton(assistant, DPadButton.Direction.LEFT).whileHeld(new CopilotControlCommand(0.4, 0.3));;
+    new JoystickButton(switchBoard, 1).whenPressed(new DeployCargoTrapCommand());
+    new JoystickButton(switchBoard, 2).whenPressed(new RetractCargoTrapCommand());
 
     // setup buttons for use in CommandManager
     heightDownSelect = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
@@ -156,7 +158,8 @@ public class OI {
     new JoystickButton(switchBoard, 4).whileActive(new RollerMotorTestCmd(0.5));
     new JoystickButton(switchBoard, 5).whileActive(new ClimbMotorTestCmd(-0.3));
 
-    // setup buttons - required for Control Manager construction, but not really used.
+    // setup buttons - required for Control Manager construction, but not really
+    // used.
     heightDownSelect = new JoystickButton(phantom, XboxControllerButtonCode.LB.getCode());
     heightUpSelect = new JoystickButton(phantom, XboxControllerButtonCode.RB.getCode());
     captureRelease = new JoystickButton(phantom, XboxControllerButtonCode.Y.getCode());
