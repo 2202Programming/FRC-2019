@@ -562,7 +562,7 @@ public class CommandManager {
         grp.addSequential(new VacuumCommand(true, 0.0));   // no timeout
         grp.addSequential(new RotateWristCommand(95.0, 0.0)); // these will wait, not timeout,
        // grp.addSequential(new RotateWristCommand(90.0, 1.0)); // wiggle wrist to grab hatch
-        grp.addSequential(new GripperPositionCommand(5.0, 13.25, 0.5, 2.0)); // mv h up, keep start xproj
+        grp.addSequential(new GripperPositionCommand(5.0, 13.25, 0.5, 0.0)); // mv h up, keep start xproj
        // grp.addSequential(new GripperPositionCommand(20.0, 20.0, 0.5, 2.0)); // now rotate out and move up
         grp.addSequential(new NextModeCmd(Modes.HuntingCargo));
         return grp;
