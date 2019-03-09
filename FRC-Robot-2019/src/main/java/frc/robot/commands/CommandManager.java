@@ -106,13 +106,13 @@ public class CommandManager {
     int delHeightIdx = 0; // used in Delivery<Cargo/Hatch>Heights[]
 
     // Data points - shares delheightidx, must be same length
-    final double DeliveryCargoHeights[] = { 32.0, 59.0, 84.0 }; // TODO: fix the numbers
+    final double DeliveryCargoHeights[] = { 26.875, 55.0, 84.0 }; // TODO: fix the numbers
     final double DeliveryHatchHeights[] = { 27.5, 55.0, 82.0 }; 
     final double deliveryProjection[] = { 25.0, 25.0, 25.0 }; // TODO: fix the numbers
 
     final Modes huntingModes[] = { Modes.HuntingFloor, Modes.HuntingCargo, Modes.HuntingHatch };
     final double HuntHeights[] = { 5.0, 17.5, 24.0 }; // height from floor, H,C,Floor TODO:fix numbers
-    final double huntProjection[] = { 24.0, 24.0, 24.0 }; // TODO: fix the numbers
+    final double huntProjection[] = { 24.0, 23.5, 24.0 }; // TODO: fix the numbers
     int huntModeIdx = 2; // hatch
 
     private int driveIdx = 1;
@@ -245,7 +245,7 @@ public class CommandManager {
 
         case DeliverCargo: // based on what we captured
             delHeightIdx = 0;
-            wristOffset = 0.0;
+            wristOffset = 30.0;
             nextCmd = deliveryGrp;
             break;
 
@@ -567,6 +567,8 @@ public class CommandManager {
         grp.addSequential(new WaitCommand("Hatch Vaccum", 1.0));
         grp.addParallel(new WristTrackFunction(this::wristTrackParallel));
         grp.addSequential(new NextModeCmd(Modes.HuntingHatch));
+        grp.addSequential(new NextModeCmd(Modes.Drive));
+        grp.addSequential(new NextModeCmd(Modes.DeliverHatch));
         return grp;
     }
 
