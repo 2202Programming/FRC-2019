@@ -47,7 +47,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public final double PHI_MAX = 158.0; // In Degrees, Positive is foward, bottom front
   public final double PHI_MIN = 25.0; // In Degrees, Near top front
 
-  private final double kCounts_per_deg = 600; // measured 2/24/2019
+  private final double kCounts_per_deg = 843; // measured 3/7/2019 on competition bot
   private final double kDeg_per_count = 1.0 / kCounts_per_deg;
 
   // Geometry of the arm's pivot point
@@ -56,12 +56,12 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public final double MAX_PROJECTION = PIVOT_TO_FRONT + Robot.kProjectConstraint; //
 
   // Extender phyiscal numbers
-  public final double L0 = 8.875; // inches - starting point, encoder zero -set 2/24/2019
+  public final double L0 = 9.0; // inches - starting point, encoder zero -set 2/24/2019
   public final double EXTEND_MIN = 0.750; // inches 0.0 physic, .75 soft stop
   public final double EXTEND_MAX = 35.0; // inches - measured practice bot
   public final double ARM_BASE_LENGTH = 18.0; // inches - measured practice bot (from pivot center) xg 2/16/19
   public final double ARM_PIVOT_HEIGHT = 30.25; // inches - measured practice bot
-  public final double WRIST_LENGTH = 4.5; // inches - measured practice bot 2/26/19
+  public final double WRIST_LENGTH = 5.0; // inches - measured practice bot 2/26/19
 
   private final double kCounts_per_in = -600.0; // measured practice bot 2/24/2019
   private final double kIn_per_count = 1.0 / kCounts_per_in;
@@ -97,8 +97,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
     // Set Talon postion mode gains and power limits
     // Arm
     armRotationMotor.config_kP(0, 0.5 /* 0.8 */, 30);
-    armRotationMotor.configPeakOutputForward(0.5);
-    armRotationMotor.configPeakOutputReverse(-0.5);
+    armRotationMotor.configPeakOutputForward(0.24);
+    armRotationMotor.configPeakOutputReverse(-0.24);
     armRotationMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     armRotationMotor.setInverted(true);
 
@@ -111,7 +111,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
     armExtensionMotor.configPeakOutputForward(0.5);
     armExtensionMotor.configPeakOutputReverse(-0.5);
 
-    System.out.println("Warning - Arm s have moderate Kp values & reduced power 30% limits");
+    System.out.println("Warning - Arm Rotation has moderate Kp values & reduced power 24% limits");
+    System.out.println("Warning - Arm Extension has moderate Kp values & reduced power 50% limits");
     logTimer = System.currentTimeMillis();
 
     zeroArm(); // will also get called on transition to teleOp, should arms be moved
@@ -175,6 +176,10 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public void setExtension(double l) {
     double angle = getRealAngle(); // current angle
     double compLen = ((angle - PHI0) * k_dl_dphi); // ext due to rotation to compensate for
+    double max_l_at_phi = MAX_PROJECTION / Math.sin(Math.toRadians(angle)) - PIVOT_TO_FRONT - WRIST_LENGTH;
+
+    l = Math.min(l, max_l_at_phi); // Limit length to max projection
+    
     double len = (l - L0) - compLen; // net len to command relative to start
 
     SmartDashboard.putNumber("Extension Compensation", compLen);
@@ -184,9 +189,11 @@ public class ArmSubsystem extends ExtendedSubSystem {
     if (len < (EXTEND_MIN - L0)) {
       System.out.println("Arm:Extension below minimum.");
     }
+
     // todo:not sure if this is the right way to limit
     // we can't go above or below our adjust min/max based on starting L0
     len = MathUtil.limit(len, EXTEND_MIN - L0, EXTEND_MAX);
+    
     SmartDashboard.putNumber("Extension Set", len);
 
     double c = len * kCounts_per_in;
@@ -236,8 +243,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
     double rads = Math.toRadians(90 - phi);
     double ext = getExtension(); // includes angle compensation
     double l = ARM_BASE_LENGTH + WRIST_LENGTH + ext;
-    position.height = ARM_PIVOT_HEIGHT + l * Math.cos(rads);
-    position.projection = l * Math.sin(rads);
+    position.height = ARM_PIVOT_HEIGHT + l * Math.sin(rads);
+    position.projection = l * Math.cos(rads);
     return position;
   }
 

@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Spark;
 import frc.robot.subsystems.ExtendedSubSystem;
+import frc.robot.Robot;
 import frc.robot.RobotMap;
 
 //used for CustomServo
@@ -185,7 +186,7 @@ public class IntakeSubsystem extends ExtendedSubSystem {
 
   // ### check the PDP for current level, we can tell if vacuum is obtained.
   public double getPumpCurrent() {
-    return -999.999;
+    return Robot.pdp.getCurrent(RobotMap.INTAKE_VACCUM_SPARK_PDP);
   }
 
   @Override
@@ -336,6 +337,7 @@ public class IntakeSubsystem extends ExtendedSubSystem {
       logTimer = System.currentTimeMillis();
 
       SmartDashboard.putNumber("In:Wr(deg)", getAngle());
+      SmartDashboard.putNumber("Vaccum Current", getPumpCurrent());
 
     }
   }

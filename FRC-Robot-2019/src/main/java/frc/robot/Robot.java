@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -14,6 +15,9 @@ import frc.robot.subsystems.*;
 
 import frc.robot.commands.CommandManager;
 import frc.robot.commands.CommandManager.Modes;
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.*;
 
 /**
@@ -27,7 +31,7 @@ public class Robot extends TimedRobot {
   //common constants for robot
   public static double dT = kDefaultPeriod;  // Robots sample period (seconds) 
   //THis years bounding box beyond frame of robot. Use this in limit calcs in subsystems.
-  public static double kProjectConstraint = 30.0; //inches from frame
+  public static double kProjectConstraint = 26.0; //inches from frame (accounting for the suction cup length)
   //public static double kForwardProjectMin = 18.0; //inches from arm pivot x-axis to bumper
   //public static double kReverseProjectMin = 18.0; //inches from arm pivot x-axis to bumper
   
@@ -39,6 +43,7 @@ public class Robot extends TimedRobot {
   public static CargoTrapSubsystem cargoTrap = new CargoTrapSubsystem();
   public static ArmSubsystem arm = new ArmSubsystem();
   public static ClimberSubsystem climber = new ClimberSubsystem();
+  public static PowerDistributionPanel pdp = new PowerDistributionPanel(0);
   //public static SerialPortSubsystem serialSubsystem = new SerialPortSubsystem();
   public static OI m_oi = new OI(); //OI Depends on the subsystems and must be last (boolean is whether we are testing or not)
 
@@ -61,6 +66,14 @@ public class Robot extends TimedRobot {
     NetworkTableEntry cameraSelect = NetworkTableInstance.getDefault().getEntry("/PiSwitch");
     // 0=front cam, 1= rear cam, 2 = arm  (pi camera server defines this - could change)
     cameraSelect.setDouble(1);    
+    
+    UsbCamera frontDrive = CameraServer.getInstance().startAutomaticCapture(0);
+    frontDrive.setResolution(320, 240);
+    frontDrive.setFPS(30);
+
+    UsbCamera armCamera = CameraServer.getInstance().startAutomaticCapture(1);
+    armCamera.setResolution(320, 240);
+    armCamera.setFPS(30);
   }
 
   /**
@@ -93,6 +106,7 @@ public class Robot extends TimedRobot {
   public void disabledPeriodic() {
     Scheduler.getInstance().run();
     limeLight.disableLED(); //disable blinding green LED that Trevor hates
+    intake.releaseSolenoid(intake.kRelease);
   }
 
   /**
@@ -109,6 +123,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    if (doneOnce == false ){
+      m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function
+      doneOnce = true;
+    }
     resetAllDashBoardSensors();
     limeLight.enableLED(); //active limelight LED when operational
   }
@@ -118,6 +136,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
+    m_cmdMgr.execute();
     Scheduler.getInstance().run();
   }
 

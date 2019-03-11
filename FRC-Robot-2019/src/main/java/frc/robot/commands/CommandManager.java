@@ -100,18 +100,19 @@ public class CommandManager {
     // step command values used as inputs to RateLimiters, inches these get smoothed
     double gripperX_cmd = 0.0; // (inches) Projection of arm/extender/wrist/cup
     double gripperH_cmd = 0.0; // (inches) composite of arm/extender/wrist/cup
+    double wristOffset = 0.0;
 
     // internal states
     int delHeightIdx = 0; // used in Delivery<Cargo/Hatch>Heights[]
 
     // Data points - shares delheightidx, must be same length
-    final double DeliveryCargoHeights[] = { 32.0, 59.0, 84.0 }; // TODO: fix the numbers
-    final double DeliveryHatchHeights[] = { 28.0, 55.0, 82.0 }; 
+    final double DeliveryCargoHeights[] = { 26.875, 55.0, 84.0 }; // TODO: fix the numbers
+    final double DeliveryHatchHeights[] = { 27.5, 55.0, 82.0 }; 
     final double deliveryProjection[] = { 25.0, 25.0, 25.0 }; // TODO: fix the numbers
 
     final Modes huntingModes[] = { Modes.HuntingFloor, Modes.HuntingCargo, Modes.HuntingHatch };
     final double HuntHeights[] = { 5.0, 17.5, 24.0 }; // height from floor, H,C,Floor TODO:fix numbers
-    final double huntProjection[] = { 24.0, 24.0, 24.0 }; // TODO: fix the numbers
+    final double huntProjection[] = { 24.0, 23.5, 24.0 }; // TODO: fix the numbers
     int huntModeIdx = 2; // hatch
 
     private int driveIdx = 1;
@@ -129,6 +130,7 @@ public class CommandManager {
         Robot.m_oi.captureRelease.whenPressed(new CallFunctionCmd(this::triggerCaptureRelease));
         Robot.m_oi.flip.whenPressed(new FlipCmd());
         Robot.m_oi.endDriveMode.whenPressed(new CallFunctionCmd(this::endDriveState));
+        Robot.m_oi.goToPrevMode.whenPressed(new CallFunctionCmd(this::goToPrevMode));
 
         // Construct our major modes from their command factories
         zeroRobotGrp = CmdFactoryZeroRobot();
@@ -147,27 +149,27 @@ public class CommandManager {
 
         xprojShaper = new ExpoShaper(0.5, Robot.m_oi::extensionInput); // joystick defined in m_oi.
         xprojStick = new LimitedIntegrator(Robot.dT, xprojShaper::get, // shaped joystick input
-                -12.0, // kGain, 5 in/sec on the joystick (neg. gain, forward stick is neg.)
+                -20.0, // kGain, 5 in/sec on the joystick (neg. gain, forward stick is neg.)
                 -20.0, // xmin inches
                  20.0, // x_max inches
-                -12.0, // dx_falling rate inch/sec
-                 12.0); // dx_raise rate inch/sec
+                -20.0, // dx_falling rate inch/sec
+                 20.0); // dx_raise rate inch/sec
         xprojStick.setDeadZone(0.1); // in/sec deadzone
 
         xprojRL = new RateLimiter(Robot.dT, this::get_gripperX_cmd, // inputFunc gripperX_cmd
                 this::measProjection, // phy position func
                 Robot.arm.MIN_PROJECTION, // output min
                 Robot.arm.MAX_PROJECTION, // output max
-                -20.0, // inches/sec // falling rate limit
-                20.0, // inches/sec //raising rate limit
+                -30.0, // inches/sec // falling rate limit 
+                30.0, // inches/sec //raising rate limit
                 InputModel.Position);
 
         heightRL = new RateLimiter(Robot.dT, this::get_gripperH_cmd, // gripperH_cmd var as set by this module
                 this::measHeight, // phy position func
                 kHeightMin, // output min
                 kHeightMax, // output max
-                -20.0, // inches/sec // falling rate limit
-                20.0, // inches/sec //raising rate limit
+                -40.0, // inches/sec // falling rate limit
+                40.0, // inches/sec //raising rate limit
                 InputModel.Position);
 
     }
@@ -200,50 +202,61 @@ public class CommandManager {
 
         case HuntGameStart:
             prevHuntMode = Modes.HuntingHatch; // change this if we start with Cargo
+            wristOffset = 14.0;
             nextCmd = huntGameStartGrp;
             break;
 
         case HuntingFloor:
             nextCmd = huntingHFloorGrp;
+            wristOffset = 0.0;
             break;
 
         case HuntingCargo:
             nextCmd = huntingCargoGrp;
+            wristOffset = 0.0;
             break;
 
         case HuntingHatch:
             huntModeIdx = 2;
             nextCmd = huntingHatchGrp;
+            wristOffset = 0.0;
             break;
 
         case Capturing: // moving from hunting to picking it up. Button:Capture
             prevHuntMode = currentMode; // this is what we captured
             nextCmd = captureGrp;
+            wristOffset = 0.0;
             break;
         case Drive:
             driveIdx = 1;
             nextCmd = driveGrp;
+            wristOffset = 0.0;
             break;
         case Defense:
             nextCmd = driveGrp;
+            wristOffset = 0.0;
             break;
         // DeliveryModes
         case DeliverHatch: // based on what we captured
             delHeightIdx = 0; // start at lowest
+            wristOffset = 7.0;
             nextCmd = deliveryGrp;
             break;
 
         case DeliverCargo: // based on what we captured
             delHeightIdx = 0;
+            wristOffset = 30.0;
             nextCmd = deliveryGrp;
             break;
 
         case Releasing:
             prevHuntMode = Modes.Releasing; // Reset the prevHuntMode
             nextCmd = releaseGrp;
+            wristOffset = 0.0;
             break;
         case Flipping:
             nextCmd = flipGrp;
+            wristOffset = 0.0;
             break;
         default:
             break;
@@ -350,6 +363,16 @@ public class CommandManager {
         return cycleHeightMode(-1);
     }
 
+    private int goToPrevMode() {
+        if(currentMode == Modes.Drive) {
+            if ((prevMode.get() > Modes.HuntGameStart.get()) && (prevMode.get() < Modes.Capturing.get())) {
+                setMode(prevMode);
+                prevMode = Modes.Releasing; // Intentially overriding the previous to Releasing if we go back
+                return prevMode.get();
+            }
+        }
+        return 0;
+    }
     /******************************************************************************************** */
 
     // Select proper delivery mode based on what we were hunting.
@@ -359,6 +382,10 @@ public class CommandManager {
         Modes nextMode = (prevHuntMode == Modes.HuntingCargo) ? Modes.DeliverCargo : Modes.DeliverHatch;
         setMode(nextMode);
         return (nextMode.get());
+    }
+
+    double wristTrackOffset() {
+        return this.wristOffset;
     }
 
     double wristTrackParallel() {
@@ -533,11 +560,15 @@ public class CommandManager {
     private CommandGroup CmdFactoryHuntGameStart() {
         CommandGroup grp = new CommandGroup("HuntGameStart");
         grp.addSequential(new VacuumCommand(true, 0.0));   // no timeout
-        grp.addSequential(new RotateWristCommand(95.0, 1.0)); // these will wait, not timeout,
-        grp.addSequential(new RotateWristCommand(90.0, 1.0)); // wiggle wrist to grab hatch
-        grp.addSequential(new GripperPositionCommand(5.0, 13.25, 0.5, 2.0)); // mv h up, keep start xproj
-        grp.addSequential(new GripperPositionCommand(20.0, 20.0, 0.5, 5.0)); // now rotate out and move up
+        grp.addParallel(new WristTrackFunction(this::wristTrackParallel, this::wristTrackOffset));
+        grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
+        grp.addSequential(new GripperPositionCommand(6, 11.5, 0.05, 0.5)); // Move arm up and back to avoid moving hatch
+        grp.addSequential(new GripperPositionCommand(6, 14.5, 0.05, 1.0)); // Move arm into hatch and intake
+        grp.addSequential(new WaitCommand("Hatch Vaccum", 1.0));
+        grp.addParallel(new WristTrackFunction(this::wristTrackParallel));
+        grp.addSequential(new NextModeCmd(Modes.HuntingHatch));
         grp.addSequential(new NextModeCmd(Modes.Drive));
+        grp.addSequential(new NextModeCmd(Modes.DeliverHatch));
         return grp;
     }
 
@@ -560,7 +591,7 @@ public class CommandManager {
     private CommandGroup CmdFactoryDelivery() {
         CommandGroup grp = new CommandGroup("Deliver");
         grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
-        grp.addParallel(new WristTrackFunction(this::wristTrackParallel));
+        grp.addParallel(new WristTrackFunction(this::wristTrackParallel, this::wristTrackOffset));
         return grp;
     }
 

@@ -34,8 +34,8 @@ public class GearShifterSubsystem extends Subsystem {
             RobotMap.GEARSHIFTUP_SOLENOID_PCM, RobotMap.GEARSHIFTDOWN_SOLENOID_PCM);
 
     public enum Gear {        
-        HIGH_GEAR (DoubleSolenoid.Value.kReverse),      //### need to check right order
-        LOW_GEAR (DoubleSolenoid.Value.kForward) ;
+        HIGH_GEAR (DoubleSolenoid.Value.kForward),      //### need to check right order
+        LOW_GEAR (DoubleSolenoid.Value.kReverse) ;
         private final DoubleSolenoid.Value gearCode;
         Gear(DoubleSolenoid.Value value) { gearCode = value; }
         public DoubleSolenoid.Value solenoidCmd() {return this.gearCode; }

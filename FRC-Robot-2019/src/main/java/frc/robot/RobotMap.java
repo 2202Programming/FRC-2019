@@ -52,15 +52,16 @@ public class RobotMap {
   public static final int ARM_EXTENSION_ENCODER_PIN_1 = 9;
   
   //Cargo Trap
-  public static final int TRAP_PCM_ID = CAN_PCM2_ID;
-  public static final int TRAP_DEPLOY_PCM = 2; 
-  public static final int TRAP_RETRACT_PCM = 3;
+  public static final int TRAP_PCM_ID = CAN_PCM1_ID;
+  public static final int TRAP_DEPLOY_PCM = 6; 
+  public static final int TRAP_RETRACT_PCM = 7;
   public static final int TRAP_INTAKE_MOTOR_PIN = 2;
   public static final int TRAP_CARGO_SENSOR_DIO = 30;
 
   //End Effector IntakeSubsystem
   public static final int INTAKE_WRIST_SERVO_PWM = 0;
   public static final int INTAKE_VACUUM_SPARK_PWM = 1;    
+  public static final int INTAKE_VACCUM_SPARK_PDP = 7;
   public static final int INTAKE_CARGO_SWITCH_MXP_CH = 11;
   public static final int INTAKE_PCM_ID = CAN_PCM2_ID;       
   public static final int INTAKE_RELEASE_SOLENOID_PCM = 0;   // DPL switched to single Solenoid

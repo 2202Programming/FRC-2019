@@ -8,15 +8,19 @@ import frc.robot.commands.util.ExpoShaper;
 /**
  * An example command. You can replace me with your own command.
  */
-public class ArcadeDriveCommand extends Command {
+public class CopilotControlCommand extends Command {
   private DriveTrainSubsystem driveTrain;
   private ExpoShaper speedShaper;
   private ExpoShaper rotationShaper;
+  private double maxSpeed;
+  private double maxRotation;
 
-  public ArcadeDriveCommand() {
+  public CopilotControlCommand(double maxSpeed, double maxRotation) {
     // Use requires() here to declare subsystem dependencies
     requires(Robot.driveTrain);
     driveTrain = Robot.driveTrain;
+    this.maxSpeed = maxSpeed;
+    this.maxRotation = maxRotation;
 
     speedShaper = new ExpoShaper(0.6);        //0 no change,  1.0 max flatness
     rotationShaper = new ExpoShaper(0.5);
@@ -35,9 +39,9 @@ public class ArcadeDriveCommand extends Command {
   @Override
   protected void execute() {
     //Robot.driveTrain.ArcadeDrive(0.90, 0, true);
-    double s = speedShaper.expo(Robot.m_oi.getDriverController().getY(Hand.kLeft));
+    double s = maxSpeed * speedShaper.expo(Robot.m_oi.getAssistantController().getY(Hand.kRight));
     //soften the input by limiting the max input
-    double rot = rotationShaper.expo(0.8 * Robot.m_oi.getDriverController().getX(Hand.kRight));
+    double rot = maxRotation * rotationShaper.expo(0.8 * Robot.m_oi.getAssistantController().getX(Hand.kRight));
     Robot.driveTrain.ArcadeDrive(s, rot, false);
   }
 
