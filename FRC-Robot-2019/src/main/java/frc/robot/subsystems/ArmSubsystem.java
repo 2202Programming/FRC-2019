@@ -1,9 +1,3 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -132,6 +126,19 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
     armRotationMotor.setSelectedSensorPosition(0);
     armRotationMotor.setIntegralAccumulator(0.0, PIDIdx, TO);
+  }
+
+  /**
+   * Resets the arm to match calculated position
+   * Run only when the arm extension belt slips
+   */
+  public void resetArm() {
+    double angle = getRealAngle(); // current angle
+    double compLen = ((angle - PHI0) * k_dl_dphi); // ext due to rotation to compensate for
+    double calculatedLength = compLen - L0;
+
+    int counts = (int) (calculatedLength * kCounts_per_in);
+    armExtensionMotor.setSelectedSensorPosition(counts);
   }
 
   /**
