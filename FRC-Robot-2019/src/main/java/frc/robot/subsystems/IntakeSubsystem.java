@@ -54,7 +54,7 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   public final double WristMinDegrees = -100.0; // pointing down, relative to the arm //dpl hack
   public final double WristMaxDegrees = +100.0; // pointing up
   public final double WristStraightDegrees = 0.0; // points near straight out
-  public final double WristDistToPivot = 4.0; //inches
+  public final double WristDistToPivot = 4.0; // inches
   public final double PumpSpeed = 1.0; // motor units
   private long logTimer;
 
@@ -75,32 +75,33 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   public final boolean kVacuum = false;
 
   // Physical devices
-  protected CustomServo wristServo;             // positive angle, wrist up, when arm is forward
-  protected DigitalInput cargoSwitch;           // true when cargo switch is pressed by ball
-  protected SpeedController vacuumPump;         // motor control for vacuum pump
-  protected Solenoid vacuumSol;                 // solenoid to hold and relase ball/hatch
+  protected CustomServo wristServo; // positive angle, wrist up, when arm is forward
+  protected DigitalInput cargoSwitch; // true when cargo switch is pressed by ball
+  protected SpeedController vacuumPump; // motor control for vacuum pump
+  protected Solenoid vacuumSol; // solenoid to hold and relase ball/hatch
 
   /**
    * Creates an intake subsystem.
    */
   public IntakeSubsystem() {
     super("Intake");
-    wristServo = new CustomServo(RobotMap.INTAKE_WRIST_SERVO_PWM, WristMinDegrees, WristMaxDegrees,
-    kServoMinPWM, kServoMaxPWM);
+    wristServo = new CustomServo(RobotMap.INTAKE_WRIST_SERVO_PWM, WristMinDegrees, WristMaxDegrees, kServoMinPWM,
+        kServoMaxPWM);
     wristServo.setName(this.getSubsystem(), "wrist");
 
     cargoSwitch = new DigitalInput(RobotMap.INTAKE_CARGO_SWITCH_MXP_CH);
     vacuumPump = new Spark(RobotMap.INTAKE_VACUUM_SPARK_PWM);
     vacuumSol = new Solenoid(RobotMap.INTAKE_PCM_ID, RobotMap.INTAKE_RELEASE_SOLENOID_PCM);
-  
+
     // addChild("In:Wrist", (Sendable) wristServo);
     // addChild("In:VacPump", vacuumPump);
     addChild("In:CargoSw", cargoSwitch);
-    addChild("In:VacSol",  vacuumSol);
+    addChild("In:VacSol", vacuumSol);
 
-    intakeVacuum = new Subsystem("Intake:Vac"){
+    intakeVacuum = new Subsystem("Intake:Vac") {
       @Override
-      protected void initDefaultCommand() {}  //none 
+      protected void initDefaultCommand() {
+      } // none
     };
 
     logTimer = System.currentTimeMillis();
@@ -111,23 +112,26 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   }
 
   /**
-   * Wrist Controls - With the Arm in front,
-   *                 positive -->angle up
-   *                 negitive -->angle down
-   *                 0.0 --> level with arm mount
+   * Wrist Controls - With the Arm in front, positive -->angle up negitive
+   * -->angle down 0.0 --> level with arm mount
    */
-  public void setAngle(double degrees) { wristServo.setAngle(-degrees);  }
+  public void setAngle(double degrees) {
+    wristServo.setAngle(-degrees);
+  }
 
   /**
    * -1*servo angle is correct by our convention.
+   * 
    * @return wrist angle (degrees)
    */
-  public double getAngle() {  return -wristServo.getAngle();  }
+  public double getAngle() {
+    return -wristServo.getAngle();
+  }
 
   /**
-   *  Commands can used the vacuum subsystem without interferring with wrist.
-  */
-  public Subsystem getVacuumSubsystem()  {
+   * Commands can used the vacuum subsystem without interferring with wrist.
+   */
+  public Subsystem getVacuumSubsystem() {
     return this.intakeVacuum;
   }
 
@@ -136,7 +140,7 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   }
 
   public void setVacuum(boolean on) {
-    if(on) {
+    if (on) {
       vacuumPump.set(PumpSpeed);
     } else {
       vacuumPump.stopMotor();
@@ -157,12 +161,12 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   }
 
   public void vacuumOffHoldOn() {
-    vacuumSol.set(kVacuum);   // keep the vacuum.  
+    vacuumSol.set(kVacuum); // keep the vacuum.
     vacuumPump.stopMotor();
   }
 
   public boolean isVacuum() {
-    boolean v =  (vacuumSol.get() == kVacuum);
+    boolean v = (vacuumSol.get() == kVacuum);
     return v;
   }
 
@@ -191,8 +195,8 @@ public class IntakeSubsystem extends ExtendedSubSystem {
 
   @Override
   public void initSendable(SendableBuilder builder) {
-    //builder.setSmartDashboardType("CustomServo");
-    //builder.addDoubleProperty("Value", this::getAngle, this::setAngle);
+    // builder.setSmartDashboardType("CustomServo");
+    // builder.addDoubleProperty("Value", this::getAngle, this::setAngle);
   }
 
   // Create the zeroSubsystem Command
@@ -208,8 +212,11 @@ public class IntakeSubsystem extends ExtendedSubSystem {
       protected void initialize() {
         zeroIntake();
       }
+
       @Override
-      protected boolean isFinished() { return true; }
+      protected boolean isFinished() {
+        return true;
+      }
     }
     // create the zero command we just defined
     return new IntakeZeroCmd(this);
@@ -244,8 +251,8 @@ public class IntakeSubsystem extends ExtendedSubSystem {
 
     private final double kDefaultMaxServoPWM;
     private final double kDefaultMinServoPWM;
-    private double position;   // save the setting and use it to return a value if asked
-       
+    private double position; // save the setting and use it to return a value if asked
+
     /**
      * Constructor.<br>
      *
@@ -272,7 +279,7 @@ public class IntakeSubsystem extends ExtendedSubSystem {
       kDefaultMaxServoPWM = maxPWMuS;
       kDefaultMinServoPWM = minPWMuS;
       // compute range once
-      kServoRange = kMaxServoAngle - kMinServoAngle;  
+      kServoRange = kMaxServoAngle - kMinServoAngle;
       setBounds(kDefaultMaxServoPWM, 0.0, 0.0, 0.0, kDefaultMinServoPWM);
       setPeriodMultiplier(PeriodMultiplier.k4X);
 
@@ -314,12 +321,13 @@ public class IntakeSubsystem extends ExtendedSubSystem {
      * Assume that the servo angle is linear with respect to the PWM value (big
      * assumption, need to test).
      * 
-     * Derek L - getPosition() returns zero.  Fake a value with saved position. 2/24/2019
+     * Derek L - getPosition() returns zero. Fake a value with saved position.
+     * 2/24/2019
      *
      * @return The angle in degrees to which the servo is set.
      */
     public double getAngle() {
-      double pos =  getPosition() * kServoRange + kMinServoAngle;
+      double pos = getPosition() * kServoRange + kMinServoAngle;
       return pos;
     }
 
@@ -333,7 +341,7 @@ public class IntakeSubsystem extends ExtendedSubSystem {
 
   public void log(int interval) {
 
-    if ((logTimer + interval) < System.currentTimeMillis()) { //only post to smartdashboard every interval ms
+    if ((logTimer + interval) < System.currentTimeMillis()) { // only post to smartdashboard every interval ms
       logTimer = System.currentTimeMillis();
 
       SmartDashboard.putNumber("In:Wr(deg)", getAngle());
