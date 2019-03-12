@@ -39,6 +39,11 @@ public class ClimberSubsystem extends Subsystem {
     final DoubleSolenoid.Value PullIn = Value.kReverse;
     final DoubleSolenoid.Value Release = Value.kForward;
 
+    public final double STALL_POWER_EXTEND = 0.069; //Power needed to allow pawl to fire while on the ground 
+    public final double STALL_POWER_RETRACT = 0.420; //Power needed to allow pawl to fire while extended up
+    public final double COUNTS_PER_IN = 150; //TODO: Find actual counts
+    public final double IN_PER_COUNT = 1 / COUNTS_PER_IN;
+
     // physical devices
     DoubleSolenoid pawl = new DoubleSolenoid(RobotMap.CLIMB_PCM_ID, RobotMap.CLIMB_PAWL_ENGAGE_PCM,
             RobotMap.CLIMB_PAWL_RELEASE_PCM);
@@ -82,7 +87,7 @@ public class ClimberSubsystem extends Subsystem {
     }
 
     public double getExtension() {
-        return footExtender.getEncoder().getPosition();
+        return footExtender.getEncoder().getPosition() * IN_PER_COUNT;
     }
 
     public void setRollerSpeed(double speed) {

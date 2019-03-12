@@ -5,8 +5,10 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 public class ClimbGroup extends CommandGroup {
     public ClimbGroup() {
         //if separate command to bring up robot change to parallel
+        addSequential(new PawlSureFire(true));
         addSequential(new DeployClimbFoot());
         addSequential(new ClimbRollForward());
+        addSequential(new PawlSureFire(false));
         addSequential(new RetractClimbFoot());
     }
 
