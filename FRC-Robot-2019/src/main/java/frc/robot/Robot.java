@@ -51,6 +51,8 @@ public class Robot extends TimedRobot {
   private RobotTest m_testRobot;
 
   boolean doneOnce = false;   //single execute our zero 
+  private UsbCamera driveCamera;
+  private Integer currentCamera = 1;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -67,13 +69,15 @@ public class Robot extends TimedRobot {
     // 0=front cam, 1= rear cam, 2 = arm  (pi camera server defines this - could change)
     cameraSelect.setDouble(1);    
     
-    UsbCamera frontDrive = CameraServer.getInstance().startAutomaticCapture(0);
-    frontDrive.setResolution(320, 240);
-    frontDrive.setFPS(30);
+    driveCamera = CameraServer.getInstance().startAutomaticCapture("Drive", 0);
+    driveCamera.setResolution(320, 240);
+    driveCamera.setFPS(20);
+    currentCamera = 0;
 
-    UsbCamera armCamera = CameraServer.getInstance().startAutomaticCapture(1);
-    armCamera.setResolution(320, 240);
-    armCamera.setFPS(30);
+    UsbCamera armCamera = CameraServer.getInstance().startAutomaticCapture("Arm", 2);
+    armCamera.setResolution(240, 240);
+    armCamera.setFPS(20);
+
   }
 
   /**
@@ -138,6 +142,7 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
     m_cmdMgr.execute();
     Scheduler.getInstance().run();
+    setDriveCamera();
   }
 
   @Override
@@ -161,6 +166,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     m_cmdMgr.execute();
     Scheduler.getInstance().run();
+    setDriveCamera();
 
 
 //    if (serialSubsystem.isSerialEnabled()) //if serial was initalized, run periodic serial processing loop
@@ -181,6 +187,7 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {
     Scheduler.getInstance().run();
     m_testRobot.periodic();
+    setDriveCamera();
   }
 
   private void logSmartDashboardSensors(int interval) {
@@ -207,4 +214,19 @@ public class Robot extends TimedRobot {
     driveTrain.getRightEncoderTalon().setSelectedSensorPosition(0);
   }
 
+  private void setDriveCamera() { //switch drive camera to other USB webcam if inversion constant changes
+    if (driveTrain.getInversionConstant() != currentCamera) {  //true if inversion constant has changed
+      currentCamera = driveTrain.getInversionConstant();
+      if (currentCamera > 0) {
+        driveCamera = CameraServer.getInstance().startAutomaticCapture("Drive", 0);
+        driveCamera.setResolution(320, 240);
+        driveCamera.setFPS(20);
+      }
+      else {
+        driveCamera = CameraServer.getInstance().startAutomaticCapture("Drive", 1);
+        driveCamera.setResolution(320, 240);
+        driveCamera.setFPS(20);
+      }
+    }
+  }
 }
