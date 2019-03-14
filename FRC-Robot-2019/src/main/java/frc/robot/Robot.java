@@ -69,12 +69,12 @@ public class Robot extends TimedRobot {
     // 0=front cam, 1= rear cam, 2 = arm  (pi camera server defines this - could change)
     cameraSelect.setDouble(1);    
     
-    driveCamera = CameraServer.getInstance().startAutomaticCapture("Drive", "/dev/v41/by-id/usb-HD_Camera_Manufacturer_USB_2.0_Camera-video-index0");
+    driveCamera = CameraServer.getInstance().startAutomaticCapture("Drive", RobotMap.FRONT_DRIVE_CAMERA_PATH);
     driveCamera.setResolution(320, 240);
     driveCamera.setFPS(20);
     currentCamera = 0;
 
-    UsbCamera armCamera = CameraServer.getInstance().startAutomaticCapture("Arm", "/dev/v41/by-id/usb-HD_Camera_Manufacturer_VGA_USB_Camera_VGA_USB_Camera-video-index0");
+    UsbCamera armCamera = CameraServer.getInstance().startAutomaticCapture("Arm", RobotMap.ARM_CAMERA_PATH);
     armCamera.setResolution(240, 240);
     armCamera.setFPS(20);
 
