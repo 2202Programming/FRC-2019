@@ -15,6 +15,8 @@ import frc.robot.subsystems.*;
 
 import frc.robot.commands.CommandManager;
 import frc.robot.commands.CommandManager.Modes;
+import frc.robot.commands.climb.CheckSolenoids;
+import frc.robot.commands.intake.CheckSucc;
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
@@ -140,6 +142,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
+    Scheduler.getInstance().add(new CheckSolenoids());
+    Scheduler.getInstance().add(new CheckSucc());
     m_cmdMgr.execute();
     Scheduler.getInstance().run();
     setDriveCamera();
