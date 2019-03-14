@@ -273,6 +273,10 @@ public class CommandManager {
         currentGrp.start(); // schedule our new work, initialize() then execute() are called
     }
 
+    public Modes getCurMode() {
+        return currentMode;
+    }
+
     public boolean isHunting() {
         if ((currentMode.get() > Modes.HuntGameStart.get()) && (currentMode.get() < Modes.Capturing.get())) {
             return true;

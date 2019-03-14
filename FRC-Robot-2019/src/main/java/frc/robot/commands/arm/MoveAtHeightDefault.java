@@ -6,6 +6,7 @@ import frc.robot.commands.util.LimitedIntegrator;
 import frc.robot.commands.util.MathUtil;
 import frc.robot.commands.util.RateLimiter;
 import frc.robot.commands.util.RateLimiter.InputModel;
+import frc.robot.subsystems.ArmSubsystem;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
@@ -19,6 +20,7 @@ import frc.robot.Robot;
 
 public class MoveAtHeightDefault extends Command {
 
+    private ArmSubsystem arm;
     // Height of point of rotation for the arm in inches
     private final double pivotHeight = Robot.arm.ARM_PIVOT_HEIGHT;
     public final double kCapHeight = 4.0; // inch/joy units TODO: put in better place
@@ -33,45 +35,49 @@ public class MoveAtHeightDefault extends Command {
     final double DeliveryHatchHeights[] = { 27.5, 55.0, 82.0 }; 
     final double deliveryProjection[] = { 25.0, 25.0, 25.0 }; // TODO: fix the numbers
 
-    //OOF
-    RateLimiter xprojRL = new RateLimiter(Robot.dT, this::get_gripperX_cmd, // inputFunc gripperX_cmd
-            this::measProjection, // phy position func
-            Robot.arm.MIN_PROJECTION, // output min
-            Robot.arm.MAX_PROJECTION, // output max
-            -30.0, // inches/sec // falling rate limit 
-            30.0, // inches/sec //raising rate limit
-            InputModel.Position);
+    // //OOF
+    // RateLimiter xprojRL = new RateLimiter(Robot.dT, this::get_gripperX_cmd, // inputFunc gripperX_cmd
+    //         this::measProjection, // phy position func
+    //         Robot.arm.MIN_PROJECTION, // output min
+    //         Robot.arm.MAX_PROJECTION, // output max
+    //         -30.0, // inches/sec // falling rate limit 
+    //         30.0, // inches/sec //raising rate limit
+    //         InputModel.Position);
 
-    RateLimiter heightRL = new RateLimiter(Robot.dT, this::get_gripperH_cmd, // gripperH_cmd var as set by this module
-            this::measHeight, // phy position func
-            kHeightMin, // output min
-            kHeightMax, // output max
-            -40.0, // inches/sec // falling rate limit
-            40.0, // inches/sec //raising rate limit
-            InputModel.Position);
+    // RateLimiter heightRL = new RateLimiter(Robot.dT, this::get_gripperH_cmd, // gripperH_cmd var as set by this module
+    //         this::measHeight, // phy position func
+    //         kHeightMin, // output min
+    //         kHeightMax, // output max
+    //         -40.0, // inches/sec // falling rate limit
+    //         40.0, // inches/sec //raising rate limit
+    //         InputModel.Position);
 
-    ExpoShaper xprojShaper = new ExpoShaper(0.5, Robot.m_oi::extensionInput); // joystick defined in m_oi.
-    LimitedIntegrator xprojStick = new LimitedIntegrator(Robot.dT, xprojShaper::get, // shaped joystick input
-            -20.0, // kGain, 5 in/sec on the joystick (neg. gain, forward stick is neg.)
-            -20.0, // xmin inches
-            20.0, // x_max inches
-            -20.0, // dx_falling rate inch/sec
-             20.0); // dx_raise rate inch/sec
-    xprojStick.setDeadZone(0.1); // in/sec deadzone
+    // ExpoShaper xprojShaper = new ExpoShaper(0.5, Robot.m_oi::extensionInput); // joystick defined in m_oi.
+    // LimitedIntegrator xprojStick = new LimitedIntegrator(Robot.dT, xprojShaper::get, // shaped joystick input
+    //         -20.0, // kGain, 5 in/sec on the joystick (neg. gain, forward stick is neg.)
+    //         -20.0, // xmin inches
+    //         20.0, // x_max inches
+    //         -20.0, // dx_falling rate inch/sec
+    //          20.0); // dx_raise rate inch/sec
+    // xprojStick.setDeadZone(0.1); // in/sec deadzone
+
+    private double stateH;
+    private double stateX;
 
     public MoveAtHeightDefault() {
         requires(Robot.arm);
+        arm = Robot.arm;
     }
 
-    private double get_gripperH_cmd() {
+    private double getHeightCommanded() {
         double h_driverOffset = kCapHeight * Robot.m_oi.adjustHeight(); // driver contrib from triggers
-        double h = gripperH_cmd - h_driverOffset; // state machine + driver so both are rate filtered
+        double h = stateH - h_driverOffset; // state machine + driver so both are rate filtered
         return h;
     }
 
-    private double get_gripperX_cmd() {
+    private double getProjectionCommanded() {
         double x_driverOffset = xprojStick.get(); // co-driver's offset.
-        double x = gripperX_cmd + x_driverOffset;
+        double x = stateX + x_driverOffset;
         return x;
     }
 
@@ -80,19 +86,17 @@ public class MoveAtHeightDefault extends Command {
      */
 
     protected void execute() {
-
         Modes curMode = Robot.m_cmdMgr.getCurMode();
         // read inputs
-        //TODO: Get adjustments/RL on these values directly rather than through confusing chain of methods
-        double h_cmd = Robot.m_cmdMgr.gripperHeightOut();
-        double l_cmd = Robot.m_cmdMgr.gripperXProjectionOut();
+        double h_cmd = getHeightCommanded();
+        double x_cmd = getProjectionCommanded();
 
         // If target is below pivot height, used for quadrant calcs
         boolean belowPiv = h_cmd < pivotHeight;
         h = Math.abs(pivotHeight - h_cmd);           //h (inches) above or below piviot in mag
         
         //Roughly limit the extension based on game limits and robot geometry
-        xProjection = MathUtil.limit(l_cmd, Robot.arm.MIN_PROJECTION, Robot.arm.MAX_PROJECTION);
+        xProjection = MathUtil.limit(x_cmd, Robot.arm.MIN_PROJECTION, Robot.arm.MAX_PROJECTION);
 
         double tanRatio = (belowPiv) ? h / xProjection : xProjection / h;
         // Rotate to maintain height as projection changes
@@ -116,8 +120,25 @@ public class MoveAtHeightDefault extends Command {
          */
     }
 
+    protected void alternativeExecute() {
+        Modes curMode = Robot.m_cmdMgr.getCurMode();
+
+        // Get input
+        double h_cmd = getHeightCommanded();
+        double x_cmd = getProjectionCommanded();
+
+        //Calculate the angle
+        double heightAbovePivot = h_cmd - arm.ARM_PIVOT_HEIGHT;
+        double calculatedAngle = -Math.toDegrees(Math.atan(heightAbovePivot / x_cmd)) + 90;
+        double curAngle = MathUtil.limit(calculatedAngle, arm.PHI_MIN, arm.PHI_MAX);
+        double calculatedExtension = (x_cmd / Math.cos(Math.toRadians(90 - arm.getAbsoluteAngle()))) - arm.ARM_BASE_LENGTH - arm.WRIST_LENGTH;
+        double extensionLength = MathUtil.limit(calculatedExtension, arm.EXTEND_MIN, arm.EXTEND_MAX);
+
+        arm.setAngle(curAngle);
+        arm.setExtension(extensionLength);
+    }
+
     protected boolean isFinished() {
         return false;
     }
-
 }
