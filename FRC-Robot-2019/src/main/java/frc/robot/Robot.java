@@ -235,12 +235,12 @@ public class Robot extends TimedRobot {
       */
     }
   }
-  private double getDistanceFront() //returns distance from target (either from Front Lydar or from lime light depending on reliability)
+  private double getDistanceFront() //returns distance from target (either from Front Lidar or from lime light depending on reliability), -1 if not available
   {
     double distance=9999;
     double distance2 = 9999;
     double conversion = 0.001; //area to range in mm conversion
-    double areaMax = 3;
+    double areaMax = 3; // Once target area is over this size, will check Lidar for reliability and use Lidar if available
     double errorConstant = 0.9;
     
 
@@ -251,9 +251,7 @@ public class Robot extends TimedRobot {
         distance = Double.valueOf(serialSubsystem.getDistanceAvg(RobotMap.LEFT_FRONT_LIDAR));
         distance2 = Double.valueOf(serialSubsystem.getDistanceAvg(RobotMap.RIGHT_FRONT_LIDAR));
 
-        
-
-        return (distance+distance2)/2; //error cuz it returns an Integer and it is a float (???)
+        return (distance+distance2)/2; 
       }
       else{
 
@@ -278,7 +276,7 @@ public class Robot extends TimedRobot {
 
   }
 
-  private double getDistanceBack() //returns distance from target using back Lydar
+  private double getDistanceBack() //returns distance from target using back Lidar, -1 if not reliable
   {
     double distance=9999;
     double distance2=9999;
