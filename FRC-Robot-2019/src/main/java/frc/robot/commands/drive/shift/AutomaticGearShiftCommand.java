@@ -2,7 +2,6 @@ package frc.robot.commands.drive.shift;
 
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
-//import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.subsystems.GearShifterSubsystem;

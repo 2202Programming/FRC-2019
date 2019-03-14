@@ -93,8 +93,8 @@ public class LimeLightSubsystem extends Subsystem {
 
 
         //put cameraselect value into network tables
-        if(Robot.driveTrain.getInversionConstant()>0) cameraSelect.setBoolean(true);
-        else cameraSelect.setBoolean(false);
+        if(Robot.driveTrain.getInversionConstant()>0) cameraSelect.setDouble(0);
+        else cameraSelect.setDouble(1);
 
         return;
     }

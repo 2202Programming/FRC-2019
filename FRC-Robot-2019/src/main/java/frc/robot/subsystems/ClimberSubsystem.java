@@ -1,13 +1,13 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-//import edu.wpi.first.wpilibj.Sendable;
-//import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.Spark;
 import frc.robot.RobotMap;
 
 /**
@@ -36,25 +36,46 @@ public class ClimberSubsystem extends Subsystem {
     // DPL ### check the settings for Extend/Retract
     final DoubleSolenoid.Value Extend = Value.kForward;
     final DoubleSolenoid.Value Retract = Value.kReverse;
+    final DoubleSolenoid.Value PullIn = Value.kReverse;
+    final DoubleSolenoid.Value Release = Value.kForward;
+
+    public final double STALL_POWER_EXTEND = 0.069; //Power needed to allow pawl to fire while on the ground 
+    public final double STALL_POWER_RETRACT = 0.420; //Power needed to allow pawl to fire while extended up
+    public final double COUNTS_PER_IN = 150; //TODO: Find actual counts
+    public final double IN_PER_COUNT = 1 / COUNTS_PER_IN;
 
     // physical devices
-    DoubleSolenoid ratchet = new DoubleSolenoid(RobotMap.CLIMB_RATCHET_PCM_ID, RobotMap.CLIMB_RATCHET_UP_PCM,
-            RobotMap.CLIMB_RATCHET_DOWN_PCM);
+    DoubleSolenoid pawl = new DoubleSolenoid(RobotMap.CLIMB_PCM_ID, RobotMap.CLIMB_PAWL_ENGAGE_PCM,
+            RobotMap.CLIMB_PAWL_RELEASE_PCM);
+    DoubleSolenoid drawerSlide = new DoubleSolenoid(RobotMap.CLIMB_PCM_ID, RobotMap.CLIMB_SLIDE_PULL_PCM,
+            RobotMap.CLIMB_SLIDE_RELEASE_PCM);
 
-    Spark footExtender = new Spark(RobotMap.CLIMB_FOOT_SPARK_PWM);
-    Spark roller = new Spark(RobotMap.CLIMB_ROLLER_SPARK_PWM);
+    CANSparkMax footExtender = new CANSparkMax(RobotMap.CLIMB_FOOT_SPARK_MAX_CAN_ID, MotorType.kBrushless);
+    CANSparkMax roller = new CANSparkMax(RobotMap.CLIMB_ROLLER_SPARK_MAX_CAN_ID, MotorType.kBrushed);
 
-    void init() {
-        roller.disable();
-        footExtender.disable();
-        ratchet.set(Retract);
+    // think we need to add an encoder
+
+    public void setDrawerSlide(boolean on) {
+        if (on)
+            drawerSlide.set(Extend);
+        else
+            drawerSlide.set(Retract);
+    }
+
+    public void setPawl(boolean on) {
+        if (on)
+            pawl.set(PullIn);
+        else
+            pawl.set(Release);
+    }
+
+    public void init() {
+        setPawl(false);
+        setDrawerSlide(false);
     }
 
     public ClimberSubsystem() {
         init();
-        addChild("Climber-ratchet", ratchet);
-        addChild("Climber-foot", footExtender);
-        addChild("Climber-roller", roller);
     }
 
     public void setExtenderSpeed(double speed) {
@@ -65,6 +86,10 @@ public class ClimberSubsystem extends Subsystem {
         return footExtender.get();
     }
 
+    public double getExtension() {
+        return footExtender.getEncoder().getPosition() * IN_PER_COUNT;
+    }
+
     public void setRollerSpeed(double speed) {
         roller.set(speed);
     }
@@ -72,15 +97,6 @@ public class ClimberSubsystem extends Subsystem {
     public double getRollerSpeed() {
         return roller.get();
     }
-
-    public void setRatchetExtend(boolean extend) {
-        if (extend)  { ratchet.set(Extend);  } 
-        else         { ratchet.set(Retract); }
-    }
-
-    public boolean getRatchetExtend() {
-        return (Extend == ratchet.get()); 
-        }
 
     @Override
     protected void initDefaultCommand() {
@@ -90,11 +106,10 @@ public class ClimberSubsystem extends Subsystem {
         builder.setSmartDashboardType("ClimberSubsystem");
         builder.addDoubleProperty("ExtenderSpeed", this::getExtenderSpeed, this::setExtenderSpeed);
         builder.addDoubleProperty("FootSpeed", this::getRollerSpeed, this::setRollerSpeed);
-        builder.addBooleanProperty("RatchetExtend", this::getRatchetExtend, this::setRatchetExtend);
     }
 
     public void log() {
-        SmartDashboard.putData(this);
+        SmartDashboard.putNumber("Climber counts", getExtension());
     }
 
 }

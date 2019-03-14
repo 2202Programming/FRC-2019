@@ -7,16 +7,18 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.*;
-import frc.robot.RobotMap;
 
 import frc.robot.commands.CommandManager;
 import frc.robot.commands.CommandManager.Modes;
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.networktables.*;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -29,7 +31,7 @@ public class Robot extends TimedRobot {
   //common constants for robot
   public static double dT = kDefaultPeriod;  // Robots sample period (seconds) 
   //THis years bounding box beyond frame of robot. Use this in limit calcs in subsystems.
-  public static double kProjectConstraint = 30.0; //inches from frame
+  public static double kProjectConstraint = 26.0; //inches from frame (accounting for the suction cup length)
   //public static double kForwardProjectMin = 18.0; //inches from arm pivot x-axis to bumper
   //public static double kReverseProjectMin = 18.0; //inches from arm pivot x-axis to bumper
   
@@ -41,13 +43,16 @@ public class Robot extends TimedRobot {
   public static CargoTrapSubsystem cargoTrap = new CargoTrapSubsystem();
   public static ArmSubsystem arm = new ArmSubsystem();
   public static ClimberSubsystem climber = new ClimberSubsystem();
-  public static SerialPortSubsystem serialSubsystem = new SerialPortSubsystem();
-  public static OI m_oi = new OI(false); //OI Depends on the subsystems and must be last (boolean is whether we are testing or not)
+  public static PowerDistributionPanel pdp = new PowerDistributionPanel(0);
+  //public static SerialPortSubsystem serialSubsystem = new SerialPortSubsystem();
+  public static OI m_oi = new OI(); //OI Depends on the subsystems and must be last (boolean is whether we are testing or not)
 
   public static CommandManager m_cmdMgr;    //fix the public later
   private RobotTest m_testRobot;
 
   boolean doneOnce = false;   //single execute our zero 
+  private UsbCamera driveCamera;
+  private Integer currentCamera = 1;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -60,6 +65,19 @@ public class Robot extends TimedRobot {
     m_cmdMgr = new CommandManager();
     m_cmdMgr.setMode(Modes.Construction);   // schedules the mode's function
     limeLight.disableLED(); //disable blinding green LED that Trevor hates
+    NetworkTableEntry cameraSelect = NetworkTableInstance.getDefault().getEntry("/PiSwitch");
+    // 0=front cam, 1= rear cam, 2 = arm  (pi camera server defines this - could change)
+    cameraSelect.setDouble(1);    
+    
+    driveCamera = CameraServer.getInstance().startAutomaticCapture("Drive", RobotMap.FRONT_DRIVE_CAMERA_PATH);
+    driveCamera.setResolution(320, 240);
+    driveCamera.setFPS(20);
+    currentCamera = 0;
+
+    UsbCamera armCamera = CameraServer.getInstance().startAutomaticCapture("Arm", RobotMap.ARM_CAMERA_PATH);
+    armCamera.setResolution(240, 240);
+    armCamera.setFPS(20);
+
   }
 
   /**
@@ -75,7 +93,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     logSmartDashboardSensors(500); //call smartdashboard logging, 500ms update rate
     limeLight.populateLimelight();
-    serialSubsystem.processSerial();
+    //serialSubsystem.processSerial();
   }
 
   /**
@@ -91,6 +109,8 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledPeriodic() {
     Scheduler.getInstance().run();
+    limeLight.disableLED(); //disable blinding green LED that Trevor hates
+    intake.releaseSolenoid(intake.kRelease);
   }
 
   /**
@@ -107,6 +127,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    if (doneOnce == false ){
+      m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function
+      doneOnce = true;
+    }
     resetAllDashBoardSensors();
     limeLight.enableLED(); //active limelight LED when operational
   }
@@ -116,7 +140,9 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
+    m_cmdMgr.execute();
     Scheduler.getInstance().run();
+    setDriveCamera();
   }
 
   @Override
@@ -130,7 +156,6 @@ public class Robot extends TimedRobot {
       doneOnce = true;
     }
     resetAllDashBoardSensors();
-    //m_cmdMgr.setMode(Modes.HuntingHatch);  
     limeLight.enableLED(); //active limelight LED when operational 
   }
 
@@ -141,6 +166,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     m_cmdMgr.execute();
     Scheduler.getInstance().run();
+    setDriveCamera();
 
 
 //    if (serialSubsystem.isSerialEnabled()) //if serial was initalized, run periodic serial processing loop
@@ -161,6 +187,7 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {
     Scheduler.getInstance().run();
     m_testRobot.periodic();
+    setDriveCamera();
   }
 
   private void logSmartDashboardSensors(int interval) {
@@ -169,17 +196,17 @@ public class Robot extends TimedRobot {
     //picking hopefully non-overlapping time intervals so all the logging isn't done at the same cycle
     limeLight.log(interval); //tell limelight to post to dashboard every Xms
     driveTrain.log(interval+3); //tell drivertrain to post to dashboard every Xms
-    serialSubsystem.log(interval+7); //tell serial to post to dashboard every Xms
+    //serialSubsystem.log(interval+7); //tell serial to post to dashboard every Xms
     arm.log(interval+11);
     gearShifter.log(interval+17); //tell gearshifter to post to dashboard every Xms
     m_cmdMgr.log(interval+23);
     intake.log(interval+29);
 
-/*    
+    
     SmartDashboard.putData(Scheduler.getInstance()); 
-    //SmartDashboard.putData(driveTrain);
-    //SmartDashboard.putData(gearShifter);
-*/
+    SmartDashboard.putData(arm);
+    SmartDashboard.putData(intake);
+
 }
 
   private void resetAllDashBoardSensors() {
@@ -187,6 +214,23 @@ public class Robot extends TimedRobot {
     driveTrain.getRightEncoderTalon().setSelectedSensorPosition(0);
   }
 
+  private void setDriveCamera() { //switch drive camera to other USB webcam if inversion constant changes
+    if (driveTrain.getInversionConstant() != currentCamera) {  //true if inversion constant has changed
+      currentCamera = driveTrain.getInversionConstant();
+      /*
+      if (currentCamera > 0) {
+        driveCamera = CameraServer.getInstance().startAutomaticCapture("Drive", 0);
+        driveCamera.setResolution(320, 240);
+        driveCamera.setFPS(20);
+      }
+      else {
+        driveCamera = CameraServer.getInstance().startAutomaticCapture("Drive", 1);
+        driveCamera.setResolution(320, 240);
+        driveCamera.setFPS(20);
+      }
+      */
+    }
+  }
   private double getDistanceFront() //returns distance from target (either from Front Lydar or from lime light depending on reliability)
   {
     double distance=9999;

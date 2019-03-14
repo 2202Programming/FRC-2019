@@ -9,7 +9,6 @@ public class RetractClimbFoot extends Command {
     }
 
     protected void execute() {
-        Robot.climber.setRatchetExtend(false);
         Robot.climber.setExtenderSpeed(-0.3);
     }
 
@@ -18,6 +17,6 @@ public class RetractClimbFoot extends Command {
     }
 
     protected boolean isFinished() {
-        return false; //TODO: Choose good way to stop the extender
+        return Robot.climber.getExtension() <= 10; //TODO: Better stop at bottom
     }
 }

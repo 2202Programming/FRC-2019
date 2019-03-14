@@ -4,7 +4,6 @@ import frc.robot.commands.util.MathUtil;
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.subsystems.ArmSubsystem;
 
 /** 
  * 

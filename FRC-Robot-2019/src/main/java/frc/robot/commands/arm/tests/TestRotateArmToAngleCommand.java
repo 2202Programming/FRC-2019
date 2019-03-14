@@ -16,7 +16,7 @@ public class TestRotateArmToAngleCommand extends Command {
     
     public TestRotateArmToAngleCommand(double angle)
     {
-        this(angle, 0.0);
+        this(angle, 10);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class TestRotateArmToAngleCommand extends Command {
     }
 
     protected boolean isFinished() {
-        boolean pos = Math.abs(Robot.arm.getAngle() - angle) < kTolerance; 
+        boolean pos = Math.abs(Robot.arm.getAbsoluteAngle() - angle) < kTolerance; 
         return pos || isTimedOut();  
     }
 }
