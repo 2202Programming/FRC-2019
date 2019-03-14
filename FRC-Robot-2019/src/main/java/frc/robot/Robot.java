@@ -44,7 +44,7 @@ public class Robot extends TimedRobot {
   public static ArmSubsystem arm = new ArmSubsystem();
   public static ClimberSubsystem climber = new ClimberSubsystem();
   public static PowerDistributionPanel pdp = new PowerDistributionPanel(0);
-  //public static SerialPortSubsystem serialSubsystem = new SerialPortSubsystem();
+  public static SerialPortSubsystem serialSubsystem = new SerialPortSubsystem();
   public static OI m_oi = new OI(); //OI Depends on the subsystems and must be last (boolean is whether we are testing or not)
 
   public static CommandManager m_cmdMgr;    //fix the public later
@@ -206,6 +206,10 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(Scheduler.getInstance()); 
     SmartDashboard.putData(arm);
     SmartDashboard.putData(intake);
+
+    SmartDashboard.putNumber("Front Distance", getDistanceFront());
+    SmartDashboard.putNumber("Back Distance", getDistanceBack());
+
 
 }
 
