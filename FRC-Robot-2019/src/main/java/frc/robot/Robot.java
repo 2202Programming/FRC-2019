@@ -19,6 +19,8 @@ import frc.robot.commands.climb.CheckSolenoids;
 import frc.robot.commands.intake.CheckSucc;
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoSink;
+import edu.wpi.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.*;
 
@@ -53,7 +55,10 @@ public class Robot extends TimedRobot {
   private RobotTest m_testRobot;
 
   boolean doneOnce = false;   //single execute our zero 
-  private UsbCamera driveCamera;
+  private UsbCamera frontCamera;
+  private UsbCamera rearCamera;
+  private UsbCamera armCamera;
+  private VideoSink switchedCamera;
   private Integer currentCamera = 1;
 
   /**
@@ -71,14 +76,25 @@ public class Robot extends TimedRobot {
     // 0=front cam, 1= rear cam, 2 = arm  (pi camera server defines this - could change)
     cameraSelect.setDouble(1);    
     
-    driveCamera = CameraServer.getInstance().startAutomaticCapture("Drive", RobotMap.FRONT_DRIVE_CAMERA_PATH);
-    driveCamera.setResolution(320, 240);
-    driveCamera.setFPS(20);
-    currentCamera = 0;
+    frontCamera = CameraServer.getInstance().startAutomaticCapture("Front Drive", RobotMap.FRONT_DRIVE_CAMERA_PATH);
+    frontCamera.setResolution(320, 240);
+    frontCamera.setFPS(20);
 
-    UsbCamera armCamera = CameraServer.getInstance().startAutomaticCapture("Arm", RobotMap.ARM_CAMERA_PATH);
+    rearCamera = CameraServer.getInstance().startAutomaticCapture("Rear Drive", RobotMap.REAR_DRIVE_CAMERA_PATH);
+    rearCamera.setResolution(320, 240);
+    rearCamera.setFPS(20);
+
+    armCamera = CameraServer.getInstance().startAutomaticCapture("Arm", RobotMap.ARM_CAMERA_PATH);
     armCamera.setResolution(240, 240);
     armCamera.setFPS(20);
+
+    switchedCamera = CameraServer.getInstance().addSwitchedCamera("Switched Camera");
+    frontCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+    rearCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+
+    currentCamera = 0;
+
+
 
   }
 
@@ -223,16 +239,13 @@ public class Robot extends TimedRobot {
       currentCamera = driveTrain.getInversionConstant();
       
       if (currentCamera > 0) {
-        driveCamera = CameraServer.getInstance().startAutomaticCapture("Drive", RobotMap.FRONT_DRIVE_CAMERA_PATH);
-        driveCamera.setResolution(320, 240);
-        driveCamera.setFPS(20);
+        switchedCamera.setSource(frontCamera);
+        System.out.println("Setting Front Camera");
       }
       else {
-        driveCamera = CameraServer.getInstance().startAutomaticCapture("Drive", RobotMap.REAR_DRIVE_CAMERA_PATH);
-        driveCamera.setResolution(320, 240);
-        driveCamera.setFPS(20);
+        switchedCamera.setSource(rearCamera);
+        System.out.println("Setting Rear Camera");
       }
-      
     }
   }
 }
