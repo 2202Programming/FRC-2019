@@ -221,18 +221,18 @@ public class Robot extends TimedRobot {
   private void setDriveCamera() { //switch drive camera to other USB webcam if inversion constant changes
     if (driveTrain.getInversionConstant() != currentCamera) {  //true if inversion constant has changed
       currentCamera = driveTrain.getInversionConstant();
-      /*
+      
       if (currentCamera > 0) {
-        driveCamera = CameraServer.getInstance().startAutomaticCapture("Drive", 0);
+        driveCamera = CameraServer.getInstance().startAutomaticCapture("Drive", RobotMap.FRONT_DRIVE_CAMERA_PATH);
         driveCamera.setResolution(320, 240);
         driveCamera.setFPS(20);
       }
       else {
-        driveCamera = CameraServer.getInstance().startAutomaticCapture("Drive", 1);
+        driveCamera = CameraServer.getInstance().startAutomaticCapture("Drive", RobotMap.REAR_DRIVE_CAMERA_PATH);
         driveCamera.setResolution(320, 240);
         driveCamera.setFPS(20);
       }
-      */
+      
     }
   }
 }
