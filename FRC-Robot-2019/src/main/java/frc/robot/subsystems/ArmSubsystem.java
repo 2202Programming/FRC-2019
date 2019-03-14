@@ -50,7 +50,9 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public final double MAX_PROJECTION = PIVOT_TO_FRONT + Robot.kProjectConstraint; //
 
   // Extender phyiscal numbers
-  public final double L0 = 8.875; // inches - starting point, encoder zero -set 2/24/2019
+  public double L0 = 8.875; // inches - starting point, encoder zero -set 2/24/2019
+  public double Phi0_L0 =  PHI0; // degrees - angle where dl/dPhi is zeroed
+  public final double L_sw = 0.0; // inches - extension point where switch is triggered
   public final double EXTEND_MIN = 0.750; // inches 0.0 physic, .75 soft stop
   public final double EXTEND_MAX = 35.0; // inches - measured practice bot
   public final double ARM_BASE_LENGTH = 18.0; // inches - measured practice bot (from pivot center) xg 2/16/19
@@ -66,13 +68,13 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
   // talon controls
   final int PIDIdx = 0; // using pid 0 on talon
-  final int TO = 30; // timeout 30ms
+  final int TO = 30;    // timeout, we shouldn't really need one  TODO try 0
 
   private long logTimer;
 
   public class Position {
-    public double height;
-    public double projection;
+    public double height;      //inches above floor
+    public double projection;  //inches in front of pivot point
   };
 
   // outputs in robot coordinates h,ext (inches)
@@ -90,16 +92,16 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
     // Set Talon postion mode gains and power limits
     // Arm
-    armRotationMotor.config_kP(0, 0.5 /* 0.8 */, 30);
+    armRotationMotor.config_kP(0, 0.5 /* 0.8 */, TO);
     armRotationMotor.configPeakOutputForward(0.24);
     armRotationMotor.configPeakOutputReverse(-0.24);
     armRotationMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     armRotationMotor.setInverted(true);
 
     // Extension on power will be out at L0.
-    armExtensionMotor.config_kP(0, 0.6 /* 0.6 */, 30);
+    armExtensionMotor.config_kP(0, 0.6 /* 0.6 */, TO);
     armExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
-    armExtensionMotor.setIntegralAccumulator(0, 0, 30);
+    armExtensionMotor.setIntegralAccumulator(0, 0, TO);
     armExtensionMotor.setSensorPhase(false);
     armExtensionMotor.setInverted(true);
     armExtensionMotor.configPeakOutputForward(0.5);
@@ -142,6 +144,20 @@ public class ArmSubsystem extends ExtendedSubSystem {
   }
 
   /**
+   *  Arm has been bumped or retracted to the zero-switch positon.  Need to reset
+   *  counters to match the physical extension point and take into account the 
+   *  current angle and its compensation.
+   */
+  public void resetArmByDerek() {
+    // ext is at Lsw
+    this.L0 = L_sw;  // inches - starting point, encoder zero -set 2/24/2019
+    this.Phi0_L0 = getRealAngle();  //new Phi0 angle where dl/dPhi is zeroed
+    armExtensionMotor.setSelectedSensorPosition(0);   //this could be automatic inside the talon
+
+  }
+
+
+  /**
    * Rotates the arm to a specific angle
    * 
    * @param angle the angle to rotate the arm to, in degrees
@@ -175,19 +191,21 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * Extends the extension to the length given. Compensate for the arm angle, phi,
    * so the desired extension is maintained.
    * 
-   * Because the encoders are zeroed at PHI0 and D0 they must be accounted for...
+   * Because the encoders are zeroed at PHI0 and L0 they must be accounted for...
    * At phi == phi0 there is no changes in length.
+   * 
+   * If we reset the talon with limit switch, we set new Phi0_l0 and L0
    * 
    * @param extendInch (inches) to set the arm.
    */
   public void setExtension(double l) {
     double angle = getRealAngle(); // current angle
-    double compLen = ((angle - PHI0) * k_dl_dphi); // ext due to rotation to compensate for
+    double compLen = ((angle - Phi0_L0) * k_dl_dphi); // ext due to rotation to compensate for
     double max_l_at_phi = MAX_PROJECTION / Math.sin(Math.toRadians(angle)) - PIVOT_TO_FRONT - WRIST_LENGTH;
 
     l = Math.min(l, max_l_at_phi); // Limit length to max projection
     
-    double len = (l - L0) - compLen; // net len to command relative to start
+    double len = (l - L0) - compLen; // net len to command relative to start or zero switch
 
     SmartDashboard.putNumber("Extension Compensation", compLen);
     SmartDashboard.putNumber("Extension Calculated", len);
@@ -216,7 +234,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public double getExtension() {
     int counts = armExtensionMotor.getSelectedSensorPosition();
     // L0 + phi correction
-    return (L0 + (getRealAngle() - PHI0) * k_dl_dphi) + (counts * kIn_per_count);
+    return (L0 + (getRealAngle() - Phi0_L0) * k_dl_dphi) + (counts * kIn_per_count);
   }
 
   /**
@@ -246,8 +264,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * horizontal zero
    */
   public Position getArmPosition() {
-    double phi = getAbsoluteAngle();
-    double rads = Math.toRadians(90 - phi);
+    double phi = getAbsoluteAngle();     
+    double rads = Math.toRadians(90 - phi);    //TODO - can we remove the 90 shift and put sin & cos back 
     double ext = getExtension(); // includes angle compensation
     double l = ARM_BASE_LENGTH + WRIST_LENGTH + ext;
     position.height = ARM_PIVOT_HEIGHT + l * Math.sin(rads);
@@ -258,7 +276,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   // Expected change in extension as a result of phi, phi in degrees
   public double getCompLen(double phi) {
     // base + wrist + phi-rotation
-    double compLen = ((phi - PHI0) * k_dl_dphi);
+    double compLen = ((phi - Phi0_L0) * k_dl_dphi);
     return (compLen);
   }
 
