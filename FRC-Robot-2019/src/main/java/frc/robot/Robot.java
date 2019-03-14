@@ -69,12 +69,12 @@ public class Robot extends TimedRobot {
     // 0=front cam, 1= rear cam, 2 = arm  (pi camera server defines this - could change)
     cameraSelect.setDouble(1);    
     
-    driveCamera = CameraServer.getInstance().startAutomaticCapture("Drive", 0);
+    driveCamera = CameraServer.getInstance().startAutomaticCapture("Drive", "/dev/v41/by-id/usb-HD_Camera_Manufacturer_USB_2.0_Camera-video-index0");
     driveCamera.setResolution(320, 240);
     driveCamera.setFPS(20);
     currentCamera = 0;
 
-    UsbCamera armCamera = CameraServer.getInstance().startAutomaticCapture("Arm", 2);
+    UsbCamera armCamera = CameraServer.getInstance().startAutomaticCapture("Arm", "/dev/v41/by-id/usb-HD_Camera_Manufacturer_VGA_USB_Camera_VGA_USB_Camera-video-index0");
     armCamera.setResolution(240, 240);
     armCamera.setFPS(20);
 
@@ -217,6 +217,7 @@ public class Robot extends TimedRobot {
   private void setDriveCamera() { //switch drive camera to other USB webcam if inversion constant changes
     if (driveTrain.getInversionConstant() != currentCamera) {  //true if inversion constant has changed
       currentCamera = driveTrain.getInversionConstant();
+      /*
       if (currentCamera > 0) {
         driveCamera = CameraServer.getInstance().startAutomaticCapture("Drive", 0);
         driveCamera.setResolution(320, 240);
@@ -227,6 +228,7 @@ public class Robot extends TimedRobot {
         driveCamera.setResolution(320, 240);
         driveCamera.setFPS(20);
       }
+      */
     }
   }
 }
