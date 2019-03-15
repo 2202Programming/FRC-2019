@@ -132,7 +132,6 @@ public class Robot extends TimedRobot {
     Scheduler.getInstance().add(new CheckSucc());
     m_cmdMgr.execute();
     Scheduler.getInstance().run();
-    setDriveCamera();
   }
 
   @Override
@@ -156,7 +155,6 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     m_cmdMgr.execute();
     Scheduler.getInstance().run();
-    setDriveCamera();
   }
 
    @Override
@@ -173,7 +171,6 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {
     Scheduler.getInstance().run();
     m_testRobot.periodic();
-    setDriveCamera();
   }
 
   private void logSmartDashboardSensors(int interval) {
@@ -197,12 +194,5 @@ public class Robot extends TimedRobot {
   private void resetAllDashBoardSensors() {
     driveTrain.getLeftEncoderTalon().setSelectedSensorPosition(0);
     driveTrain.getRightEncoderTalon().setSelectedSensorPosition(0);
-  }
-
-  private void setDriveCamera() { //switch drive camera to other USB webcam if inversion constant changes
-    if (driveTrain.getInversionConstant() != currentCamera) {  //true if inversion constant has changed
-      currentCamera = driveTrain.getInversionConstant();
-      cameraSubsystem.toggleDriveCamera();
-    }
   }
 }
