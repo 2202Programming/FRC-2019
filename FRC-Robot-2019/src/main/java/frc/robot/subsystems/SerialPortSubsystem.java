@@ -49,7 +49,10 @@ private long logTimer;
   }
 
   public int getDistance(int sensor) { //return last distance measure for LIDAR sensor
-    return distanceArray[sensor-1];
+    if (!serialExists)
+      return 0;
+    else
+      return distanceArray[sensor-1];
   }
 
   public Integer getDistanceAvg(int sensor) { //return olympic average of last 10 readings of LIDAR sensor
@@ -61,23 +64,66 @@ private long logTimer;
     Integer max = 0;
     Integer min = 10000;
 
-    for (int i = 0; i<distanceAvgArray.get(sensor-1).size(); i++) {
-      if(tempArray[i] > max)
-      {
-        max = tempArray[i];
+    if (!serialExists)
+      return 0;
+    else {
+      for (int i = 0; i<distanceAvgArray.get(sensor-1).size(); i++) {
+        if(tempArray[i] > max)
+        {
+          max = tempArray[i];
+        }
+        if(tempArray[i] < min)
+        {
+          min = tempArray[i];
+        }
+        sum = sum + tempArray[i];
       }
-      if(tempArray[i] < min)
-      {
-        min = tempArray[i];
+      if ((distanceAvgArray.get(sensor-1).size()-2)!=0) {
+      average = (sum-max-min) / (distanceAvgArray.get(sensor-1).size()-2); //return average, not including max or min reading (olympic)  
+      return average; 
       }
-      sum = sum + tempArray[i];
+      else return 0;
     }
-    if ((distanceAvgArray.get(sensor-1).size()-2)!=0) {
-    average = (sum-max-min) / (distanceAvgArray.get(sensor-1).size()-2); //return average, not including max or min reading (olympic)  
-    return average; 
-    }
-    else return 0;
   }
+
+    public Boolean isReliable(int sensor, double percent){ //check sensor to see if last 10 measurements are within a certain deviation
+      Integer max = 0;
+      Integer min = 10000;
+      Deque<Integer> tempDeque = distanceAvgArray.get(sensor-1);
+      Integer[] tempArray = tempDeque.toArray(new Integer[0]);
+
+      if (!serialExists)
+        return false;
+      else {
+        for (int i = 0; i<distanceAvgArray.get(sensor-1).size(); i++) {
+          if(tempArray[i] > max)
+          {
+            max = tempArray[i];
+          }
+          if(tempArray[i] < min)
+          {
+            min = tempArray[i];
+          }
+        }
+
+        if(max != 0)
+        {
+          if(min/max >= percent)
+          {
+            return true;
+          }
+          else
+          {
+            return false; 
+          }
+        }
+        else
+        {
+          return false;
+        }
+      }
+    }
+
 
   public Boolean allDigits(String tempString) {
     for (int i = 0; i<tempString.length(); i++) { //check all chars to make sure they are all digits
@@ -91,8 +137,8 @@ private long logTimer;
 
     if ((logTimer + interval) < System.currentTimeMillis()) { //only post to smartdashboard every interval ms
       logTimer = System.currentTimeMillis();
-      SmartDashboard.putBoolean("Serial Enabled?", isSerialEnabled());
-      if (isSerialEnabled()) { //verify serial system was initalized before calling for results
+      SmartDashboard.putBoolean("Serial Enabled?", serialExists);
+      if (serialExists) { //verify serial system was initalized before calling for results
         SmartDashboard.putNumber("Left Front LIDAR (mm)", getDistance(RobotMap.LEFT_FRONT_LIDAR));
         SmartDashboard.putNumber("Right Front LIDAR (mm)", getDistance(RobotMap.RIGHT_FRONT_LIDAR));
         SmartDashboard.putNumber("Left Back LIDAR (mm)", getDistance(RobotMap.LEFT_BACK_LIDAR));
@@ -107,6 +153,7 @@ private long logTimer;
     }
   }
 
+  /*
   public void serialReduction(int bufferLimit) { //throw away serial buffer contents until size is < bufferLimit
     String temp;
 
@@ -122,6 +169,7 @@ private long logTimer;
     }
     return;
   }
+  */
 
   public void serialFlush(int bufferLimit) {
     int flushAmount = arduinoSerial.getBytesReceived()-bufferLimit;
