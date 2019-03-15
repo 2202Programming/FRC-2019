@@ -92,6 +92,7 @@ public class Robot extends TimedRobot {
     frontCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
     rearCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
 
+    switchedCamera.setSource(frontCamera);
     currentCamera = 0;
 
 
