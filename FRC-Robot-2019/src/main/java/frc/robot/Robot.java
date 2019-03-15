@@ -15,7 +15,7 @@ import frc.robot.subsystems.*;
 
 import frc.robot.commands.CommandManager;
 import frc.robot.commands.CommandManager.Modes;
-import frc.robot.commands.climb.CheckSolenoids;
+import frc.robot.commands.climb.CheckSolenoids;   
 import frc.robot.commands.intake.CheckSucc;
 import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.UsbCamera;
@@ -128,7 +128,6 @@ public class Robot extends TimedRobot {
   public void disabledPeriodic() {
     Scheduler.getInstance().run();
     limeLight.disableLED(); //disable blinding green LED that Trevor hates
-    intake.releaseSolenoid(intake.kRelease);
   }
 
   /**
