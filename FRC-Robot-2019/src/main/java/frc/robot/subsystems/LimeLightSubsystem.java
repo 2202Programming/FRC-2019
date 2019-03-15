@@ -133,11 +133,11 @@ public class LimeLightSubsystem extends Subsystem {
           }
           sum = sum + tempArray[i];
         }
-        if ((xArray.size()-2)!=0) {
+        if ((xArray.size()-2)!=0) { //make sure not to divide by zero if array is small
             average = (sum-max-min) / (xArray.size()-2); //return average, not including max or min reading (olympic)  
             return average; 
         }
-            else return 0;
+        else return 0;
 
         
     }
@@ -164,9 +164,8 @@ public class LimeLightSubsystem extends Subsystem {
           }
           sum = sum + tempArray[i];
         }
-        average = (sum-max-min) / (yArray.size()-2); //return average, not including max or min reading (olympic)  
-    
-        if ((yArray.size()-2)!=0) {
+
+        if ((yArray.size()-2)!=0) { //make sure not to divide by zero if array is small
             average = (sum-max-min) / (yArray.size()-2); //return average, not including max or min reading (olympic)  
             return average; 
             }
@@ -195,17 +194,16 @@ public class LimeLightSubsystem extends Subsystem {
           }
           sum = sum + tempArray[i];
         }
-        if ((areaArray.size()-2)!=0) {
-        average = (sum-max-min) / (areaArray.size()-2); //return average, not including max or min reading (olympic)  
-        return average; 
+        if ((areaArray.size()-2)!=0) { //make sure not to divide by zero if array is small
+            average = (sum-max-min) / (areaArray.size()-2); //return average, not including max or min reading (olympic)  
+            return average; 
         }
         else return 0;
-        
     } 
+
     public Boolean hasTarget() {
         if (target < 1) return false;
         else return true;
-
     }
 
     public Boolean hasTargetReliable() { //determines how reliable target is; if any of the values are 0 it isn't reliable
