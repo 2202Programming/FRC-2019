@@ -17,10 +17,8 @@ import frc.robot.commands.CommandManager;
 import frc.robot.commands.CommandManager.Modes;
 import frc.robot.commands.climb.CheckSolenoids;   
 import frc.robot.commands.intake.CheckSucc;
-import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoSink;
-import edu.wpi.cscore.VideoSource.ConnectionStrategy;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.*;
 
@@ -114,7 +112,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     logSmartDashboardSensors(500); //call smartdashboard logging, 500ms update rate
     limeLight.populateLimelight();
-    //serialSubsystem.processSerial();
+    serialSubsystem.processSerial();
   }
 
   /**
@@ -189,10 +187,6 @@ public class Robot extends TimedRobot {
     m_cmdMgr.execute();
     Scheduler.getInstance().run();
     setDriveCamera();
-
-
-//    if (serialSubsystem.isSerialEnabled()) //if serial was initalized, run periodic serial processing loop
-//    serialSubsystem.processSerial();
   }
 
    @Override
