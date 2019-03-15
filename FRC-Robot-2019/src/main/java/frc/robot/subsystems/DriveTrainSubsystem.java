@@ -199,7 +199,7 @@ public class DriveTrainSubsystem extends Subsystem {
    */
   public void invertControls() {
     inversionConstant *= -1;
-
+    
     //post to network tables which drive camera to show based on control direction
     if (inversionConstant>0) {
       cameraSelect.setDouble(0);

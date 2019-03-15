@@ -17,9 +17,6 @@ import frc.robot.commands.CommandManager;
 import frc.robot.commands.CommandManager.Modes;
 import frc.robot.commands.climb.CheckSolenoids;   
 import frc.robot.commands.intake.CheckSucc;
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.cscore.VideoSink;
-import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.*;
 
 /**
@@ -47,16 +44,14 @@ public class Robot extends TimedRobot {
   public static ClimberSubsystem climber = new ClimberSubsystem();
   public static PowerDistributionPanel pdp = new PowerDistributionPanel(0);
   public static SerialPortSubsystem serialSubsystem = new SerialPortSubsystem();
+  public static CameraSubsystem cameraSubsystem = new CameraSubsystem();
+
   public static OI m_oi = new OI(); //OI Depends on the subsystems and must be last (boolean is whether we are testing or not)
 
   public static CommandManager m_cmdMgr;    //fix the public later
   private RobotTest m_testRobot;
 
   boolean doneOnce = false;   //single execute our zero 
-  private UsbCamera frontCamera;
-  private UsbCamera rearCamera;
-  private UsbCamera armCamera;
-  private VideoSink switchedCamera;
   private Integer currentCamera = 1;
 
   /**
@@ -74,29 +69,6 @@ public class Robot extends TimedRobot {
     // 0=front cam, 1= rear cam, 2 = arm  (pi camera server defines this - could change)
     cameraSelect.setDouble(1);    
     
-    frontCamera = CameraServer.getInstance().startAutomaticCapture("Front Drive", RobotMap.FRONT_DRIVE_CAMERA_PATH);
-    frontCamera.setResolution(320, 240);
-    frontCamera.setFPS(20);
-
-    rearCamera = CameraServer.getInstance().startAutomaticCapture("Rear Drive", RobotMap.REAR_DRIVE_CAMERA_PATH);
-    rearCamera.setResolution(320, 240);
-    rearCamera.setFPS(20);
-
-    armCamera = CameraServer.getInstance().startAutomaticCapture("Arm", RobotMap.ARM_CAMERA_PATH);
-    armCamera.setResolution(240, 240);
-    armCamera.setFPS(20);
-
-    switchedCamera = CameraServer.getInstance().addSwitchedCamera("Switched Camera");
-    
-    /* Does this kill our camera FPS?  Was about 6 with this option set.
-    frontCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-    rearCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-    */
-    switchedCamera.setSource(frontCamera);
-    currentCamera = 0;
-
-
-
   }
 
   /**
@@ -237,15 +209,7 @@ public class Robot extends TimedRobot {
   private void setDriveCamera() { //switch drive camera to other USB webcam if inversion constant changes
     if (driveTrain.getInversionConstant() != currentCamera) {  //true if inversion constant has changed
       currentCamera = driveTrain.getInversionConstant();
-      
-      if (currentCamera > 0) {
-        switchedCamera.setSource(frontCamera);
-        System.out.println("Setting Front Camera");
-      }
-      else {
-        switchedCamera.setSource(rearCamera);
-        System.out.println("Setting Rear Camera");
-      }
+      cameraSubsystem.toggleDriveCamera();
     }
   }
 
