@@ -69,13 +69,7 @@ public class ClimberSubsystem extends Subsystem {
             pawl.set(Release);
     }
 
-    public void init() {
-        setPawl(false);
-        setDrawerSlide(false);
-    }
-
     public ClimberSubsystem() {
-        init();
     }
 
     public void setExtenderSpeed(double speed) {

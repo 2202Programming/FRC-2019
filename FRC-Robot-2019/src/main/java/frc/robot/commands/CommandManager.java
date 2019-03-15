@@ -142,7 +142,7 @@ public class CommandManager {
         driveGrp = CmdFactoryDrive();
         deliveryGrp = CmdFactoryDelivery();
         releaseGrp = CmdFactoryRelease();
-        flipGrp = CmdFactoryFlip();
+        flipGrp = null; //(dpl - keep from mistakes for now) CmdFactoryFlip();
 
         logTimer = System.currentTimeMillis();
         armPosition = Robot.arm.getArmPosition();

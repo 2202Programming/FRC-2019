@@ -32,6 +32,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
  * 2/17/2019   DPL  Split vacuum into own subsystem, but contained here
  * 3/3/2019    DPL  Removed the DoubleSolenoid for a single one.
  *                  Vacuum is applied on un-powered(default), pressure on powered
+ * 3/14/2019   DPL  Changed release solenoid to spark for high current NC release
+ *                  Vacuum on unpowered, High pressure air on powered
  * 
  */
 /**
@@ -71,14 +73,14 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   Subsystem intakeVacuum;
 
   // Vacuum mode is the default for the solenoid, power it to drop the payload
-  public final boolean kRelease = true;
-  public final boolean kVacuum = false;
+  public final double kRelease = 1.0;   //powered will open solenoid
+  public final double kVacuum = 0.0;    //unpower will restore vacuum
 
   // Physical devices
   protected CustomServo wristServo;             // positive angle, wrist up, when arm is forward
   protected DigitalInput cargoSwitch;           // true when cargo switch is pressed by ball
   protected SpeedController vacuumPump;         // motor control for vacuum pump
-  protected Solenoid vacuumSol;                 // solenoid to hold and relase ball/hatch
+  protected SpeedController vacuumSol;          // solenoid to hold and relase ball/hatch
 
   /**
    * Creates an intake subsystem.
@@ -91,12 +93,12 @@ public class IntakeSubsystem extends ExtendedSubSystem {
 
     cargoSwitch = new DigitalInput(RobotMap.INTAKE_CARGO_SWITCH_MXP_CH);
     vacuumPump = new Spark(RobotMap.INTAKE_VACUUM_SPARK_PWM);
-    vacuumSol = new Solenoid(RobotMap.INTAKE_PCM_ID, RobotMap.INTAKE_RELEASE_SOLENOID_PCM);
-  
+    vacuumSol = new Spark(RobotMap.INTAKE_VAC_RELEASE_SPARK_PWM);
+    
     // addChild("In:Wrist", (Sendable) wristServo);
     // addChild("In:VacPump", vacuumPump);
-    addChild("In:CargoSw", cargoSwitch);
-    addChild("In:VacSol",  vacuumSol);
+    //addChild("In:CargoSw", cargoSwitch);   //dpl not using 3/14/2019
+    //addChild("In:VacSol",  vacuumSol);     //switched to spark
 
     intakeVacuum = new Subsystem("Intake:Vac"){
       @Override
@@ -131,35 +133,28 @@ public class IntakeSubsystem extends ExtendedSubSystem {
     return this.intakeVacuum;
   }
 
+  //true - will release the payload
+  //false - returns to vacuum postion for Solenoid
+  //
+  // A short toggle should release the payload
   public void releaseSolenoid(boolean direction) {
-    vacuumSol.set(direction);
+    if (direction == true) {
+      vacuumSol.set(kRelease);
+    }
+    else {
+      vacuumSol.set(kVacuum);
+    }
   }
 
   public void setVacuum(boolean on) {
-    if(on) {
+    if (on) {
       vacuumPump.set(PumpSpeed);
+      releaseSolenoid(false);      //if we want vacuum, releaseSolenoid must be off.
     } else {
       vacuumPump.stopMotor();
     }
   }
 
-  /**
-   * Vacuum Controls
-   */
-  public void vacuumOn() {
-    vacuumPump.set(PumpSpeed);
-    releaseSolenoid(kVacuum);
-  }
-
-  public void vacuumOff() {
-    vacuumPump.stopMotor();
-    releaseSolenoid(kRelease);
-  }
-
-  public void vacuumOffHoldOn() {
-    vacuumSol.set(kVacuum);   // keep the vacuum.  
-    vacuumPump.stopMotor();
-  }
 
   public boolean isVacuum() {
     boolean v =  (vacuumSol.get() == kVacuum);
@@ -171,7 +166,8 @@ public class IntakeSubsystem extends ExtendedSubSystem {
    */
 
   private void zeroIntake() {
-    vacuumOff();
+    setVacuum(false);           //power off
+    releaseSolenoid(false);     //power off 
   }
 
   /**

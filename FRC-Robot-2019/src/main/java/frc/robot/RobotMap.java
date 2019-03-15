@@ -63,8 +63,10 @@ public class RobotMap {
   public static final int INTAKE_VACUUM_SPARK_PWM = 1;    
   public static final int INTAKE_VACCUM_SPARK_PDP = 7;
   public static final int INTAKE_CARGO_SWITCH_MXP_CH = 11;
-  public static final int INTAKE_PCM_ID = CAN_PCM2_ID;       
-  public static final int INTAKE_RELEASE_SOLENOID_PCM = 0;   // DPL switched to single Solenoid
+  //public static final int INTAKE_PCM_ID = CAN_PCM2_ID;       
+  //public static final int INTAKE_RELEASE_SOLENOID_PCM = 0;   // DPL switched to single Solenoid
+  public static final int INTAKE_VAC_RELEASE_SPARK_PWM = 3;    // dpl high current solenoid to replace
+
  
 
   //Climber
@@ -84,6 +86,7 @@ public class RobotMap {
 
   //camera paths
   public static final String FRONT_DRIVE_CAMERA_PATH = "/dev/video2";
+  public static final String REAR_DRIVE_CAMERA_PATH = "/dev/video0";
   public static final String ARM_CAMERA_PATH = "/dev/video1";
   
 }
