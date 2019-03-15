@@ -20,7 +20,7 @@ public class CameraSubsystem extends Subsystem {
     //NOTE: There is a bug in CameraServer where cameras constructed before the first  getInstance() call aren't published,
     //      so it's VERY IMPORTANT to call getInstance() prior to constructing the first camera
     //      https://www.chiefdelphi.com/t/stream-from-jetson-to-rio/343525/2
-    CameraServer cs = CameraServer.getInstance();
+    //CameraServer cs = CameraServer.getInstance();
 
     frontCamera = CameraServer.getInstance().startAutomaticCapture("Front Drive", RobotMap.FRONT_DRIVE_CAMERA_PATH);
     frontCamera.setVideoMode(VideoMode.PixelFormat.kMJPEG, 320, 240, 20);
