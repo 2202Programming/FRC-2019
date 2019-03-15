@@ -116,11 +116,11 @@ public class LimeLightSubsystem extends Subsystem {
     } 
 
     public double getXAvg() { //gets olympic avg of x coordinate lydar
-        Integer average = 0;
-        Integer sum = 0;
-        Integer max = 0;
-        Integer min = 10000;
-        Integer[] tempArray = xArray.toArray(new Integer[0]);
+        double average = 0.0;
+        double sum = 0.0;
+        double max = 0.0;
+        double min = 10000.0;
+        Double[] tempArray = xArray.toArray(new Double[0]);
     
         for (int i = 0; i< xArray.size(); i++) {//gets min and max (so it can remove min and max)
           if(tempArray[i] > max)
@@ -147,11 +147,11 @@ public class LimeLightSubsystem extends Subsystem {
     }
 
     public double getYAvg() {//gets olympic avg of y coordinate lydar
-        Integer average = 0;
-        Integer sum = 0;
-        Integer max = 0;
-        Integer min = 10000;
-        Integer[] tempArray = yArray.toArray(new Integer[0]);
+        double average = 0;
+        double sum = 0;
+        double max = 0;
+        double min = 10000;
+        Double[] tempArray = yArray.toArray(new Double[0]);
     
         for (int i = 0; i< yArray.size(); i++) {
           if(tempArray[i] > max)
@@ -178,11 +178,11 @@ public class LimeLightSubsystem extends Subsystem {
     }
 
     public double getAreaAvg() {//get area olypmic average
-        Integer average = 0;
-        Integer sum = 0;
-        Integer max = 0;
-        Integer min = 10000;
-        Integer[] tempArray = areaArray.toArray(new Integer[0]);
+        double average = 0;
+        double sum = 0;
+        double max = 0;
+        double min = 10000;
+        Double[] tempArray = areaArray.toArray(new Double[0]);
     
         for (int i = 0; i< areaArray.size(); i++) {
           if(tempArray[i] > max)
@@ -209,7 +209,7 @@ public class LimeLightSubsystem extends Subsystem {
     }
 
     public Boolean hasTargetReliable() { //determines how reliable target is; if any of the values are 0 it isn't reliable
-        Integer[] tempArray = targetArray.toArray(new Integer[0]);
+        Double[] tempArray = targetArray.toArray(new Double[0]);
 
         for (int i = 0; i < targetArray.size(); i++)
         {
