@@ -37,14 +37,13 @@ public class Robot extends TimedRobot {
   //physical devices and subsystems
   public static DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
   public static GearShifterSubsystem gearShifter = new GearShifterSubsystem(driveTrain.kShiftPoint);
-  public static LimeLightSubsystem limeLight = new LimeLightSubsystem();
   public static IntakeSubsystem intake = new IntakeSubsystem();
   public static CargoTrapSubsystem cargoTrap = new CargoTrapSubsystem();
   public static ArmSubsystem arm = new ArmSubsystem();
   public static ClimberSubsystem climber = new ClimberSubsystem();
   public static PowerDistributionPanel pdp = new PowerDistributionPanel(0);
-  public static SerialPortSubsystem serialSubsystem = new SerialPortSubsystem();
   public static CameraSubsystem cameraSubsystem = new CameraSubsystem();
+  public static SensorSubsystem sensorSubystem = new SensorSubsystem();
 
   public static OI m_oi = new OI(); //OI Depends on the subsystems and must be last (boolean is whether we are testing or not)
 
@@ -64,7 +63,7 @@ public class Robot extends TimedRobot {
     m_testRobot  = new RobotTest();
     m_cmdMgr = new CommandManager();
     m_cmdMgr.setMode(Modes.Construction);   // schedules the mode's function
-    limeLight.disableLED(); //disable blinding green LED that Trevor hates
+    sensorSubystem.disableLED(); //disable blinding green LED that Trevor hates
     NetworkTableEntry cameraSelect = NetworkTableInstance.getDefault().getEntry("/PiSwitch");
     // 0=front cam, 1= rear cam, 2 = arm  (pi camera server defines this - could change)
     cameraSelect.setDouble(1);    
@@ -83,8 +82,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     logSmartDashboardSensors(500); //call smartdashboard logging, 500ms update rate
-    limeLight.populateLimelight();
-    serialSubsystem.processSerial();
+    sensorSubystem.processSensors();
   }
 
   /**
@@ -94,13 +92,13 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
-    limeLight.disableLED(); //disable blinding green LED that Trevor hates
+    sensorSubystem.disableLED(); //disable blinding green LED that Trevor hates
   }
 
   @Override
   public void disabledPeriodic() {
     Scheduler.getInstance().run();
-    limeLight.disableLED(); //disable blinding green LED that Trevor hates
+    sensorSubystem.disableLED(); //disable blinding green LED that Trevor hates
   }
 
   /**
@@ -122,7 +120,7 @@ public class Robot extends TimedRobot {
       doneOnce = true;
     }
     resetAllDashBoardSensors();
-    limeLight.enableLED(); //active limelight LED when operational
+    sensorSubystem.enableLED(); //active limelight LED when operational
   }
 
   /**
@@ -148,7 +146,7 @@ public class Robot extends TimedRobot {
       doneOnce = true;
     }
     resetAllDashBoardSensors();
-    limeLight.enableLED(); //active limelight LED when operational 
+    sensorSubystem.enableLED(); //active limelight LED when operational 
   }
 
   /**
@@ -164,7 +162,7 @@ public class Robot extends TimedRobot {
    @Override
    public void testInit() {
      m_testRobot.initialize();
-     limeLight.enableLED(); //active limelight LED when operational
+     sensorSubystem.enableLED(); //active limelight LED when operational
      Scheduler.getInstance().enable();   //### hack? or required?  Seems required otherwise nothing runs 
    }
 
@@ -182,7 +180,7 @@ public class Robot extends TimedRobot {
     //calls subsystem smartdashboard logging functions, instructs them to only update every interval # of ms
     
     //picking hopefully non-overlapping time intervals so all the logging isn't done at the same cycle
-    limeLight.log(interval); //tell limelight to post to dashboard every Xms
+    sensorSubystem.log(interval); //tell limelight to post to dashboard every Xms
     driveTrain.log(interval+3); //tell drivertrain to post to dashboard every Xms
     //serialSubsystem.log(interval+7); //tell serial to post to dashboard every Xms
     arm.log(interval+11);
@@ -194,11 +192,6 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(Scheduler.getInstance()); 
     SmartDashboard.putData(arm);
     SmartDashboard.putData(intake);
-
-    SmartDashboard.putNumber("Front Distance", getDistanceFront());
-    SmartDashboard.putNumber("Back Distance", getDistanceBack());
-
-
 }
 
   private void resetAllDashBoardSensors() {
@@ -212,65 +205,4 @@ public class Robot extends TimedRobot {
       cameraSubsystem.toggleDriveCamera();
     }
   }
-
-  private double getDistanceFront() //returns distance from target (either from Front Lidar or from lime light depending on reliability), -1 if not available
-  {
-    double distance=9999;
-    double distance2 = 9999;
-    double conversion = 0.001; //area to range in mm conversion
-    double areaMax = 3; // Once target area is over this size, will check Lidar for reliability and use Lidar if available
-    double errorConstant = 0.9;
-    
-
-    if(limeLight.hasTargetReliable() == true && limeLight.getAreaAvg() >= areaMax){
-
-      if(serialSubsystem.isReliable(RobotMap.LEFT_FRONT_LIDAR, errorConstant) && serialSubsystem.isReliable(RobotMap.RIGHT_FRONT_LIDAR, errorConstant))
-      {
-        distance = Double.valueOf(serialSubsystem.getDistanceAvg(RobotMap.LEFT_FRONT_LIDAR));
-        distance2 = Double.valueOf(serialSubsystem.getDistanceAvg(RobotMap.RIGHT_FRONT_LIDAR));
-
-        return (distance+distance2)/2; 
-      }
-      else{
-
-        return limeLight.getAreaAvg() * conversion;
-      }
-    }
-    else{
-
-      if(serialSubsystem.isReliable(RobotMap.LEFT_FRONT_LIDAR, errorConstant)&& serialSubsystem.isReliable(RobotMap.RIGHT_FRONT_LIDAR, errorConstant))
-      {
-        distance = Double.valueOf(serialSubsystem.getDistanceAvg(RobotMap.LEFT_FRONT_LIDAR));
-        distance2 = Double.valueOf(serialSubsystem.getDistanceAvg(RobotMap.RIGHT_FRONT_LIDAR));
-
-        
-
-        return (distance+distance2)/2; 
-      }
-      else{
-      return -1; 
-      }
-    }
-
-  }
-
-  private double getDistanceBack() //returns distance from target using back Lidar, -1 if not reliable
-  {
-    double distance=9999;
-    double distance2=9999;
-    double errorConstant = 0.9;
-
-      if(serialSubsystem.isReliable(RobotMap.LEFT_BACK_LIDAR, errorConstant) && serialSubsystem.isReliable(RobotMap.RIGHT_BACK_LIDAR, errorConstant))
-      {
-        distance = Double.valueOf(serialSubsystem.getDistanceAvg(RobotMap.LEFT_BACK_LIDAR));
-        distance2 = Double.valueOf(serialSubsystem.getDistanceAvg(RobotMap.RIGHT_BACK_LIDAR));
-
-        return (distance+distance2)/2; 
-      }
-      else{
-      return -1; 
-      }
-
-  }
-
 }
