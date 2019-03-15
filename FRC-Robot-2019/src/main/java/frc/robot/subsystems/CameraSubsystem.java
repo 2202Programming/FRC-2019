@@ -5,7 +5,7 @@ import frc.robot.RobotMap;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode;
 import edu.wpi.cscore.VideoSink;
-import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cameraserver.*;
 
 public class CameraSubsystem extends Subsystem {
 
@@ -33,10 +33,8 @@ public class CameraSubsystem extends Subsystem {
 
     switchedCamera = CameraServer.getInstance().addSwitchedCamera("Switched Camera");
     
-    /* Does this kill our camera FPS?  Was about 6 with this option set.
-    frontCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-    rearCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-    */
+    //frontCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+    //rearCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
     switchedCamera.setSource(frontCamera);
   }
 
