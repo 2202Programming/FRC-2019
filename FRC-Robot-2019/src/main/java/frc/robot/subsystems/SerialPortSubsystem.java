@@ -27,6 +27,7 @@ private long logTimer;
     }
     catch(UncleanStatusException e) {
       serialExists = false; //if fails to init, stop future attempts to check serial buffer
+      System.out.println("***Serial Init failed!***");
     }
 
     logTimer = System.currentTimeMillis();
