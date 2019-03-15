@@ -89,9 +89,11 @@ public class Robot extends TimedRobot {
     armCamera.setFPS(20);
 
     switchedCamera = CameraServer.getInstance().addSwitchedCamera("Switched Camera");
+    
+    /* Does this kill our camera FPS?  Was about 6 with this option set.
     frontCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
     rearCamera.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-
+    */
     switchedCamera.setSource(frontCamera);
     currentCamera = 0;
 
@@ -252,6 +254,7 @@ public class Robot extends TimedRobot {
       }
     }
   }
+
   private double getDistanceFront() //returns distance from target (either from Front Lidar or from lime light depending on reliability), -1 if not available
   {
     double distance=9999;
