@@ -25,6 +25,34 @@ public class SensorSubsystem extends Subsystem {
     return limeLight.getX();
   }
 
+  public double getXAvg() {
+    return limeLight.getXAvg();
+  }
+
+  public double getY(){
+    return limeLight.getY();
+  }
+
+  public double getYAvg() {
+    return limeLight.getYAvg();
+  }
+
+  public double getArea() {
+    return limeLight.getArea();
+  }
+
+  public double getAreaAvg(){
+    return limeLight.getAreaAvg();
+  }
+
+  public boolean hasTarget() {
+    return limeLight.hasTarget();
+  }
+
+  public boolean hasTargetReliable() {
+    return limeLight.hasTargetReliable();
+  }
+
   public void disableLED() {
     limeLight.disableLED();
   }
