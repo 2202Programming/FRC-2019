@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
  public class VacuumSensorSystem extends ExtendedSubSystem {
     //physical units
     final double vacuumTriggerV = 0.38; // volts about 8psi 
-    final double vacuumBiasV = 0.18;    // part or wiring is bad, 10% lower than expected .2v
+    final double vacuumBiasV = 0.15;    // part or wiring is bad, 25% lower than expected .2v
 
     // a/d is 12 bits + extra bits added via over sample, 
 	// so 12 + 3 ==> 15 bits 0 - 32767 range on averageValue
@@ -79,7 +79,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
     public int getRawVacuum() {
         return sensor.getAverageValue();
     }
-    
+
     public boolean isGood() {return sensorGood; }
 
 
