@@ -118,7 +118,11 @@ public class Robot extends TimedRobot {
     resetAllDashBoardSensors();
     Scheduler.getInstance().add(new CheckSolenoids());
     Scheduler.getInstance().add(new CheckSucc());
-    m_cmdMgr.setMode(Modes.HuntGameStart);   // schedules the mode's function
+
+    if(!doneOnce) {
+      m_cmdMgr.setMode(Modes.HuntGameStart);   // schedules the mode's function
+      doneOnce = true;
+    }
   }
 
   /**
@@ -137,6 +141,10 @@ public class Robot extends TimedRobot {
     // continue until interrupted by another command, remove
     // this line or comment it out.
     resetAllDashBoardSensors();
+    if(!doneOnce) {
+      m_cmdMgr.setMode(Modes.HuntGameStart);   // schedules the mode's function
+      doneOnce = true;
+    }
   }
 
   /**
