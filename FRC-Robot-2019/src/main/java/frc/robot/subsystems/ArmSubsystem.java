@@ -193,7 +193,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
     SmartDashboard.putNumber("Extension Compensation", compLen);
     SmartDashboard.putNumber("Extension Calculated", len);
 
-    double minLength = getMinExtension(getAbsoluteAngle()) - L0;
+    double minLength = getMinExtension(getRealAngle()) - L0;
 
     // Make sure we limit to the range of the extension is capable
     if (len < minLength) {
