@@ -67,7 +67,7 @@ public class RobotMap {
   //public static final int INTAKE_RELEASE_SOLENOID_PCM = 0;   // DPL switched to single Solenoid
   public static final int INTAKE_VAC_RELEASE_SPARK_PWM = 3;    // dpl high current solenoid to replace
 
- 
+  public static final int INTAKE_VAC_SENSOR_AD=0;    
 
   //Climber
   public static final int CLIMB_FOOT_SPARK_MAX_CAN_ID = 23;

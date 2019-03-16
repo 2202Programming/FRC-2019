@@ -81,6 +81,7 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   protected DigitalInput cargoSwitch;           // true when cargo switch is pressed by ball
   protected SpeedController vacuumPump;         // motor control for vacuum pump
   protected SpeedController vacuumSol;          // solenoid to hold and relase ball/hatch
+  protected VacuumSensorSystem vacuumSensor;    // sensor to tell if we suck.
 
   /**
    * Creates an intake subsystem.
@@ -94,6 +95,7 @@ public class IntakeSubsystem extends ExtendedSubSystem {
     cargoSwitch = new DigitalInput(RobotMap.INTAKE_CARGO_SWITCH_MXP_CH);
     vacuumPump = new Spark(RobotMap.INTAKE_VACUUM_SPARK_PWM);
     vacuumSol = new Spark(RobotMap.INTAKE_VAC_RELEASE_SPARK_PWM);
+    vacuumSensor = new VacuumSensorSystem(RobotMap.INTAKE_VAC_SENSOR_AD);
     
     // addChild("In:Wrist", (Sendable) wristServo);
     // addChild("In:VacPump", vacuumPump);
@@ -110,6 +112,13 @@ public class IntakeSubsystem extends ExtendedSubSystem {
 
   @Override
   public void initDefaultCommand() {
+  }
+
+  //expose the vacuum sensor if it is good for commands
+  // Note: it might be cleaner to just accept a command to run on the sensor.
+  public VacuumSensorSystem getVacuumSensor() {
+    if (vacuumSensor.isGood()) return vacuumSensor;
+    return null;
   }
 
   /**
