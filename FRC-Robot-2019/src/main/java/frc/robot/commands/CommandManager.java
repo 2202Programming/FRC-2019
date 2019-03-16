@@ -107,7 +107,7 @@ public class CommandManager {
 
     // Data points - shares delheightidx, must be same length
     final double DeliveryCargoHeights[] = { 26.875, 55.0, 84.0 }; // TODO: fix the numbers
-    final double DeliveryHatchHeights[] = { 27.5, 55.0, 82.0 }; 
+    final double DeliveryHatchHeights[] = { 25.5, 55.0, 82.0 }; 
     final double deliveryProjection[] = { 25.0, 25.0, 25.0 }; // TODO: fix the numbers
 
     final Modes huntingModes[] = { Modes.HuntingFloor, Modes.HuntingCargo, Modes.HuntingHatch };
@@ -524,8 +524,6 @@ public class CommandManager {
         // commands to come
         /// grp.addParallel(Robot.climber.zeroSubsystem());
         /// grp.addParallel(Robot.cargoTrap.zeroSubsystem());
-
-        grp.addSequential(new NextModeCmd(Modes.HuntGameStart));
         return grp;
     }
 
