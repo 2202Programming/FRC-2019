@@ -120,6 +120,8 @@ public class Robot extends TimedRobot {
       doneOnce = true;
     }
     resetAllDashBoardSensors();
+    Scheduler.getInstance().add(new CheckSolenoids());
+    Scheduler.getInstance().add(new CheckSucc());
     sensorSubystem.enableLED(); //active limelight LED when operational
   }
 
@@ -128,8 +130,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    Scheduler.getInstance().add(new CheckSolenoids());
-    Scheduler.getInstance().add(new CheckSucc());
     m_cmdMgr.execute();
     Scheduler.getInstance().run();
   }
