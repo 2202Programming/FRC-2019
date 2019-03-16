@@ -220,11 +220,11 @@ public class IntakeSubsystem extends ExtendedSubSystem {
     return new IntakeZeroCmd(this);
   }
 
-  public void log() {
-    SmartDashboard.putData("intake0", this);
-    SmartDashboard.putNumber("In:Wr(deg)", getAngle());
-    SmartDashboard.putNumber("In:Vac(c)", vacuumSensor.getRawVacuum() );
-  }
+ // public void log() {
+ //   SmartDashboard.putData("intake0", this);
+ //   SmartDashboard.putNumber("In:Wr(deg)", getAngle());
+ //   SmartDashboard.putNumber("In:Vac(c)", vacuumSensor.getRawVacuum() );
+ // }
 
   /**
    * The Servo used by the Wrist has been modified to extend the range. It also
@@ -343,8 +343,8 @@ public class IntakeSubsystem extends ExtendedSubSystem {
       logTimer = System.currentTimeMillis();
 
       SmartDashboard.putNumber("In:Wr(deg)", getAngle());
-      SmartDashboard.putNumber("Vaccum Current", getPumpCurrent());
-
+      SmartDashboard.putNumber("In:VacCurr(amp)", getPumpCurrent());
+      SmartDashboard.putNumber("In:Vac(c)", vacuumSensor.getRawVacuum() );
     }
   }
 

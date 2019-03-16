@@ -8,18 +8,16 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import java.util.function.BooleanSupplier;
 
 public class RumbleCommand extends Command {
-  final double kRumbleTime = 0.300; //seconds - 300 ms to make noise
+  final double kRumbleTime = 2.300; //seconds - 300 ms to make noise
   
   BooleanSupplier boolFunc;
   XboxController ctrlr;
-  GenericHID.RumbleType rumbleType = RumbleType.kRightRumble;
   double m_startTime;
   Trigger vButton;
 
   public RumbleCommand(XboxController ctrlr, BooleanSupplier boolFunct) {
     this.boolFunc = boolFunct;
     this.ctrlr = ctrlr; 
-    initialize();
 
     // tie the boolFunc to a trigger 
     vButton = new RumbleTrigger(boolFunct);
@@ -32,7 +30,9 @@ public class RumbleCommand extends Command {
   @Override
   protected void initialize() {
     setTimeout(kRumbleTime);
-    ctrlr.setRumble(rumbleType, 1.0);
+    ctrlr.setRumble(RumbleType.kRightRumble, 0.1);
+    ctrlr.setRumble(RumbleType.kLeftRumble, 0.1);
+    System.out.print("**********RUMBLE RUMBLE RUMBLE******");
   }
 
   @Override
@@ -45,7 +45,9 @@ public class RumbleCommand extends Command {
 
   @Override
   protected void end() {
-    ctrlr.setRumble(rumbleType, 0.0);   
+    ctrlr.setRumble(RumbleType.kRightRumble, 0.0);
+    ctrlr.setRumble(RumbleType.kLeftRumble, 0.0);   
+    System.out.print("N0 RUMBLE No RUMBLE n0 RUMBLE");
   }
 
   // Trigger to tie to this command

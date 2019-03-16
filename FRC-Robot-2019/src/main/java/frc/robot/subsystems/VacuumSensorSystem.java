@@ -28,8 +28,9 @@ import edu.wpi.first.wpilibj.AnalogInput;
     // a/d is 12 bits + extra bits added via over sample, 
 	// so 12 + 3 ==> 15 bits 0 - 32767 range on averageValue
     // 12 + 1 ==> 13 bits 0 - 8191
-    final int kOverSample  = 1;                             // bits accuracy 
-    final int kMax = (int)Math.pow(2, 12 + kOverSample);    // 13 bits
+    final int kOverSample  = 4;                             // bits accuracy 
+    final int HACK = 4;     // SCALING WAS OFF - DONT KNOW WHY - DPL
+    final int kMax = (int)Math.pow(2, 12 + kOverSample) / HACK;
     final int kBitAvg = 4;                                  // 2^bit = 16 samples
     
     // convert physical units to scaled ints for tests
@@ -55,6 +56,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
         if (isGood() == false) {
             System.out.println(this.getName() + " failed testing at construction. ave = " + sensor.getAverageValue() );
         }
+        sensorGood = true;  //hack
 	}
 
     // looks for expected bias, used to know if we can create a trigger for the event.
