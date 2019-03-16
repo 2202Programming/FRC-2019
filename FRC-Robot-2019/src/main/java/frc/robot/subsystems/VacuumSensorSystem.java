@@ -30,7 +30,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
     // 12 + 1 ==> 13 bits 0 - 8191
     final int kOverSample  = 1;                             // bits accuracy 
     final int kMax = (int)Math.pow(2, 12 + kOverSample);    // 13 bits
-    final int kBitAvg = 4;                                  // 2^bit = 8 samples
+    final int kBitAvg = 4;                                  // 2^bit = 16 samples
     
     // convert physical units to scaled ints for tests
     final int vacTriggerC = (int)(vacuumTriggerV * kMax);
@@ -53,7 +53,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
         testBias();
         // make some noise if sensor is bad.
         if (isGood() == false) {
-            System.out.println(this.getName() + " failed testing at construction.");
+            System.out.println(this.getName() + " failed testing at construction. ave = " + sensor.getAverageValue() );
         }
 	}
 
