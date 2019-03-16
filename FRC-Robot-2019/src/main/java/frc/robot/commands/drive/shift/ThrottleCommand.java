@@ -24,7 +24,6 @@ public class ThrottleCommand extends Command {
     // Use requires() here to declare subsystem dependencies
     requires(Robot.driveTrain);
     driveTrain = Robot.driveTrain;
-    cycleCount = 0;
     maxCycles = (int) Math.ceil(rampTime / CYCLE_TIME_IN_SECONDS);
     this.startValue = startValue;
     stepValue = (endValue - startValue) / maxCycles;
@@ -33,8 +32,8 @@ public class ThrottleCommand extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
-    driveTrain.stop();
     cycleCount = 0;
+    execute();
   }
 
   // Read Controller Input from two joysticks.
@@ -50,11 +49,14 @@ public class ThrottleCommand extends Command {
 
   @Override
   protected boolean isFinished() {
-    return cycleCount >= maxCycles;
+    double leftSpeed = Math.abs(driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity());
+    double rightSpeed = Math.abs(driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
+    double curSpeed = (leftSpeed + rightSpeed) / 2.0;
+    double shiftSpeed = AutomaticGearShiftCommand.DOWNSHIFT_SPEED_LOW * AutomaticGearShiftCommand.MAXSPEED_IN_COUNTS_PER_SECOND;
+    return cycleCount >= maxCycles || curSpeed < shiftSpeed;
   }
 
   @Override
   protected void end() {
-    driveTrain.stop();
   }
 }
