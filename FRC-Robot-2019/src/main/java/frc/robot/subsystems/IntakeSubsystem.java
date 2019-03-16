@@ -223,6 +223,7 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   public void log() {
     SmartDashboard.putData("intake0", this);
     SmartDashboard.putNumber("In:Wr(deg)", getAngle());
+    SmartDashboard.putNumber("In:Vac(c)", vacuumSensor.getRawVacuum() );
   }
 
   /**

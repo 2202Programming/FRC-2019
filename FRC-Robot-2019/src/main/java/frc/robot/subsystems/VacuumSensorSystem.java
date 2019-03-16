@@ -50,7 +50,11 @@ import edu.wpi.first.wpilibj.AnalogInput;
 		sensor = new AnalogInput(ADchan);		
 		sensor.setOversampleBits(kOverSample);
 		sensor.setAverageBits(kBitAvg);   
-		testBias();
+        testBias();
+        // make some noise if sensor is bad.
+        if (isGood() == false) {
+            System.out.println(this.getName() + " failed testing at construction.");
+        }
 	}
 
     // looks for expected bias, used to know if we can create a trigger for the event.
@@ -72,6 +76,10 @@ import edu.wpi.first.wpilibj.AnalogInput;
         return retval;
     }
 
+    public int getRawVacuum() {
+        return sensor.getAverageValue();
+    }
+    
     public boolean isGood() {return sensorGood; }
 
 
