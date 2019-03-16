@@ -67,7 +67,7 @@ public class Robot extends TimedRobot {
     NetworkTableEntry cameraSelect = NetworkTableInstance.getDefault().getEntry("/PiSwitch");
     // 0=front cam, 1= rear cam, 2 = arm  (pi camera server defines this - could change)
     cameraSelect.setDouble(1);    
-    
+    m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function    
   }
 
   /**
@@ -115,14 +115,14 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    if (doneOnce == false ){
-      m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function
-      doneOnce = true;
-    }
     resetAllDashBoardSensors();
     Scheduler.getInstance().add(new CheckSolenoids());
     Scheduler.getInstance().add(new CheckSucc());
-    sensorSubystem.enableLED(); //active limelight LED when operational
+
+    if(!doneOnce) {
+      m_cmdMgr.setMode(Modes.HuntGameStart);   // schedules the mode's function
+      doneOnce = true;
+    }
   }
 
   /**
@@ -140,12 +140,11 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    if (doneOnce == false ){
-      m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function
+    resetAllDashBoardSensors();
+    if(!doneOnce) {
+      m_cmdMgr.setMode(Modes.HuntGameStart);   // schedules the mode's function
       doneOnce = true;
     }
-    resetAllDashBoardSensors();
-    sensorSubystem.enableLED(); //active limelight LED when operational 
   }
 
   /**

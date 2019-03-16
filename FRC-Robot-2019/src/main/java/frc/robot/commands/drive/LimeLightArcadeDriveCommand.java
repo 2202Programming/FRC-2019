@@ -36,10 +36,11 @@ public class LimeLightArcadeDriveCommand extends Command {
   protected void initialize() {
     controller.reset();
     controller.setInputRange(-25.0, 25.0);
-    controller.setOutputRange(-1, 1);
+    controller.setOutputRange(-0.5, 0.5);
     controller.setPercentTolerance(1);
     controller.setContinuous(true);
     controller.enable();
+    Robot.sensorSubystem.enableLED();
     execute();
   }
 
@@ -51,7 +52,7 @@ public class LimeLightArcadeDriveCommand extends Command {
   protected void execute() {
     //We invert the PID controller value so the feedback loop is negative and not positive
     double speed = maxSpeed * speedShaper.expo(Robot.m_oi.getDriverController().getY(Hand.kLeft));
-    double rotation = controller.get();
+    double rotation = -controller.get();
     Robot.driveTrain.ArcadeDrive(speed, rotation, true);
     SmartDashboard.putData(controller);
   }
@@ -63,6 +64,7 @@ public class LimeLightArcadeDriveCommand extends Command {
 
   @Override
   protected void end() {
+    Robot.sensorSubystem.disableLED();
     controller.reset();
     driveTrain.stop();
   }

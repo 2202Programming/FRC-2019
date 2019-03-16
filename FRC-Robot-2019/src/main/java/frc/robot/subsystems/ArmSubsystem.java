@@ -51,6 +51,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
   // Extender phyiscal numbers
   public final double L0 = 8.875; // inches - starting point, encoder zero -set 2/24/2019
+  public final double STARTING_EXTENSION = 8.875; // inches - starting point, encoder zero -set 2/24/2019
   public final double EXTEND_MIN = 0.750; // inches 0.0 physic, .75 soft stop
   public final double EXTEND_MAX = 35.0; // inches - measured practice bot
   public final double ARM_BASE_LENGTH = 18.0; // inches - measured practice bot (from pivot center) xg 2/16/19
@@ -192,19 +193,28 @@ public class ArmSubsystem extends ExtendedSubSystem {
     SmartDashboard.putNumber("Extension Compensation", compLen);
     SmartDashboard.putNumber("Extension Calculated", len);
 
+    double minLength = getMinExtension(getRealAngle()) - L0;
+
     // Make sure we limit to the range of the extension is capable
-    if (len < (EXTEND_MIN - L0)) {
+    if (len < minLength) {
       System.out.println("Arm:Extension below minimum.");
     }
 
     // todo:not sure if this is the right way to limit
     // we can't go above or below our adjust min/max based on starting L0
-    len = MathUtil.limit(len, EXTEND_MIN - L0, EXTEND_MAX);
+    len = MathUtil.limit(len, minLength, EXTEND_MAX);
     
     SmartDashboard.putNumber("Extension Set", len);
 
     double c = len * kCounts_per_in;
     armExtensionMotor.set(ControlMode.Position, c);
+  }
+
+  private double getMinExtension(double angle) {
+    if(-35.0 < angle && angle < 35.0) {
+      return STARTING_EXTENSION;
+    }
+    return EXTEND_MIN;
   }
 
   /**
