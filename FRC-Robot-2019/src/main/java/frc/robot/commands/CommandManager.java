@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.command.WaitCommand;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.Robot;
 import frc.robot.subsystems.ArmSubsystem.Position;
+import frc.robot.subsystems.VacuumSensorSystem;
 import frc.robot.commands.intake.*;
 import frc.robot.commands.arm.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -131,6 +132,12 @@ public class CommandManager {
         Robot.m_oi.flip.whenPressed(new FlipCmd());
         Robot.m_oi.endDriveMode.whenPressed(new CallFunctionCmd(this::endDriveState));
         Robot.m_oi.goToPrevMode.whenPressed(new CallFunctionCmd(this::goToPrevMode));
+
+        // Rumble on vacuum
+        VacuumSensorSystem vs = Robot.intake.getVacuumSensor();
+         if ((vs != null) && vs.isGood() ) {
+             Command vacRumble = new RumbleCommand(Robot.m_oi.getAssistantController(), vs::hasVacuum );
+         }
 
         // Construct our major modes from their command factories
         zeroRobotGrp = CmdFactoryZeroRobot();
