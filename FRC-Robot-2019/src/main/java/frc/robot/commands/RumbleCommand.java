@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.buttons.Trigger;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.Timer;
 import java.util.function.BooleanSupplier;
 
 public class RumbleCommand extends Command {
@@ -32,23 +31,16 @@ public class RumbleCommand extends Command {
    */
   @Override
   protected void initialize() {
-    m_startTime = -1;
-    ctrlr.setRumble(rumbleType, 0.0);
+    setTimeout(kRumbleTime);
+    ctrlr.setRumble(rumbleType, 1.0);
   }
 
   @Override
-  protected void execute() {
-    boolean b = boolFunc.getAsBoolean();
-    if (b) {
-        ctrlr.setRumble(rumbleType, 1.0);
-        m_startTime = Timer.getFPGATimestamp();   //start the clock
-    }
-  }
+  protected void execute() {   }
   
   @Override
   protected boolean isFinished() {
-    double elapseTime = m_startTime < 0 ? 0 : Timer.getFPGATimestamp() - m_startTime;
-    return kRumbleTime != -1 && elapseTime >= kRumbleTime;
+    return isTimedOut();
   }
 
   @Override
