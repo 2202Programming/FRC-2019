@@ -150,11 +150,11 @@ public class CommandManager {
         xprojShaper = new ExpoShaper(0.5, Robot.m_oi::extensionInput); // joystick defined in m_oi.
         xprojStick = new LimitedIntegrator(Robot.dT, xprojShaper::get, // shaped joystick input
                 -20.0, // kGain, 5 in/sec on the joystick (neg. gain, forward stick is neg.)
-                -20.0, // xmin inches
-                 20.0, // x_max inches
+                -25.0, // xmin inches    true pos limit enforced by arm sub-sys
+                 25.0, // x_max inches
                 -20.0, // dx_falling rate inch/sec
                  20.0); // dx_raise rate inch/sec
-        xprojStick.setDeadZone(0.1); // in/sec deadzone
+        xprojStick.setDeadZone(0.5); // in/sec deadzone
 
         xprojRL = new RateLimiter(Robot.dT, this::get_gripperX_cmd, // inputFunc gripperX_cmd
                 this::measProjection, // phy position func
