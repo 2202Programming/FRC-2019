@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.robot.RobotMap;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.lang.Math;
 
 public class SensorSubsystem extends Subsystem {
 
@@ -67,6 +68,8 @@ public class SensorSubsystem extends Subsystem {
       logTimer = System.currentTimeMillis();
       SmartDashboard.putNumber("Front Distance", getDistanceFront());
       SmartDashboard.putNumber("Back Distance", getDistanceBack());
+      SmartDashboard.putNumber("Limelight Angle Distance", getLimelightDistanceByAngle());
+      SmartDashboard.putNumber("Limelight Area Distance", getLimelightDistanceByArea());
     }
   }
  
@@ -131,10 +134,25 @@ public class SensorSubsystem extends Subsystem {
   }
 
   
+  public double getLimelightDistanceByAngle() {  //convert limelight Y angle to distance in mm
+    double y = limeLight.getY();
+    y = Math.toRadians(y);
+
+    if (Math.tan(y) == 0) return 0;
+    else return 10*(48/Math.tan(y));
+  
+  }
+
+  public double getLimelightDistanceByArea() { //gets distance using area of target box
+    double constant = 1/30325;
+    double a = limeLight.getArea();
+    if (constant*a == 0) return 0;
+    else return (Math.sqrt(1/(constant*a))) - 6;//6 is magic number...
+
+  }
+
   @Override
   public void initDefaultCommand() {
       //set default command
   }
-
-  
 }
