@@ -149,7 +149,7 @@ public class CommandManager {
         driveGrp = CmdFactoryDrive();
         deliveryGrp = CmdFactoryDelivery();
         releaseGrp = CmdFactoryRelease();
-        flipGrp = null; //(dpl - keep from mistakes for now) CmdFactoryFlip();
+        flipGrp = CmdFactoryFlip(); //(dpl - keep from mistakes for now) CmdFactoryFlip();
 
         logTimer = System.currentTimeMillis();
         armPosition = Robot.arm.getArmPosition();
@@ -612,6 +612,10 @@ public class CommandManager {
     // TODO: Check for working w/ higher speeds
     private CommandGroup CmdFactoryFlip() {
         CommandGroup grp = new CommandGroup("Flip");
+        double start = Robot.arm.getRealAngle();
+        grp.addSequential(new FlipCommand(start, -start, 12.0, 1.0));
+        grp.addSequential(new CallFunctionCmd(Robot.arm::invert));
+        /*
         grp.addParallel(new WristTrackFunction(this::wristTrackZero));
         grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
         grp.addSequential(new GripperPositionCommand(66, 18, 1.0, 3.0));
@@ -620,6 +624,7 @@ public class CommandManager {
         grp.addSequential(new GripperPositionCommand(70, 0.5, 1.0, 4.0));
         grp.addSequential(new GripperPositionCommand(66, 18, 1.0, 3.0));
         grp.addSequential(new PrevCmd());
+        */
         return grp;
     }
 
@@ -715,8 +720,10 @@ public class CommandManager {
         String[] delivery = {"Low", "Middle", "High"};
         switch (currentMode) {
         case Construction:
+            position = "Constructing";
             break;
         case SettingZeros:
+            position = "Setting Zeros";
             break;
         case HuntGameStart:
             position = "Starting up";

@@ -39,6 +39,6 @@ public class FlipCommand extends Command {
     }
 
     protected boolean isFinished() {
-        return Math.abs(Robot.arm.getAbsoluteAngle() - endAngle) <= tolerance;
+        return Math.abs(Robot.arm.getRealAngle() - endAngle) <= tolerance;
     }
 }
