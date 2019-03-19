@@ -1,7 +1,7 @@
 package frc.robot;
 
 /**
- * A RingBuffer object is essentially a double array with a head.
+ * A RingBuffer object is essentially an integer array with a head.
  * The head increments every time a new value is incremented.
  * 
  * @author Kevin Li
@@ -9,11 +9,11 @@ package frc.robot;
 public class RingBuffer {
     // TODO: Use this class to replace Deques in other classes
 
-    private double[] array;
+    private int[] array;
     private int head = 0;
     private boolean wrapped = false;
-    private double max = Double.NEGATIVE_INFINITY;
-    private double min = Double.POSITIVE_INFINITY;
+    private int max = Integer.MIN_VALUE;
+    private int min = Integer.MAX_VALUE;
 
     /**
      * Creates a RingBuffer object.
@@ -23,14 +23,14 @@ public class RingBuffer {
     public RingBuffer(int length) {
         if (length <= 0)
             throw new IllegalArgumentException("Length must be positive.");
-        array = new double[length];
+        array = new int[length];
     }
 
     /**
      * Inserts a value to the RingBuffer at index head.
      * @param value the value to be inserted into the RingBuffer
      */
-    public void add(double value) {
+    public void add(int value) {
         array[head++] = value;
         if (head >= array.length) {
             head = 0;
@@ -79,7 +79,9 @@ public class RingBuffer {
      * Gets the minimum value of the RingBuffer.
      * @return the minimum value in the RingBuffer
      */
-    public double min() {
+    public int min() {
+        if (getLength() == 0)
+            return 0;
         return min;
     }
 
@@ -87,7 +89,9 @@ public class RingBuffer {
      * Gets the maximum value of the RingBuffer.
      * @return the maximum value in the RingBuffer
      */
-    public double max() {
+    public int max() {
+        if (getLength() == 0)
+            return 0;
         return max;
     }
 
@@ -95,10 +99,10 @@ public class RingBuffer {
      * Gets the sum of all of the values in the RingBuffer.
      * @return the sum of the values in the RingBuffer
      */
-    public double total() {
+    public int total() {
         if (getLength() == 0)
             return 0;
-        double sum = 0;
+        int sum = 0;
         for (int i = 0; i <= getLength(); i++) {
             if (i >= getLength())
                 i = 0;
