@@ -5,9 +5,8 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.hal.util.UncleanStatusException;
 import java.lang.StringBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.RingBuffer;
 import frc.robot.RobotMap;
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.ArrayList;
 
 //Listens on USB Serial port for LIDAR distance data from the arduino
@@ -15,7 +14,7 @@ import java.util.ArrayList;
 public class SerialPortSubsystem extends Subsystem {
 
 private int[] distanceArray = new int[4];
-private ArrayList<Deque> distanceAvgArray;
+private ArrayList<RingBuffer> distanceAvgArray;
 private StringBuilder serialResults = new StringBuilder();
 private SerialPort arduinoSerial;
 private boolean serialExists = true;
@@ -31,11 +30,11 @@ private long logTimer;
     }
 
     logTimer = System.currentTimeMillis();
-    distanceAvgArray = new ArrayList<Deque>(); //4 elements, each is a Deque for 10 elements of distance
-    distanceAvgArray.add(0, new ArrayDeque<Integer>());
-    distanceAvgArray.add(1, new ArrayDeque<Integer>());
-    distanceAvgArray.add(2, new ArrayDeque<Integer>());
-    distanceAvgArray.add(3, new ArrayDeque<Integer>());
+    distanceAvgArray = new ArrayList<RingBuffer>(); //4 elements, each is a RingBuffer for 10 elements of distance
+    distanceAvgArray.add(0, new RingBuffer(10));
+    distanceAvgArray.add(1, new RingBuffer(10));
+    distanceAvgArray.add(2, new RingBuffer(10));
+    distanceAvgArray.add(3, new RingBuffer(10));
 
 
   }
@@ -58,65 +57,23 @@ private long logTimer;
 
   public Integer getDistanceAvg(int sensor) { //return olympic average of last 10 readings of LIDAR sensor
     
-    Deque<Integer> tempDeque = distanceAvgArray.get(sensor-1);
-    Integer[] tempArray = tempDeque.toArray(new Integer[0]); //switch from ArrayDeque to actual array so we can get each element
-    Integer average = 0;
-    Integer sum = 0;
-    Integer max = 0;
-    Integer min = 10000;
+    RingBuffer tempRingBuffer = distanceAvgArray.get(sensor-1);
 
     if (!serialExists)
       return 0;
-    else {
-      for (int i = 0; i<distanceAvgArray.get(sensor-1).size(); i++) {
-        if(tempArray[i] > max)
-        {
-          max = tempArray[i];
-        }
-        if(tempArray[i] < min)
-        {
-          min = tempArray[i];
-        }
-        sum = sum + tempArray[i];
-      }
-      if ((distanceAvgArray.get(sensor-1).size()-2)!=0) {
-      average = (sum-max-min) / (distanceAvgArray.get(sensor-1).size()-2); //return average, not including max or min reading (olympic)  
-      return average; 
-      }
-      else return 0;
-    }
+    else
+      return (int) tempRingBuffer.olympicAvg();
   }
 
     public Boolean isReliable(int sensor, double percent){ //check sensor to see if last 10 measurements are within a certain deviation
-      Integer max = 0;
-      Integer min = 10000;
-      Deque<Integer> tempDeque = distanceAvgArray.get(sensor-1);
-      Integer[] tempArray = tempDeque.toArray(new Integer[0]);
+      RingBuffer tempRingBuffer = distanceAvgArray.get(sensor-1);
 
       if (!serialExists)
         return false;
       else {
-        for (int i = 0; i<distanceAvgArray.get(sensor-1).size(); i++) {
-          if(tempArray[i] > max)
-          {
-            max = tempArray[i];
-          }
-          if(tempArray[i] < min)
-          {
-            min = tempArray[i];
-          }
-        }
-
-        if(max != 0)
+        if(tempRingBuffer.max() > 0)
         {
-          if(min/max >= percent)
-          {
-            return true;
-          }
-          else
-          {
-            return false; 
-          }
+          return (tempRingBuffer.max() / tempRingBuffer.min() >= percent);
         }
         else
         {
@@ -251,9 +208,5 @@ private long logTimer;
 
     distanceArray[sensor-1]=distance;//set read distance to correct LIDAR based on read sensor ID
     distanceAvgArray.get(sensor-1).add(distance);//add to rolling average array
-    if(distanceAvgArray.get(sensor-1).size() > 10)//keep most recent 10 valuse in array
-    {
-      distanceAvgArray.get(sensor-1).remove(); //remove oldest reading (queue)
-    }
   }
 }
