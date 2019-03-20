@@ -120,7 +120,7 @@ public class Robot extends TimedRobot {
     Scheduler.getInstance().add(new CheckSucc());
 
     if(!doneOnce) {
-      //m_cmdMgr.setMode(Modes.HuntGameStart);   // schedules the mode's function
+      m_cmdMgr.setMode(Modes.HuntGameStart);   // schedules the mode's function
       doneOnce = true;
     }
   }
@@ -130,7 +130,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    //m_cmdMgr.execute();
+    m_cmdMgr.execute();
     Scheduler.getInstance().run();
   }
 
@@ -152,7 +152,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    //m_cmdMgr.execute();
+    m_cmdMgr.execute();
     Scheduler.getInstance().run();
   }
 
