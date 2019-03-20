@@ -88,7 +88,7 @@ public class OI {
     }
 
     // If the Test Button on the switchboard is activeSSSsS
-    if (false/* switchBoard.getRawButton(11) */) {
+    if (true/* switchBoard.getRawButton(11) */) {
       bindTestButtons();
       System.out.println("Using Test OI");
     } else {

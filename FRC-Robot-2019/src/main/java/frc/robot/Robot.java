@@ -47,7 +47,7 @@ public class Robot extends TimedRobot {
 
   public static OI m_oi = new OI(); //OI Depends on the subsystems and must be last (boolean is whether we are testing or not)
 
-  public static CommandManager m_cmdMgr;    //fix the public later
+  //public static CommandManager m_cmdMgr;    //fix the public later
   private RobotTest m_testRobot;
 
   boolean doneOnce = false;   //single execute our zero 
@@ -61,13 +61,13 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Create the test subsystem
     m_testRobot  = new RobotTest();
-    m_cmdMgr = new CommandManager();
-    m_cmdMgr.setMode(Modes.Construction);   // schedules the mode's function
+    //m_cmdMgr = new CommandManager();
+    //m_cmdMgr.setMode(Modes.Construction);   // schedules the mode's function
     sensorSubystem.disableLED(); //disable blinding green LED that Trevor hates
     NetworkTableEntry cameraSelect = NetworkTableInstance.getDefault().getEntry("/PiSwitch");
     // 0=front cam, 1= rear cam, 2 = arm  (pi camera server defines this - could change)
     cameraSelect.setDouble(1);    
-    m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function    
+    //m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function    
   }
 
   /**
@@ -120,7 +120,7 @@ public class Robot extends TimedRobot {
     Scheduler.getInstance().add(new CheckSucc());
 
     if(!doneOnce) {
-      m_cmdMgr.setMode(Modes.HuntGameStart);   // schedules the mode's function
+      //m_cmdMgr.setMode(Modes.HuntGameStart);   // schedules the mode's function
       doneOnce = true;
     }
   }
@@ -130,7 +130,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
-    m_cmdMgr.execute();
+    //m_cmdMgr.execute();
     Scheduler.getInstance().run();
   }
 
@@ -142,7 +142,7 @@ public class Robot extends TimedRobot {
     // this line or comment it out.
     resetAllDashBoardSensors();
     if(!doneOnce) {
-      m_cmdMgr.setMode(Modes.HuntGameStart);   // schedules the mode's function
+      //m_cmdMgr.setMode(Modes.HuntGameStart);   // schedules the mode's function
       doneOnce = true;
     }
   }
@@ -152,7 +152,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    m_cmdMgr.execute();
+    //m_cmdMgr.execute();
     Scheduler.getInstance().run();
   }
 
@@ -181,7 +181,7 @@ public class Robot extends TimedRobot {
     //serialSubsystem.log(interval+7); //tell serial to post to dashboard every Xms
     arm.log(interval+11);
     gearShifter.log(interval+17); //tell gearshifter to post to dashboard every Xms
-    m_cmdMgr.log(interval+23);
+    //m_cmdMgr.log(interval+23);
     intake.log(interval+29);
 
     

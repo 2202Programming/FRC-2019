@@ -11,8 +11,9 @@ public class FlipCommand extends Command {
     private double curAngle;
     private double tolerance;
     private double step;
+    private double degreesPerSecond;
 
-    public FlipCommand(double startAngle, double endAngle, double extension, double endTolerance) {
+    public FlipCommand(double startAngle, double endAngle, double extension, double endTolerance, double degreesPerSecond) {
         requires(Robot.arm);
         this.startAngle = startAngle;
         this.endAngle = endAngle;
@@ -23,7 +24,7 @@ public class FlipCommand extends Command {
     @Override
     protected void initialize() {
         curAngle = startAngle;
-        step = Math.signum(startAngle - endAngle);
+        step = Math.signum(startAngle - endAngle) * (degreesPerSecond*Robot.kDefaultPeriod); //step is the # of degrees to change per cycle
         execute();
     }
 
@@ -31,6 +32,7 @@ public class FlipCommand extends Command {
     protected void execute() {
         Robot.arm.setExtension(extension);
         Robot.arm.setAngle(curAngle);
+        
         if(step < 0) {
             curAngle = Math.max(curAngle + step, endAngle);
         } else {
