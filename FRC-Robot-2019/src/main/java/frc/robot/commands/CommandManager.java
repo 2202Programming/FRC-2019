@@ -118,7 +118,7 @@ public class CommandManager {
 
     private int driveIdx = 1;
     // Declare Drive Positions: First element is Height, second is projection
-    public final double[][] DrivePositions = { { 5, 12 }, { 49.5, 14 } }; // TODO: Find real values
+    public final double[][] DrivePositions = { { 49.5, 14 }, { 50, 12 } }; // TODO: Find real values
 
     // Phyical values from sub-systems as needed
     Position armPosition;
@@ -235,7 +235,7 @@ public class CommandManager {
             wristOffset = 0.0;
             break;
         case Drive:
-            driveIdx = 1;
+            driveIdx = 0;
             nextCmd = driveGrp;
             wristOffset = 0.0;
             break;
