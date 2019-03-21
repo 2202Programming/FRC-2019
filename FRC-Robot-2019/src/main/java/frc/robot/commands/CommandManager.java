@@ -598,6 +598,7 @@ public class CommandManager {
         CommandGroup grp = new CommandGroup("Flip");
         grp.addSequential(new FlipCommand(50.0, -50.0, 12.0, 1.0, 20));
         grp.addSequential(new CallFunctionCmd(Robot.arm::invert));
+        grp.addSequential(new PrevCmd());
         /*
          * grp.addParallel(new WristTrackFunction(this::wristTrackZero));
          * grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut,
