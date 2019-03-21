@@ -35,6 +35,7 @@ public class MoveAtHeightDefault extends Command {
     final double DeliveryHatchHeights[] = { 27.5, 55.0, 82.0 }; 
     final double deliveryProjection[] = { 25.0, 25.0, 25.0 }; // TODO: fix the numbers
 
+    private LimitedIntegrator xprojStick;
     // //OOF
     // RateLimiter xprojRL = new RateLimiter(Robot.dT, this::get_gripperX_cmd, // inputFunc gripperX_cmd
     //         this::measProjection, // phy position func
@@ -67,6 +68,14 @@ public class MoveAtHeightDefault extends Command {
     public MoveAtHeightDefault() {
         requires(Robot.arm);
         arm = Robot.arm;
+        ExpoShaper xprojShaper = new ExpoShaper(0.5, Robot.m_oi::extensionInput); // joystick defined in m_oi.
+        xprojStick = new LimitedIntegrator(Robot.dT, xprojShaper::get, // shaped joystick input
+                -25.0, // kGain, 5 in/sec on the joystick (neg. gain, forward stick is neg.)
+                -25.0, // xmin inches    true pos limit enforced by arm sub-sys
+                 25.0, // x_max inches
+                -25.0, // dx_falling rate inch/sec
+                 25.0); // dx_raise rate inch/sec
+        xprojStick.setDeadZone(0.5); // in/sec deadzone
     }
 
     private double getHeightCommanded() {
