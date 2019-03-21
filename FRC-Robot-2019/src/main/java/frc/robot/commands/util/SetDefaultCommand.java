@@ -3,7 +3,6 @@ package frc.robot.commands.util;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import frc.robot.Robot;
 
 public class SetDefaultCommand extends InstantCommand{
     private Subsystem system;
@@ -13,10 +12,13 @@ public class SetDefaultCommand extends InstantCommand{
      */
     public SetDefaultCommand(Subsystem system, Command newDefault){
         requires(system);
+        this.system = system;
+        defaultCommand = newDefault;
     }
 
     @Override
     protected void execute() {
         system.setDefaultCommand(defaultCommand);
+        System.out.println("Set Default Command to: " + defaultCommand.getName());
     }
 }

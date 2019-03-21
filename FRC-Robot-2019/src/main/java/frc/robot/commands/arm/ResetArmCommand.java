@@ -11,5 +11,6 @@ public class ResetArmCommand extends InstantCommand {
   @Override
   protected void execute() {
     Robot.arm.resetArm();
+    System.out.println("Reset");
   }
 }

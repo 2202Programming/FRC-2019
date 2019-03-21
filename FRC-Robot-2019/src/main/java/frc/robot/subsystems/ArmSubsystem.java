@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
@@ -82,6 +84,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   Position position = new Position();
 
   private short inversionConstant;
+  private DigitalInput extensionAtMin = new DigitalInput(RobotMap.ARM_MIN_EXTENSION_SENSOR_PIN);
 
   /**
    * Creates a new arm/lift subsystem.
@@ -253,7 +256,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
    *         <code>false</code> otherwise.
    */
   public boolean extensionAtMin() {
-    return armExtensionMotor.getSensorCollection().isRevLimitSwitchClosed();
+    return extensionAtMin.get();
   }
 
   /**
@@ -326,8 +329,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
       SmartDashboard.putNumber("Arm:Gripper Height", getArmPosition().height);
 
       // don't have limit switches right now
-      // SmartDashboard.putBoolean("Arm:Ext@Min", extensionAtMin());
-      // SmartDashboard.putBoolean("Arm:Ext@Max", extensionAtMax());
+      SmartDashboard.putBoolean("Arm:Ext@Min", extensionAtMin());
     }
     return;
   }
