@@ -602,9 +602,7 @@ public class CommandManager {
     // TODO: Check for working w/ higher speeds
     private CommandGroup CmdFactoryFlip() {
         CommandGroup grp = new CommandGroup("Flip");
-        double start = Robot.arm.getRealAngle();
-        
-        grp.addSequential(new FlipCommand(start, -start, 12.0, 1.0, 20));
+        grp.addSequential(new FlipCommand(50.0, -50.0, 12.0, 1.0, 20));
         grp.addSequential(new CallFunctionCmd(Robot.arm::invert));
         /*
         grp.addParallel(new WristTrackFunction(this::wristTrackZero));
