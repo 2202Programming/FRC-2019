@@ -6,10 +6,7 @@ import frc.robot.Robot;
 
 public class AutomaticUpShiftCommand extends CommandGroup {
     public AutomaticUpShiftCommand() {
-        CommandGroup upShiftParallel = new CommandGroup();
-        upShiftParallel.addSequential(new WaitCommand(0.02));
-        upShiftParallel.addSequential(new UpShiftCommand());
-        addParallel(upShiftParallel);
+        addParallel(new UpShiftCommand());
         addParallel(new ThrottleCommand(1.0, 0.5, 1));
     }
 }

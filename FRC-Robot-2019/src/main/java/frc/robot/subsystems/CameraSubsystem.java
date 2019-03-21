@@ -23,10 +23,10 @@ public class CameraSubsystem extends Subsystem {
     //CameraServer cs = CameraServer.getInstance();
 
     frontCamera = CameraServer.getInstance().startAutomaticCapture("Front Drive", RobotMap.FRONT_DRIVE_CAMERA_PATH);
-    frontCamera.setVideoMode(VideoMode.PixelFormat.kYUYV, 320, 240, 20);
+    frontCamera.setVideoMode(VideoMode.PixelFormat.kMJPEG, 320, 240, 20);
     
     rearCamera = CameraServer.getInstance().startAutomaticCapture("Rear Drive", RobotMap.REAR_DRIVE_CAMERA_PATH);
-    rearCamera.setVideoMode(VideoMode.PixelFormat.kYUYV, 320, 240, 20);
+    rearCamera.setVideoMode(VideoMode.PixelFormat.kMJPEG, 320, 240, 20);
 
     armCamera = CameraServer.getInstance().startAutomaticCapture("Arm", RobotMap.ARM_CAMERA_PATH);
     armCamera.setVideoMode(VideoMode.PixelFormat.kYUYV, 240, 240, 15);

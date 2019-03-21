@@ -85,8 +85,8 @@ public class RobotMap {
   public static final int RIGHT_BACK_LIDAR = 2;
 
   //camera paths
-  public static final String FRONT_DRIVE_CAMERA_PATH = "/dev/video2";
+  public static final String FRONT_DRIVE_CAMERA_PATH = "/dev/video1";
   public static final String REAR_DRIVE_CAMERA_PATH = "/dev/video0";
-  public static final String ARM_CAMERA_PATH = "/dev/video1";
+  public static final String ARM_CAMERA_PATH = "/dev/video2";
   
 }
