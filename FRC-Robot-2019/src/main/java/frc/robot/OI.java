@@ -9,6 +9,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import frc.robot.commands.arm.ResetArmCommand;
 import frc.robot.commands.cargo.AutoCargoIntakeCommand;
 import frc.robot.commands.cargo.DeployCargoTrapCommand;
 import frc.robot.commands.cargo.RetractCargoTrapCommand;
@@ -26,10 +27,10 @@ import frc.robot.commands.drive.shift.DownShiftCommand;
 import frc.robot.commands.drive.shift.ToggleAutomaticGearShiftingCommand;
 import frc.robot.commands.drive.shift.UpShiftCommand;
 import frc.robot.commands.intake.VacuumCommand;
-import frc.robot.commands.util.DPadButton;
 import frc.robot.commands.util.ExpoShaper;
-import frc.robot.input.JoystickTrigger;
 import frc.robot.input.XboxControllerButtonCode;
+import frc.robot.input.triggers.GeneralTrigger;
+import frc.robot.input.triggers.JoystickTrigger;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -113,6 +114,8 @@ public class OI {
     new JoystickButton(assistant, 9).whileHeld(new CopilotControlCommand(0.4, 0.3));;
     new JoystickButton(switchBoard, 1).whenPressed(new DeployCargoTrapCommand());
     new JoystickButton(switchBoard, 2).whenPressed(new RetractCargoTrapCommand());
+
+    new GeneralTrigger(Robot.arm::extensionAtMin).whenPressed(new ResetArmCommand());
 
     // setup buttons for use in CommandManager
     heightDownSelect = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());

@@ -7,9 +7,9 @@ public class ResetArmCommand extends InstantCommand {
   public ResetArmCommand() {
     requires(Robot.arm);
   }
-  
+
   @Override
   protected void execute() {
     Robot.arm.resetArm();
-}
+  }
 }

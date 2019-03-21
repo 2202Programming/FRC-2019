@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.WaitCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
+import frc.robot.commands.arm.FlipCommand;
 import frc.robot.commands.arm.MoveArmAtHeight;
 import frc.robot.commands.intake.VacuumCommand;
 import frc.robot.commands.intake.WristTrackAngle;
@@ -18,6 +19,7 @@ import frc.robot.commands.util.RateLimiter;
 import frc.robot.commands.util.RateLimiter.InputModel;
 import frc.robot.commands.util.SetDefaultCommand;
 import frc.robot.subsystems.ArmSubsystem.Position;
+import frc.robot.subsystems.VacuumSensorSystem;
 
 /**
  * One class, singleton, to rule them all. Coordinates major modes of operation.

@@ -50,7 +50,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public final double MAX_PROJECTION = PIVOT_TO_FRONT + Robot.kProjectConstraint; //
 
   // Extender phyiscal numbers
-  public final double L0 = 8.875; // inches - starting point, encoder zero -set 2/24/2019
+  public double L0 = 8.875; // inches - starting point, encoder zero -set 2/24/2019
   public final double STARTING_EXTENSION = 8.875; // inches - starting point, encoder zero -set 2/24/2019
   public double Phi0_L0 =  PHI0; // degrees - angle where dl/dPhi is zeroed
   public final double L_sw = 0.0; // inches - extension point where switch is triggered
@@ -137,7 +137,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
    */
   public void resetArm() {
     double angle = getRealAngle(); // current angle
-    double compLen = ((angle - PHI0) * k_dl_dphi); // ext due to rotation to compensate for
+    double compLen = getCompLen(angle); // ext due to rotation to compensate for
     double calculatedLength = compLen - L0;
 
     int counts = (int) (calculatedLength * kCounts_per_in);
@@ -204,8 +204,6 @@ public class ArmSubsystem extends ExtendedSubSystem {
     double compLen = ((angle - Phi0_L0) * k_dl_dphi); // ext due to rotation to compensate for
     double max_l_at_phi = MAX_PROJECTION / Math.sin(Math.toRadians(angle)) - PIVOT_TO_FRONT - WRIST_LENGTH;
 
-    l = Math.min(l, max_l_at_phi); // Limit length to max projection
-    
     double len = (l - L0) - compLen; // net len to command relative to start or zero switch
 
     SmartDashboard.putNumber("Extension Compensation", compLen);
@@ -220,7 +218,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
     // todo:not sure if this is the right way to limit
     // we can't go above or below our adjust min/max based on starting L0
-    len = MathUtil.limit(len, minLength, EXTEND_MAX);
+    len = MathUtil.limit(len, minLength, max_l_at_phi);
     
     SmartDashboard.putNumber("Extension Set", len);
 
