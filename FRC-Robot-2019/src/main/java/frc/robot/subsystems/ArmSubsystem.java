@@ -228,7 +228,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
   private double getMinExtension(double angle) {
     if(-35.0 < angle && angle < 35.0) {
-      return STARTING_EXTENSION;
+      return STARTING_EXTENSION + getCompLen(angle);
     }
     return EXTEND_MIN;
   }
