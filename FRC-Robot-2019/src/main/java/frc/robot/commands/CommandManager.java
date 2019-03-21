@@ -736,7 +736,7 @@ public class CommandManager {
             position = "Flipping";
             break;
         case Releasing:
-            position = "Capturing or Releasing";
+            position = "Releasing";
             break;
         default:
             position = "???";

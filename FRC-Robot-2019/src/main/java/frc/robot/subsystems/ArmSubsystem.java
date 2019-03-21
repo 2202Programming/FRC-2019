@@ -200,47 +200,51 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * 
    * If we reset the talon with limit switch, we set new Phi0_l0 and L0
    * 
-   * @param extendInch (inches) to set the arm.
+   * @param desired_L The desired extension of the Arm from beginning of the arm housing to the back of the wrist motor
    */
-  public void setExtension(double l) {
+  public void setExtension(double desired_L) {
     double angle = getRealAngle(); // current angle
-    double compLen = ((angle - Phi0_L0) * k_dl_dphi); // ext due to rotation to compensate for
-    double max_l_at_phi = MAX_PROJECTION / Math.sin(Math.toRadians(angle)) - PIVOT_TO_FRONT - WRIST_LENGTH;
 
-    double len = (l - L0) - compLen; // net len to command relative to start or zero switch
+    //Limit Extension
+    double min_l_at_phi = getMinExtension(angle);
+    double max_l_at_phi = getMaxExtension(angle);
+    desired_L = MathUtil.limit(desired_L, min_l_at_phi, max_l_at_phi);
 
-    SmartDashboard.putNumber("Extension Compensation", compLen);
-    SmartDashboard.putNumber("Extension Calculated", len);
-
-    double minLength = getMinExtension(getRealAngle()) - L0;
-
-    // Make sure we limit to the range of the extension is capable
-    if (len < minLength) {
-      System.out.println("Arm:Extension below minimum.");
+    //Print Warning
+    if (desired_L < min_l_at_phi) {
+      System.out.println("Desired Arm:Extension below minimum of " + min_l_at_phi + " inches.");
+    } else if(desired_L > max_l_at_phi) {
+      System.out.println("Desired Arm:Extension above maximum of " + max_l_at_phi + " inches.");
     }
-
-    // todo:not sure if this is the right way to limit
-    // we can't go above or below our adjust min/max based on starting L0
-    len = MathUtil.limit(len, minLength, max_l_at_phi);
     
-    SmartDashboard.putNumber("Extension Set", len);
+    SmartDashboard.putNumber("Extension Calculated", desired_L);
 
-    double c = len * kCounts_per_in;
+    // Adjust length to match L0 and account for compLen
+    double compLen = ((angle - Phi0_L0) * k_dl_dphi); // ext due to rotation to compensate for 
+    double cmd_L = desired_L - L0 - compLen;
+    SmartDashboard.putNumber("Extension Compensation", compLen);
+    SmartDashboard.putNumber("Extension Set", cmd_L);
+
+    double c = cmd_L * kCounts_per_in;
     armExtensionMotor.set(ControlMode.Position, c);
   }
 
-  private double getMinExtension(double angle) {
+  public double getMinExtension(double angle) {
     if(-35.0 < angle && angle < 35.0) {
-      return STARTING_EXTENSION + getCompLen(angle);
+      return STARTING_EXTENSION;
     }
     return EXTEND_MIN;
   }
 
+  public double getMaxExtension(double angle) {
+    return MAX_PROJECTION / Math.sin(Math.toRadians(angle)) - PIVOT_TO_FRONT - WRIST_LENGTH;
+  }
+
   /**
-   * Gets the extension length of the extension (l) in inches. This is not the
+   * Gets the extension length of the extension (desired_l) in inches. This is not the
    * total arm lenght, it is just the extension.
    * 
-   * @return extension (l), in inches.
+   * @return extension (desired_l), in inches.
    */
   public double getExtension() {
     int counts = armExtensionMotor.getSelectedSensorPosition();
@@ -278,9 +282,9 @@ public class ArmSubsystem extends ExtendedSubSystem {
     double phi = getAbsoluteAngle();     
     double rads = Math.toRadians(90 - phi);    //TODO - can we remove the 90 shift and put sin & cos back 
     double ext = getExtension(); // includes angle compensation
-    double l = ARM_BASE_LENGTH + WRIST_LENGTH + ext;
-    position.height = ARM_PIVOT_HEIGHT + l * Math.sin(rads);
-    position.projection = l * Math.cos(rads);
+    double desired_l = ARM_BASE_LENGTH + WRIST_LENGTH + ext;
+    position.height = ARM_PIVOT_HEIGHT + desired_l * Math.sin(rads);
+    position.projection = desired_l * Math.cos(rads);
     return position;
   }
 
