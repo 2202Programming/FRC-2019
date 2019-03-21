@@ -33,11 +33,12 @@ public class VacuumCommand extends Command {
     protected void execute() {
         if (enable) {
             done = true;              // this is instant
-            Robot.intake.vacuumOn();
+            Robot.intake.setVacuum(true);
         }
         else {
             //keep the pump on, flip the solenoid
-            Robot.intake.releaseSolenoid(Robot.intake.kRelease);  //powered
+            Robot.intake.setVacuum(false);
+            Robot.intake.releaseSolenoid(true);  //powered, will release payload
         }
 
     }
@@ -46,7 +47,8 @@ public class VacuumCommand extends Command {
     protected boolean isFinished() {
         // put the solenoid back to vacuum on timeout.
         if (isTimedOut()) {
-            Robot.intake.releaseSolenoid(Robot.intake.kVacuum);  //unpowerered
+            Robot.intake.releaseSolenoid(false);  //unpowerered for vacuum
+            Robot.intake.setVacuum(true);         //vacuum motor on again
         }
         return done || isTimedOut();
     }

@@ -109,7 +109,7 @@ public class CommandManager {
 
     // Data points - shares delheightidx, must be same length
     final double DeliveryCargoHeights[] = { 26.875, 55.0, 84.0 }; // TODO: fix the numbers
-    final double DeliveryHatchHeights[] = { 27.5, 55.0, 82.0 };
+    final double DeliveryHatchHeights[] = { 25.5, 55.0, 82.0 }; 
     final double deliveryProjection[] = { 25.0, 25.0, 25.0 }; // TODO: fix the numbers
 
     final Modes huntingModes[] = { Modes.HuntingFloor, Modes.HuntingCargo, Modes.HuntingHatch };
@@ -134,6 +134,12 @@ public class CommandManager {
         Robot.m_oi.endDriveMode.whenPressed(new CallFunctionCmd(this::endDriveState));
         Robot.m_oi.goToPrevMode.whenPressed(new CallFunctionCmd(this::goToPrevMode));
 
+        // Rumble on vacuum
+        VacuumSensorSystem vs = Robot.intake.getVacuumSensor();
+         if ((vs != null) && vs.isGood() ) {
+             Command vacRumble = new RumbleCommand(Robot.m_oi.getAssistantController(), vs::hasVacuum );
+         }
+
         // Construct our major modes from their command factories
         zeroRobotGrp = CmdFactoryZeroRobot();
         huntGameStartGrp = CmdFactoryHuntGameStart();
@@ -144,7 +150,7 @@ public class CommandManager {
         driveGrp = CmdFactoryDrive();
         deliveryGrp = CmdFactoryDelivery();
         releaseGrp = CmdFactoryRelease();
-        flipGrp = CmdFactoryFlip();
+        flipGrp = CmdFactoryFlip(); //(dpl - keep from mistakes for now) CmdFactoryFlip();
 
         logTimer = System.currentTimeMillis();
         armPosition = Robot.arm.getArmPosition();
@@ -152,11 +158,11 @@ public class CommandManager {
         xprojShaper = new ExpoShaper(0.5, Robot.m_oi::extensionInput); // joystick defined in m_oi.
         xprojStick = new LimitedIntegrator(Robot.dT, xprojShaper::get, // shaped joystick input
                 -20.0, // kGain, 5 in/sec on the joystick (neg. gain, forward stick is neg.)
-                -20.0, // xmin inches
-                20.0, // x_max inches
+                -25.0, // xmin inches    true pos limit enforced by arm sub-sys
+                 25.0, // x_max inches
                 -20.0, // dx_falling rate inch/sec
-                20.0); // dx_raise rate inch/sec
-        xprojStick.setDeadZone(0.1); // in/sec deadzone
+                 20.0); // dx_raise rate inch/sec
+        xprojStick.setDeadZone(0.5); // in/sec deadzone
 
         xprojRL = new RateLimiter(Robot.dT, this::get_gripperX_cmd, // inputFunc gripperX_cmd
                 this::measProjection, // phy position func
@@ -507,8 +513,6 @@ public class CommandManager {
         // commands to come
         /// grp.addParallel(Robot.climber.zeroSubsystem());
         /// grp.addParallel(Robot.cargoTrap.zeroSubsystem());
-
-        grp.addSequential(new NextModeCmd(Modes.HuntGameStart));
         return grp;
     }
 
@@ -596,8 +600,12 @@ public class CommandManager {
     // TODO: Check for working w/ higher speeds
     private CommandGroup CmdFactoryFlip() {
         CommandGroup grp = new CommandGroup("Flip");
-        grp.addParallel(new SetDefaultCommand(Robot.intake,
-                new WristTrackAngle(WristTrackAngle.Angle.Perpendicular_Up.getAngle())));
+        double start = Robot.arm.getRealAngle();
+        
+        grp.addSequential(new FlipCommand(start, -start, 12.0, 1.0, 20));
+        grp.addSequential(new CallFunctionCmd(Robot.arm::invert));
+        /*
+        grp.addParallel(new WristTrackFunction(this::wristTrackZero));
         grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
         grp.addSequential(new GripperPositionCommand(66, 18, 1.0, 3.0));
         grp.addSequential(new GripperPositionCommand(70, 0.5, 1.0, 4.0));
@@ -605,6 +613,7 @@ public class CommandManager {
         grp.addSequential(new GripperPositionCommand(70, 0.5, 1.0, 4.0));
         grp.addSequential(new GripperPositionCommand(66, 18, 1.0, 3.0));
         grp.addSequential(new PrevCmd());
+        */
         return grp;
     }
 
@@ -700,8 +709,10 @@ public class CommandManager {
         String[] delivery = { "Low", "Middle", "High" };
         switch (currentMode) {
         case Construction:
+            position = "Constructing";
             break;
         case SettingZeros:
+            position = "Setting Zeros";
             break;
         case HuntGameStart:
             position = "Starting up";

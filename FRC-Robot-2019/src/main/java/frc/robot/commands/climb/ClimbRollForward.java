@@ -4,13 +4,25 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
 public class ClimbRollForward extends Command {
-    public ClimbRollForward() {
+    private double timeout;
+
+    public ClimbRollForward(double timeout) {
+        this.timeout = timeout;
         requires(Robot.climber);
+    }
+
+    public ClimbRollForward() {
+        timeout = 999;
+        requires(Robot.climber);
+    }
+
+    protected void initialize() {
+        setTimeout(timeout);
+        Robot.climber.setDrawerSlide(true); //activates the drawer slide piston
     }
 
     protected void execute() {
         Robot.climber.setRollerSpeed(0.5);
-        Robot.climber.setDrawerSlide(true); //activates the drawer slide piston
     }
 
     protected void end() {

@@ -20,7 +20,7 @@ public class LimeLightXValueInput implements PIDSource{
     @Override
     public double pidGet() {
         if(sourceType == PIDSourceType.kDisplacement) 
-            return Robot.limeLight.getX();
+            return Robot.sensorSubystem.getX();
         else 
             return 0;
     }

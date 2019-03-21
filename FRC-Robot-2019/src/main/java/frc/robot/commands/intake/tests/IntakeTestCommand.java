@@ -20,12 +20,6 @@ public class IntakeTestCommand extends InstantCommand {
 
     @Override
     protected void execute() {
-        if (vacuumOn) {
-            // Transition to Off
-            Robot.intake.vacuumOn();
-        } else {
-            // Transition to On
-            Robot.intake.vacuumOff();
-        }
+        Robot.intake.setVacuum(vacuumOn);
     }
 }

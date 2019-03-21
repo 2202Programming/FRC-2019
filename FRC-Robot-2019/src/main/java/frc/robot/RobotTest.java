@@ -36,7 +36,7 @@ public class RobotTest {
         //testWristCmd = new  TestWristPositionCommand(this::Wrist_AssistLeftTrigger);
         armTest = new TeleopArmControlCommand(this::leftJoyY, this::rightJoyY);
         
-        armTest.start();
+        //armTest.start();
         //testWristCmd.start();
     }
 
