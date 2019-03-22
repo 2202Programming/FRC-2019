@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.WaitCommand;
 import edu.wpi.first.wpilibj.command.CommandGroup;
+import edu.wpi.first.wpilibj.buttons.Trigger;
 import frc.robot.Robot;
 import frc.robot.subsystems.ArmSubsystem.Position;
 import frc.robot.subsystems.VacuumSensorSystem;
@@ -137,6 +138,12 @@ public class CommandManager {
         VacuumSensorSystem vs = Robot.intake.getVacuumSensor();
          if ((vs != null) && vs.isGood() ) {
              Command vacRumble = new RumbleCommand(Robot.m_oi.getAssistantController(), vs::hasVacuum );
+            //capture trigger on vacuum
+            Trigger capTrigger = new Trigger() 
+            {
+                public boolean get() {return vs.hasVacuum();     }
+            };
+            capTrigger.whenActive(new CallFunctionCmd(this::autoTriggerCapture));
          }
 
         // Construct our major modes from their command factories
@@ -312,6 +319,25 @@ public class CommandManager {
         return 0;
     }
 
+    /** 
+     * Similar to triggerCaptureRelease, but floor handled differently.
+     * When we get vacuum we goto drive mode.
+     * When on the floor we don't want to just jump to drive because the
+     * hatch may be in awkward spot.  Let the driver know by moving up a few inches.
+     * 
+    */
+    private int autoTriggerCapture() {
+        if (isHunting() && currentMode != Modes.HuntingFloor ) {
+            prevHuntMode = currentMode;
+            setMode(Modes.Drive);              // got it, go to Drive 
+        } else if (currentMode == Modes.HuntingFloor) {
+            // just move up if we are on the floor - user still needs to hit 'A'
+            gripperH_cmd += kCapHeight;
+        }
+        // not hunting not sure HTH we got here - do nothing
+        return 0;
+    }
+
     private int endDriveState() {
         if (isDriving()) {
             if (prevHuntMode == Modes.Releasing) {
@@ -440,7 +466,7 @@ public class CommandManager {
     /**
      * Expose desired gripper height & extension with double supplier functions
      */
-    double gripperHeightOut() {
+    public double gripperHeightOut() {
         return heightRL.get();
     }
 
@@ -601,10 +627,13 @@ public class CommandManager {
     }
 
     private CommandGroup CmdFactoryRelease() {
+        double vacTimeout = 2.0; //seconds
         CommandGroup grp = new CommandGroup("Release");
         // grp.AddSequential(new Extend_Drive_To_Deliver());
-        grp.addSequential(new VacuumCommand(false, 2.0));    //will run for 2.0 seconds
-        //grp.addSequential(new WaitCommand(1.0)); // maybe move the wrist??
+        CommandGroup subGrp = new CommandGroup("ReleaseSub");
+        subGrp.addParallel(new VacuumCommand(false, vacTimeout)); 
+        subGrp.addParallel(new RetractOnReleaseCommand(2.5 /*inchs*/, vacTimeout));  
+        grp.addSequential(subGrp); 
         grp.addSequential(new NextModeCmd(Modes.Drive)); // go back to driving configuration
         return grp;
     }
