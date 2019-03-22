@@ -53,8 +53,8 @@ public class RobotMap {
   
   //Cargo Trap
   public static final int TRAP_PCM_ID = CAN_PCM1_ID;
-  public static final int TRAP_DEPLOY_PCM = 6; 
-  public static final int TRAP_RETRACT_PCM = 7;
+  public static final int TRAP_DEPLOY_PCM = 7; 
+  public static final int TRAP_RETRACT_PCM = 6;
   public static final int TRAP_INTAKE_MOTOR_PIN = 2;
   public static final int TRAP_CARGO_SENSOR_DIO = 30;
 

@@ -23,6 +23,7 @@ import frc.robot.commands.drive.InvertDriveControlsCommand;
 import frc.robot.commands.drive.LimeLightArcadeDriveCommand;
 import frc.robot.commands.drive.TankDriveCommand;
 import frc.robot.commands.drive.shift.AutomaticGearShiftCommand;
+import frc.robot.commands.drive.shift.AutomaticUpShiftCommand;
 import frc.robot.commands.drive.shift.DownShiftCommand;
 import frc.robot.commands.drive.shift.ToggleAutomaticGearShiftingCommand;
 import frc.robot.commands.drive.shift.UpShiftCommand;
@@ -104,7 +105,7 @@ public class OI {
         .whenPressed(new ToggleAutomaticGearShiftingCommand());
     new JoystickButton(driver, XboxControllerButtonCode.X.getCode()).whenPressed(new InvertDriveControlsCommand());
     new JoystickButton(driver, XboxControllerButtonCode.LB.getCode()).whileHeld(new LimeLightArcadeDriveCommand(0.4));
-    new JoystickButton(driver, XboxControllerButtonCode.RB.getCode()).whileHeld(new AutomaticGearShiftCommand());
+    new JoystickButton(driver, XboxControllerButtonCode.RB.getCode()).whenPressed(new AutomaticUpShiftCommand());
     new JoystickTrigger(driver, XboxControllerButtonCode.TRIGGER_LEFT.getCode(), 0.75)
         .whileHeld(new AutoCargoIntakeCommand(0.4));
     new JoystickTrigger(driver, XboxControllerButtonCode.TRIGGER_RIGHT.getCode(), 0.75)
