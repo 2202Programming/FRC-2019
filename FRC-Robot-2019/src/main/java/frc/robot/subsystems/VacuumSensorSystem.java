@@ -36,7 +36,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
     // convert physical units to scaled ints for tests
     final int vacTriggerC = (int)(vacuumTriggerV * kMax);
     final int vacBiasC = (int)(vacuumBiasV * kMax); 
-    final int vacBiasC2 = (int)(vacBiasC * 1.2);   //20% margin - TODO: need to test value and airpuff effect
+    final int vacBiasC2 = (int)(vacBiasC * 1.3);   //30% margin - TODO: need to test value and airpuff effect
 
     //Hz to run the A/D on. sampRate / 16 samples ==> 3906.25hz
     final int kSampleRate = 62500;  
