@@ -47,7 +47,7 @@ public class RobotMap {
   public static final int ARM_ROTATION_ENCODER_PIN_1 = 6;
 
   public static final int ARM_EXTENSTION_TALON_CAN_ID = 21;
-  public static final int ARM_MIN_EXTENSION_SENSOR_PIN = 7;
+  public static final int ARM_MIN_EXTENSION_SENSOR_PIN = 6;
   public static final int ARM_EXTENSION_ENCODER_PIN_0 = 8;
   public static final int ARM_EXTENSION_ENCODER_PIN_1 = 9;
   
