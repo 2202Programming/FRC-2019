@@ -632,7 +632,7 @@ public class CommandManager {
         // grp.AddSequential(new Extend_Drive_To_Deliver());
         CommandGroup subGrp = new CommandGroup("ReleaseSub");
         subGrp.addParallel(new VacuumCommand(false, vacTimeout)); 
-        subGrp.addParallel(new RetractOnReleaseCommand(2.5 /*inchs*/, vacTimeout));  
+        subGrp.addParallel(new RetractOnReleaseCommand(this, 2.5 /*inchs*/, vacTimeout));  
         grp.addSequential(subGrp); 
         grp.addSequential(new NextModeCmd(Modes.Drive)); // go back to driving configuration
         return grp;

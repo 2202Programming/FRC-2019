@@ -13,12 +13,12 @@ public class RetractOnReleaseCommand extends Command {
   double init_x;
   double init_h;
 
-  public RetractOnReleaseCommand(double x_retract, double timeout) {
+  public RetractOnReleaseCommand(CommandManager cmdMgr, double x_retract, double timeout) {
     //could require(vacSensor0)
     this.releaseCheckFunc = Robot.intake.getVacuumSensor()::hasReleased;
     this.x_retract = x_retract;
     this.timeout = timeout;
-    cmdMgr = Robot.m_cmdMgr;
+    this.cmdMgr = cmdMgr;
   }
 
   // Called just before this Command runs the first time
