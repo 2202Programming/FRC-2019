@@ -10,9 +10,9 @@ public class RingBuffer {
     private int[] array;
     private int head = 0;
     private boolean wrapped = false;
-    private int max = Integer.MIN_VALUE;
-    private int min = Integer.MAX_VALUE;
-    private boolean justCalculated = false;
+    private int max = 0;
+    private int min = 0;
+    private boolean justCalculated = true;
 
     /**
      * Creates a RingBuffer object.
@@ -76,7 +76,9 @@ public class RingBuffer {
      * will automatically invoke this method, if necessary.
      */
     public void calculate() {
-        for (int i = 0; i < getLength(); i++) {
+        max = array[0];
+        min = array[0];
+        for (int i = 1; i < getLength(); i++) {
             if (max < array[i])
                 max = array[i];
             if (min < array[i])
@@ -90,8 +92,6 @@ public class RingBuffer {
      * @return the minimum value in the RingBuffer
      */
     public int min() {
-        if (getLength() == 0)
-            return 0;
         if (!justCalculated)
             calculate();
         return min;
@@ -102,8 +102,6 @@ public class RingBuffer {
      * @return the maximum value in the RingBuffer
      */
     public int max() {
-        if (getLength() == 0)
-            return 0;
         if (!justCalculated)
             calculate();
         return max;
@@ -114,8 +112,6 @@ public class RingBuffer {
      * @return the sum of the values in the RingBuffer
      */
     public int total() {
-        if (getLength() == 0)
-            return 0;
         int sum = 0;
         for (int i = 0; i <= getLength(); i++) {
             if (i >= getLength())
