@@ -27,10 +27,10 @@ public class PawlSureFire extends Command {
 
     protected void execute() {
         if (cmd == Robot.climber.PullIn) {
-            Robot.climber.setExtenderSpeed(Robot.climber.STALL_POWER_EXTEND);
+            Robot.climber.setExtenderSpeed(Robot.climber.STALL_POWER_RETRACT);
         }
         else {  //Robot.climber.Release
-            Robot.climber.setExtenderSpeed(Robot.climber.STALL_POWER_RETRACT);
+            Robot.climber.setExtenderSpeed(Robot.climber.STALL_POWER_EXTEND);
         }
         frameCount--;
         if (frameCount <=0) {

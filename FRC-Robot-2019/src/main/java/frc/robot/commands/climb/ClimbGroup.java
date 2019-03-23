@@ -9,6 +9,9 @@ import frc.robot.commands.GripperPositionCommand;
 public class ClimbGroup extends CommandGroup {
     public ClimbGroup() {
         double longTO = 5.0;
+        double timeToDriveForward = 4.0;
+        double drivePower = -.15;
+
         CommandGroup armGrp = new CommandGroup();
         //move the arm to the back side
         armGrp.addSequential(new GripperPositionCommand(64.0, 1.0, 0.05, longTO)); 
@@ -19,18 +22,21 @@ public class ClimbGroup extends CommandGroup {
         addSequential(armGrp);
 
         //if separate command to bring up robot change to parallel
-        addSequential(new PawlSureFire(Robot.climber.Release, 1));
-        addSequential(new DeployClimbFoot(0.85, 19.0));
+        addSequential(new PawlSureFire(Robot.climber.PullIn, 1));
+        addSequential(new DeployClimbFoot(0.85, 25.0));    // 25 uses limit switch
         //go forward while driving foot
         CommandGroup forwardCmds = new CommandGroup("going forward");
-        forwardCmds.addParallel(new ClimbRollForward(0.6, 10.0 ));  // power, timeout
-        forwardCmds.addParallel(new DriveByPowerCommand(-.15, 5.0)); // power, timeout
+        forwardCmds.addParallel(new ClimbRollForward(0.6, timeToDriveForward ));   // power, timeout
+        forwardCmds.addParallel(new DriveByPowerCommand(drivePower, timeToDriveForward)); // power, timeout
+        
         addSequential(forwardCmds);
         addSequential(new CallFunctionCommand(this::setCharon));
+        addSequential(forwardCmds);
+
         CommandGroup forwardCmds2 = new CommandGroup("going forward 2");
-        forwardCmds2.addSequential(new PawlSureFire(Robot.climber.PullIn,  1));
-        forwardCmds2.addParallel(new DeployClimbFoot(-0.6, 0.33));   // neg power retract 
-        forwardCmds2.addParallel(new DriveByPowerCommand(-.15, 2.0)); // neg power drive reverse
+        forwardCmds2.addSequential(new PawlSureFire(Robot.climber.Release,  1));
+        forwardCmds2.addParallel(new DeployClimbFoot(-0.85, 0.0));    // neg power retract / limit sw
+        forwardCmds2.addParallel(new DriveByPowerCommand(drivePower, 2.0)); // neg power drive reverse
         addSequential(forwardCmds2);
     }
 
