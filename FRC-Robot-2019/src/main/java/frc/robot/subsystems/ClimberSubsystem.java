@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -53,6 +54,9 @@ public class ClimberSubsystem extends Subsystem {
     CANSparkMax footExtender = new CANSparkMax(RobotMap.CLIMB_FOOT_SPARK_MAX_CAN_ID, MotorType.kBrushless);
     CANSparkMax roller = new CANSparkMax(RobotMap.CLIMB_ROLLER_SPARK_MAX_CAN_ID, MotorType.kBrushed);
 
+    private DigitalInput extensionAtMax = new DigitalInput(RobotMap.CLIMB_MAX_EXTENSION_CH);
+    private DigitalInput extensionAtMin = new DigitalInput(RobotMap.CLIMB_MIN_EXTENSION_CH);
+
     // think we need to add an encoder
 
     public void setDrawerSlide(boolean on) {
@@ -94,6 +98,14 @@ public class ClimberSubsystem extends Subsystem {
 
     public double getRollerSpeed() {
         return roller.get();
+    }
+
+    public boolean extensionAtMax() {
+        return extensionAtMax.get();
+    }
+
+    public boolean extensionAtMin() {
+        return extensionAtMin.get();
     }
 
     @Override
