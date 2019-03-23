@@ -137,9 +137,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * Run only when the arm extension belt slips
    */
   public void resetArm() {
-    double angle = getRealAngle(); // current angle
-    double compLen = ((angle - PHI0) * k_dl_dphi); // ext due to rotation to compensate for
-    double calculatedLength = compLen - L0;
+    double compLen = getCompLen(getRealAngle());
+    double calculatedLength = -compLen - L0;
 
     int counts = (int) (calculatedLength * kCounts_per_in);
     armExtensionMotor.setSelectedSensorPosition(counts);
