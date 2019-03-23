@@ -12,7 +12,7 @@ public class RingBuffer {
     private boolean wrapped = false;
     private int max = 0;
     private int min = 0;
-    private boolean justCalculated = true;
+    private boolean justComputed = true;
 
     /**
      * Creates a RingBuffer object.
@@ -71,11 +71,11 @@ public class RingBuffer {
     }
 
     /**
-     * Calculates and updates the minimum and maximum of all values in the RingBuffer.
+     * Computes and updates the minimum and maximum of all values in the RingBuffer.
      * Using the min or max method (or any method that in any way invokes those methods - e.g. avg)
      * will automatically invoke this method, if necessary.
      */
-    public void calculate() {
+    public void compute() {
         max = array[0];
         min = array[0];
         for (int i = 1; i < getLength(); i++) {
@@ -84,7 +84,7 @@ public class RingBuffer {
             if (min < array[i])
                 min = array[i];
         }
-        justCalculated = true;
+        justComputed = true;
     }
 
     /**
@@ -92,8 +92,8 @@ public class RingBuffer {
      * @return the minimum value in the RingBuffer
      */
     public int min() {
-        if (!justCalculated)
-            calculate();
+        if (!justComputed)
+            compute();
         return min;
     }
 
@@ -102,8 +102,8 @@ public class RingBuffer {
      * @return the maximum value in the RingBuffer
      */
     public int max() {
-        if (!justCalculated)
-            calculate();
+        if (!justComputed)
+            compute();
         return max;
     }
 
