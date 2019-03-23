@@ -7,11 +7,31 @@ package frc.robot;
  * @author Kevin Li
  */
 public class RingBuffer {
+    /**
+     * The array in which the values are stored
+     */
     private int[] array;
+    /**
+     * The "beginning" of the RingBuffer.
+     */
     private int head = 0;
+    /**
+     * Whether or not the RingBuffer has wrapped all the way to the beginning of the array.
+     * Used to figure the length of the RingBuffer.
+     */
     private boolean wrapped = false;
+    /**
+     * The maximum value of the RingBuffer.
+     */
     private int max = 0;
+    /**
+     * The minimum value of the RingBuffer.
+     */
     private int min = 0;
+    /**
+     * Whether or not the maximum and minimum values are updated.
+     * Opposite of whether or not <code>compute()</code> is nesessary.
+     */
     private boolean justComputed = true;
 
     /**
