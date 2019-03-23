@@ -4,9 +4,20 @@ import frc.robot.commands.drive.DriveByPowerCommand;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.robot.commands.CallFunctionCommand;
 import frc.robot.Robot;
+import frc.robot.commands.GripperPositionCommand;
 
 public class ClimbGroup extends CommandGroup {
     public ClimbGroup() {
+        double longTO = 5.0;
+        CommandGroup armGrp = new CommandGroup();
+        //move the arm to the back side
+        armGrp.addSequential(new GripperPositionCommand(64.0, 1.0, 0.05, longTO)); 
+        armGrp.addSequential(new CallFunctionCommand(Robot.arm::invert));
+        armGrp.addSequential(new GripperPositionCommand(64.0, 5.0, 0.05, longTO));
+        armGrp.addSequential(new GripperPositionCommand(25.0, 40.0, 0.05, longTO));
+
+        addSequential(armGrp);
+
         //if separate command to bring up robot change to parallel
         addSequential(new PawlSureFire(Robot.climber.Release, 1));
         addSequential(new DeployClimbFoot(0.85, 19.0));

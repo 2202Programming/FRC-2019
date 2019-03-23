@@ -672,38 +672,6 @@ public class CommandManager {
         }
     }
 
-    class GripperPositionCommand extends Command {
-        double timeout;
-        double height;
-        double projx;
-        double error;
-
-        public GripperPositionCommand(double height, double projx, double error, double timeout) {
-            this.height = height;
-            this.projx = projx;
-            this.timeout = timeout;
-            this.error = Math.abs(error);
-        }
-
-        @Override
-        protected void initialize() {
-            setTimeout(timeout);
-            cmdPosition(height, projx); // sets the CommandManagers h/x output
-        }
-
-        @Override
-        protected void execute() {
-            cmdPosition(height, projx); // once should be fine
-        }
-
-        @Override
-        protected boolean isFinished() {
-            double h_err = Math.abs(armPosition.height - height);
-            double x_err = Math.abs(armPosition.projection - projx);
-            boolean posGood = (h_err < error) && (x_err < error);
-            return posGood || isTimedOut();
-        }
-    }
 
     class FlipCmd extends InstantCommand {
         @Override
