@@ -5,24 +5,22 @@ import frc.robot.Robot;
 
 public class ClimbRollForward extends Command {
     private double timeout;
+    private double rollerSpeed;
 
-    public ClimbRollForward(double timeout) {
+    public ClimbRollForward(double rollerSpeed, double timeout) {
         this.timeout = timeout;
-        requires(Robot.climber);
-    }
-
-    public ClimbRollForward() {
-        timeout = 999;
+        this.rollerSpeed = rollerSpeed;
         requires(Robot.climber);
     }
 
     protected void initialize() {
         setTimeout(timeout);
         Robot.climber.setDrawerSlide(true); //activates the drawer slide piston
+        Robot.climber.setRollerSpeed(rollerSpeed);
     }
 
     protected void execute() {
-        Robot.climber.setRollerSpeed(0.5);
+        
     }
 
     protected void end() {

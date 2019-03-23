@@ -36,8 +36,8 @@ public class ClimberSubsystem extends Subsystem {
     // DPL ### check the settings for Extend/Retract
     final DoubleSolenoid.Value Extend = Value.kForward;
     final DoubleSolenoid.Value Retract = Value.kReverse;
-    final DoubleSolenoid.Value PullIn = Value.kReverse;
-    final DoubleSolenoid.Value Release = Value.kForward;
+    public final DoubleSolenoid.Value PullIn = Value.kReverse;
+    public final DoubleSolenoid.Value Release = Value.kForward;
 
     public final double STALL_POWER_EXTEND = 0.069; //Power needed to allow pawl to fire while on the ground 
     public final double STALL_POWER_RETRACT = 0.420; //Power needed to allow pawl to fire while extended up
@@ -62,6 +62,10 @@ public class ClimberSubsystem extends Subsystem {
             drawerSlide.set(Retract);
     }
 
+    public void setPawl( DoubleSolenoid.Value cmd) {
+        pawl.set(cmd);
+    }
+    
     public void setPawl(boolean on) {
         if (on)
             pawl.set(PullIn);

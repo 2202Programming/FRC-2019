@@ -13,7 +13,7 @@ public class CharonSolenoidTestCmd extends Command {
     boolean enabled;
 
     public CharonSolenoidTestCmd(boolean enabled) {
-        this.setName("vac=" + enabled);
+        this.setName("Charon=" + enabled);
         this.enabled = enabled;
     }
 
@@ -24,7 +24,7 @@ public class CharonSolenoidTestCmd extends Command {
 
     @Override
     protected void end() {
-        System.out.println("Entered End of Command");
+        System.out.println("Entered End of CharonCommand");
         Robot.climber.setDrawerSlide(!enabled);
     }
 

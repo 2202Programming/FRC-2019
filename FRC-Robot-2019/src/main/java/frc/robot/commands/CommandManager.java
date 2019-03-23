@@ -720,7 +720,7 @@ public class CommandManager {
     }
 
     // Turn any function into an instant command. Return value not really used.
-    class CallFunctionCmd extends InstantCommand {
+    public class CallFunctionCmd extends InstantCommand {
         IntSupplier workFunct;
 
         public CallFunctionCmd(IntSupplier workFunct) {
