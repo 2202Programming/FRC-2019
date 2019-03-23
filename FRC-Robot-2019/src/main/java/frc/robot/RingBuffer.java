@@ -7,13 +7,12 @@ package frc.robot;
  * @author Kevin Li
  */
 public class RingBuffer {
-    // TODO: Use this class to replace Deques in other classes
-
     private int[] array;
     private int head = 0;
     private boolean wrapped = false;
     private int max = Integer.MIN_VALUE;
     private int min = Integer.MAX_VALUE;
+    private boolean justCalculated = false;
 
     /**
      * Creates a RingBuffer object.
@@ -36,10 +35,6 @@ public class RingBuffer {
             head = 0;
             wrapped = true;
         }
-        if (value > max)
-            max = value;
-        if (value < min)
-            min = value;
     }
 
     /**
@@ -76,12 +71,29 @@ public class RingBuffer {
     }
 
     /**
+     * Calculates and updates the minimum and maximum of all values in the RingBuffer.
+     * Using the min or max method (or any method that in any way invokes those methods - e.g. avg)
+     * will automatically invoke this method, if necessary.
+     */
+    public void calculate() {
+        for (int i = 0; i < getLength(); i++) {
+            if (max < array[i])
+                max = array[i];
+            if (min < array[i])
+                min = array[i];
+        }
+        justCalculated = true;
+    }
+
+    /**
      * Gets the minimum value of the RingBuffer.
      * @return the minimum value in the RingBuffer
      */
     public int min() {
         if (getLength() == 0)
             return 0;
+        if (!justCalculated)
+            calculate();
         return min;
     }
 
@@ -92,6 +104,8 @@ public class RingBuffer {
     public int max() {
         if (getLength() == 0)
             return 0;
+        if (!justCalculated)
+            calculate();
         return max;
     }
 
