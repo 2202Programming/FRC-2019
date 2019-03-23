@@ -25,19 +25,23 @@ public class ClimbGroup extends CommandGroup {
         addSequential(new PawlSureFire(Robot.climber.PullIn, 1));
         addSequential(new DeployClimbFoot(0.85, 25.0));    // 25 uses limit switch
         //go forward while driving foot
-        CommandGroup forwardCmds = new CommandGroup("going forward");
+        CommandGroup forwardCmds = new CommandGroup("going forward1");
         forwardCmds.addParallel(new ClimbRollForward(0.6, timeToDriveForward ));   // power, timeout
         forwardCmds.addParallel(new DriveByPowerCommand(drivePower, timeToDriveForward)); // power, timeout
         
         addSequential(forwardCmds);
         addSequential(new CallFunctionCommand(this::setCharon));
-        addSequential(forwardCmds);
+        CommandGroup forwardCmds2 = new CommandGroup("going forward2");
+        forwardCmds2.addParallel(new ClimbRollForward(0.6, timeToDriveForward ));   // power, timeout
+        forwardCmds2.addParallel(new DriveByPowerCommand(drivePower, timeToDriveForward)); // power, timeout
 
-        CommandGroup forwardCmds2 = new CommandGroup("going forward 2");
-        forwardCmds2.addSequential(new PawlSureFire(Robot.climber.Release,  1));
-        forwardCmds2.addParallel(new DeployClimbFoot(-0.85, 0.0));    // neg power retract / limit sw
-        forwardCmds2.addParallel(new DriveByPowerCommand(drivePower, 2.0)); // neg power drive reverse
         addSequential(forwardCmds2);
+
+        CommandGroup forwardCmds3 = new CommandGroup("going forward 3");
+        forwardCmds3.addSequential(new PawlSureFire(Robot.climber.Release,  1));
+        forwardCmds3.addParallel(new DeployClimbFoot(-0.85, 0.0));    // neg power retract / limit sw
+        forwardCmds3.addParallel(new DriveByPowerCommand(drivePower, 2.0)); // neg power drive reverse
+        addSequential(forwardCmds3);
     }
 
     /*

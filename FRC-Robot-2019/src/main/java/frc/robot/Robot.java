@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.*;
-
+import frc.robot.commands.climb.ClimbGroup;
 import frc.robot.commands.CommandManager;
 import frc.robot.commands.CommandManager.Modes;
 import frc.robot.commands.climb.CheckSolenoids;   
@@ -68,6 +68,7 @@ public class Robot extends TimedRobot {
     // 0=front cam, 1= rear cam, 2 = arm  (pi camera server defines this - could change)
     cameraSelect.setDouble(1);    
     m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function    
+    m_oi.climbButton.whenActive(new ClimbGroup());
   }
 
   /**

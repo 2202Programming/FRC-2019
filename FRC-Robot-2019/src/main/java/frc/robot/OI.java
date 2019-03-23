@@ -15,6 +15,7 @@ import frc.robot.commands.cargo.DeployCargoTrapCommand;
 import frc.robot.commands.cargo.RetractCargoTrapCommand;
 import frc.robot.commands.cargo.tests.IntakeTestCmd;
 import frc.robot.commands.cargo.tests.OuttakeTestCmd;
+
 import frc.robot.commands.climb.tests.CharonSolenoidTestCmd;
 import frc.robot.commands.climb.tests.ClimbMotorTestCmd;
 import frc.robot.commands.climb.tests.PawlSolenoidTestCmd;
@@ -77,6 +78,8 @@ public class OI {
   public JoystickButton endDriveMode; // Switches state out of drive
   public JoystickButton goToPrevMode; // Goes to previous state (only works for recapturing)
 
+  public JoystickButton climbButton;
+
   private ExpoShaper rotateShaper = new ExpoShaper(.7); // fairly flat curve
 
   @SuppressWarnings({ "resource", })
@@ -122,6 +125,9 @@ public class OI {
     flip = new JoystickButton(assistant, XboxControllerButtonCode.X.getCode());
     endDriveMode = new JoystickButton(assistant, XboxControllerButtonCode.B.getCode());
     goToPrevMode = new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode());
+
+    //todo: Billy Zander pick a real place for this
+    climbButton = new JoystickButton(switchBoard, 5);
 
     // Intake Commands
     // hack new JoystickButton(assistant,

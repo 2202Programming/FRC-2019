@@ -62,7 +62,9 @@ public class CommandManager {
         Defense(9), // Unused, for when we need to go to the other side
         DeliverHatch(10), // based on what we captured
         DeliverCargo(11), // based on what we captured
-        Flipping(12), Releasing(20); // Button:CaptureRelease
+        Flipping(12), 
+        Releasing(20), // Button:CaptureRelease
+        Climbing(21);
 
         private int v;
 

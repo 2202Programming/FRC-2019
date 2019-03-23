@@ -32,12 +32,13 @@ public class PawlSureFire extends Command {
         else {  //Robot.climber.Release
             Robot.climber.setExtenderSpeed(Robot.climber.STALL_POWER_EXTEND);
         }
-        frameCount--;
+        
         if (frameCount <=0) {
             Robot.climber.setPawl(cmd);
             Robot.climber.setExtenderSpeed(0.0);
             done = true;
         }
+        frameCount--;
     }
 
     protected boolean isFinished() {
