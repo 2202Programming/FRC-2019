@@ -163,7 +163,7 @@ public class CommandManager {
 
         xprojShaper = new ExpoShaper(0.5, Robot.m_oi::extensionInput); // joystick defined in m_oi.
         xprojStick = new LimitedIntegrator(Robot.dT, xprojShaper::get, // shaped joystick input
-                -20.0, // kGain, 5 in/sec on the joystick (neg. gain, forward stick is neg.)
+                -20.0, // kGain, 20 in/sec on the joystick (neg. gain, forward stick is neg.)
                 -25.0, // xmin inches    true pos limit enforced by arm sub-sys
                  25.0, // x_max inches
                 -20.0, // dx_falling rate inch/sec
@@ -632,8 +632,8 @@ public class CommandManager {
         // grp.AddSequential(new Extend_Drive_To_Deliver());
         CommandGroup subGrp = new CommandGroup("ReleaseSub");
         subGrp.addParallel(new VacuumCommand(false, vacTimeout)); 
-        subGrp.addParallel(new RetractOnReleaseCommand(this, -4.0 /*inchs*/, 2.0));  
-        grp.addSequential(subGrp); 
+        subGrp.addParallel(new RetractOnReleaseCommand(this, -4.0 /*inchs*/, 10.0));  
+        grp.addSequential(subGrp);
         grp.addSequential(new NextModeCmd(Modes.Drive)); // go back to driving configuration
         return grp;
     }
