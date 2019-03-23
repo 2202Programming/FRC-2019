@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
@@ -35,6 +37,7 @@ import frc.robot.commands.util.MathUtil;
 public class ArmSubsystem extends ExtendedSubSystem {
   private WPI_TalonSRX armRotationMotor = new WPI_TalonSRX(RobotMap.ARM_ROTATION_TALON_CAN_ID);
   private WPI_TalonSRX armExtensionMotor = new WPI_TalonSRX(RobotMap.ARM_EXTENSTION_TALON_CAN_ID);
+  private DigitalInput extensionAtMin = new DigitalInput(RobotMap.ARM_MIN_EXTENSION_SENSOR_PIN);
 
   // Constants used by commands as measured
   public final double PHI0 = 158.0; // degrees, starting position - encoder zero
@@ -237,7 +240,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
    *         <code>false</code> otherwise.
    */
   public boolean extensionAtMin() {
-    return armExtensionMotor.getSensorCollection().isRevLimitSwitchClosed();
+    return extensionAtMin.get();
   }
 
   /**
@@ -310,7 +313,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
       SmartDashboard.putNumber("Arm:Gripper Height", getArmPosition().height);
 
       // don't have limit switches right now
-      // SmartDashboard.putBoolean("Arm:Ext@Min", extensionAtMin());
+      SmartDashboard.putBoolean("Arm:Ext@Min", extensionAtMin());
       // SmartDashboard.putBoolean("Arm:Ext@Max", extensionAtMax());
     }
     return;
