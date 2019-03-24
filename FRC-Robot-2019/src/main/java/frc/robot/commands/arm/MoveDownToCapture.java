@@ -24,12 +24,12 @@ public class MoveDownToCapture extends Command {
     public MoveDownToCapture(double down){
         requires(Robot.arm);
         down_cmd = down;
-
+        System.out.println("MoveDownToCapture - warning untested code.")
         
     }
 
     protected void initialize() {
-        curProjection = (armInitialLength + Robot.arm.getExtension()) * Math.cos(Robot.arm.getAbsoluteAngle());
+        curProjection = (armInitialLength + Robot.arm.getExtension()) * Math.cos(Robot.arm.getRealAngle());
         curCalcHeight = Math.sqrt((Robot.arm.getExtension() + armInitialLength) * (Robot.arm.getExtension() + armInitialLength) - curProjection * curProjection);
         endHeight = curCalcHeight + down_cmd; //Move down 5 inches (increase bc increasing distance from x-axis)
         /*

@@ -83,7 +83,7 @@ public class CommandManager {
     CommandGroup huntingHatchGrp;
     CommandGroup huntingCargoGrp;
     CommandGroup huntingHFloorGrp;
-    CommandGroup captureGrp;
+    //CommandGroup captureGrp;
     CommandGroup deliveryGrp;
     CommandGroup releaseGrp;
     CommandGroup flipGrp;
@@ -154,11 +154,11 @@ public class CommandManager {
         huntingHFloorGrp = CmdFactoryHuntHatchFloor();
         huntingHatchGrp = CmdFactoryHuntHatch();
         huntingCargoGrp = CmdFactoryHuntCargo();
-        captureGrp = CmdFactoryCapture();
+        //captureGrp = CmdFactoryCapture();
         driveGrp = CmdFactoryDrive();
         deliveryGrp = CmdFactoryDelivery();
         releaseGrp = CmdFactoryRelease();
-        flipGrp = CmdFactoryFlip(); //(dpl - keep from mistakes for now) CmdFactoryFlip();
+        flipGrp = CmdFactoryFlip(); 
 
         logTimer = System.currentTimeMillis();
         armPosition = Robot.arm.getArmPosition();
@@ -238,9 +238,9 @@ public class CommandManager {
             wristOffset = 0.0;
             break;
 
-        case Capturing: // moving from hunting to picking it up. Button:Capture
+        case Capturing:                 //unused  // moving from hunting to picking it up. Button:Capture
             prevHuntMode = currentMode; // this is what we captured
-            nextCmd = captureGrp;
+            nextCmd =  null;            //captureGrp;
             wristOffset = 0.0;
             break;
         case Drive:
@@ -424,14 +424,18 @@ public class CommandManager {
     }
 
     double wristTrackParallel() {
-        double phi = Robot.arm.getAbsoluteAngle();
-        return Robot.arm.getInversion() * (phi - 90.0);
+        double phi = Robot.arm.getRealAngle();
+        double alpha = (phi > 0.0) ? (phi - 90) : (90 + phi);
+        return alpha;
     }
 
     double wristTrackPerp() {
-        // TODO: will need to account for phi on each side
-        double phi = Robot.arm.getAbsoluteAngle();
-        return Robot.arm.getInversion() * (phi - 180.0);
+        double phi = Robot.arm.getRealAngle();
+        double alpha = (phi > 0.0) ? (phi - 180) : (180 + phi );
+        //if we are out of the +- 90 range
+        alpha = (alpha > 90.0)  ? (alpha - 90.0) : alpha;
+        alpha = (alpha < -90.0) ? (alpha + 90.0) : alpha;
+        return alpha;
     }
 
     /**
@@ -646,7 +650,7 @@ public class CommandManager {
         double start = Robot.arm.getRealAngle();
         
         grp.addSequential(new FlipCommand(start, -start, 12.0, 1.0, 20));
-        grp.addSequential(new CallFunctionCmd(Robot.arm::invert));
+        
         /*
         grp.addParallel(new WristTrackFunction(this::wristTrackZero));
         grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));

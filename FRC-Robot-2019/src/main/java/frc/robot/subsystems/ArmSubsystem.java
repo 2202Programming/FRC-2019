@@ -42,7 +42,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   // Constants used by commands as measured
   public final double PHI0 = 158.0; // degrees, starting position - encoder zero
   public final double PHI_MAX = 158.0; // In Degrees, Positive is foward, bottom front
-  public final double PHI_MIN = 25.0; // In Degrees, Near top front
+  public final double PHI_MIN = -140.0; // In Degrees
 
   private final double kCounts_per_deg = 600; //back to practice bot
   private final double kDeg_per_count = 1.0 / kCounts_per_deg;
@@ -70,7 +70,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
   // talon controls
   final int PIDIdx = 0; // using pid 0 on talon
-  final int TO = 30; // timeout 30ms
+  final int TO = 0;     // timeout - use 0 per Chief Delphi 
 
   private long logTimer;
 
@@ -94,16 +94,16 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
     // Set Talon postion mode gains and power limits
     // Arm
-    armRotationMotor.config_kP(0, 0.5 /* 0.8 */, 30);
+    armRotationMotor.config_kP(0, 0.5 /* 0.8 */, TO);
     armRotationMotor.configPeakOutputForward(0.24);
     armRotationMotor.configPeakOutputReverse(-0.24);
     armRotationMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     armRotationMotor.setInverted(true);
 
     // Extension on power will be out at L0.
-    armExtensionMotor.config_kP(0, 0.6 /* 0.6 */, 30);
+    armExtensionMotor.config_kP(0, 0.6, TO);
     armExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
-    armExtensionMotor.setIntegralAccumulator(0, 0, 30);
+    armExtensionMotor.setIntegralAccumulator(0, 0, TO);
     armExtensionMotor.setSensorPhase(false);
     armExtensionMotor.setInverted(true);
     armExtensionMotor.configPeakOutputForward(0.5);
@@ -161,27 +161,26 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * @return the angle of the arm, in degrees.
    */
   public double getRealAngle() {
-    // return PHI_MAX - (rotationEncoder.getSelectedSensorPosition() / COUNT_MAX *
-    // (PHI_MAX - PHI_MIN));
     double counts = armRotationMotor.getSelectedSensorPosition();
     double angle = PHI0 - counts * kDeg_per_count;
     return angle;
   }
-
+/****
   public double getAbsoluteAngle() {
     double counts = armRotationMotor.getSelectedSensorPosition();
     double angle = PHI0 - counts * kDeg_per_count;
     return inversionConstant * angle;
   }
+***/
 
   /**
    * Extends the extension to the length given. Compensate for the arm angle, phi,
    * so the desired extension is maintained.
    * 
-   * Because the encoders are zeroed at PHI0 and D0 they must be accounted for...
+   * Because the encoders are zeroed at PHI0 and L0 they must be accounted for...
    * At phi == phi0 there is no changes in length.
    * 
-   * @param extendInch (inches) to set the arm.
+   * @param l (inches) to set the arm.
    */
   public void setExtension(double l) {
     double angle = getRealAngle(); // current angle
@@ -258,12 +257,12 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * horizontal zero
    */
   public Position getArmPosition() {
-    double phi = getAbsoluteAngle();
-    double rads = Math.toRadians(90 - phi);
+    double phi = getRealAngle();
+    double rads = Math.toRadians(phi);
     double ext = getExtension(); // includes angle compensation
     double l = ARM_BASE_LENGTH + WRIST_LENGTH + ext;
-    position.height = ARM_PIVOT_HEIGHT + l * Math.sin(rads);
-    position.projection = l * Math.cos(rads);
+    position.height = ARM_PIVOT_HEIGHT + l * Math.cos(rads);
+    position.projection = l * Math.sin(rads);
     return position;
   }
 
@@ -288,7 +287,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public Command zeroSubsystem() {
     return new ArmZero();
   }
-
+/*
   public int invert() {
     inversionConstant *= -1;
     return inversionConstant;
@@ -297,6 +296,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public short getInversion() {
     return inversionConstant;
   }
+*/
 
   public void log(int interval) {
     if ((logTimer + interval) < System.currentTimeMillis()) { // only post to smartdashboard every interval ms
