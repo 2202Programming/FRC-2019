@@ -554,10 +554,10 @@ public class CommandManager {
         CommandGroup grp = new CommandGroup("ZeroRobot");
         grp.addSequential(Robot.arm.zeroSubsystem());
         grp.addSequential(Robot.intake.zeroSubsystem());
+        grp.addSequential(Robot.climber.zeroSubsystem());
         grp.addSequential(new CallFunctionCmd(this::initialize));
-
+        
         // commands to come
-        /// grp.addParallel(Robot.climber.zeroSubsystem());
         /// grp.addParallel(Robot.cargoTrap.zeroSubsystem());
         return grp;
     }

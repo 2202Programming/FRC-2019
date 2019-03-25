@@ -233,13 +233,14 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
   /**
    * Gets whether or not the arm is at the state of being the least extended it
-   * can.
+   * can.  Active low on the wiring, we invert the signal
    * 
    * @return <code>true</code> if the arm is at the minimum extension state,
    *         <code>false</code> otherwise.
    */
   public boolean extensionAtMin() {
-    return extensionAtMin.get();
+    //this signal is active low
+    return !extensionAtMin.get();
   }
 
   /**

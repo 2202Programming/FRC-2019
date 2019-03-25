@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
 /**
- * VacuumCommand (enable) true - turn it on false - turn it off
  * 
  * Instantiate with one or other for what you need.
  */
@@ -13,22 +12,21 @@ public class PawlSolenoidTestCmd extends Command {
     boolean enabled;
 
     public PawlSolenoidTestCmd(boolean enabled) {
-        this.setName("vac=" + enabled);
+        this.setName("PawlTest=" + enabled);
         this.enabled = enabled;
     }
 
     @Override
-    protected void execute() {
+    protected void initialize() {
         Robot.climber.setPawl(enabled);
     }
 
     @Override
-    protected void end() {
-        Robot.climber.setPawl(!enabled);
+    protected void execute() {      
     }
 
     @Override
     protected boolean isFinished() {
-        return false;
+        return true;
     }
 }

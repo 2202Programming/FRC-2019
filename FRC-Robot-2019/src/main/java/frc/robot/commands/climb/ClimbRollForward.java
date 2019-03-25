@@ -15,7 +15,6 @@ public class ClimbRollForward extends Command {
 
     protected void initialize() {
         setTimeout(timeout);
-        Robot.climber.setDrawerSlide(true); //activates the drawer slide piston
         Robot.climber.setRollerSpeed(rollerSpeed);
     }
 
@@ -25,7 +24,6 @@ public class ClimbRollForward extends Command {
 
     protected void end() {
         Robot.climber.setRollerSpeed(0);
-        Robot.climber.setDrawerSlide(false);
     }
 
     protected boolean isFinished() {

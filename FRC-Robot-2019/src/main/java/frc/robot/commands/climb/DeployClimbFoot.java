@@ -15,12 +15,12 @@ public class DeployClimbFoot extends Command {
         requires(Robot.climber);
         this.power = power;
         this.distance = distance;
+        extending = (power > 0);    //confirmed pos power is extending 
     }
 
     @Override
     protected void initialize() {
         Robot.climber.setExtenderSpeed(power);
-        extending = (power > 0);    //confirmed pos power is extending
     }
 
     protected void execute() {  }
@@ -33,8 +33,8 @@ public class DeployClimbFoot extends Command {
         // depending on direction (power indicates)
         boolean done;
         // perform check based on which way we are  moving the foot
-        done = (extending) ? ((Robot.climber.getExtension() >= distance) || Robot.climber.extensionAtMax() )
-                           : ((Robot.climber.getExtension() <= distance) || Robot.climber.extensionAtMin() );
+        done = (extending) ? ((Robot.climber.getExtension() >= distance) || Robot.climber.footAtExtend() )
+                           : ((Robot.climber.getExtension() <= distance) || Robot.climber.footAtRetract() );
         return done; 
     }
 }

@@ -184,6 +184,7 @@ public class Robot extends TimedRobot {
     gearShifter.log(interval+17); //tell gearshifter to post to dashboard every Xms
     m_cmdMgr.log(interval+23);
     intake.log(interval+29);
+    climber.log(interval+31);
 
     
     SmartDashboard.putData(Scheduler.getInstance()); 

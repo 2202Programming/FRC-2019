@@ -91,7 +91,7 @@ public class OI {
       // don't care - won't happen
     }
 
-    // If the Test Button on the switchboard is activeSSSsS
+    // If the Test Button on the switchboard is active, select for TestBinding
     if (false/* switchBoard.getRawButton(11) */) {
       bindTestButtons();
       System.out.println("Using Test OI");
@@ -113,8 +113,28 @@ public class OI {
     new JoystickTrigger(driver, XboxControllerButtonCode.TRIGGER_RIGHT.getCode(), 0.75)
         .whileHeld(new OuttakeTestCmd(0.4));
     new JoystickButton(assistant, 9).whileHeld(new CopilotControlCommand(0.4, 0.3));;
+
+    // Switchboard Assignments 
+    /**
+     * 
+     * TODO: are these used???  Temp adding Climber tests buttons to live code to help debug CommandGroup
+     * DPL - 3/23/19
     new JoystickButton(switchBoard, 1).whenPressed(new DeployCargoTrapCommand());
     new JoystickButton(switchBoard, 2).whenPressed(new RetractCargoTrapCommand());
+    */
+
+    // Climber tests - temporary added to field
+    //execute Pawl only on change
+    new JoystickButton(switchBoard, 1).whenPressed(new PawlSolenoidTestCmd(true));
+    new JoystickButton(switchBoard, 1).whenReleased(new PawlSolenoidTestCmd(false));
+    new JoystickButton(switchBoard, 2).whileActive(new ClimbMotorTestCmd(0.3));
+    
+    //execute Charon only on button change
+    new JoystickButton(switchBoard, 3).whenPressed(new CharonSolenoidTestCmd(true));
+    new JoystickButton(switchBoard, 3).whenReleased(new CharonSolenoidTestCmd(false));
+
+    new JoystickButton(switchBoard, 4).whileActive(new RollerMotorTestCmd(0.5));
+    new JoystickButton(switchBoard, 5).whileActive(new ClimbMotorTestCmd(-0.3));
 
     new GeneralTrigger(Robot.arm::extensionAtMin).whenPressed(new ResetArmCommand());
 
@@ -126,24 +146,14 @@ public class OI {
     endDriveMode = new JoystickButton(assistant, XboxControllerButtonCode.B.getCode());
     goToPrevMode = new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode());
 
-    //todo: Billy Zander pick a real place for this
-    climbButton = new JoystickButton(switchBoard, 5);
-
-    // Intake Commands
-    // hack new JoystickButton(assistant,
-    // XboxControllerButtonCode.B.getCode()).whenPressed(new VacuumCommand(false));
-    // hack new JoystickButton(assistant,
-    // XboxControllerButtonCode.A.getCode()).whenPressed(new VacuumCommand(true));
-    // new JoystickButton(assistant,
-    // XboxControllerButtonCode.START.getCode()).whenPressed(new
-    // RotateWristUpCommand());
-    // new JoystickButton(assistant,
-    // XboxControllerButtonCode.BACK.getCode()).whenPressed(new
-    // RotateWristDownCommand());
-
-    // Driver assist commands (macros)
+    //TODO: Billy / Zander / driveteam pick a real place for this - 3/23/19
+    climbButton = new JoystickButton(switchBoard, 6);
   }
 
+
+  /**
+   *  Test Bindings - used if the hard coded flag above is set to TRUE see line#.
+   */
   public void bindTestButtons() {
     // Vacuum subsystem tests
     // new JoystickButton(assistant,
@@ -159,9 +169,15 @@ public class OI {
     new JoystickButton(driver, XboxControllerButtonCode.X.getCode()).whileHeld(new OuttakeTestCmd(0.4));
 
     // Climber tests
-    new JoystickButton(switchBoard, 1).whileHeld(new PawlSolenoidTestCmd(true));
+    //execute Pawl only on change
+    new JoystickButton(switchBoard, 1).whenPressed(new PawlSolenoidTestCmd(true));
+    new JoystickButton(switchBoard, 1).whenReleased(new PawlSolenoidTestCmd(false));
     new JoystickButton(switchBoard, 2).whileActive(new ClimbMotorTestCmd(0.3));
-    new JoystickButton(switchBoard, 3).whileHeld(new CharonSolenoidTestCmd(true));
+    
+    //execute Charon only on button change
+    new JoystickButton(switchBoard, 3).whenPressed(new CharonSolenoidTestCmd(true));
+    new JoystickButton(switchBoard, 3).whenReleased(new CharonSolenoidTestCmd(false));
+
     new JoystickButton(switchBoard, 4).whileActive(new RollerMotorTestCmd(0.5));
     new JoystickButton(switchBoard, 5).whileActive(new ClimbMotorTestCmd(-0.3));
 

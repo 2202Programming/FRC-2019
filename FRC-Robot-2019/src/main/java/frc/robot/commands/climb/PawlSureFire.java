@@ -26,10 +26,12 @@ public class PawlSureFire extends Command {
     }
 
     protected void execute() {
-        if (cmd == Robot.climber.PullIn) {
+        // run motor opp of what we want to unload before switching
+
+        if (cmd == Robot.climber.Extend) {
             Robot.climber.setExtenderSpeed(Robot.climber.STALL_POWER_RETRACT);
         }
-        else {  //Robot.climber.Release
+        else {  //Robot.climber.Retract
             Robot.climber.setExtenderSpeed(Robot.climber.STALL_POWER_EXTEND);
         }
         
