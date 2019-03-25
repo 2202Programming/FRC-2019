@@ -183,40 +183,42 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * 
    * @param extendInch (inches) to set the arm.
    */
-  public void setExtension(double l) {
+  public void setExtension(double desired_L) {
     double angle = getRealAngle(); // current angle
-    double compLen = ((angle - PHI0) * k_dl_dphi); // ext due to rotation to compensate for
-    double max_l_at_phi = MAX_PROJECTION / Math.sin(Math.toRadians(angle)) - PIVOT_TO_FRONT - WRIST_LENGTH;
 
-    l = Math.min(l, max_l_at_phi); // Limit length to max projection
-    
-    double len = (l - L0) - compLen; // net len to command relative to start
+    //Limit Extension
+    double min_l_at_phi = getMinExtension(angle);
+    double max_l_at_phi = getMaxExtension(angle);
+    desired_L = MathUtil.limit(desired_L, min_l_at_phi, max_l_at_phi);
 
-    SmartDashboard.putNumber("Extension Compensation", compLen);
-    SmartDashboard.putNumber("Extension Calculated", len);
-
-    double minLength = getMinExtension(getRealAngle()) - L0;
-
-    // Make sure we limit to the range of the extension is capable
-    if (len < minLength) {
-      System.out.println("Arm:Extension below minimum.");
+    //Print Warning
+    if (desired_L < min_l_at_phi) {
+      System.out.println("Desired Arm:Extension below minimum of " + min_l_at_phi + " inches.");
+    } else if(desired_L > max_l_at_phi) {
+      System.out.println("Desired Arm:Extension above maximum of " + max_l_at_phi + " inches.");
     }
-
-    // todo:not sure if this is the right way to limit
-    // we can't go above or below our adjust min/max based on starting L0
-    len = MathUtil.limit(len, minLength, EXTEND_MAX);
     
-    SmartDashboard.putNumber("Extension Set", len);
+    SmartDashboard.putNumber("Extension Calculated", desired_L);
 
-    double c = len * kCounts_per_in;
+    // Adjust length to match L0 and account for compLen
+    double compLen = ((angle - PHI0) * k_dl_dphi); // ext due to rotation to compensate for 
+    double cmd_L = desired_L - L0 - compLen;
+    SmartDashboard.putNumber("Extension Compensation", compLen);
+    SmartDashboard.putNumber("Extension Set", cmd_L);
+
+    double c = cmd_L * kCounts_per_in;
     armExtensionMotor.set(ControlMode.Position, c);
   }
 
-  private double getMinExtension(double angle) {
+  public double getMinExtension(double angle) {
     if(-35.0 < angle && angle < 35.0) {
-      return STARTING_EXTENSION - getCompLen(angle);
+      return STARTING_EXTENSION;
     }
-    return EXTEND_MIN - getCompLen(angle);
+    return EXTEND_MIN;
+  }
+
+  public double getMaxExtension(double angle) {
+    return MAX_PROJECTION / Math.sin(Math.toRadians(angle)) - PIVOT_TO_FRONT - WRIST_LENGTH;
   }
 
   /**
