@@ -8,7 +8,7 @@ import frc.robot.Robot;
 import frc.robot.commands.GripperPositionCommand;
 
 public class ClimbGroup extends CommandGroup {
-    public ClimbGroup() {
+    public ClimbGroup(double climbHeight) {
         double longTO = 5.0;
         double timeToDriveForward = 4.0;
         double drivePower = 0.3; // Positive power goes to negative direction
@@ -24,8 +24,8 @@ public class ClimbGroup extends CommandGroup {
 
         //if separate command to bring up robot change to parallel
         addSequential(Robot.climber.zeroSubsystem());   //hack to zero counters
-        //addSequential(new PawlSureFire(Robot.climber.Extend, 4));
-        //addSequential(new DeployClimbFoot(0.9, 20.5));    // 20.5 uses limit switch
+        addSequential(new PawlSureFire(Robot.climber.Extend, 4));
+        addSequential(new DeployClimbFoot(0.9, climbHeight));    // 20.5 uses limit switch
         //go forward while driving foot
         CommandGroup forwardCmds = new CommandGroup("going forward1");
         forwardCmds.addParallel(new ClimbRollForward(0.6, timeToDriveForward ));   // power, timeout
@@ -75,5 +75,14 @@ public class ClimbGroup extends CommandGroup {
 
         Robot.climber.setDrawerSlide(Robot.climber.HoldSlide);
         return 0;
+    }
+
+    @Override
+    protected void interrupted() {
+        Robot.driveTrain.stop();
+        Robot.climber.setRollerSpeed(0.0);
+        Robot.climber.setExtenderSpeed(0.0);
+        Robot.climber.setPawl(Robot.climber.Retract);
+        Robot.climber.setDrawerSlide(Robot.climber.HoldSlide);
     }
 }

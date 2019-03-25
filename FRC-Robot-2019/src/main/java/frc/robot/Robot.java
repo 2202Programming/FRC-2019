@@ -7,17 +7,27 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystems.*;
-import frc.robot.commands.climb.ClimbGroup;
 import frc.robot.commands.CommandManager;
 import frc.robot.commands.CommandManager.Modes;
-import frc.robot.commands.climb.CheckSolenoids;   
+import frc.robot.commands.climb.CheckSolenoids;
+import frc.robot.commands.climb.ClimbGroup;
 import frc.robot.commands.intake.CheckSucc;
-import edu.wpi.first.networktables.*;
+import frc.robot.commands.util.CancelCommand;
+import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.CameraSubsystem;
+import frc.robot.subsystems.CargoTrapSubsystem;
+import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.DriveTrainSubsystem;
+import frc.robot.subsystems.GearShifterSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.SensorSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -68,7 +78,9 @@ public class Robot extends TimedRobot {
     // 0=front cam, 1= rear cam, 2 = arm  (pi camera server defines this - could change)
     cameraSelect.setDouble(1);    
     m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function    
-    m_oi.climbButton.whenActive(new ClimbGroup());
+    CommandGroup level3Climb = new ClimbGroup(20.5);
+    m_oi.climbButton.whenPressed(level3Climb);
+    m_oi.climbButton.whenReleased(new CancelCommand(level3Climb));
   }
 
   /**
