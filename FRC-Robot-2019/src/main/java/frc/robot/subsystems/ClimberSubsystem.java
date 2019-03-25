@@ -49,7 +49,7 @@ public class ClimberSubsystem extends ExtendedSubSystem {
     public final double STALL_POWER_EXTEND = 0.3;  //Power needed to allow pawl to fire while on the ground 
     public final double STALL_POWER_RETRACT = -0.3; //Power needed to allow pawl to fire while extended up
 
-    public final double COUNTS_PER_IN = 11.31;         //TODO: Find actual counts
+    public final double COUNTS_PER_IN = 10.3;      //updated with Kevin's meas 3/23/2019
     public final double IN_PER_COUNT = 1.0 / COUNTS_PER_IN;
 
     // physical devices
