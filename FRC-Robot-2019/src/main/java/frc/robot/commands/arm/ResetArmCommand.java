@@ -10,6 +10,6 @@ public class ResetArmCommand extends InstantCommand {
 
   @Override
   protected void execute() {
-    Robot.arm.resetArm();
+    Robot.arm.resetArm(0.0);
   }
 }

@@ -136,9 +136,9 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * Resets the arm to match calculated position
    * Run only when the arm extension belt slips
    */
-  public void resetArm() {
+  public void resetArm(double resetLength) {
     double compLen = getCompLen(getRealAngle());
-    double calculatedLength = -compLen - L0;
+    double calculatedLength = resetLength - compLen - L0;
 
     int counts = (int) (calculatedLength * kCounts_per_in);
     armExtensionMotor.setSelectedSensorPosition(counts);
