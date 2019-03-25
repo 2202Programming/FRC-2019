@@ -1,20 +1,30 @@
 package frc.robot.commands.drive;
 
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
+import frc.robot.commands.util.ExpoShaper;
 import frc.robot.subsystems.DriveTrainSubsystem;
 
 /**
  * An example command. You can replace me with your own command.
  */
-public class DriveByPowerCommand extends Command {
+public class DriveByPowerAndJoystickCommand extends Command {
   private DriveTrainSubsystem driveTrain = Robot.driveTrain;
   double power;
+  double minPower;
+  double maxPower;
   double timeout;
+  private ExpoShaper speedShaper;
+  private ExpoShaper rotationShaper;
 
-  public DriveByPowerCommand(double power, double timeout) {
+  public DriveByPowerAndJoystickCommand(double power, double minPower, double maxPower, double timeout) {
     this.power = power;
+    this.minPower = minPower;
+    this.maxPower = maxPower;
     this.timeout = timeout;
+    this.speedShaper = new ExpoShaper(0.6);        //0 no change,  1.0 max flatness
+    this.rotationShaper = new ExpoShaper(0.5);
     // Use requires() here to declare subsystem dependencies
     requires(Robot.driveTrain);
   }
@@ -33,7 +43,10 @@ public class DriveByPowerCommand extends Command {
   // Temporary until we get the XboxController wrapper for joystick
   @Override
   protected void execute() {
-    Robot.driveTrain.ArcadeDrive(power, 0.0, true);
+    double speedInput = speedShaper.expo(Robot.m_oi.getDriverController().getY(Hand.kLeft));
+    double speedAdjust = speedInput > 0? speedInput * (maxPower - power): speedInput * (power - minPower);
+    double rotation = 0.5 * rotationShaper.expo(Robot.m_oi.getDriverController().getX(Hand.kRight));
+    Robot.driveTrain.ArcadeDrive(power + speedAdjust, rotation, true);
   }
 
   @Override
