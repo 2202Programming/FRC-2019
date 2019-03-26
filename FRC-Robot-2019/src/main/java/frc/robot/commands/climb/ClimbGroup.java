@@ -3,6 +3,7 @@ package frc.robot.commands.climb;
 import frc.robot.commands.drive.DriveByPowerAndJoystickCommand;
 import frc.robot.commands.drive.DriveByPowerCommand;
 import edu.wpi.first.wpilibj.command.CommandGroup;
+import edu.wpi.first.wpilibj.command.WaitCommand;
 import frc.robot.commands.CallFunctionCommand;
 import frc.robot.Robot;
 import frc.robot.commands.GripperPositionCommand;
@@ -10,7 +11,8 @@ import frc.robot.commands.GripperPositionCommand;
 public class ClimbGroup extends CommandGroup {
     public ClimbGroup(double climbHeight) {
         double longTO = 5.0;
-        double timeToDriveForward = 4.0;
+        double timeToDriveForward = 2.0;
+        double rollPower = 0.3;
         double drivePower = 0.3; // Positive power goes to negative direction
 
         CommandGroup armGrp = new CommandGroup();
@@ -20,7 +22,7 @@ public class ClimbGroup extends CommandGroup {
         armGrp.addSequential(new GripperPositionCommand(64.0, 5.0, 0.05, longTO));
         armGrp.addSequential(new GripperPositionCommand(25.0, 40.0, 0.05, longTO));
 
-       // addSequential(armGrp);
+        //addSequential(armGrp);
 
         //if separate command to bring up robot change to parallel
         addSequential(Robot.climber.zeroSubsystem());   //hack to zero counters
@@ -28,21 +30,24 @@ public class ClimbGroup extends CommandGroup {
         addSequential(new DeployClimbFoot(0.9, climbHeight));    // 20.5 uses limit switch
         //go forward while driving foot
         CommandGroup forwardCmds = new CommandGroup("going forward1");
-        forwardCmds.addParallel(new ClimbRollForward(0.6, timeToDriveForward ));   // power, timeout
+        forwardCmds.addParallel(new ClimbRollForward(rollPower, timeToDriveForward ));   // power, timeout
         forwardCmds.addParallel(new DriveByPowerAndJoystickCommand(drivePower, 0.25, 0.5, timeToDriveForward)); // power, timeout
         
         addSequential(forwardCmds);
+        addSequential(new WaitCommand(0.2));
         addSequential(new CallFunctionCommand(this::releaseSlide));
+
+        timeToDriveForward = 2.0;
         CommandGroup forwardCmds2 = new CommandGroup("going forward2");
-        forwardCmds2.addParallel(new ClimbRollForward(0.6, timeToDriveForward ));   // power, timeout
+        forwardCmds2.addParallel(new ClimbRollForward(rollPower, timeToDriveForward ));   // power, timeout
         forwardCmds2.addParallel(new DriveByPowerAndJoystickCommand(drivePower, 0.25, 0.5, timeToDriveForward)); // power, timeout
 
         addSequential(forwardCmds2);
 
         CommandGroup forwardCmds3 = new CommandGroup("going forward 3");
-        //forwardCmds3.addSequential(new PawlSureFire(Robot.climber.Retract,  4));
-        //forwardCmds3.addParallel(new DeployClimbFoot(-0.50, 0.0));    // neg power retract / limit sw
-        forwardCmds3.addParallel(new DriveByPowerAndJoystickCommand(drivePower, 0.25, 0.5, 2.0)); // neg power drive reverse
+        forwardCmds3.addSequential(new PawlSureFire(Robot.climber.Retract,  4));
+        forwardCmds3.addParallel(new DeployClimbFoot(-0.50, 0.0));    // neg power retract / limit sw
+        forwardCmds3.addParallel(new DriveByPowerAndJoystickCommand(drivePower, 0.25, 0.5, 3.0)); // neg power drive reverse
         addSequential(forwardCmds3);
         addSequential(new CallFunctionCommand(this::holdSlide));
     }
