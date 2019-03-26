@@ -7,13 +7,15 @@ import edu.wpi.first.wpilibj.command.WaitCommand;
 import frc.robot.commands.CallFunctionCommand;
 import frc.robot.Robot;
 import frc.robot.commands.GripperPositionCommand;
+import frc.robot.commands.arm.FlipCommand;
+import frc.robot.commands.arm.MoveArmAtHeight;
 
 public class ClimbGroup extends CommandGroup {
     public ClimbGroup(double climbHeight) {
         double longTO = 5.0;
         double timeToDriveForward = 2.0;
-        double rollPower = 0.3;
-        double drivePower = 0.3; // Positive power goes to negative direction
+        double rollPower = 0.4;
+        double drivePower = 0.35; // Positive power goes to negative direction
 
         CommandGroup armGrp = new CommandGroup();
         //move the arm to the back side
@@ -22,10 +24,11 @@ public class ClimbGroup extends CommandGroup {
         armGrp.addSequential(new GripperPositionCommand(64.0, 5.0, 0.05, longTO));
         armGrp.addSequential(new GripperPositionCommand(25.0, 40.0, 0.05, longTO));
 
-        //addSequential(armGrp);
+       // addSequential(armGrp);
 
-        //if separate command to bring up robot change to parallel
-        addSequential(Robot.climber.zeroSubsystem());   //hack to zero counters
+       //if separate command to bring up robot change to parallel
+       addSequential(Robot.climber.zeroSubsystem());   //hack to zero counters
+       addSequential(new FlipCommand(97, 90, 29, 0.5, 20));
         addSequential(new PawlSureFire(Robot.climber.Extend, 4));
         addSequential(new DeployClimbFoot(0.9, climbHeight));    // 20.5 uses limit switch
         //go forward while driving foot
@@ -37,15 +40,15 @@ public class ClimbGroup extends CommandGroup {
         addSequential(new WaitCommand(0.2));
         addSequential(new CallFunctionCommand(this::releaseSlide));
 
-        timeToDriveForward = 2.0;
+        timeToDriveForward = 3.0;
         CommandGroup forwardCmds2 = new CommandGroup("going forward2");
         forwardCmds2.addParallel(new ClimbRollForward(rollPower, timeToDriveForward ));   // power, timeout
         forwardCmds2.addParallel(new DriveByPowerAndJoystickCommand(drivePower, 0.25, 0.5, timeToDriveForward)); // power, timeout
 
         addSequential(forwardCmds2);
-
+        addSequential(new FlipCommand(90, -90, 12, 0.5, 20));
         CommandGroup forwardCmds3 = new CommandGroup("going forward 3");
-        forwardCmds3.addSequential(new PawlSureFire(Robot.climber.Retract,  4));
+        forwardCmds3.addSequential(new PawlSureFire(Robot.climber.Retract,  5));
         forwardCmds3.addParallel(new DeployClimbFoot(-0.50, 0.0));    // neg power retract / limit sw
         forwardCmds3.addParallel(new DriveByPowerAndJoystickCommand(drivePower, 0.25, 0.5, 3.0)); // neg power drive reverse
         addSequential(forwardCmds3);

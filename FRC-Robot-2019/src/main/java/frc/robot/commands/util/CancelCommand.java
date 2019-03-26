@@ -8,7 +8,6 @@ public class CancelCommand extends InstantCommand {
     private Command command;
 
     public CancelCommand(Command c) {
-        requires(Robot.arm);
         command = c;
     }
 

@@ -79,6 +79,7 @@ public class OI {
   public JoystickButton goToPrevMode; // Goes to previous state (only works for recapturing)
 
   public JoystickButton climbButton;
+  public JoystickButton shortClimbButton;
 
   private ExpoShaper rotateShaper = new ExpoShaper(.7); // fairly flat curve
 
@@ -147,7 +148,8 @@ public class OI {
     goToPrevMode = new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode());
 
     //TODO: Billy / Zander / driveteam pick a real place for this - 3/23/19
-    climbButton = new JoystickButton(switchBoard, 6);
+    climbButton = new JoystickButton(switchBoard, 7);
+    shortClimbButton = new JoystickButton(switchBoard, 8);
   }
 
 

@@ -46,8 +46,8 @@ public class ClimberSubsystem extends ExtendedSubSystem {
     public final DoubleSolenoid.Value ReleaseSlide = Value.kForward;
 
     //use for pawl burp sequence
-    public final double STALL_POWER_EXTEND = 0.3;  //Power needed to allow pawl to fire while on the ground 
-    public final double STALL_POWER_RETRACT = -0.3; //Power needed to allow pawl to fire while extended up
+    public final double STALL_POWER_EXTEND = 0.6;  //Power needed to allow pawl to fire while extended up 
+    public final double STALL_POWER_RETRACT = -0.4; //Power needed to allow pawl to fire while on the ground
 
     public final double COUNTS_PER_IN = 13.3;      //updated with Kevin's meas 3/23/2019
     public final double IN_PER_COUNT = 1.0 / COUNTS_PER_IN;
