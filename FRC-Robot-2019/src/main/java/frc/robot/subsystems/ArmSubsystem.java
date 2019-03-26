@@ -210,6 +210,13 @@ public class ArmSubsystem extends ExtendedSubSystem {
     armExtensionMotor.set(ControlMode.Position, c);
   }
 
+  /**
+   *  Returns the minimal extention in inches based on an arm angle in degrees.
+   * Vaild over full range of phi 
+   * 
+   * @param angle
+   * @return
+   */
   public double getMinExtension(double angle) {
     if(-35.0 < angle && angle < 35.0) {
       return STARTING_EXTENSION;
@@ -217,8 +224,23 @@ public class ArmSubsystem extends ExtendedSubSystem {
     return EXTEND_MIN;
   }
 
+  /**
+   * Returns the max extension based on arm angle.
+   * PhiCrit is the cutoff where we need to make sure we limit our max length.
+   * Less than PhiCrit we can have full extension and stay in the box.
+   * 
+   * Valid over full range of Phi, except for minor error if we are on the backside
+   * of the robot. On backside, the MAX_PROJECTION is off by about 1/2 inch.
+   * 
+   * @param angle
+   * @return
+   */
   public double getMaxExtension(double angle) {
-    return MAX_PROJECTION / Math.sin(Math.toRadians(angle)) - PIVOT_TO_FRONT - WRIST_LENGTH;
+    final double PhiCrit = Math.toDegrees(Math.asin(  (MAX_PROJECTION)/(WRIST_LENGTH + ARM_BASE_LENGTH + EXTEND_MAX) ));
+
+    double absAngle =Math.abs(angle);
+    if ( absAngle < PhiCrit ) return EXTEND_MAX;
+    return (MAX_PROJECTION / Math.sin(Math.toRadians(absAngle))) - ARM_BASE_LENGTH - WRIST_LENGTH;
   }
 
   /**
