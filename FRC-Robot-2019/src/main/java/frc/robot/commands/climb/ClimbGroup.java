@@ -14,7 +14,7 @@ public class ClimbGroup extends CommandGroup {
     public ClimbGroup(double climbHeight, double retractHeight) {
         double longTO = 5.0;
         double timeToDriveForward = 2.0;
-        double rollPower = 0.4;
+        double rollPower = 0.5;
         double drivePower = 0.35; // Positive power goes to negative direction
 
         //run the arm
