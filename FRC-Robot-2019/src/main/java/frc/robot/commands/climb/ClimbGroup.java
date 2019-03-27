@@ -49,7 +49,8 @@ public class ClimbGroup extends CommandGroup {
         forwardCmds2.addParallel(new DriveByPowerAndJoystickCommand(drivePower, 0.25, 0.5, timeToDriveForward)); // power, timeout
 
         addSequential(forwardCmds2);
-        addSequential(new FlipCommand(90, -90, 12, 0.5, 20));
+        addParallel(new DriveByPowerAndJoystickCommand(drivePower, 0.25, 0.5, timeToDriveForward));
+        addParallel(new FlipCommand(90, -90, 12, 0.5, 20));
         CommandGroup forwardCmds3 = new CommandGroup("going forward 3");
         forwardCmds3.addSequential(new PawlSureFire(Robot.climber.Retract,  5));
         forwardCmds3.addParallel(new DeployClimbFoot(-0.50, retractHeight));    // neg power retract / limit sw
