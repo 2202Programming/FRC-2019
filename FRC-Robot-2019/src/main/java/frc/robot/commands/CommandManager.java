@@ -2,22 +2,25 @@ package frc.robot.commands;
 
 import java.util.function.IntSupplier;
 
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.InstantCommand;
-import edu.wpi.first.wpilibj.command.WaitCommand;
-import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.buttons.Trigger;
-import frc.robot.Robot;
-import frc.robot.subsystems.ArmSubsystem.Position;
-import frc.robot.subsystems.VacuumSensorSystem;
-import frc.robot.commands.intake.*;
-import frc.robot.commands.arm.*;
+import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.CommandGroup;
+import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Robot;
+import frc.robot.commands.arm.FlipCommand;
+import frc.robot.commands.arm.MoveArmAtHeight;
+import frc.robot.commands.intake.RetractOnReleaseCommand;
+import frc.robot.commands.intake.VacuumCommand;
+import frc.robot.commands.intake.WristTrackFunction;
+import frc.robot.commands.util.ExpoShaper;
+import frc.robot.commands.util.LimitedIntegrator;
+import frc.robot.commands.util.MathUtil;
 import frc.robot.commands.util.RateLimiter;
 import frc.robot.commands.util.RateLimiter.InputModel;
-import frc.robot.commands.util.MathUtil;
-import frc.robot.commands.util.LimitedIntegrator;
-import frc.robot.commands.util.ExpoShaper;
+import frc.robot.commands.util.TriggerTimeoutCommand;
+import frc.robot.subsystems.ArmSubsystem.Position;
+import frc.robot.subsystems.VacuumSensorSystem;
 
 /**
  * One class, singleton, to rule them all. Coordinates major modes of operation.
@@ -329,13 +332,13 @@ public class CommandManager {
      * 
     */
     private int autoTriggerCapture() {
-        if (isHunting() && currentMode != Modes.HuntingFloor ) {
-            prevHuntMode = currentMode;
-            setMode(Modes.Drive);              // got it, go to Drive 
-        } else if (currentMode == Modes.HuntingFloor) {
+        if (currentMode == Modes.HuntingFloor) {
             // just move up if we are on the floor - user still needs to hit 'A'
             gripperH_cmd += kCapHeight;
-        }
+        } else if (isHunting()) {
+            prevHuntMode = currentMode;
+            setMode(Modes.Drive);              // got it, go to Drive 
+        }  
         // not hunting not sure HTH we got here - do nothing
         return 0;
     }
@@ -592,14 +595,15 @@ public class CommandManager {
     //
     private CommandGroup CmdFactoryHuntGameStart() {
         CommandGroup grp = new CommandGroup("HuntGameStart");
+        VacuumSensorSystem vs = Robot.intake.getVacuumSensor();
         grp.addSequential(new VacuumCommand(true, 0.0));   // no timeout
         grp.addParallel(new WristTrackFunction(this::wristTrackParallel, this::wristTrackOffset));
         grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
         grp.addSequential(new GripperPositionCommand(6, 11.5, 0.05, 0.5)); // Move arm up and back to avoid moving hatch
         grp.addSequential(new GripperPositionCommand(6, 14.5, 0.05, 1.0)); // Move arm into hatch and intake
-        grp.addSequential(new WaitCommand("Hatch Vaccum", 1.0));
+        grp.addSequential(new TriggerTimeoutCommand(vs::hasVacuum, 1.0));  //waits or sees vacuum and finsishes
         grp.addParallel(new WristTrackFunction(this::wristTrackParallel));
-        grp.addSequential(new NextModeCmd(Modes.HuntingHatch));
+        grp.addSequential(new NextModeCmd(Modes.HuntingHatch));  // Capture the right previous state
         grp.addSequential(new NextModeCmd(Modes.Drive));
         grp.addSequential(new NextModeCmd(Modes.DeliverHatch));
         return grp;
