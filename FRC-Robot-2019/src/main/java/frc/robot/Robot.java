@@ -18,6 +18,8 @@ import frc.robot.commands.CommandManager;
 import frc.robot.commands.CommandManager.Modes;
 import frc.robot.commands.climb.CheckSolenoids;
 import frc.robot.commands.climb.ClimbGroup;
+import frc.robot.commands.climb.ClimbUpPartial;
+import frc.robot.commands.climb.PullUpPartial;
 import frc.robot.commands.intake.CheckSucc;
 import frc.robot.commands.util.CancelCommand;
 import frc.robot.subsystems.ArmSubsystem;
@@ -84,6 +86,13 @@ public class Robot extends TimedRobot {
     CommandGroup level2Climb = new ClimbGroup(9.0, 0.0);
     m_oi.shortClimbButton.whenPressed(level2Climb);
     m_oi.shortClimbButton.whenReleased(new CancelCommand(level2Climb));
+    CommandGroup level3Up = new ClimbUpPartial(25.5, 0);
+    m_oi.climbUp.whenPressed(level3Up);
+    m_oi.climbUp.whenReleased(new CancelCommand(level3Up));
+    CommandGroup level3Retract = new PullUpPartial(25.5, 0);
+    m_oi.climbUp.whenPressed(level3Retract);
+    m_oi.climbUp.whenReleased(new CancelCommand(level3Retract));
+
   }
 
   /**

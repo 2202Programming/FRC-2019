@@ -7,6 +7,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.arm.ResetArmCommand;
@@ -80,6 +81,8 @@ public class OI {
 
   public JoystickButton climbButton;
   public JoystickButton shortClimbButton;
+  public JoystickButton climbUp;
+  public JoystickButton pullUp;
 
   private ExpoShaper rotateShaper = new ExpoShaper(.7); // fairly flat curve
 
@@ -150,6 +153,8 @@ public class OI {
     //TODO: Billy / Zander / driveteam pick a real place for this - 3/23/19
     climbButton = new JoystickButton(switchBoard, 7);
     shortClimbButton = new JoystickButton(switchBoard, 8);
+    climbUp = new JoystickButton(switchBoard, 9);
+    pullUp = new JoystickButton(switchBoard, 10);
   }
 
 
