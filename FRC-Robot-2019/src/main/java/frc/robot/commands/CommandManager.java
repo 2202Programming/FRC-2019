@@ -218,7 +218,7 @@ public class CommandManager {
 
         case HuntGameStart:
             prevHuntMode = Modes.HuntingHatch; // change this if we start with Cargo
-            wristOffset = 14.0;
+            wristOffset = 11.0;
             nextCmd = huntGameStartGrp;
             break;
 
