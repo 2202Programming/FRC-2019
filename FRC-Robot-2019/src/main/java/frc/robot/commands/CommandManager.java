@@ -119,7 +119,7 @@ public class CommandManager {
 
     final Modes huntingModes[] = { Modes.HuntingFloor, Modes.HuntingCargo, Modes.HuntingHatch };
     final double HuntHeights[] = { 5.0, 17.5, 24.0 }; // height from floor, H,C,Floor TODO:fix numbers
-    final double huntProjection[] = { 24.0, 23.5, 24.0 }; // TODO: fix the numbers
+    final double huntProjection[] = { 23.0, 23.5, 24.0 }; // TODO: fix the numbers
     int huntModeIdx = 2; // hatch
 
     private int driveIdx = 1;
@@ -221,7 +221,7 @@ public class CommandManager {
 
         case HuntGameStart:
             prevHuntMode = Modes.HuntingHatch; // change this if we start with Cargo
-            wristOffset = 14.0;
+            wristOffset = 11.0;
             nextCmd = huntGameStartGrp;
             break;
 
@@ -638,7 +638,7 @@ public class CommandManager {
         // grp.AddSequential(new Extend_Drive_To_Deliver());
         CommandGroup subGrp = new CommandGroup("ReleaseSub");
         subGrp.addParallel(new VacuumCommand(false, vacTimeout)); 
-        subGrp.addParallel(new RetractOnReleaseCommand(this, -4.0 /*inchs*/, 10.0));  
+        subGrp.addParallel(new RetractOnReleaseCommand(this, -4.0 /*inchs*/, 1.0));  
         grp.addSequential(subGrp);
         grp.addSequential(new NextModeCmd(Modes.Drive)); // go back to driving configuration
         return grp;
