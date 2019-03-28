@@ -40,11 +40,11 @@ public class ArmSubsystem extends ExtendedSubSystem {
   private DigitalInput extensionAtMin = new DigitalInput(RobotMap.ARM_MIN_EXTENSION_SENSOR_PIN);
 
   // Constants used by commands as measured
-  public final double PHI0 = 158.0; // degrees, starting position - encoder zero
-  public final double PHI_MAX = 158.0; // In Degrees, Positive is foward, bottom front
+  public final double PHI0 = 159.0; // degrees, starting position - encoder zero
+  public final double PHI_MAX = 159.0; // In Degrees, Positive is foward, bottom front
   public final double PHI_MIN = 25.0; // In Degrees, Near top front
 
-  private final double kCounts_per_deg = 600; //back to practice bot
+  private final double kCounts_per_deg = 843; //back to practice bot
   private final double kDeg_per_count = 1.0 / kCounts_per_deg;
 
   // Geometry of the arm's pivot point
@@ -61,7 +61,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public final double ARM_PIVOT_HEIGHT = 30.25; // inches - measured practice bot
   public final double WRIST_LENGTH = 5.0; // inches - measured practice bot 2/26/19
 
-  private final double kCounts_per_in = -843.0; // measured practice bot 2/24/2019
+  private final double kCounts_per_in = -600.0; // measured practice bot 2/24/2019
   private final double kIn_per_count = 1.0 / kCounts_per_in;
 
   // Coupling between Phi and extension, as arm moves, so does d
