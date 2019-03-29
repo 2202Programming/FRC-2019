@@ -187,8 +187,8 @@ public class CommandManager {
                 this::measHeight, // phy position func
                 kHeightMin, // output min
                 kHeightMax, // output max
-                -60.0, // inches/sec // falling rate limit
-                60.0, // inches/sec //raising rate limit
+                -80.0, // inches/sec // falling rate limit
+                80.0, // inches/sec //raising rate limit
                 InputModel.Position);
 
     }
@@ -221,7 +221,7 @@ public class CommandManager {
 
         case HuntGameStart:
             prevHuntMode = Modes.HuntingHatch; // change this if we start with Cargo
-            wristOffset = 11.0;
+            wristOffset = 10.0;
             nextCmd = huntGameStartGrp;
             break;
 
@@ -426,7 +426,7 @@ public class CommandManager {
         return this.wristOffset;
     }
 
-    double wristTrackParallel() {
+    public double wristTrackParallel() {
         double phi = Robot.arm.getAbsoluteAngle();
         return Robot.arm.getInversion() * (phi - 90.0);
     }
@@ -638,7 +638,7 @@ public class CommandManager {
         // grp.AddSequential(new Extend_Drive_To_Deliver());
         CommandGroup subGrp = new CommandGroup("ReleaseSub");
         subGrp.addParallel(new VacuumCommand(false, vacTimeout)); 
-        subGrp.addParallel(new RetractOnReleaseCommand(this, -4.0 /*inchs*/, 1.0));  
+        subGrp.addParallel(new RetractOnReleaseCommand(this, 4.0 /*inchs*/, 1.0));  
         grp.addSequential(subGrp);
         grp.addSequential(new NextModeCmd(Modes.Drive)); // go back to driving configuration
         return grp;

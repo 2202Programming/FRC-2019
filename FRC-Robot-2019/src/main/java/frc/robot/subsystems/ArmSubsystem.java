@@ -94,22 +94,26 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
     // Set Talon postion mode gains and power limits
     // Arm
-    armRotationMotor.config_kP(0, 0.5 /* 0.8 */, 30);
-    armRotationMotor.configPeakOutputForward(0.24);
-    armRotationMotor.configPeakOutputReverse(-0.24);
+    armRotationMotor.config_kP(0, 0.5);
+    armExtensionMotor.config_kD(0, 4.0);
+    armRotationMotor.configPeakOutputForward(0.3);
+    armRotationMotor.configPeakOutputReverse(-0.3);
+    armRotationMotor.configAllowableClosedloopError(0, 100);
     armRotationMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     armRotationMotor.setInverted(true);
 
     // Extension on power will be out at L0.
-    armExtensionMotor.config_kP(0, 0.6 /* 0.6 */, 30);
+    armExtensionMotor.config_kP(0, 0.6);
+    armExtensionMotor.config_kD(0, 0.8);
     armExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     armExtensionMotor.setIntegralAccumulator(0, 0, 30);
     armExtensionMotor.setSensorPhase(false);
     armExtensionMotor.setInverted(true);
     armExtensionMotor.configPeakOutputForward(0.5);
     armExtensionMotor.configPeakOutputReverse(-0.5);
+    armExtensionMotor.configAllowableClosedloopError(0, 100);
 
-    System.out.println("Warning - Arm Rotation has moderate Kp values & reduced power 24% limits");
+    System.out.println("Warning - Arm Rotation has moderate Kp values & reduced power 30% limits");
     System.out.println("Warning - Arm Extension has moderate Kp values & reduced power 50% limits");
     logTimer = System.currentTimeMillis();
 
