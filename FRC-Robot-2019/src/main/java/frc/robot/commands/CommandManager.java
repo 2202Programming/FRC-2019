@@ -600,8 +600,8 @@ public class CommandManager {
         grp.addParallel(new WristTrackFunction(this::wristTrackParallel, this::wristTrackOffset));
         grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
         grp.addSequential(new GripperPositionCommand(5.7, 11.5, 0.05, 0.5)); // Move arm up and back to avoid moving hatch
-        grp.addSequential(new GripperPositionCommand(5.7, 14.0, 0.05, 0.5)); // Move arm into hatch and intake
-        grp.addSequential(new GripperPositionCommand(5.7, 14.6, 0.05, 1.0)); // Move arm into hatch and intake
+        grp.addSequential(new GripperPositionCommand(5.7, 13.8, 0.05, 0.5)); // Move arm into hatch and intake
+        grp.addSequential(new GripperPositionCommand(5.7, 14.5, 0.05, 1.0)); // Move arm into hatch and intake
         grp.addSequential(new TriggerTimeoutCommand(vs::hasVacuum, 1.0));  //waits or sees vacuum and finsishes
         grp.addParallel(new WristTrackFunction(this::wristTrackParallel));
         grp.addSequential(new NextModeCmd(Modes.HuntingHatch));  // Capture the right previous state
