@@ -85,7 +85,6 @@ public class ArmSubsystem extends ExtendedSubSystem {
   Position position = new Position();
 
   private short inversionConstant;
-  private DigitalInput extensionAtMin = new DigitalInput(RobotMap.ARM_MIN_EXTENSION_SENSOR_PIN);
 
   /**
    * Creates a new arm/lift subsystem.
@@ -241,10 +240,6 @@ public class ArmSubsystem extends ExtendedSubSystem {
       return STARTING_EXTENSION;
     }
     return EXTEND_MIN;
-  }
-
-  public double getMaxExtension(double angle) {
-    return MAX_PROJECTION / Math.sin(Math.toRadians(angle)) - PIVOT_TO_FRONT - WRIST_LENGTH;
   }
 
   /**
