@@ -7,17 +7,29 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.subsystems.*;
-
 import frc.robot.commands.CommandManager;
 import frc.robot.commands.CommandManager.Modes;
-import frc.robot.commands.climb.CheckSolenoids;   
+import frc.robot.commands.climb.CheckSolenoids;
+import frc.robot.commands.climb.ClimbGroup;
+import frc.robot.commands.climb.ClimbUpPartial;
+import frc.robot.commands.climb.PullUpPartial;
 import frc.robot.commands.intake.CheckSucc;
-import edu.wpi.first.networktables.*;
+import frc.robot.commands.util.CancelCommand;
+import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.CameraSubsystem;
+import frc.robot.subsystems.CargoTrapSubsystem;
+import frc.robot.subsystems.ClimberSubsystem;
+import frc.robot.subsystems.DriveTrainSubsystem;
+import frc.robot.subsystems.GearShifterSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.SensorSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -68,6 +80,19 @@ public class Robot extends TimedRobot {
     // 0=front cam, 1= rear cam, 2 = arm  (pi camera server defines this - could change)
     cameraSelect.setDouble(1);    
     m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function    
+    CommandGroup level3Climb = new ClimbGroup(25.5, 0.0);  // extend/retract in inches
+    m_oi.climbButton.whenPressed(level3Climb);
+    m_oi.climbButton.whenReleased(new CancelCommand(level3Climb));
+    CommandGroup level2Climb = new ClimbGroup(9.0, 0.0);
+    m_oi.shortClimbButton.whenPressed(level2Climb);
+    m_oi.shortClimbButton.whenReleased(new CancelCommand(level2Climb));
+    CommandGroup level3Up = new ClimbUpPartial(25.5, 0);
+    m_oi.climbUp.whenPressed(level3Up);
+    m_oi.climbUp.whenReleased(new CancelCommand(level3Up));
+    CommandGroup level3Retract = new PullUpPartial(25.5, 0);
+    m_oi.climbUp.whenPressed(level3Retract);
+    m_oi.climbUp.whenReleased(new CancelCommand(level3Retract));
+
   }
 
   /**
@@ -183,6 +208,7 @@ public class Robot extends TimedRobot {
     gearShifter.log(interval+17); //tell gearshifter to post to dashboard every Xms
     m_cmdMgr.log(interval+23);
     intake.log(interval+29);
+    climber.log(interval+31);
 
     
     SmartDashboard.putData(Scheduler.getInstance()); 

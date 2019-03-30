@@ -22,8 +22,9 @@ import edu.wpi.first.wpilibj.AnalogInput;
 
  public class VacuumSensorSystem extends ExtendedSubSystem {
     //physical units
-    final double vacuumTriggerV = 0.38; // volts about 8psi 
+    final double vacuumTriggerV = 0.32; // volts about 8psi 
     final double vacuumBiasV = 0.15;    // part or wiring is bad, 25% lower than expected .2v
+    final double vacuumReleaseV = 0.22;  //point where we say we let the payload go - near bias v
 
     // a/d is 12 bits + extra bits added via over sample, 
 	// so 12 + 3 ==> 15 bits 0 - 32767 range on averageValue
@@ -36,7 +37,8 @@ import edu.wpi.first.wpilibj.AnalogInput;
     // convert physical units to scaled ints for tests
     final int vacTriggerC = (int)(vacuumTriggerV * kMax);
     final int vacBiasC = (int)(vacuumBiasV * kMax); 
-    
+    final int vacRelease = (int)(vacuumReleaseV * kMax);   //TODO: need to test value and airpuff effect
+
     //Hz to run the A/D on. sampRate / 16 samples ==> 3906.25hz
     final int kSampleRate = 62500;  
 
@@ -78,6 +80,13 @@ import edu.wpi.first.wpilibj.AnalogInput;
         return retval;
     }
 
+    // on release, the vac pressure should be down around the bias value.
+    public boolean hasReleased() {
+        int ave = sensor.getAverageValue();
+        boolean retval = (ave <= vacRelease) ? true : false;
+        return retval;
+    }
+
     public int getRawVacuum() {
         return sensor.getAverageValue();
     }
@@ -88,9 +97,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
     @Override
     protected void initDefaultCommand() {
         // could put the trigger here if good, but may just want to do in state manager or owning subsytem
-        if (sensorGood) {
-            // create trigger
-        }
+    
     }
 
     @Override

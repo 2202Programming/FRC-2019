@@ -16,8 +16,8 @@ public class AutomaticGearShiftCommand extends Command {
   public static final double UPSHIFT_SPEED_HIGH = 0.3;
   public static final double UPSHIFT_THROTTLE_LOW = 0.3;
   public static final double UPSHIFT_THROTTLE_HIGH = 0.6;
-  public static final double DOWNSHIFT_SPEED_LOW = 0.20;
-  public static final double DOWNSHIFT_SPEED_HIGH = 0.20;
+  public static final double DOWNSHIFT_SPEED_LOW = 0.03;
+  public static final double DOWNSHIFT_SPEED_HIGH = 0.03;
   public static final double DOWNSHIFT_THROTTLE_LOW = 0.3;
   public static final double DOWNSHIFT_THROTTLE_HIGH = 0.6;
   public static final double DEADZONE = 0.02;
@@ -55,9 +55,10 @@ public class AutomaticGearShiftCommand extends Command {
     }
 
     if (curGear == Gear.LOW_GEAR) {
-      if (curSpeed > shiftSpeed) {
-        new AutomaticUpShiftCommand().start();
-      }
+      // Disable automatic upshift
+      // if (curSpeed > shiftSpeed) {
+      //   new AutomaticUpShiftCommand().start();
+      // }
     } else {
       if (curSpeed < shiftSpeed) {
         gearShifter.shiftDown();

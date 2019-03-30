@@ -2,6 +2,7 @@ package frc.robot.commands.arm;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
+import frc.robot.subsystems.ArmSubsystem;
 
 //Commands the arm to follow an arc
 public class FlipCommand extends Command {
@@ -48,4 +49,12 @@ public class FlipCommand extends Command {
     protected boolean isFinished() {
         return Math.abs(Robot.arm.getAbsoluteAngle() - endAngle) <= tolerance;
     }
+
+    @Override
+    protected void end() {
+        //tell the cmdmgr where we ended up, in case we need XY control after flip.
+        ArmSubsystem.Position armPos = Robot.arm.getArmPosition();
+        Robot.m_cmdMgr.cmdPosition(armPos.height, armPos.projection);
+    }
+
 }

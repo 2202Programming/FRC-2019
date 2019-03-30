@@ -6,6 +6,13 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.command.WaitCommand;
+import edu.wpi.first.wpilibj.command.CommandGroup;
+import edu.wpi.first.wpilibj.buttons.Trigger;
+import frc.robot.Robot;
+import frc.robot.subsystems.ArmSubsystem.Position;
+import frc.robot.subsystems.VacuumSensorSystem;
+import frc.robot.commands.intake.*;
+import frc.robot.commands.arm.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.commands.arm.FlipCommand;
@@ -64,7 +71,9 @@ public class CommandManager {
         Defense(9), // Unused, for when we need to go to the other side
         DeliverHatch(10), // based on what we captured
         DeliverCargo(11), // based on what we captured
-        Flipping(12), Releasing(20); // Button:CaptureRelease
+        Flipping(12), 
+        Releasing(20), // Button:CaptureRelease
+        Climbing(21);
 
         private int v;
 
@@ -121,7 +130,7 @@ public class CommandManager {
 
     private int driveIdx = 1;
     // Declare Drive Positions: First element is Height, second is projection
-    public final double[][] DrivePositions = { { 5, 12 }, { 49.5, 14 } }; // TODO: Find real values
+    public final double[][] DrivePositions = { { 49.5, 14 }, { 50, 12 } }; // TODO: Find real values
 
     // Phyical values from sub-systems as needed
     Position armPosition;
@@ -138,36 +147,42 @@ public class CommandManager {
 
         // Rumble on vacuum
         VacuumSensorSystem vs = Robot.intake.getVacuumSensor();
-        if ((vs != null) && vs.isGood()) {
-            Command vacRumble = new RumbleCommand(Robot.m_oi.getAssistantController(), vs::hasVacuum);
-        }
+         if ((vs != null) && vs.isGood() ) {
+             Command vacRumble = new RumbleCommand(Robot.m_oi.getAssistantController(), vs::hasVacuum );
+            //capture trigger on vacuum
+            Trigger capTrigger = new Trigger() 
+            {
+                public boolean get() {return vs.hasVacuum();     }
+            };
+            capTrigger.whenActive(new CallFunctionCmd(this::autoTriggerCapture));
+         }
 
         logTimer = System.currentTimeMillis();
         armPosition = Robot.arm.getArmPosition();
 
         xprojShaper = new ExpoShaper(0.5, Robot.m_oi::extensionInput); // joystick defined in m_oi.
         xprojStick = new LimitedIntegrator(Robot.dT, xprojShaper::get, // shaped joystick input
-                -25.0, // kGain, 5 in/sec on the joystick (neg. gain, forward stick is neg.)
-                -25.0, // xmin inches true pos limit enforced by arm sub-sys
-                25.0, // x_max inches
+                -25.0, // kGain, 20 in/sec on the joystick (neg. gain, forward stick is neg.)
+                -25.0, // xmin inches    true pos limit enforced by arm sub-sys
+                 25.0, // x_max inches
                 -25.0, // dx_falling rate inch/sec
-                25.0); // dx_raise rate inch/sec
+                 25.0); // dx_raise rate inch/sec
         xprojStick.setDeadZone(0.5); // in/sec deadzone
 
         xprojRL = new RateLimiter(Robot.dT, this::get_gripperX_cmd, // inputFunc gripperX_cmd
                 this::measProjection, // phy position func
                 Robot.arm.MIN_PROJECTION, // output min
                 Robot.arm.MAX_PROJECTION, // output max
-                -30.0, // inches/sec // falling rate limit
-                30.0, // inches/sec //raising rate limit
+                -50.0, // inches/sec // falling rate limit 
+                50.0, // inches/sec //raising rate limit
                 InputModel.Position);
 
         heightRL = new RateLimiter(Robot.dT, this::get_gripperH_cmd, // gripperH_cmd var as set by this module
                 this::measHeight, // phy position func
                 kHeightMin, // output min
                 kHeightMax, // output max
-                -40.0, // inches/sec // falling rate limit
-                40.0, // inches/sec //raising rate limit
+                -60.0, // inches/sec // falling rate limit
+                60.0, // inches/sec //raising rate limit
                 InputModel.Position);
 
         // Construct our major modes from their command factories
@@ -232,7 +247,7 @@ public class CommandManager {
             nextCmd = captureGrp;
             break;
         case Drive:
-            driveIdx = 1;
+            driveIdx = 0;
             nextCmd = driveGrp;
             break;
         case Defense:
@@ -306,6 +321,25 @@ public class CommandManager {
             setMode(Modes.Drive);
         } else
             setMode(Modes.Releasing);
+        return 0;
+    }
+
+    /** 
+     * Similar to triggerCaptureRelease, but floor handled differently.
+     * When we get vacuum we goto drive mode.
+     * When on the floor we don't want to just jump to drive because the
+     * hatch may be in awkward spot.  Let the driver know by moving up a few inches.
+     * 
+    */
+    private int autoTriggerCapture() {
+        if (isHunting() && currentMode != Modes.HuntingFloor ) {
+            prevHuntMode = currentMode;
+            setMode(Modes.Drive);              // got it, go to Drive 
+        } else if (currentMode == Modes.HuntingFloor) {
+            // just move up if we are on the floor - user still needs to hit 'A'
+            gripperH_cmd += kCapHeight;
+        }
+        // not hunting not sure HTH we got here - do nothing
         return 0;
     }
 
@@ -423,7 +457,7 @@ public class CommandManager {
     /**
      * Expose desired gripper height & extension with double supplier functions
      */
-    double gripperHeightOut() {
+    public double gripperHeightOut() {
         return heightRL.get();
     }
 
@@ -509,10 +543,10 @@ public class CommandManager {
         CommandGroup grp = new CommandGroup("ZeroRobot");
         grp.addSequential(Robot.arm.zeroSubsystem());
         grp.addSequential(Robot.intake.zeroSubsystem());
+        grp.addSequential(Robot.climber.zeroSubsystem());
         grp.addSequential(new CallFunctionCmd(this::initialize));
-
+        
         // commands to come
-        /// grp.addParallel(Robot.climber.zeroSubsystem());
         /// grp.addParallel(Robot.cargoTrap.zeroSubsystem());
         return grp;
     }
@@ -585,10 +619,13 @@ public class CommandManager {
     }
 
     private CommandGroup CmdFactoryRelease() {
+        double vacTimeout = 0.20; //seconds
         CommandGroup grp = new CommandGroup("Release");
         // grp.AddSequential(new Extend_Drive_To_Deliver());
-        grp.addSequential(new VacuumCommand(false, 2.0)); // will run for 2.0 seconds
-        // grp.addSequential(new WaitCommand(1.0)); // maybe move the wrist??
+        CommandGroup subGrp = new CommandGroup("ReleaseSub");
+        subGrp.addParallel(new VacuumCommand(false, vacTimeout)); 
+        subGrp.addParallel(new RetractOnReleaseCommand(this, -4.0 /*inchs*/, 10.0));  
+        grp.addSequential(subGrp);
         grp.addSequential(new NextModeCmd(Modes.Drive)); // go back to driving configuration
         return grp;
     }
@@ -626,38 +663,6 @@ public class CommandManager {
         }
     }
 
-    class GripperPositionCommand extends Command {
-        double timeout;
-        double height;
-        double projx;
-        double error;
-
-        public GripperPositionCommand(double height, double projx, double error, double timeout) {
-            this.height = height;
-            this.projx = projx;
-            this.timeout = timeout;
-            this.error = Math.abs(error);
-        }
-
-        @Override
-        protected void initialize() {
-            setTimeout(timeout);
-            cmdPosition(height, projx); // sets the CommandManagers h/x output
-        }
-
-        @Override
-        protected void execute() {
-            cmdPosition(height, projx); // once should be fine
-        }
-
-        @Override
-        protected boolean isFinished() {
-            double h_err = Math.abs(armPosition.height - height);
-            double x_err = Math.abs(armPosition.projection - projx);
-            boolean posGood = (h_err < error) && (x_err < error);
-            return posGood || isTimedOut();
-        }
-    }
 
     class FlipCmd extends InstantCommand {
         @Override
@@ -674,7 +679,7 @@ public class CommandManager {
     }
 
     // Turn any function into an instant command. Return value not really used.
-    class CallFunctionCmd extends InstantCommand {
+    public class CallFunctionCmd extends InstantCommand {
         IntSupplier workFunct;
 
         public CallFunctionCmd(IntSupplier workFunct) {

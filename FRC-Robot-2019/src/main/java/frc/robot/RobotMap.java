@@ -53,8 +53,8 @@ public class RobotMap {
   
   //Cargo Trap
   public static final int TRAP_PCM_ID = CAN_PCM1_ID;
-  public static final int TRAP_DEPLOY_PCM = 6; 
-  public static final int TRAP_RETRACT_PCM = 7;
+  public static final int TRAP_DEPLOY_PCM = 7; 
+  public static final int TRAP_RETRACT_PCM = 6;
   public static final int TRAP_INTAKE_MOTOR_PIN = 2;
   public static final int TRAP_CARGO_SENSOR_DIO = 30;
 
@@ -77,6 +77,8 @@ public class RobotMap {
   public static final int CLIMB_PAWL_ENGAGE_PCM = 3;
   public static final int CLIMB_SLIDE_PULL_PCM = 4;
   public static final int CLIMB_SLIDE_RELEASE_PCM = 5;
+  public static final int CLIMB_MAX_EXTENSION_CH = 8;
+  public static final int CLIMB_MIN_EXTENSION_CH = 9;
 
   //LIDAR sensors
   public static final int LEFT_FRONT_LIDAR = 3;
@@ -85,8 +87,8 @@ public class RobotMap {
   public static final int RIGHT_BACK_LIDAR = 2;
 
   //camera paths
-  public static final String FRONT_DRIVE_CAMERA_PATH = "/dev/video2";
+  public static final String FRONT_DRIVE_CAMERA_PATH = "/dev/video0";
   public static final String REAR_DRIVE_CAMERA_PATH = "/dev/video1";
-  public static final String ARM_CAMERA_PATH = "/dev/video0";
+  public static final String ARM_CAMERA_PATH = "/dev/video2";
   
 }

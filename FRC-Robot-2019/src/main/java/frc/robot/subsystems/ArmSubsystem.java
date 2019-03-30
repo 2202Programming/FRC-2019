@@ -37,6 +37,7 @@ import frc.robot.commands.util.MathUtil;
 public class ArmSubsystem extends ExtendedSubSystem {
   private WPI_TalonSRX armRotationMotor = new WPI_TalonSRX(RobotMap.ARM_ROTATION_TALON_CAN_ID);
   private WPI_TalonSRX armExtensionMotor = new WPI_TalonSRX(RobotMap.ARM_EXTENSTION_TALON_CAN_ID);
+  private DigitalInput extensionAtMin = new DigitalInput(RobotMap.ARM_MIN_EXTENSION_SENSOR_PIN);
 
   // Constants used by commands as measured
   public final double PHI0 = 158.0; // degrees, starting position - encoder zero
@@ -138,10 +139,9 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * Resets the arm to match calculated position
    * Run only when the arm extension belt slips
    */
-  public void resetArm() {
-    double angle = getRealAngle(); // current angle
-    double compLen = getCompLen(angle); // ext due to rotation to compensate for
-    double calculatedLength = compLen - L0;
+  public void resetArm(double resetLength) {
+    double compLen = getCompLen(getRealAngle());
+    double calculatedLength = resetLength - compLen - L0;
 
     int counts = (int) (calculatedLength * kCounts_per_in);
     armExtensionMotor.setSelectedSensorPosition(counts);
@@ -220,7 +220,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
     SmartDashboard.putNumber("Extension Calculated", desired_L);
 
     // Adjust length to match L0 and account for compLen
-    double compLen = ((angle - Phi0_L0) * k_dl_dphi); // ext due to rotation to compensate for 
+    double compLen = ((angle - PHI0) * k_dl_dphi); // ext due to rotation to compensate for 
     double cmd_L = desired_L - L0 - compLen;
     SmartDashboard.putNumber("Extension Compensation", compLen);
     SmartDashboard.putNumber("Extension Set", cmd_L);
@@ -229,6 +229,13 @@ public class ArmSubsystem extends ExtendedSubSystem {
     armExtensionMotor.set(ControlMode.Position, c);
   }
 
+  /**
+   *  Returns the minimal extention in inches based on an arm angle in degrees.
+   * Vaild over full range of phi 
+   * 
+   * @param angle
+   * @return
+   */
   public double getMinExtension(double angle) {
     if(-35.0 < angle && angle < 35.0) {
       return STARTING_EXTENSION;
@@ -241,7 +248,26 @@ public class ArmSubsystem extends ExtendedSubSystem {
   }
 
   /**
-   * Gets the extension length of the extension (desired_l) in inches. This is not the
+   * Returns the max extension based on arm angle.
+   * PhiCrit is the cutoff where we need to make sure we limit our max length.
+   * Less than PhiCrit we can have full extension and stay in the box.
+   * 
+   * Valid over full range of Phi, except for minor error if we are on the backside
+   * of the robot. On backside, the MAX_PROJECTION is off by about 1/2 inch.
+   * 
+   * @param angle
+   * @return
+   */
+  public double getMaxExtension(double angle) {
+    final double PhiCrit = Math.toDegrees(Math.asin(  (MAX_PROJECTION)/(WRIST_LENGTH + ARM_BASE_LENGTH + EXTEND_MAX) ));
+
+    double absAngle =Math.abs(angle);
+    if ( absAngle < PhiCrit ) return EXTEND_MAX;
+    return (MAX_PROJECTION / Math.sin(Math.toRadians(absAngle))) - ARM_BASE_LENGTH - WRIST_LENGTH;
+  }
+
+  /**
+   * Gets the extension length of the extension (l) in inches. This is not the
    * total arm lenght, it is just the extension.
    * 
    * @return extension (desired_l), in inches.
@@ -254,13 +280,14 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
   /**
    * Gets whether or not the arm is at the state of being the least extended it
-   * can.
+   * can.  Active low on the wiring, we invert the signal
    * 
    * @return <code>true</code> if the arm is at the minimum extension state,
    *         <code>false</code> otherwise.
    */
   public boolean extensionAtMin() {
-    return extensionAtMin.get();
+    //this signal is active low
+    return !extensionAtMin.get();
   }
 
   /**
@@ -334,6 +361,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
       // don't have limit switches right now
       SmartDashboard.putBoolean("Arm:Ext@Min", extensionAtMin());
+      // SmartDashboard.putBoolean("Arm:Ext@Max", extensionAtMax());
     }
     return;
   }
