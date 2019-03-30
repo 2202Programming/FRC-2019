@@ -145,6 +145,9 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     resetAllDashBoardSensors();
     Scheduler.getInstance().add(new CheckSolenoids());
+    //back off while we are picking up hatch - DPL 3/29/2019 
+     m_cmdMgr.setXRate(-10.0, 10.0);
+     m_cmdMgr.setHeightRate(-10.0, 10.0);
 
     if(!doneOnce) {
       m_cmdMgr.setMode(Modes.HuntGameStart);   // schedules the mode's function
@@ -168,6 +171,9 @@ public class Robot extends TimedRobot {
     // continue until interrupted by another command, remove
     // this line or comment it out.
     resetAllDashBoardSensors();
+    //hack to return rates - these overwrite what is in the command mangager - dpl 3/29/2019
+    m_cmdMgr.setXRate(-50.0, 50.0);
+    m_cmdMgr.setHeightRate(-80.0, 80.0);
     if(!doneOnce) {
       m_cmdMgr.setMode(Modes.HuntGameStart);   // schedules the mode's function
       doneOnce = true;

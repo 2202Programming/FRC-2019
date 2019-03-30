@@ -175,6 +175,9 @@ public class CommandManager {
                  25.0); // dx_raise rate inch/sec
         xprojStick.setDeadZone(0.5); // in/sec deadzone
 
+        //  DPL - 3/29/19 added code to change rates in Robot.java
+        //  WARNING RATE CHANGE HERE GET OVERRIDEN IN ROBOT, AUTO and TELE INITS
+        //
         xprojRL = new RateLimiter(Robot.dT, this::get_gripperX_cmd, // inputFunc gripperX_cmd
                 this::measProjection, // phy position func
                 Robot.arm.MIN_PROJECTION, // output min
@@ -550,6 +553,20 @@ public class CommandManager {
     }
 
     /****************************************************************************************/
+
+    /** 
+     * Expose rate limits so we can slow down in auto mode
+     */
+    public void setXRate(double dx_falling, double dx_raising)
+    {
+        xprojRL.setRateLimits(dx_falling, dx_raising);
+    }
+
+    public void setHeightRate(double dx_falling, double dx_raising)
+    {
+       heightRL.setRateLimits(dx_falling, dx_raising);
+    }
+
 
     // Command Factories that build command sets for each mode of operation
     // These are largely interruptable so we can switch as state changes

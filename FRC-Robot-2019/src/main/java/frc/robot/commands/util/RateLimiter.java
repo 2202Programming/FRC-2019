@@ -45,11 +45,11 @@ public class RateLimiter {
   
   // output vars
   double X;      // output value (device units)
-  double Xprev;  // previous frame output
+  double Xprev;  // previous frame output  - state variable
 
   public RateLimiter(final Double dT,
       final DoubleSupplier inFunct, 
-      final DoubleSupplier getter, // optional
+      final DoubleSupplier devGetter, // optional
       double x_min, 
       double x_max, 
       double dx_fall,  
@@ -57,7 +57,7 @@ public class RateLimiter {
       final InputModel model) 
   {
     this.dT = dT;
-    devGetter = getter;
+    this.devGetter = devGetter;
     this.inFunct = inFunct;
     this.x_max = x_max;
     this.x_min = x_min;
@@ -80,6 +80,11 @@ public class RateLimiter {
     kRate = k;
   }
 
+  public void setRateLimits(double dx_falling, double dx_raising) 
+  {
+    this.dx_fall = dx_falling;
+    this.dx_raise = dx_raising;
+  }
 
   // designed to be called from an FRC Command if needed
   public void initialize() {
@@ -134,7 +139,7 @@ public class RateLimiter {
     if (model == InputModel.Position) {
       // for postion limits, need to look at command vs current an limit rate aka dX
       double rate = (kc - Xprev)/dT;   
-      double phyRate = (devPos - devPosPrev) /dT;  //this could amplify noise
+     // double phyRate = (devPos - devPosPrev) /dT;  //this could amplify noise
       dX = limit(rate, dx_fall, dx_raise);
     }
     return dX;
