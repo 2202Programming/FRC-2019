@@ -113,7 +113,7 @@ public class CommandManager {
     int delHeightIdx = 0; // used in Delivery<Cargo/Hatch>Heights[]
 
     // Data points - shares delheightidx, must be same length
-    final double DeliveryCargoHeights[] = { 26.375, 55.0, 84.0 }; // TODO: fix the numbers
+    final double DeliveryCargoHeights[] = { 25.0, 55.0, 84.0 }; // TODO: fix the numbers
     final double DeliveryHatchHeights[] = { 25.5, 55.0, 82.0 }; 
     final double deliveryProjection[] = { 25.0, 25.0, 25.0 }; // TODO: fix the numbers
 
@@ -258,7 +258,7 @@ public class CommandManager {
         // DeliveryModes
         case DeliverHatch: // based on what we captured
             delHeightIdx = 0; // start at lowest
-            wristOffset = 7.0;
+            wristOffset = 20.0;
             nextCmd = deliveryGrp;
             break;
 
