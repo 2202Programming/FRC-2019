@@ -177,8 +177,8 @@ public class CommandManager {
 
         xprojRL = new RateLimiter(Robot.dT, this::get_gripperX_cmd, // inputFunc gripperX_cmd
                 this::measProjection, // phy position func
-                Robot.arm.MIN_PROJECTION, // output min
-                Robot.arm.MAX_PROJECTION, // output max
+                Robot.arm.getInversion() * Robot.arm.MIN_PROJECTION, // output min
+                Robot.arm.getInversion() * Robot.arm.MAX_PROJECTION, // output max
                 -50.0, // inches/sec // falling rate limit 
                 50.0, // inches/sec //raising rate limit
                 InputModel.Position);
@@ -448,13 +448,13 @@ public class CommandManager {
         double h;
         if (isHunting()) {
             // Hunting, use the HuntHeights table and that height index
-            cmdPosition(HuntHeights[huntModeIdx], huntProjection[huntModeIdx]);
+            cmdPosition(HuntHeights[huntModeIdx], Robot.arm.getInversion() * huntProjection[huntModeIdx]);
             xprojStick.setX(0.0);
         } else if (isDelivering()) {
             // Delivering
             h = (prevHuntMode == Modes.HuntingCargo) ? DeliveryCargoHeights[delHeightIdx]
                     : DeliveryHatchHeights[delHeightIdx];
-            cmdPosition(h, deliveryProjection[delHeightIdx]);
+            cmdPosition(h, Robot.arm.getInversion() * deliveryProjection[delHeightIdx]);
             xprojStick.setX(0.0);      //reset to baseline extension
         } else if (isDriving()) {
             cmdPosition(DrivePositions[driveIdx][0], DrivePositions[driveIdx][1]);
