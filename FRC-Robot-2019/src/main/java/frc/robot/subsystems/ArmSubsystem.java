@@ -42,10 +42,10 @@ public class ArmSubsystem extends ExtendedSubSystem {
   // Constants used by commands as measured
   //When on the ground we can't touch the hard stop. We are off by ~1 degree
   public final double PHI0 = 158.0; // degrees, starting position - encoder zero 
-  public final double PHI_MAX = 159.0; // In Degrees, Positive is foward, bottom front
+  public final double PHI_MAX = 158.0; // In Degrees, Positive is foward, bottom front
   public final double PHI_MIN = 25.0; // In Degrees, Near top front
 
-  private final double kCounts_per_deg = 843; //back to practice bot
+  private final double kCounts_per_deg = 600; //back to practice bot
   private final double kDeg_per_count = 1.0 / kCounts_per_deg;
 
   // Geometry of the arm's pivot point
@@ -54,13 +54,13 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public final double MAX_PROJECTION = PIVOT_TO_FRONT + Robot.kProjectConstraint; //
 
   // Extender phyiscal numbers
-  public final double L0 = 9.0; // inches - starting point, encoder zero -set 2/24/2019
+  public final double L0 = 8.875; // inches - starting point, encoder zero -set 2/24/2019
   public final double STARTING_EXTENSION = L0; // inches - starting point, encoder zero -set 2/24/2019
   public final double EXTEND_MIN = 0.750; // inches 0.0 physic, .75 soft stop
   public final double EXTEND_MAX = 35.0; // inches - measured practice bot
   public final double ARM_BASE_LENGTH = 18.0; // inches - measured practice bot (from pivot center) xg 2/16/19
   public final double ARM_PIVOT_HEIGHT = 30.25; // inches - measured practice bot
-  public final double WRIST_LENGTH = 5.0; // inches - measured practice bot 2/26/19
+  public final double WRIST_LENGTH = 4.5; // inches - measured practice bot 2/26/19
 
   private final double kCounts_per_in = -600.0; // measured practice bot 2/24/2019
   private final double kIn_per_count = 1.0 / kCounts_per_in;
