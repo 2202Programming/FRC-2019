@@ -20,19 +20,16 @@ public class RollerMotorTestCmd extends Command {
     @Override
     protected void initialize() {
         Robot.climber.setRollerSpeed(speed);
-        System.out.println("Initialize Roller");
     }
 
     @Override
     protected void execute() {
         Robot.climber.setRollerSpeed(speed);
-        System.out.println("Initialize Execute");
     }
 
     @Override
     protected void end() {
-        Robot.climber.setRollerSpeed(0);        
-        System.out.println("Initialize End");
+        Robot.climber.setRollerSpeed(0);
     }
 
     @Override

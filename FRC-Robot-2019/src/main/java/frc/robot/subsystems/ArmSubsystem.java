@@ -40,11 +40,12 @@ public class ArmSubsystem extends ExtendedSubSystem {
   private DigitalInput extensionAtMin = new DigitalInput(RobotMap.ARM_MIN_EXTENSION_SENSOR_PIN);
 
   // Constants used by commands as measured
-  public final double PHI0 = 158.0; // degrees, starting position - encoder zero
-  public final double PHI_MAX = 158.0; // In Degrees, Positive is foward, bottom front
+  //When on the ground we can't touch the hard stop. We are off by ~1 degree
+  public final double PHI0 = 158.0; // degrees, starting position - encoder zero 
+  public final double PHI_MAX = 159.0; // In Degrees, Positive is foward, bottom front
   public final double PHI_MIN = 25.0; // In Degrees, Near top front
 
-  private final double kCounts_per_deg = 600; //back to practice bot
+  private final double kCounts_per_deg = 843; //back to practice bot
   private final double kDeg_per_count = 1.0 / kCounts_per_deg;
 
   // Geometry of the arm's pivot point
@@ -53,13 +54,13 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public final double MAX_PROJECTION = PIVOT_TO_FRONT + Robot.kProjectConstraint; //
 
   // Extender phyiscal numbers
-  public final double L0 = 8.875; // inches - starting point, encoder zero -set 2/24/2019
-  public final double STARTING_EXTENSION = 8.875; // inches - starting point, encoder zero -set 2/24/2019
+  public final double L0 = 9.0; // inches - starting point, encoder zero -set 2/24/2019
+  public final double STARTING_EXTENSION = L0; // inches - starting point, encoder zero -set 2/24/2019
   public final double EXTEND_MIN = 0.750; // inches 0.0 physic, .75 soft stop
   public final double EXTEND_MAX = 35.0; // inches - measured practice bot
   public final double ARM_BASE_LENGTH = 18.0; // inches - measured practice bot (from pivot center) xg 2/16/19
   public final double ARM_PIVOT_HEIGHT = 30.25; // inches - measured practice bot
-  public final double WRIST_LENGTH = 4.5; // inches - measured practice bot 2/26/19
+  public final double WRIST_LENGTH = 5.0; // inches - measured practice bot 2/26/19
 
   private final double kCounts_per_in = -600.0; // measured practice bot 2/24/2019
   private final double kIn_per_count = 1.0 / kCounts_per_in;
@@ -94,22 +95,26 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
     // Set Talon postion mode gains and power limits
     // Arm
-    armRotationMotor.config_kP(0, 0.5 /* 0.8 */, 30);
-    armRotationMotor.configPeakOutputForward(0.24);
-    armRotationMotor.configPeakOutputReverse(-0.24);
+    armRotationMotor.config_kP(0, 0.5);
+    armExtensionMotor.config_kD(0, 4.0);
+    armRotationMotor.configPeakOutputForward(0.3);
+    armRotationMotor.configPeakOutputReverse(-0.3);
+    armRotationMotor.configAllowableClosedloopError(0, 100);
     armRotationMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     armRotationMotor.setInverted(true);
 
     // Extension on power will be out at L0.
-    armExtensionMotor.config_kP(0, 0.6 /* 0.6 */, 30);
+    armExtensionMotor.config_kP(0, 0.6);
+    armExtensionMotor.config_kD(0, 0.8);
     armExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     armExtensionMotor.setIntegralAccumulator(0, 0, 30);
     armExtensionMotor.setSensorPhase(false);
     armExtensionMotor.setInverted(true);
     armExtensionMotor.configPeakOutputForward(0.5);
     armExtensionMotor.configPeakOutputReverse(-0.5);
+    armExtensionMotor.configAllowableClosedloopError(0, 100);
 
-    System.out.println("Warning - Arm Rotation has moderate Kp values & reduced power 24% limits");
+    System.out.println("Warning - Arm Rotation has moderate Kp values & reduced power 30% limits");
     System.out.println("Warning - Arm Extension has moderate Kp values & reduced power 50% limits");
     logTimer = System.currentTimeMillis();
 
@@ -218,7 +223,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * @return
    */
   public double getMinExtension(double angle) {
-    if(-35.0 < angle && angle < 35.0) {
+    if(-35.0 < angle && angle < 30.5) {
       return STARTING_EXTENSION;
     }
     return EXTEND_MIN;
