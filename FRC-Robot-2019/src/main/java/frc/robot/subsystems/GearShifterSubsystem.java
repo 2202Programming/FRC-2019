@@ -53,7 +53,8 @@ public class GearShifterSubsystem extends Subsystem {
 
     public void initDefaultCommand() {
         shiftDown();
-        //setDefaultCommand(new AutomaticGearShiftCommand());
+        setDefaultCommand(new AutomaticGearShiftCommand());
+        isAutoShiftEnabled = true;
     }
 
     public void shiftUp()  {

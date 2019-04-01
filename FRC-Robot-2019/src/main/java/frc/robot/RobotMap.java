@@ -47,14 +47,14 @@ public class RobotMap {
   public static final int ARM_ROTATION_ENCODER_PIN_1 = 6;
 
   public static final int ARM_EXTENSTION_TALON_CAN_ID = 21;
-  public static final int ARM_MIN_EXTENSION_SENSOR_PIN = 7;
+  public static final int ARM_MIN_EXTENSION_SENSOR_PIN = 6;
   public static final int ARM_EXTENSION_ENCODER_PIN_0 = 8;
   public static final int ARM_EXTENSION_ENCODER_PIN_1 = 9;
   
   //Cargo Trap
   public static final int TRAP_PCM_ID = CAN_PCM1_ID;
-  public static final int TRAP_DEPLOY_PCM = 6; 
-  public static final int TRAP_RETRACT_PCM = 7;
+  public static final int TRAP_DEPLOY_PCM = 7; 
+  public static final int TRAP_RETRACT_PCM = 6;
   public static final int TRAP_INTAKE_MOTOR_PIN = 2;
   public static final int TRAP_CARGO_SENSOR_DIO = 30;
 
@@ -63,9 +63,11 @@ public class RobotMap {
   public static final int INTAKE_VACUUM_SPARK_PWM = 1;    
   public static final int INTAKE_VACCUM_SPARK_PDP = 7;
   public static final int INTAKE_CARGO_SWITCH_MXP_CH = 11;
-  public static final int INTAKE_PCM_ID = CAN_PCM2_ID;       
-  public static final int INTAKE_RELEASE_SOLENOID_PCM = 0;   // DPL switched to single Solenoid
- 
+  //public static final int INTAKE_PCM_ID = CAN_PCM2_ID;       
+  //public static final int INTAKE_RELEASE_SOLENOID_PCM = 0;   // DPL switched to single Solenoid
+  public static final int INTAKE_VAC_RELEASE_SPARK_PWM = 3;    // dpl high current solenoid to replace
+
+  public static final int INTAKE_VAC_SENSOR_AD=0;    
 
   //Climber
   public static final int CLIMB_FOOT_SPARK_MAX_CAN_ID = 23;
@@ -75,11 +77,18 @@ public class RobotMap {
   public static final int CLIMB_PAWL_ENGAGE_PCM = 3;
   public static final int CLIMB_SLIDE_PULL_PCM = 4;
   public static final int CLIMB_SLIDE_RELEASE_PCM = 5;
+  public static final int CLIMB_MAX_EXTENSION_CH = 8;
+  public static final int CLIMB_MIN_EXTENSION_CH = 9;
 
   //LIDAR sensors
   public static final int LEFT_FRONT_LIDAR = 3;
   public static final int RIGHT_FRONT_LIDAR = 4;
   public static final int LEFT_BACK_LIDAR = 1;
   public static final int RIGHT_BACK_LIDAR = 2;
+
+  //camera paths
+  public static final String FRONT_DRIVE_CAMERA_PATH = "/dev/video1";
+  public static final String REAR_DRIVE_CAMERA_PATH = "/dev/video0";
+  public static final String ARM_CAMERA_PATH = "/dev/video2";
   
 }

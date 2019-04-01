@@ -17,6 +17,7 @@ import frc.robot.RobotMap;
 import frc.robot.commands.drive.ArcadeDriveCommand;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import frc.robot.Robot;
 
 /**
  * The basic drive train subsystem for four motors
@@ -90,7 +91,7 @@ public class DriveTrainSubsystem extends Subsystem {
 
     drive = new DifferentialDrive(leftMotors, rightMotors);
     inversionConstant = 1;
-
+    
     cameraSelect = NetworkTableInstance.getDefault().getEntry("/PiSwitch");
     logTimer = System.currentTimeMillis();
   }
@@ -114,6 +115,8 @@ public class DriveTrainSubsystem extends Subsystem {
     talon.enableCurrentLimit(true);
     talon.configOpenloopRamp(0.08, 10);
     talon.setNeutralMode(NeutralMode.Brake);
+    talon.configPeakOutputForward(0.9);
+    talon.configPeakOutputReverse(-0.9);
   }
 
   @Override
@@ -199,7 +202,8 @@ public class DriveTrainSubsystem extends Subsystem {
    */
   public void invertControls() {
     inversionConstant *= -1;
-
+    Robot.cameraSubsystem.toggleDriveCamera();
+    
     //post to network tables which drive camera to show based on control direction
     if (inversionConstant>0) {
       cameraSelect.setDouble(0);

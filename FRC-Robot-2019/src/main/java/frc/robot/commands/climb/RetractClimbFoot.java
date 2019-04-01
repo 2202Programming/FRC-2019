@@ -9,12 +9,10 @@ public class RetractClimbFoot extends Command {
     }
 
     protected void execute() {
-        Robot.climber.setPawl(true);
         Robot.climber.setExtenderSpeed(-0.3);
     }
 
     protected void end() {
-        Robot.climber.setPawl(false);
         Robot.climber.setExtenderSpeed(0);
     }
 

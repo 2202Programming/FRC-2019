@@ -1,14 +1,10 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
@@ -41,13 +37,15 @@ import frc.robot.commands.util.MathUtil;
 public class ArmSubsystem extends ExtendedSubSystem {
   private WPI_TalonSRX armRotationMotor = new WPI_TalonSRX(RobotMap.ARM_ROTATION_TALON_CAN_ID);
   private WPI_TalonSRX armExtensionMotor = new WPI_TalonSRX(RobotMap.ARM_EXTENSTION_TALON_CAN_ID);
+  private DigitalInput extensionAtMin = new DigitalInput(RobotMap.ARM_MIN_EXTENSION_SENSOR_PIN);
 
   // Constants used by commands as measured
-  public final double PHI0 = 158.0; // degrees, starting position - encoder zero
-  public final double PHI_MAX = 158.0; // In Degrees, Positive is foward, bottom front
+  //When on the ground we can't touch the hard stop. We are off by ~1 degree
+  public final double PHI0 = 158.0; // degrees, starting position - encoder zero 
+  public final double PHI_MAX = 159.0; // In Degrees, Positive is foward, bottom front
   public final double PHI_MIN = 25.0; // In Degrees, Near top front
 
-  private final double kCounts_per_deg = 843; // measured 3/7/2019 on competition bot
+  private final double kCounts_per_deg = 843; //back to practice bot
   private final double kDeg_per_count = 1.0 / kCounts_per_deg;
 
   // Geometry of the arm's pivot point
@@ -57,6 +55,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
   // Extender phyiscal numbers
   public final double L0 = 9.0; // inches - starting point, encoder zero -set 2/24/2019
+  public final double STARTING_EXTENSION = L0; // inches - starting point, encoder zero -set 2/24/2019
   public final double EXTEND_MIN = 0.750; // inches 0.0 physic, .75 soft stop
   public final double EXTEND_MAX = 35.0; // inches - measured practice bot
   public final double ARM_BASE_LENGTH = 18.0; // inches - measured practice bot (from pivot center) xg 2/16/19
@@ -96,22 +95,26 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
     // Set Talon postion mode gains and power limits
     // Arm
-    armRotationMotor.config_kP(0, 0.5 /* 0.8 */, 30);
-    armRotationMotor.configPeakOutputForward(0.24);
-    armRotationMotor.configPeakOutputReverse(-0.24);
+    armRotationMotor.config_kP(0, 0.5);
+    armExtensionMotor.config_kD(0, 4.0);
+    armRotationMotor.configPeakOutputForward(0.3);
+    armRotationMotor.configPeakOutputReverse(-0.3);
+    armRotationMotor.configAllowableClosedloopError(0, 100);
     armRotationMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     armRotationMotor.setInverted(true);
 
     // Extension on power will be out at L0.
-    armExtensionMotor.config_kP(0, 0.6 /* 0.6 */, 30);
+    armExtensionMotor.config_kP(0, 0.6);
+    armExtensionMotor.config_kD(0, 0.8);
     armExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     armExtensionMotor.setIntegralAccumulator(0, 0, 30);
     armExtensionMotor.setSensorPhase(false);
     armExtensionMotor.setInverted(true);
     armExtensionMotor.configPeakOutputForward(0.5);
     armExtensionMotor.configPeakOutputReverse(-0.5);
+    armExtensionMotor.configAllowableClosedloopError(0, 100);
 
-    System.out.println("Warning - Arm Rotation has moderate Kp values & reduced power 24% limits");
+    System.out.println("Warning - Arm Rotation has moderate Kp values & reduced power 30% limits");
     System.out.println("Warning - Arm Extension has moderate Kp values & reduced power 50% limits");
     logTimer = System.currentTimeMillis();
 
@@ -132,6 +135,18 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
     armRotationMotor.setSelectedSensorPosition(0);
     armRotationMotor.setIntegralAccumulator(0.0, PIDIdx, TO);
+  }
+
+  /**
+   * Resets the arm to match calculated position
+   * Run only when the arm extension belt slips
+   */
+  public void resetArm(double resetLength) {
+    double compLen = getCompLen(getRealAngle());
+    double calculatedLength = resetLength - compLen - L0;
+
+    int counts = (int) (calculatedLength * kCounts_per_in);
+    armExtensionMotor.setSelectedSensorPosition(counts);
   }
 
   /**
@@ -173,31 +188,64 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * 
    * @param extendInch (inches) to set the arm.
    */
-  public void setExtension(double l) {
+  public void setExtension(double desired_L) {
     double angle = getRealAngle(); // current angle
-    double compLen = ((angle - PHI0) * k_dl_dphi); // ext due to rotation to compensate for
-    double max_l_at_phi = MAX_PROJECTION / Math.sin(Math.toRadians(angle)) - PIVOT_TO_FRONT - WRIST_LENGTH;
 
-    l = Math.min(l, max_l_at_phi); // Limit length to max projection
-    
-    double len = (l - L0) - compLen; // net len to command relative to start
+    //Limit Extension
+    double min_l_at_phi = getMinExtension(angle);
+    double max_l_at_phi = getMaxExtension(angle);
+    desired_L = MathUtil.limit(desired_L, min_l_at_phi, max_l_at_phi);
 
-    SmartDashboard.putNumber("Extension Compensation", compLen);
-    SmartDashboard.putNumber("Extension Calculated", len);
-
-    // Make sure we limit to the range of the extension is capable
-    if (len < (EXTEND_MIN - L0)) {
-      System.out.println("Arm:Extension below minimum.");
+    //Print Warning
+    if (desired_L < min_l_at_phi) {
+      System.out.println("Desired Arm:Extension below minimum of " + min_l_at_phi + " inches.");
+    } else if(desired_L > max_l_at_phi) {
+      System.out.println("Desired Arm:Extension above maximum of " + max_l_at_phi + " inches.");
     }
-
-    // todo:not sure if this is the right way to limit
-    // we can't go above or below our adjust min/max based on starting L0
-    len = MathUtil.limit(len, EXTEND_MIN - L0, EXTEND_MAX);
     
-    SmartDashboard.putNumber("Extension Set", len);
+    SmartDashboard.putNumber("Extension Calculated", desired_L);
 
-    double c = len * kCounts_per_in;
+    // Adjust length to match L0 and account for compLen
+    double compLen = ((angle - PHI0) * k_dl_dphi); // ext due to rotation to compensate for 
+    double cmd_L = desired_L - L0 - compLen;
+    SmartDashboard.putNumber("Extension Compensation", compLen);
+    SmartDashboard.putNumber("Extension Set", cmd_L);
+
+    double c = cmd_L * kCounts_per_in;
     armExtensionMotor.set(ControlMode.Position, c);
+  }
+
+  /**
+   *  Returns the minimal extention in inches based on an arm angle in degrees.
+   * Vaild over full range of phi 
+   * 
+   * @param angle
+   * @return
+   */
+  public double getMinExtension(double angle) {
+    if(-35.0 < angle && angle < 30.5) {
+      return STARTING_EXTENSION;
+    }
+    return EXTEND_MIN;
+  }
+
+  /**
+   * Returns the max extension based on arm angle.
+   * PhiCrit is the cutoff where we need to make sure we limit our max length.
+   * Less than PhiCrit we can have full extension and stay in the box.
+   * 
+   * Valid over full range of Phi, except for minor error if we are on the backside
+   * of the robot. On backside, the MAX_PROJECTION is off by about 1/2 inch.
+   * 
+   * @param angle
+   * @return
+   */
+  public double getMaxExtension(double angle) {
+    final double PhiCrit = Math.toDegrees(Math.asin(  (MAX_PROJECTION)/(WRIST_LENGTH + ARM_BASE_LENGTH + EXTEND_MAX) ));
+
+    double absAngle =Math.abs(angle);
+    if ( absAngle < PhiCrit ) return EXTEND_MAX;
+    return (MAX_PROJECTION / Math.sin(Math.toRadians(absAngle))) - ARM_BASE_LENGTH - WRIST_LENGTH;
   }
 
   /**
@@ -214,13 +262,14 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
   /**
    * Gets whether or not the arm is at the state of being the least extended it
-   * can.
+   * can.  Active low on the wiring, we invert the signal
    * 
    * @return <code>true</code> if the arm is at the minimum extension state,
    *         <code>false</code> otherwise.
    */
   public boolean extensionAtMin() {
-    return armExtensionMotor.getSensorCollection().isRevLimitSwitchClosed();
+    //this signal is active low
+    return !extensionAtMin.get();
   }
 
   /**
@@ -293,7 +342,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
       SmartDashboard.putNumber("Arm:Gripper Height", getArmPosition().height);
 
       // don't have limit switches right now
-      // SmartDashboard.putBoolean("Arm:Ext@Min", extensionAtMin());
+      SmartDashboard.putBoolean("Arm:Ext@Min", extensionAtMin());
       // SmartDashboard.putBoolean("Arm:Ext@Max", extensionAtMax());
     }
     return;

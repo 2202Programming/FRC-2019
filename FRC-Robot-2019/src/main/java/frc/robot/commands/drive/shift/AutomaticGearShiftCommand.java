@@ -11,17 +11,17 @@ import frc.robot.subsystems.GearShifterSubsystem.Gear;
  * Automatically shifts the gears up and down
  */
 public class AutomaticGearShiftCommand extends Command {
-  private final double MAXSPEED_IN_COUNTS_PER_SECOND = 10000; // TODO: Find real values for these constants
-  private final double UPSHIFT_SPEED_LOW = 0.3;
-  private final double UPSHIFT_SPEED_HIGH = 0.3;
-  private final double UPSHIFT_THROTTLE_LOW = 0.3;
-  private final double UPSHIFT_THROTTLE_HIGH = 0.6;
-  private final double DOWNSHIFT_SPEED_LOW = 0.28;
-  private final double DOWNSHIFT_SPEED_HIGH = 0.28;
-  private final double DOWNSHIFT_THROTTLE_LOW = 0.3;
-  private final double DOWNSHIFT_THROTTLE_HIGH = 0.6;
-  private final double DEADZONE = 0.02;
-  private final double TURNING_DEADZONE = 500; // Maximum difference allowed between left and right speeds in counts per
+  public static final double MAXSPEED_IN_COUNTS_PER_SECOND = 10000; // TODO: Find real values for these constants
+  public static final double UPSHIFT_SPEED_LOW = 0.3;
+  public static final double UPSHIFT_SPEED_HIGH = 0.3;
+  public static final double UPSHIFT_THROTTLE_LOW = 0.3;
+  public static final double UPSHIFT_THROTTLE_HIGH = 0.6;
+  public static final double DOWNSHIFT_SPEED_LOW = 0.03;
+  public static final double DOWNSHIFT_SPEED_HIGH = 0.03;
+  public static final double DOWNSHIFT_THROTTLE_LOW = 0.3;
+  public static final double DOWNSHIFT_THROTTLE_HIGH = 0.6;
+  public static final double DEADZONE = 0.02;
+  public static final double TURNING_DEADZONE = 500; // Maximum difference allowed between left and right speeds in counts per
                                                // second during shifting (TODO: Find real value)
   private final double MAX_OUTPUT = 1.0;
   private final double RIGHT_SIDE_INVERT_MULTIPLIER = -1.0;
@@ -55,9 +55,10 @@ public class AutomaticGearShiftCommand extends Command {
     }
 
     if (curGear == Gear.LOW_GEAR) {
-      if (curSpeed > shiftSpeed) {
-        gearShifter.shiftUp();
-      }
+      // Disable automatic upshift
+      // if (curSpeed > shiftSpeed) {
+      //   new AutomaticUpShiftCommand().start();
+      // }
     } else {
       if (curSpeed < shiftSpeed) {
         gearShifter.shiftDown();

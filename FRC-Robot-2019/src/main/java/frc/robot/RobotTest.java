@@ -21,7 +21,6 @@ public class RobotTest {
     private Command armTest;
 
     public RobotTest() {
-        System.out.println("IN TEST MODE");
     }
 
     public void initialize() {
@@ -36,7 +35,7 @@ public class RobotTest {
         //testWristCmd = new  TestWristPositionCommand(this::Wrist_AssistLeftTrigger);
         armTest = new TeleopArmControlCommand(this::leftJoyY, this::rightJoyY);
         
-        armTest.start();
+        //armTest.start();
         //testWristCmd.start();
     }
 

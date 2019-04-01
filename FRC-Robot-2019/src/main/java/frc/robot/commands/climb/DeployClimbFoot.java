@@ -3,23 +3,38 @@ package frc.robot.commands.climb;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
+/**
+ *    distance in inches, use large number to rely on limit swithc
+ */
 public class DeployClimbFoot extends Command {
-    public DeployClimbFoot() {
+    double power;
+    double distance;
+    boolean extending;
+
+    public DeployClimbFoot(double power, double distance) {
         requires(Robot.climber);
+        this.power = power;
+        this.distance = distance;
+        extending = (power > 0);    //confirmed pos power is extending 
     }
 
-    protected void execute() {
-        Robot.climber.setPawl(true);
-        Robot.climber.setExtenderSpeed(0.3);
+    @Override
+    protected void initialize() {
+        Robot.climber.setExtenderSpeed(power);
     }
+
+    protected void execute() {  }
 
     protected void end() {
-        Robot.climber.setPawl(false);
         Robot.climber.setExtenderSpeed(0);
     }
 
     protected boolean isFinished() {
-        int x = -1; //will be value for 19 inches
-        return Robot.climber.getExtension() >= x; //TODO: stop when it extends 19 inches
+        // depending on direction (power indicates)
+        boolean done;
+        // perform check based on which way we are  moving the foot
+        done = (extending) ? ((Robot.climber.getExtension() >= distance) || Robot.climber.footAtExtend() )
+                           : ((Robot.climber.getExtension() <= distance) || Robot.climber.footAtRetract() );
+        return done; 
     }
 }

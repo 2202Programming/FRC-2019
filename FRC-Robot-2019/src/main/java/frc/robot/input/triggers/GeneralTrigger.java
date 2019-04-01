@@ -1,12 +1,12 @@
-package frc.robot.input;
+package frc.robot.input.triggers;
+
+import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.buttons.Button;
 
-public class JoystickTrigger extends Button {
-    private final GenericHID joystick;
-    private final int axisNumber;
-    private final double threshold;
+public class GeneralTrigger extends Button {
+    private final BooleanSupplier trigger;
 
     /**
      * Create a joystick trigger for triggering commands.
@@ -17,14 +17,12 @@ public class JoystickTrigger extends Button {
      * 
      * @param threshold The value necessary for the trigger to activate (0-1) }     * 
      */
-    public JoystickTrigger(GenericHID joystick, int axisNumber, double threshold) {
-        this.joystick = joystick;
-        this.axisNumber = axisNumber;
-        this.threshold = threshold;
+    public GeneralTrigger(BooleanSupplier trigger) {
+        this.trigger = trigger;
     }
 
     @Override
     public boolean get() {
-        return joystick.getRawAxis(axisNumber) > threshold;
+        return trigger.getAsBoolean();
     }
 }

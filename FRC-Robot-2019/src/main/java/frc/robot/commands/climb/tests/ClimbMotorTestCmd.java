@@ -19,12 +19,17 @@ public class ClimbMotorTestCmd extends Command {
 
     @Override
     protected void initialize() {
-        Robot.climber.setExtenderSpeed(speed);
     }
 
+    /**
+     * extend or retract until a limit is hit
+     * +speed is extend, -speed is retract
+     */
     @Override
     protected void execute() {
-        Robot.climber.setExtenderSpeed(speed);
+        double s = ((Robot.climber.footAtExtend()  && speed > 0.0 ) ||
+                    (Robot.climber.footAtRetract() && speed < 0.0)) ? 0.0 : speed;
+        Robot.climber.setExtenderSpeed(s);
     }
 
     @Override

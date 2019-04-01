@@ -7,6 +7,8 @@ import frc.robot.Robot;
  *   VacuumCommand (enable)  
  *       true - turn it on - effectively an instanct
  *       false - turn it off  - will run duration of timeout
+ *             - leaves the pump off, but will put solenoid to vac mode
+ *               so compressed air won't drain.
  * 
  *      Instantiate with one or other for what you need.
  */
@@ -25,31 +27,32 @@ public class VacuumCommand extends Command {
     @Override
     protected void initialize()
     {
-        done = false;      // turning off takes time.
-        setTimeout(timeout);   //todo: not sure how much
+        done = false;          // turning off takes time.
+        setTimeout(timeout); 
+
+        if (enable) {
+            done = true;              // this is instant
+            Robot.intake.setVacuum(true);
+        }
+        else {
+            //pump off, flip the solenoid to put compressed air into lines
+            Robot.intake.setVacuum(false);
+            Robot.intake.releaseSolenoid(true);  //powered, will release payload
+        }
     }
 
     @Override
     protected void execute() {
-        if (enable) {
-            done = true;              // this is instant
-            Robot.intake.vacuumOn();
-        }
-        else {
-            //keep the pump on, flip the solenoid
-            Robot.intake.releaseSolenoid(Robot.intake.kRelease);  //powered
-        }
-
+        //just wait for time out or we are done.
     }
 
     @Override
     protected boolean isFinished() {
         // put the solenoid back to vacuum on timeout.
         if (isTimedOut()) {
-            Robot.intake.releaseSolenoid(Robot.intake.kVacuum);  //unpowerered
+            Robot.intake.releaseSolenoid(false);  //unpowerered for vacuum
         }
         return done || isTimedOut();
     }
-    
 
 }

@@ -7,29 +7,32 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import frc.robot.commands.LimeLightArcadeDriveCommand;
+import frc.robot.commands.arm.ResetArmCommand;
 import frc.robot.commands.cargo.AutoCargoIntakeCommand;
 import frc.robot.commands.cargo.DeployCargoTrapCommand;
 import frc.robot.commands.cargo.RetractCargoTrapCommand;
 import frc.robot.commands.cargo.tests.IntakeTestCmd;
 import frc.robot.commands.cargo.tests.OuttakeTestCmd;
+
 import frc.robot.commands.climb.tests.CharonSolenoidTestCmd;
 import frc.robot.commands.climb.tests.ClimbMotorTestCmd;
 import frc.robot.commands.climb.tests.PawlSolenoidTestCmd;
 import frc.robot.commands.climb.tests.RollerMotorTestCmd;
+import frc.robot.commands.drive.CopilotControlCommand;
 import frc.robot.commands.drive.InvertDriveControlsCommand;
-import frc.robot.commands.drive.TankDriveCommand;
+import frc.robot.commands.drive.LimeLightArcadeDriveCommand;
+import frc.robot.commands.drive.shift.AutomaticUpShiftCommand;
 import frc.robot.commands.drive.shift.DownShiftCommand;
 import frc.robot.commands.drive.shift.ToggleAutomaticGearShiftingCommand;
 import frc.robot.commands.drive.shift.UpShiftCommand;
 import frc.robot.commands.intake.VacuumCommand;
-import frc.robot.commands.intake.tests.IntakeTestCommand;
-import frc.robot.commands.intake.tests.VacuumTestCommand;
 import frc.robot.commands.util.ExpoShaper;
-import frc.robot.input.JoystickTrigger;
 import frc.robot.input.XboxControllerButtonCode;
+import frc.robot.input.triggers.GeneralTrigger;
+import frc.robot.input.triggers.JoystickTrigger;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -76,20 +79,24 @@ public class OI {
   public JoystickButton endDriveMode; // Switches state out of drive
   public JoystickButton goToPrevMode; // Goes to previous state (only works for recapturing)
 
+  public JoystickButton climbButton;
+  public JoystickButton shortClimbButton;
+  public JoystickButton climbUp;
+  public JoystickButton pullUp;
+
   private ExpoShaper rotateShaper = new ExpoShaper(.7); // fairly flat curve
 
   @SuppressWarnings({ "resource", })
   public OI() {
     // Wait until we get the first switchboard input - hack we know.
     try {
-      Thread.sleep(250); }
-    catch ( InterruptedException e) {
-      //don't care - won't happen
+      Thread.sleep(250);
+    } catch (InterruptedException e) {
+      // don't care - won't happen
     }
 
-
-    // If the Test Button on the switchboard is activeSSSsS
-    if (false/*switchBoard.getRawButton(11)*/) {
+    // If the Test Button on the switchboard is active, select for TestBinding
+    if (false/* switchBoard.getRawButton(11) */) {
       bindTestButtons();
       System.out.println("Using Test OI");
     } else {
@@ -100,19 +107,40 @@ public class OI {
 
   private void bindFieldButtons() {
     // Drive Train Commands
-    new JoystickButton(driver, XboxControllerButtonCode.A.getCode()).whenPressed(new DownShiftCommand());
-    new JoystickButton(driver, XboxControllerButtonCode.Y.getCode()).whenPressed(new UpShiftCommand());
     new JoystickButton(driver, XboxControllerButtonCode.B.getCode())
         .whenPressed(new ToggleAutomaticGearShiftingCommand());
     new JoystickButton(driver, XboxControllerButtonCode.X.getCode()).whenPressed(new InvertDriveControlsCommand());
-    new JoystickButton(driver, XboxControllerButtonCode.LB.getCode()).whileHeld(new TankDriveCommand());
-    new JoystickButton(driver, XboxControllerButtonCode.RB.getCode()).whileHeld(new LimeLightArcadeDriveCommand());
+    new JoystickButton(driver, XboxControllerButtonCode.LB.getCode()).whileHeld(new LimeLightArcadeDriveCommand(0.4));
+    new JoystickButton(driver, XboxControllerButtonCode.RB.getCode()).whenPressed(new AutomaticUpShiftCommand());
     new JoystickTrigger(driver, XboxControllerButtonCode.TRIGGER_LEFT.getCode(), 0.75)
         .whileHeld(new AutoCargoIntakeCommand(0.4));
     new JoystickTrigger(driver, XboxControllerButtonCode.TRIGGER_RIGHT.getCode(), 0.75)
         .whileHeld(new OuttakeTestCmd(0.4));
-      new JoystickButton(switchBoard, 1).whenPressed(new DeployCargoTrapCommand());
-      new JoystickButton(switchBoard, 2).whenPressed(new RetractCargoTrapCommand());
+    new JoystickButton(assistant, 9).whileHeld(new CopilotControlCommand(0.4, 0.3));;
+
+    // Switchboard Assignments 
+    /**
+     * 
+     * TODO: are these used???  Temp adding Climber tests buttons to live code to help debug CommandGroup
+     * DPL - 3/23/19
+    new JoystickButton(switchBoard, 1).whenPressed(new DeployCargoTrapCommand());
+    new JoystickButton(switchBoard, 2).whenPressed(new RetractCargoTrapCommand());
+    */
+
+    // Climber tests - temporary added to field
+    //execute Pawl only on change
+    new JoystickButton(switchBoard, 1).whenPressed(new PawlSolenoidTestCmd(true));
+    new JoystickButton(switchBoard, 1).whenReleased(new PawlSolenoidTestCmd(false));
+    new JoystickButton(switchBoard, 2).whileActive(new ClimbMotorTestCmd(0.3));
+    
+    //execute Charon only on button change
+    new JoystickButton(switchBoard, 3).whenPressed(new CharonSolenoidTestCmd(true));
+    new JoystickButton(switchBoard, 3).whenReleased(new CharonSolenoidTestCmd(false));
+
+    new JoystickButton(switchBoard, 4).whileActive(new RollerMotorTestCmd(0.5));
+    new JoystickButton(switchBoard, 5).whileActive(new ClimbMotorTestCmd(-0.3));
+
+    new GeneralTrigger(Robot.arm::extensionAtMin).whenPressed(new ResetArmCommand());
 
     // setup buttons for use in CommandManager
     heightDownSelect = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
@@ -122,21 +150,17 @@ public class OI {
     endDriveMode = new JoystickButton(assistant, XboxControllerButtonCode.B.getCode());
     goToPrevMode = new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode());
 
-    // Intake Commands
-    // hack new JoystickButton(assistant,
-    // XboxControllerButtonCode.B.getCode()).whenPressed(new VacuumCommand(false));
-    // hack new JoystickButton(assistant,
-    // XboxControllerButtonCode.A.getCode()).whenPressed(new VacuumCommand(true));
-    // new JoystickButton(assistant,
-    // XboxControllerButtonCode.START.getCode()).whenPressed(new
-    // RotateWristUpCommand());
-    // new JoystickButton(assistant,
-    // XboxControllerButtonCode.BACK.getCode()).whenPressed(new
-    // RotateWristDownCommand());
-
-    // Driver assist commands (macros)
+    //TODO: Billy / Zander / driveteam pick a real place for this - 3/23/19
+    climbButton = new JoystickButton(switchBoard, 7);
+    shortClimbButton = new JoystickButton(switchBoard, 8);
+    climbUp = new JoystickButton(switchBoard, 9);
+    pullUp = new JoystickButton(switchBoard, 10);
   }
 
+
+  /**
+   *  Test Bindings - used if the hard coded flag above is set to TRUE see line#.
+   */
   public void bindTestButtons() {
     // Vacuum subsystem tests
     // new JoystickButton(assistant,
@@ -152,13 +176,20 @@ public class OI {
     new JoystickButton(driver, XboxControllerButtonCode.X.getCode()).whileHeld(new OuttakeTestCmd(0.4));
 
     // Climber tests
-    new JoystickButton(switchBoard, 1).whileHeld(new PawlSolenoidTestCmd(true));
+    //execute Pawl only on change
+    new JoystickButton(switchBoard, 1).whenPressed(new PawlSolenoidTestCmd(true));
+    new JoystickButton(switchBoard, 1).whenReleased(new PawlSolenoidTestCmd(false));
     new JoystickButton(switchBoard, 2).whileActive(new ClimbMotorTestCmd(0.3));
-    new JoystickButton(switchBoard, 3).whileHeld(new CharonSolenoidTestCmd(true));
+    
+    //execute Charon only on button change
+    new JoystickButton(switchBoard, 3).whenPressed(new CharonSolenoidTestCmd(true));
+    new JoystickButton(switchBoard, 3).whenReleased(new CharonSolenoidTestCmd(false));
+
     new JoystickButton(switchBoard, 4).whileActive(new RollerMotorTestCmd(0.5));
     new JoystickButton(switchBoard, 5).whileActive(new ClimbMotorTestCmd(-0.3));
 
-    // setup buttons - required for Control Manager construction, but not really used.
+    // setup buttons - required for Control Manager construction, but not really
+    // used.
     heightDownSelect = new JoystickButton(phantom, XboxControllerButtonCode.LB.getCode());
     heightUpSelect = new JoystickButton(phantom, XboxControllerButtonCode.RB.getCode());
     captureRelease = new JoystickButton(phantom, XboxControllerButtonCode.Y.getCode());
