@@ -21,8 +21,7 @@ import frc.robot.commands.climb.CheckSolenoids;
 import frc.robot.commands.climb.ClimbGroup;
 import frc.robot.commands.climb.ClimbUpPartial;
 import frc.robot.commands.climb.PullUpPartial;
-import frc.robot.commands.intake.CheckSucc;
-import frc.robot.commands.intake.WristTrackFunction;
+import frc.robot.commands.intake.WristTrackAngle;
 import frc.robot.commands.util.CancelCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CameraSubsystem;
@@ -95,7 +94,7 @@ public class Robot extends TimedRobot {
     m_oi.climbUp.whenPressed(level3Retract);
     m_oi.climbUp.whenReleased(new CancelCommand(level3Retract));
     Robot.arm.setDefaultCommand(new MoveArmAtHeight(m_cmdMgr::gripperHeightOut, m_cmdMgr::gripperXProjectionOut));
-    Robot.intake.setDefaultCommand(new WristTrackFunction(m_cmdMgr::wristTrackParallel));
+    Robot.intake.setDefaultCommand(new WristTrackAngle(WristTrackAngle.Angle.Parallel.getAngle()));
   }
 
   /**

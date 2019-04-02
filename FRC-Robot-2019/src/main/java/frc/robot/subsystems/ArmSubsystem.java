@@ -154,19 +154,6 @@ public class ArmSubsystem extends ExtendedSubSystem {
   }
 
   /**
-   * Arm has been bumped or retracted to the zero-switch positon. Need to reset
-   * counters to match the physical extension point and take into account the
-   * current angle and its compensation.
-   */
-  public void resetArmByDerek() {
-    // ext is at Lsw
-    this.L0 = L_sw; // inches - starting point, encoder zero -set 2/24/2019
-    this.Phi0_L0 = getRealAngle(); // new Phi0 angle where dl/dPhi is zeroed
-    armExtensionMotor.setSelectedSensorPosition(0); // this could be automatic inside the talon
-
-  }
-
-  /**
    * Rotates the arm to a specific angle
    * 
    * @param angle the angle to rotate the arm to, in degrees
@@ -279,7 +266,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public double getExtension() {
     int counts = armExtensionMotor.getSelectedSensorPosition();
     // L0 + phi correction
-    return (L0 + (getRealAngle() - Phi0_L0) * k_dl_dphi) + (counts * kIn_per_count);
+    return (L0 + (getRealAngle() - PHI0) * k_dl_dphi) + (counts * kIn_per_count);
   }
 
   /**
@@ -322,7 +309,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   // Expected change in extension as a result of phi, phi in degrees
   public double getCompLen(double phi) {
     // base + wrist + phi-rotation
-    double compLen = ((phi - Phi0_L0) * k_dl_dphi);
+    double compLen = ((phi - PHI0) * k_dl_dphi);
     return (compLen);
   }
 

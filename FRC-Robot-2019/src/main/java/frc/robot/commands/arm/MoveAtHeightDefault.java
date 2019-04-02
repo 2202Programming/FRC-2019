@@ -43,10 +43,6 @@ public class MoveAtHeightDefault extends Command {
         requires(Robot.arm);
         arm = Robot.arm;
         
-        this.projectionLimiter = projectionLimiter;
-        projectionLimiter.setInputFunction(this::getProjectionCommanded);
-        this.heightLimiter = heightLimiter;
-        heightLimiter.setInputFunction((this::getHeightCommanded));
         this.projectionAdjustLimiter = projectionAdjustLimiter;
     }
 

@@ -236,7 +236,6 @@ public class CommandManager {
 
         case HuntGameStart:
             prevHuntMode = Modes.HuntingHatch; // change this if we start with Cargo
-            wristOffset = 10.0;
             nextCmd = huntGameStartGrp;
             break;
 
@@ -267,7 +266,6 @@ public class CommandManager {
         // DeliveryModes
         case DeliverHatch: // based on what we captured
             delHeightIdx = 0; // start at lowest
-            wristOffset = 20.0;
             wristAngle = WristTrackAngle.Angle.Hatch_Delivery.getAngle();
             nextCmd = deliveryGrp;
             break;

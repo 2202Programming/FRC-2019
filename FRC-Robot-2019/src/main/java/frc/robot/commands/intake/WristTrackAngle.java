@@ -39,7 +39,7 @@ public class WristTrackAngle extends Command {
     }
 
     public enum Angle {
-        Perpendicular_Up(0.0), Cargo_Delivery(60.0), Starting_Hatch_Hunt(76.0), Hatch_Delivery(83.0), Parallel(90.0),
+        Perpendicular_Up(0.0), Cargo_Delivery(60.0), Starting_Hatch_Hunt(80.0), Hatch_Delivery(70.0), Parallel(90.0),
         Perpendicular_Down(180.0);
 
         private double phi;
