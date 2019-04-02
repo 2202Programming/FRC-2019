@@ -203,7 +203,8 @@ public class Robot extends TimedRobot {
     //calls subsystem smartdashboard logging functions, instructs them to only update every interval # of ms
     
     //picking hopefully non-overlapping time intervals so all the logging isn't done at the same cycle
-    sensorSubystem.log(interval); //tell limelight to post to dashboard every Xms
+    if ((logTimer + interval) < System.currentTimeMillis()) // only post to smartdashboard every interval ms
+      sensorSubystem.log(interval); //tell limelight to post to dashboard every Xms
     driveTrain.log(interval+3); //tell drivertrain to post to dashboard every Xms
     //serialSubsystem.log(interval+7); //tell serial to post to dashboard every Xms
     arm.log(interval+11);
