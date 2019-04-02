@@ -11,6 +11,7 @@ import frc.robot.Robot;
 import frc.robot.RobotMap;
 import frc.robot.commands.arm.ArmZero;
 import frc.robot.commands.util.MathUtil;
+import frc.robot.commands.util.RateLimiter;
 
 /**
  * Arm based lifter subsystem.
@@ -44,7 +45,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public final double PHI_MAX = 158.0; // In Degrees, Positive is foward, bottom front
   public final double PHI_MIN = 25.0; // In Degrees, Near top front
 
-  private final double kCounts_per_deg = 600; //back to practice bot
+  private final double kCounts_per_deg = 600; // back to practice bot
   private final double kDeg_per_count = 1.0 / kCounts_per_deg;
 
   // Geometry of the arm's pivot point
@@ -55,7 +56,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   // Extender phyiscal numbers
   public double L0 = 8.875; // inches - starting point, encoder zero -set 2/24/2019
   public final double STARTING_EXTENSION = 8.875; // inches - starting point, encoder zero -set 2/24/2019
-  public double Phi0_L0 =  PHI0; // degrees - angle where dl/dPhi is zeroed
+  public double Phi0_L0 = PHI0; // degrees - angle where dl/dPhi is zeroed
   public final double L_sw = 0.0; // inches - extension point where switch is triggered
   public final double EXTEND_MIN = 0.750; // inches 0.0 physic, .75 soft stop
   public final double EXTEND_MAX = 35.0; // inches - measured practice bot
@@ -72,13 +73,16 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
   // talon controls
   final int PIDIdx = 0; // using pid 0 on talon
-  final int TO = 30;    // timeout, we shouldn't really need one  TODO try 0
+  final int TO = 30; // timeout, we shouldn't really need one TODO try 0
+
+  private RateLimiter projectionLimiter;
+  private RateLimiter heightLimiter;
 
   private long logTimer;
 
   public class Position {
-    public double height;      //inches above floor
-    public double projection;  //inches in front of pivot point
+    public double height; // inches above floor
+    public double projection; // inches in front of pivot point
   };
 
   // outputs in robot coordinates h,ext (inches)
@@ -135,8 +139,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
   }
 
   /**
-   * Resets the arm to match calculated position
-   * Run only when the arm extension belt slips
+   * Resets the arm to match calculated position Run only when the arm extension
+   * belt slips
    */
   public void resetArm(double resetLength) {
     double compLen = getCompLen(getRealAngle());
@@ -147,18 +151,17 @@ public class ArmSubsystem extends ExtendedSubSystem {
   }
 
   /**
-   *  Arm has been bumped or retracted to the zero-switch positon.  Need to reset
-   *  counters to match the physical extension point and take into account the 
-   *  current angle and its compensation.
+   * Arm has been bumped or retracted to the zero-switch positon. Need to reset
+   * counters to match the physical extension point and take into account the
+   * current angle and its compensation.
    */
   public void resetArmByDerek() {
     // ext is at Lsw
-    this.L0 = L_sw;  // inches - starting point, encoder zero -set 2/24/2019
-    this.Phi0_L0 = getRealAngle();  //new Phi0 angle where dl/dPhi is zeroed
-    armExtensionMotor.setSelectedSensorPosition(0);   //this could be automatic inside the talon
+    this.L0 = L_sw; // inches - starting point, encoder zero -set 2/24/2019
+    this.Phi0_L0 = getRealAngle(); // new Phi0 angle where dl/dPhi is zeroed
+    armExtensionMotor.setSelectedSensorPosition(0); // this could be automatic inside the talon
 
   }
-
 
   /**
    * Rotates the arm to a specific angle
@@ -199,27 +202,28 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * 
    * If we reset the talon with limit switch, we set new Phi0_l0 and L0
    * 
-   * @param desired_L The desired extension of the Arm from beginning of the arm housing to the back of the wrist motor
+   * @param desired_L The desired extension of the Arm from beginning of the arm
+   *                  housing to the back of the wrist motor
    */
   public void setExtension(double desired_L) {
     double angle = getRealAngle(); // current angle
 
-    //Limit Extension
+    // Limit Extension
     double min_l_at_phi = getMinExtension(angle);
     double max_l_at_phi = getMaxExtension(angle);
     desired_L = MathUtil.limit(desired_L, min_l_at_phi, max_l_at_phi);
 
-    //Print Warning
+    // Print Warning
     if (desired_L < min_l_at_phi) {
       System.out.println("Desired Arm:Extension below minimum of " + min_l_at_phi + " inches.");
-    } else if(desired_L > max_l_at_phi) {
+    } else if (desired_L > max_l_at_phi) {
       System.out.println("Desired Arm:Extension above maximum of " + max_l_at_phi + " inches.");
     }
-    
+
     SmartDashboard.putNumber("Extension Calculated", desired_L);
 
     // Adjust length to match L0 and account for compLen
-    double compLen = ((angle - PHI0) * k_dl_dphi); // ext due to rotation to compensate for 
+    double compLen = ((angle - PHI0) * k_dl_dphi); // ext due to rotation to compensate for
     double cmd_L = desired_L - L0 - compLen;
     SmartDashboard.putNumber("Extension Compensation", compLen);
     SmartDashboard.putNumber("Extension Set", cmd_L);
@@ -229,35 +233,37 @@ public class ArmSubsystem extends ExtendedSubSystem {
   }
 
   /**
-   *  Returns the minimal extention in inches based on an arm angle in degrees.
-   * Vaild over full range of phi 
+   * Returns the minimal extention in inches based on an arm angle in degrees.
+   * Vaild over full range of phi
    * 
    * @param angle
    * @return
    */
   public double getMinExtension(double angle) {
-    if(-35.0 < angle && angle < 35.0) {
+    if (-35.0 < angle && angle < 35.0) {
       return STARTING_EXTENSION;
     }
     return EXTEND_MIN;
   }
 
   /**
-   * Returns the max extension based on arm angle.
-   * PhiCrit is the cutoff where we need to make sure we limit our max length.
-   * Less than PhiCrit we can have full extension and stay in the box.
+   * Returns the max extension based on arm angle. PhiCrit is the cutoff where we
+   * need to make sure we limit our max length. Less than PhiCrit we can have full
+   * extension and stay in the box.
    * 
-   * Valid over full range of Phi, except for minor error if we are on the backside
-   * of the robot. On backside, the MAX_PROJECTION is off by about 1/2 inch.
+   * Valid over full range of Phi, except for minor error if we are on the
+   * backside of the robot. On backside, the MAX_PROJECTION is off by about 1/2
+   * inch.
    * 
    * @param angle
    * @return
    */
   public double getMaxExtension(double angle) {
-    final double PhiCrit = Math.toDegrees(Math.asin(  (MAX_PROJECTION)/(WRIST_LENGTH + ARM_BASE_LENGTH + EXTEND_MAX) ));
+    final double PhiCrit = Math.toDegrees(Math.asin((MAX_PROJECTION) / (WRIST_LENGTH + ARM_BASE_LENGTH + EXTEND_MAX)));
 
-    double absAngle =Math.abs(angle);
-    if ( absAngle < PhiCrit ) return EXTEND_MAX;
+    double absAngle = Math.abs(angle);
+    if (absAngle < PhiCrit)
+      return EXTEND_MAX;
     return (MAX_PROJECTION / Math.sin(Math.toRadians(absAngle))) - ARM_BASE_LENGTH - WRIST_LENGTH;
   }
 
@@ -275,13 +281,13 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
   /**
    * Gets whether or not the arm is at the state of being the least extended it
-   * can.  Active low on the wiring, we invert the signal
+   * can. Active low on the wiring, we invert the signal
    * 
    * @return <code>true</code> if the arm is at the minimum extension state,
    *         <code>false</code> otherwise.
    */
   public boolean extensionAtMin() {
-    //this signal is active low
+    // this signal is active low
     return !extensionAtMin.get();
   }
 
@@ -301,8 +307,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * horizontal zero
    */
   public Position getArmPosition() {
-    double phi = getAbsoluteAngle();     
-    double rads = Math.toRadians(90 - phi);    //TODO - can we remove the 90 shift and put sin & cos back 
+    double phi = getAbsoluteAngle();
+    double rads = Math.toRadians(90 - phi); // TODO - can we remove the 90 shift and put sin & cos back
     double ext = getExtension(); // includes angle compensation
     double desired_l = ARM_BASE_LENGTH + WRIST_LENGTH + ext;
     position.height = ARM_PIVOT_HEIGHT + desired_l * Math.sin(rads);
