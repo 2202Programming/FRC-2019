@@ -20,13 +20,11 @@ public class GearShifterSubsystem extends Subsystem {
         isAutoShiftEnabled = temp;
     }
 
-    public void log(int interval) {
+    public void log() {
 
-        if ((logTimer + interval) < System.currentTimeMillis()) { //only post to smartdashboard every interval ms
           logTimer = System.currentTimeMillis();
           SmartDashboard.putBoolean("Autoshift Enabled", isAutoShiftEnabled);  
           SmartDashboard.putString("Gear Shifter State", String.valueOf(getCurGear()));
-        }
       }
 
     //physical devices

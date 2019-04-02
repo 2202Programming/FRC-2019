@@ -41,14 +41,17 @@ import frc.robot.subsystems.SensorSubsystem;
  * project.
  */
 public class Robot extends TimedRobot {
-  //common constants for robot
-  public static double dT = kDefaultPeriod;  // Robots sample period (seconds) 
-  //THis years bounding box beyond frame of robot. Use this in limit calcs in subsystems.
-  public static double kProjectConstraint = 26.0; //inches from frame (accounting for the suction cup length)
-  //public static double kForwardProjectMin = 18.0; //inches from arm pivot x-axis to bumper
-  //public static double kReverseProjectMin = 18.0; //inches from arm pivot x-axis to bumper
-  
-  //physical devices and subsystems
+  // common constants for robot
+  public static double dT = kDefaultPeriod; // Robots sample period (seconds)
+  // THis years bounding box beyond frame of robot. Use this in limit calcs in
+  // subsystems.
+  public static double kProjectConstraint = 26.0; // inches from frame (accounting for the suction cup length)
+  // public static double kForwardProjectMin = 18.0; //inches from arm pivot
+  // x-axis to bumper
+  // public static double kReverseProjectMin = 18.0; //inches from arm pivot
+  // x-axis to bumper
+
+  // physical devices and subsystems
   public static DriveTrainSubsystem driveTrain = new DriveTrainSubsystem();
   public static GearShifterSubsystem gearShifter = new GearShifterSubsystem(driveTrain.kShiftPoint);
   public static IntakeSubsystem intake = new IntakeSubsystem();
@@ -59,13 +62,17 @@ public class Robot extends TimedRobot {
   public static CameraSubsystem cameraSubsystem = new CameraSubsystem();
   public static SensorSubsystem sensorSubystem = new SensorSubsystem();
 
-  public static OI m_oi = new OI(); //OI Depends on the subsystems and must be last (boolean is whether we are testing or not)
+  public static OI m_oi = new OI(); // OI Depends on the subsystems and must be last (boolean is whether we are
+                                    // testing or not)
 
-  public static CommandManager m_cmdMgr;    //fix the public later
+  public static CommandManager m_cmdMgr; // fix the public later
   private RobotTest m_testRobot;
 
-  boolean doneOnce = false;   //single execute our zero 
+  boolean doneOnce = false; // single execute our zero
   private Integer currentCamera = 1;
+
+  private static long[] logTimers = new long[7];// for each individual subsystem
+  private static int[] offsets = { 0, 3, 7, 11, 17, 23, 29, 31 };
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -74,15 +81,16 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     // Create the test subsystem
-    m_testRobot  = new RobotTest();
+    m_testRobot = new RobotTest();
     m_cmdMgr = new CommandManager();
-    m_cmdMgr.setMode(Modes.Construction);   // schedules the mode's function
-    sensorSubystem.disableLED(); //disable blinding green LED that Trevor hates
+    m_cmdMgr.setMode(Modes.Construction); // schedules the mode's function
+    sensorSubystem.disableLED(); // disable blinding green LED that Trevor hates
     NetworkTableEntry cameraSelect = NetworkTableInstance.getDefault().getEntry("/PiSwitch");
-    // 0=front cam, 1= rear cam, 2 = arm  (pi camera server defines this - could change)
-    cameraSelect.setDouble(1);    
-    m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function    
-    CommandGroup level3Climb = new ClimbGroup(25.5, 0.0);  // extend/retract in inches
+    // 0=front cam, 1= rear cam, 2 = arm (pi camera server defines this - could
+    // change)
+    cameraSelect.setDouble(1);
+    m_cmdMgr.setMode(Modes.SettingZeros); // schedules the mode's function
+    CommandGroup level3Climb = new ClimbGroup(25.5, 0.0); // extend/retract in inches
     m_oi.climbButton.whenPressed(level3Climb);
     m_oi.climbButton.whenReleased(new CancelCommand(level3Climb));
     CommandGroup level2Climb = new ClimbGroup(9.0, 0.0);
@@ -96,6 +104,11 @@ public class Robot extends TimedRobot {
     m_oi.climbUp.whenReleased(new CancelCommand(level3Retract));
     Robot.arm.setDefaultCommand(new MoveArmAtHeight(m_cmdMgr::gripperHeightOut, m_cmdMgr::gripperXProjectionOut));
     Robot.intake.setDefaultCommand(new WristTrackFunction(m_cmdMgr::wristTrackParallel));
+
+    // testing this for now
+    long systime = System.currentTimeMillis();
+    for (int i = 0; i < logTimers.length; i++)
+      logTimers[i] = systime;
   }
 
   /**
@@ -109,7 +122,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    logSmartDashboardSensors(500); //call smartdashboard logging, 500ms update rate
+    logSmartDashboardSensors(500); // call smartdashboard logging, 500ms update rate
     sensorSubystem.processSensors();
   }
 
@@ -120,13 +133,13 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void disabledInit() {
-    sensorSubystem.disableLED(); //disable blinding green LED that Trevor hates
+    sensorSubystem.disableLED(); // disable blinding green LED that Trevor hates
   }
 
   @Override
   public void disabledPeriodic() {
     Scheduler.getInstance().run();
-    sensorSubystem.disableLED(); //disable blinding green LED that Trevor hates
+    sensorSubystem.disableLED(); // disable blinding green LED that Trevor hates
   }
 
   /**
@@ -146,8 +159,8 @@ public class Robot extends TimedRobot {
     resetAllDashBoardSensors();
     Scheduler.getInstance().add(new CheckSolenoids());
 
-    if(!doneOnce) {
-      m_cmdMgr.setMode(Modes.HuntGameStart);   // schedules the mode's function
+    if (!doneOnce) {
+      m_cmdMgr.setMode(Modes.HuntGameStart); // schedules the mode's function
       doneOnce = true;
     }
   }
@@ -168,8 +181,8 @@ public class Robot extends TimedRobot {
     // continue until interrupted by another command, remove
     // this line or comment it out.
     resetAllDashBoardSensors();
-    if(!doneOnce) {
-      m_cmdMgr.setMode(Modes.HuntGameStart);   // schedules the mode's function
+    if (!doneOnce) {
+      m_cmdMgr.setMode(Modes.HuntGameStart); // schedules the mode's function
       doneOnce = true;
     }
   }
@@ -183,12 +196,12 @@ public class Robot extends TimedRobot {
     Scheduler.getInstance().run();
   }
 
-   @Override
-   public void testInit() {
-     m_testRobot.initialize();
-     sensorSubystem.enableLED(); //active limelight LED when operational
-     Scheduler.getInstance().enable();   //### hack? or required?  Seems required otherwise nothing runs 
-   }
+  @Override
+  public void testInit() {
+    m_testRobot.initialize();
+    sensorSubystem.enableLED(); // active limelight LED when operational
+    Scheduler.getInstance().enable(); // ### hack? or required? Seems required otherwise nothing runs
+  }
 
   /**
    * This function is called periodically during test mode.
@@ -200,24 +213,69 @@ public class Robot extends TimedRobot {
   }
 
   private void logSmartDashboardSensors(int interval) {
-    //calls subsystem smartdashboard logging functions, instructs them to only update every interval # of ms
-    
-    //picking hopefully non-overlapping time intervals so all the logging isn't done at the same cycle
-    if ((logTimer + interval) < System.currentTimeMillis()) // only post to smartdashboard every interval ms
-      sensorSubystem.log(interval); //tell limelight to post to dashboard every Xms
-    driveTrain.log(interval+3); //tell drivertrain to post to dashboard every Xms
-    //serialSubsystem.log(interval+7); //tell serial to post to dashboard every Xms
-    arm.log(interval+11);
-    gearShifter.log(interval+17); //tell gearshifter to post to dashboard every Xms
-    m_cmdMgr.log(interval+23);
-    intake.log(interval+29);
-    climber.log(interval+31);
+    // calls subsystem smartdashboard logging functions, instructs them to only
+    // update every interval # of ms
 
-    
-    SmartDashboard.putData(Scheduler.getInstance()); 
+    // picking hopefully non-overlapping time intervals so all the logging isn't
+    // done at the same cycle
+    int i = 0;
+
+    if ((logTimers[i] + interval + offsets[i]) < System.currentTimeMillis()) { // only post to smartdashboard every
+                                                                               // interval ms
+      sensorSubystem.log(); // tell limelight to post to dashboard every Xms
+      logTimers[i] = System.currentTimeMillis();
+    }
+    i++;
+    if ((logTimers[i] + interval + offsets[i]) < System.currentTimeMillis()) { // only post to smartdashboard every
+                                                                               // interval ms
+      driveTrain.log(); // tell limelight to post to dashboard every Xms
+      logTimers[i] = System.currentTimeMillis();
+    }
+    i++;
+    // serialSubsystem.log(interval+7); //tell serial to post to dashboard every Xms
+    if ((logTimers[i] + interval + offsets[i]) < System.currentTimeMillis()) {
+      arm.log();
+      logTimers[i] = System.currentTimeMillis();
+    }
+    i++;
+    if ((logTimers[i] + interval + offsets[i]) < System.currentTimeMillis()) {
+      gearShifter.log(); // tell gearshifter to post to dashboard every Xms
+      logTimers[i] = System.currentTimeMillis();
+    }
+    i++;
+    if ((logTimers[i] + interval + offsets[i]) < System.currentTimeMillis()) {
+      m_cmdMgr.log();
+      logTimers[i] = System.currentTimeMillis();
+    }
+    i++;
+    if ((logTimers[i] + interval + offsets[i]) < System.currentTimeMillis()) {
+      intake.log();
+      logTimers[i] = System.currentTimeMillis();
+    }
+    i++;
+    if ((logTimers[i] + interval + offsets[i]) < System.currentTimeMillis()) {
+      climber.log();
+      logTimers[i] = System.currentTimeMillis();
+    }
+
+    // sensorSubystem.log(interval); // tell limelight to post to dashboard every
+    // Xms
+    // driveTrain.log(interval + 3); // tell drivertrain to post to dashboard every
+    // Xms
+    // // serialSubsystem.log(interval+7); //tell serial to post to dashboard every
+    // Xms
+    // arm.log(interval + 11);
+    // gearShifter.log(interval + 17); // tell gearshifter to post to dashboard
+    // every Xms
+    // m_cmdMgr.log(interval + 23);
+    // intake.log(interval + 29);
+    // climber.log(interval + 31);
+
+    SmartDashboard.putData(Scheduler.getInstance());
     SmartDashboard.putData(arm);
     SmartDashboard.putData(intake);
-}
+
+  }
 
   private void resetAllDashBoardSensors() {
     driveTrain.getLeftEncoderTalon().setSelectedSensorPosition(0);

@@ -708,15 +708,13 @@ public class CommandManager {
         }
     }
 
-    public void log(int interval) {
-        if ((logTimer + interval) < System.currentTimeMillis()) { // only post to smartdashboard every interval ms
+    public void log() {
             logTimer = System.currentTimeMillis();
             SmartDashboard.putString("Command Mode", currentMode.toString());
             SmartDashboard.putNumber("GripHCmd", gripperH_cmd);
             SmartDashboard.putNumber("GripX_RL", heightRL.get());
             SmartDashboard.putNumber("GripXCmd", gripperX_cmd);
             SmartDashboard.putNumber("GripX_RL", xprojRL.get());
-        }
         SmartDashboard.putString("Current Position", logCurHeight());
     }
 

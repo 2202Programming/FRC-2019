@@ -19,7 +19,6 @@ public class SerialPortSubsystem extends Subsystem {
   private StringBuilder serialResults = new StringBuilder();
   private SerialPort arduinoSerial;
   private boolean serialExists = true;
-  private long logTimer;
 
   public SerialPortSubsystem() {
     try {
@@ -28,8 +27,6 @@ public class SerialPortSubsystem extends Subsystem {
       serialExists = false; // if fails to init, stop future attempts to check serial buffer
       System.out.println("***Serial Init failed!***");
     }
-
-    logTimer = System.currentTimeMillis();
     distanceAvgArray = new ArrayList<Deque>(); // 4 elements, each is a Deque for 10 elements of distance
     distanceAvgArray.add(0, new ArrayDeque<Integer>());
     distanceAvgArray.add(1, new ArrayDeque<Integer>());
@@ -125,7 +122,6 @@ public class SerialPortSubsystem extends Subsystem {
   }
 
   public void log() {
-    logTimer = System.currentTimeMillis();
     SmartDashboard.putBoolean("Serial Enabled?", serialExists);
     if (serialExists) { // verify serial system was initalized before calling for results
       SmartDashboard.putNumber("Left Front LIDAR (mm)", getDistance(RobotMap.LEFT_FRONT_LIDAR));
@@ -138,7 +134,6 @@ public class SerialPortSubsystem extends Subsystem {
       SmartDashboard.putNumber("Avg Left Back LIDAR (mm)", getDistanceAvg(RobotMap.LEFT_BACK_LIDAR));
       SmartDashboard.putNumber("Avg Right Back LIDAR (mm)", getDistanceAvg(RobotMap.RIGHT_BACK_LIDAR));
     }
-
   }
 
   /*

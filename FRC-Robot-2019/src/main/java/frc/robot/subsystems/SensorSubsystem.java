@@ -62,10 +62,8 @@ public class SensorSubsystem extends Subsystem {
     limeLight.enableLED();
   }
 
-  public void log(int interval) {
-    if ((logTimer + interval) < System.currentTimeMillis()) { // only post to smartdashboard every interval ms
+  public void log() {
       serialSubsystem.log();
-    }
       logTimer = System.currentTimeMillis();
       SmartDashboard.putNumber("Front Distance", getDistanceFront());
       SmartDashboard.putNumber("Back Distance", getDistanceBack());
