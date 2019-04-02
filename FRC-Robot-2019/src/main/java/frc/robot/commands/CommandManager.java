@@ -2,13 +2,23 @@ package frc.robot.commands;
 
 import java.util.function.IntSupplier;
 
+import edu.wpi.first.wpilibj.buttons.Trigger;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.InstantCommand;
-import edu.wpi.first.wpilibj.command.WaitCommand;
-import edu.wpi.first.wpilibj.command.CommandGroup;
-import edu.wpi.first.wpilibj.buttons.Trigger;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
+import frc.robot.commands.arm.FlipCommand;
+import frc.robot.commands.arm.MoveArmAtHeight;
+import frc.robot.commands.intake.RetractOnReleaseCommand;
+import frc.robot.commands.intake.VacuumCommand;
+import frc.robot.commands.intake.WristTrackFunction;
+import frc.robot.commands.util.ExpoShaper;
+import frc.robot.commands.util.LimitedIntegrator;
+import frc.robot.commands.util.MathUtil;
+import frc.robot.commands.util.RateLimiter;
+import frc.robot.commands.util.RateLimiter.InputModel;
+import frc.robot.commands.util.TriggerTimeoutCommand;
 import frc.robot.subsystems.ArmSubsystem.Position;
 import frc.robot.subsystems.VacuumSensorSystem;
 import frc.robot.commands.intake.*;
@@ -119,13 +129,13 @@ public class CommandManager {
     int delHeightIdx = 0; // used in Delivery<Cargo/Hatch>Heights[]
 
     // Data points - shares delheightidx, must be same length
-    final double DeliveryCargoHeights[] = { 26.875, 55.0, 84.0 }; // TODO: fix the numbers
-    final double DeliveryHatchHeights[] = { 25.5, 55.0, 82.0 };
+    final double DeliveryCargoHeights[] = { 25.0, 55.0, 84.0 }; // TODO: fix the numbers
+    final double DeliveryHatchHeights[] = { 25.5, 55.0, 82.0 }; 
     final double deliveryProjection[] = { 25.0, 25.0, 25.0 }; // TODO: fix the numbers
 
     final Modes huntingModes[] = { Modes.HuntingFloor, Modes.HuntingCargo, Modes.HuntingHatch };
     final double HuntHeights[] = { 5.0, 17.5, 24.0 }; // height from floor, H,C,Floor TODO:fix numbers
-    final double huntProjection[] = { 24.0, 23.5, 24.0 }; // TODO: fix the numbers
+    final double huntProjection[] = { 23.0, 23.5, 24.0 }; // TODO: fix the numbers
     int huntModeIdx = 2; // hatch
 
     private int driveIdx = 1;
@@ -181,8 +191,8 @@ public class CommandManager {
                 this::measHeight, // phy position func
                 kHeightMin, // output min
                 kHeightMax, // output max
-                -60.0, // inches/sec // falling rate limit
-                60.0, // inches/sec //raising rate limit
+                -80.0, // inches/sec // falling rate limit
+                80.0, // inches/sec //raising rate limit
                 InputModel.Position);
 
         // Construct our major modes from their command factories
@@ -226,6 +236,7 @@ public class CommandManager {
 
         case HuntGameStart:
             prevHuntMode = Modes.HuntingHatch; // change this if we start with Cargo
+            wristOffset = 10.0;
             nextCmd = huntGameStartGrp;
             break;
 
@@ -256,6 +267,7 @@ public class CommandManager {
         // DeliveryModes
         case DeliverHatch: // based on what we captured
             delHeightIdx = 0; // start at lowest
+            wristOffset = 20.0;
             wristAngle = WristTrackAngle.Angle.Hatch_Delivery.getAngle();
             nextCmd = deliveryGrp;
             break;
@@ -332,13 +344,13 @@ public class CommandManager {
      * 
     */
     private int autoTriggerCapture() {
-        if (isHunting() && currentMode != Modes.HuntingFloor ) {
-            prevHuntMode = currentMode;
-            setMode(Modes.Drive);              // got it, go to Drive 
-        } else if (currentMode == Modes.HuntingFloor) {
+        if (currentMode == Modes.HuntingFloor) {
             // just move up if we are on the floor - user still needs to hit 'A'
             gripperH_cmd += kCapHeight;
-        }
+        } else if (isHunting()) {
+            prevHuntMode = currentMode;
+            setMode(Modes.Drive);              // got it, go to Drive 
+        }  
         // not hunting not sure HTH we got here - do nothing
         return 0;
     }
@@ -581,14 +593,16 @@ public class CommandManager {
     //
     private CommandGroup CmdFactoryHuntGameStart() {
         CommandGroup grp = new CommandGroup("HuntGameStart");
-        grp.addSequential(new VacuumCommand(true, 0.0)); // no timeout
+        VacuumSensorSystem vs = Robot.intake.getVacuumSensor();
+        grp.addSequential(new VacuumCommand(true, 0.0));   // no timeout
         grp.addParallel(new WristTrackAngle(WristTrackAngle.Angle.Starting_Hatch_Hunt.getAngle()));
         grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
-        grp.addSequential(new GripperPositionCommand(6, 11.5, 0.05, 0.5)); // Move arm up and back to avoid moving hatch
-        grp.addSequential(new GripperPositionCommand(6, 14.5, 0.05, 1.0)); // Move arm into hatch and intake
-        grp.addSequential(new WaitCommand("Hatch Vaccum", 1.0));
+        grp.addSequential(new GripperPositionCommand(5.7, 11.5, 0.05, 0.5)); // Move arm up and back to avoid moving hatch
+        grp.addSequential(new GripperPositionCommand(5.7, 13.8, 0.05, 0.5)); // Move arm into hatch and intake
+        grp.addSequential(new GripperPositionCommand(5.7, 14.5, 0.05, 1.0)); // Move arm into hatch and intake
+        grp.addSequential(new TriggerTimeoutCommand(vs::hasVacuum, 1.0));  //waits or sees vacuum and finsishes
         grp.addParallel(new WristTrackAngle(WristTrackAngle.Angle.Parallel.getAngle()));
-        grp.addSequential(new NextModeCmd(Modes.HuntingHatch));
+        grp.addSequential(new NextModeCmd(Modes.HuntingHatch));  // Capture the right previous state
         grp.addSequential(new NextModeCmd(Modes.Drive));
         grp.addSequential(new NextModeCmd(Modes.DeliverHatch));
         return grp;
@@ -624,7 +638,7 @@ public class CommandManager {
         // grp.AddSequential(new Extend_Drive_To_Deliver());
         CommandGroup subGrp = new CommandGroup("ReleaseSub");
         subGrp.addParallel(new VacuumCommand(false, vacTimeout)); 
-        subGrp.addParallel(new RetractOnReleaseCommand(this, -4.0 /*inchs*/, 10.0));  
+        subGrp.addParallel(new RetractOnReleaseCommand(this, 10.0 /*inchs*/, 1.0));  
         grp.addSequential(subGrp);
         grp.addSequential(new NextModeCmd(Modes.Drive)); // go back to driving configuration
         return grp;
