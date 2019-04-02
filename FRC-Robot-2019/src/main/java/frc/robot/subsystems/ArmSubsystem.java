@@ -173,7 +173,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
    */
   public void setAngle(double angle) {
     // If inverted, translate based on max angle backwards
-    double counts = (PHI0 - inversionConstant * angle) * kCounts_per_deg;
+    double counts = (PHI0 - angle) * kCounts_per_deg;
     armRotationMotor.set(ControlMode.Position, counts);
   }
 
