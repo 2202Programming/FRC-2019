@@ -17,12 +17,6 @@ public class MoveAtHeightDefault extends Command {
     public final double kHeightMin = 2.0; // inches
     public final double kHeightMax = 96.0; // inches
 
-    // Make an h' to more easily construct a triangle, relative to pivot height
-    private double h;
-
-    // Projection of the arm on the ground
-    private double xProjection;
-
     final double DeliveryCargoHeights[] = { 26.875, 55.0, 84.0 }; // TODO: fix the numbers
     final double DeliveryHatchHeights[] = { 27.5, 55.0, 82.0 };
     final double deliveryProjection[] = { 25.0, 25.0, 25.0 }; // TODO: fix the numbers
@@ -40,7 +34,7 @@ public class MoveAtHeightDefault extends Command {
 
         ExpoShaper projectionShaper = new ExpoShaper(0.5, Robot.m_oi::extensionInput); // joystick defined in m_oi.
         projectionAdjustLimiter = new LimitedIntegrator(Robot.dT, projectionShaper::get, // shaped joystick input
-                -25.0, // kGain, 20 in/sec on the joystick (neg. gain, forward stick is neg.)
+                -25.0, // kGain, 25 in/sec on the joystick (neg. gain, forward stick is neg.)
                 -25.0, // xmin inches true pos limit enforced by arm sub-sys
                 25.0, // x_max inches
                 -25.0, // dx_falling rate inch/sec
@@ -62,18 +56,6 @@ public class MoveAtHeightDefault extends Command {
                 -80.0, // inches/sec // falling rate limit
                 80.0, // inches/sec //raising rate limit
                 InputModel.Position);
-    }
-
-    private double getHeightCommanded() {
-        double h_driverOffset = heightAdjustCap * Robot.m_oi.adjustHeight(); // driver contrib from triggers
-        double h = stateH - h_driverOffset; // state machine + driver so both are rate filtered
-        return h;
-    }
-
-    private double getProjectionCommanded() {
-        double x_driverOffset = projectionAdjustLimiter.get(); // co-driver's offset.
-        double x = stateX + x_driverOffset;
-        return x;
     }
 
     @Override
@@ -115,5 +97,29 @@ public class MoveAtHeightDefault extends Command {
 
     protected boolean isFinished() {
         return false;
+    }
+
+    private double getHeightCommanded() {
+        double h_driverOffset = heightAdjustCap * Robot.m_oi.adjustHeight(); // driver contrib from triggers
+        double h = stateH - h_driverOffset; // state machine + driver so both are rate filtered
+        return h;
+    }
+
+    private double getProjectionCommanded() {
+        double x_driverOffset = projectionAdjustLimiter.get(); // co-driver's offset.
+        double x = stateX + x_driverOffset;
+        return x;
+    }
+
+    public void setHeightLimiter(double minHeight, double maxHeight, double fallSpeed, double raiseSpeed) {
+        heightLimiter.setConstraints(minHeight, maxHeight, fallSpeed, raiseSpeed);
+    }
+
+    public void setProjectionLimiter(double minProjection, double maxProjection, double retractSpeed, double extendSpeed) {
+        projectionLimiter.setConstraints(minProjection, maxProjection, retractSpeed, extendSpeed);
+    }
+
+    public void setDriverAdjustLimiter(double inputGain, double minExtension, double maxExtension, double retractSpeed, double extendSpeed) {
+        projectionAdjustLimiter.setConstraints(inputGain, minExtension, maxExtension, retractSpeed, extendSpeed);
     }
 }

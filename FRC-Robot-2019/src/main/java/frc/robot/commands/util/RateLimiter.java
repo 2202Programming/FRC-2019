@@ -154,4 +154,11 @@ public class RateLimiter {
   public void setInputFunction(DoubleSupplier in) {
     inFunct = in;
   }
+
+  public void setConstraints(double x_min, double x_max, double dx_fall, double dx_raise) {
+    this.x_max = x_max;
+    this.x_min = x_min;
+    this.dx_fall = dx_fall;
+    this.dx_raise = dx_raise;
+  }
 }
