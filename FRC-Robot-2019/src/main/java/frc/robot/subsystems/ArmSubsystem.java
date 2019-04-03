@@ -44,15 +44,19 @@ public class ArmSubsystem extends ExtendedSubSystem {
   //When on the ground we can't touch the hard stop. We are off by ~1 degree
   public final double PHI0 = 158.0; // degrees, starting position - encoder zero 
   public final double PHI_MAX = 158.0; // In Degrees, Positive is foward, bottom front
-  public final double PHI_MIN = 25.0; // In Degrees, Near top front
+  public final double PHI_FRONT_MIN = 25.0; // In Degrees, Near top front
+  public final double PHI_BACK_MAX = -25.0; // In degrees
+  public final double PHI_MIN = -140.0;     // In degress
 
   private final double kCounts_per_deg = 600; // back to practice bot
   private final double kDeg_per_count = 1.0 / kCounts_per_deg;
 
   // Geometry of the arm's pivot point
   public final double PIVOT_TO_FRONT = 16.5; // inches pivot center to the frame
-  public final double MIN_PROJECTION = PIVOT_TO_FRONT - 6.5; // inches from pivot to close arm position
+  public final double MIN_FRONT_PROJECTION = PIVOT_TO_FRONT - 6.5; // inches from pivot to close arm position
+  public final double MIN_BACK_PROJECTION = -MIN_FRONT_PROJECTION;
   public final double MAX_PROJECTION = PIVOT_TO_FRONT + Robot.kProjectConstraint; //
+  public final double MIN_PROJECTION = -MAX_PROJECTION - 1.0; // In inches with a offset because the pivot isn't in the center
 
   // Extender phyiscal numbers
   public final double L0 = 8.875; // inches - starting point, encoder zero -set 2/24/2019
@@ -62,6 +66,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public final double ARM_BASE_LENGTH = 18.0; // inches - measured practice bot (from pivot center) xg 2/16/19
   public final double ARM_PIVOT_HEIGHT = 30.25; // inches - measured practice bot
   public final double WRIST_LENGTH = 4.5; // inches - measured practice bot 2/26/19
+  public final double MAX_ARM_LENGTH = EXTEND_MAX + ARM_BASE_LENGTH + WRIST_LENGTH; // TODO: Find real max length of arm
 
   private final double kCounts_per_in = -600.0; // measured practice bot 2/24/2019
   private final double kIn_per_count = 1.0 / kCounts_per_in;
@@ -73,9 +78,6 @@ public class ArmSubsystem extends ExtendedSubSystem {
   // talon controls
   final int PIDIdx = 0; // using pid 0 on talon
   final int TO = 30; // timeout, we shouldn't really need one TODO try 0
-
-  private RateLimiter projectionLimiter;
-  private RateLimiter heightLimiter;
 
   private long logTimer;
 
@@ -292,17 +294,27 @@ public class ArmSubsystem extends ExtendedSubSystem {
     return armExtensionMotor.getSensorCollection().isFwdLimitSwitchClosed();
   }
 
+  public double getHeight() {
+    double height = Math.cos(Math.toRadians(getRealAngle())) * getExtension() + ARM_PIVOT_HEIGHT;
+    return height;
+  }
+
+  public double getProjection() {
+    double projection = Math.sin(Math.toRadians(getRealAngle())) * getExtension();
+    return projection;
+  }
+
   /**
    * Computes height of gripper and projection on floor from pivot, pivot is
    * horizontal zero
    */
   public Position getArmPosition() {
     double phi = getAbsoluteAngle();
-    double rads = Math.toRadians(90 - phi); // TODO - can we remove the 90 shift and put sin & cos back
+    double rads = Math.toRadians(phi);
     double ext = getExtension(); // includes angle compensation
     double desired_l = ARM_BASE_LENGTH + WRIST_LENGTH + ext;
-    position.height = ARM_PIVOT_HEIGHT + desired_l * Math.sin(rads);
-    position.projection = desired_l * Math.cos(rads);
+    position.height = ARM_PIVOT_HEIGHT + desired_l * Math.cos(rads);
+    position.projection = desired_l * Math.sin(rads);
     return position;
   }
 
