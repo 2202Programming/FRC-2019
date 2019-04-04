@@ -12,29 +12,13 @@ import frc.robot.commands.arm.FlipCommand;
 import frc.robot.commands.arm.MoveArmAtHeight;
 import frc.robot.commands.intake.RetractOnReleaseCommand;
 import frc.robot.commands.intake.VacuumCommand;
-import frc.robot.commands.intake.WristTrackFunction;
-import frc.robot.commands.util.ExpoShaper;
-import frc.robot.commands.util.LimitedIntegrator;
-import frc.robot.commands.util.MathUtil;
-import frc.robot.commands.util.RateLimiter;
-import frc.robot.commands.util.RateLimiter.InputModel;
-import frc.robot.commands.util.TriggerTimeoutCommand;
-import frc.robot.subsystems.ArmSubsystem.Position;
-import frc.robot.subsystems.VacuumSensorSystem;
-import frc.robot.commands.intake.*;
-import frc.robot.commands.arm.*;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Robot;
-import frc.robot.commands.arm.FlipCommand;
-import frc.robot.commands.arm.MoveArmAtHeight;
-import frc.robot.commands.intake.VacuumCommand;
 import frc.robot.commands.intake.WristTrackAngle;
 import frc.robot.commands.util.ExpoShaper;
 import frc.robot.commands.util.LimitedIntegrator;
 import frc.robot.commands.util.MathUtil;
 import frc.robot.commands.util.RateLimiter;
 import frc.robot.commands.util.RateLimiter.InputModel;
-import frc.robot.commands.util.SetDefaultCommand;
+import frc.robot.commands.util.TriggerTimeoutCommand;
 import frc.robot.subsystems.ArmSubsystem.Position;
 import frc.robot.subsystems.VacuumSensorSystem;
 
@@ -77,12 +61,10 @@ public class CommandManager {
         Recapturing(7), // UNUSED right now 3-second period where robot will be able to recapture
                         // hatch/cargo if dropped
         // DeliveryModes
-        Drive(8), // Unused, Richard suggest we tuck in with game piece until ready
-        Defense(9), // Unused, for when we need to go to the other side
+        Drive(8), Defense(9), // Unused, for when we need to go to the other side
         DeliverHatch(10), // based on what we captured
         DeliverCargo(11), // based on what we captured
-        Flipping(12), 
-        Releasing(20), // Button:CaptureRelease
+        Flipping(12), Releasing(20), // Button:CaptureRelease
         Climbing(21);
 
         private int v;
@@ -130,7 +112,7 @@ public class CommandManager {
 
     // Data points - shares delheightidx, must be same length
     final double DeliveryCargoHeights[] = { 25.0, 55.0, 84.0 }; // TODO: fix the numbers
-    final double DeliveryHatchHeights[] = { 25.5, 55.0, 82.0 }; 
+    final double DeliveryHatchHeights[] = { 25.5, 55.0, 82.0 };
     final double deliveryProjection[] = { 25.0, 25.0, 25.0 }; // TODO: fix the numbers
 
     final Modes huntingModes[] = { Modes.HuntingFloor, Modes.HuntingCargo, Modes.HuntingHatch };
@@ -157,15 +139,16 @@ public class CommandManager {
 
         // Rumble on vacuum
         VacuumSensorSystem vs = Robot.intake.getVacuumSensor();
-         if ((vs != null) && vs.isGood() ) {
-             Command vacRumble = new RumbleCommand(Robot.m_oi.getAssistantController(), vs::hasVacuum );
-            //capture trigger on vacuum
-            Trigger capTrigger = new Trigger() 
-            {
-                public boolean get() {return vs.hasVacuum();     }
+        if ((vs != null) && vs.isGood()) {
+            Command vacRumble = new RumbleCommand(Robot.m_oi.getAssistantController(), vs::hasVacuum);
+            // capture trigger on vacuum
+            Trigger capTrigger = new Trigger() {
+                public boolean get() {
+                    return vs.hasVacuum();
+                }
             };
             capTrigger.whenActive(new CallFunctionCmd(this::autoTriggerCapture));
-         }
+        }
 
         logTimer = System.currentTimeMillis();
         armPosition = Robot.arm.getArmPosition();
@@ -173,17 +156,17 @@ public class CommandManager {
         xprojShaper = new ExpoShaper(0.5, Robot.m_oi::extensionInput); // joystick defined in m_oi.
         xprojStick = new LimitedIntegrator(Robot.dT, xprojShaper::get, // shaped joystick input
                 -25.0, // kGain, 20 in/sec on the joystick (neg. gain, forward stick is neg.)
-                -25.0, // xmin inches    true pos limit enforced by arm sub-sys
-                 25.0, // x_max inches
+                -25.0, // xmin inches true pos limit enforced by arm sub-sys
+                25.0, // x_max inches
                 -25.0, // dx_falling rate inch/sec
-                 25.0); // dx_raise rate inch/sec
+                25.0); // dx_raise rate inch/sec
         xprojStick.setDeadZone(0.5); // in/sec deadzone
 
         xprojRL = new RateLimiter(Robot.dT, this::get_gripperX_cmd, // inputFunc gripperX_cmd
                 this::measProjection, // phy position func
                 Robot.arm.getInversion() * Robot.arm.MIN_PROJECTION, // output min
                 Robot.arm.getInversion() * Robot.arm.MAX_PROJECTION, // output max
-                -50.0, // inches/sec // falling rate limit 
+                -50.0, // inches/sec // falling rate limit
                 50.0, // inches/sec //raising rate limit
                 InputModel.Position);
 
@@ -260,9 +243,6 @@ public class CommandManager {
             driveIdx = 0;
             nextCmd = driveGrp;
             break;
-        case Defense:
-            nextCmd = driveGrp;
-            break;
         // DeliveryModes
         case DeliverHatch: // based on what we captured
             delHeightIdx = 0; // start at lowest
@@ -309,6 +289,25 @@ public class CommandManager {
         return currentMode;
     }
 
+    public int getPositionIndex() {
+        switch (getCurMode()) {
+        case HuntingHatch:
+            return huntModeIdx;
+        case HuntingCargo:
+            return huntModeIdx;
+        case HuntingFloor:
+            return huntModeIdx;
+        case Drive:
+            return driveIdx;
+        case DeliverHatch:
+            return delHeightIdx;
+        case DeliverCargo:
+            return delHeightIdx;
+        default:
+            return 0;
+        }
+    }
+
     public boolean isHunting() {
         if ((currentMode.get() > Modes.HuntGameStart.get()) && (currentMode.get() < Modes.Capturing.get())) {
             return true;
@@ -334,21 +333,21 @@ public class CommandManager {
         return 0;
     }
 
-    /** 
-     * Similar to triggerCaptureRelease, but floor handled differently.
-     * When we get vacuum we goto drive mode.
-     * When on the floor we don't want to just jump to drive because the
-     * hatch may be in awkward spot.  Let the driver know by moving up a few inches.
+    /**
+     * Similar to triggerCaptureRelease, but floor handled differently. When we get
+     * vacuum we goto drive mode. When on the floor we don't want to just jump to
+     * drive because the hatch may be in awkward spot. Let the driver know by moving
+     * up a few inches.
      * 
-    */
+     */
     private int autoTriggerCapture() {
         if (currentMode == Modes.HuntingFloor) {
             // just move up if we are on the floor - user still needs to hit 'A'
             gripperH_cmd += kCapHeight;
         } else if (isHunting()) {
             prevHuntMode = currentMode;
-            setMode(Modes.Drive);              // got it, go to Drive 
-        }  
+            setMode(Modes.Drive); // got it, go to Drive
+        }
         // not hunting not sure HTH we got here - do nothing
         return 0;
     }
@@ -455,7 +454,7 @@ public class CommandManager {
             h = (prevHuntMode == Modes.HuntingCargo) ? DeliveryCargoHeights[delHeightIdx]
                     : DeliveryHatchHeights[delHeightIdx];
             cmdPosition(h, Robot.arm.getInversion() * deliveryProjection[delHeightIdx]);
-            xprojStick.setX(0.0);      //reset to baseline extension
+            xprojStick.setX(0.0); // reset to baseline extension
         } else if (isDriving()) {
             cmdPosition(DrivePositions[driveIdx][0], DrivePositions[driveIdx][1]);
             xprojStick.setX(0.0);
@@ -555,7 +554,7 @@ public class CommandManager {
         grp.addSequential(Robot.intake.zeroSubsystem());
         grp.addSequential(Robot.climber.zeroSubsystem());
         grp.addSequential(new CallFunctionCmd(this::initialize));
-        
+
         // commands to come
         /// grp.addParallel(Robot.cargoTrap.zeroSubsystem());
         return grp;
@@ -592,15 +591,16 @@ public class CommandManager {
     private CommandGroup CmdFactoryHuntGameStart() {
         CommandGroup grp = new CommandGroup("HuntGameStart");
         VacuumSensorSystem vs = Robot.intake.getVacuumSensor();
-        grp.addSequential(new VacuumCommand(true, 0.0));   // no timeout
+        grp.addSequential(new VacuumCommand(true, 0.0)); // no timeout
         grp.addParallel(new WristTrackAngle(WristTrackAngle.Angle.Starting_Hatch_Hunt.getAngle()));
         grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
-        grp.addSequential(new GripperPositionCommand(5.7, 11.5, 0.05, 0.5)); // Move arm up and back to avoid moving hatch
+        grp.addSequential(new GripperPositionCommand(5.7, 11.5, 0.05, 0.5)); // Move arm up and back to avoid moving
+                                                                             // hatch
         grp.addSequential(new GripperPositionCommand(5.7, 13.8, 0.05, 0.5)); // Move arm into hatch and intake
         grp.addSequential(new GripperPositionCommand(5.7, 14.5, 0.05, 1.0)); // Move arm into hatch and intake
-        grp.addSequential(new TriggerTimeoutCommand(vs::hasVacuum, 1.0));  //waits or sees vacuum and finsishes
+        grp.addSequential(new TriggerTimeoutCommand(vs::hasVacuum, 1.0)); // waits or sees vacuum and finsishes
         grp.addParallel(new WristTrackAngle(WristTrackAngle.Angle.Parallel.getAngle()));
-        grp.addSequential(new NextModeCmd(Modes.HuntingHatch));  // Capture the right previous state
+        grp.addSequential(new NextModeCmd(Modes.HuntingHatch)); // Capture the right previous state
         grp.addSequential(new NextModeCmd(Modes.Drive));
         grp.addSequential(new NextModeCmd(Modes.DeliverHatch));
         return grp;
@@ -631,12 +631,12 @@ public class CommandManager {
     }
 
     private CommandGroup CmdFactoryRelease() {
-        double vacTimeout = 0.20; //seconds
+        double vacTimeout = 0.20; // seconds
         CommandGroup grp = new CommandGroup("Release");
         // grp.AddSequential(new Extend_Drive_To_Deliver());
         CommandGroup subGrp = new CommandGroup("ReleaseSub");
-        subGrp.addParallel(new VacuumCommand(false, vacTimeout)); 
-        subGrp.addParallel(new RetractOnReleaseCommand(this, 10.0 /*inchs*/, 1.0));  
+        subGrp.addParallel(new VacuumCommand(false, vacTimeout));
+        subGrp.addParallel(new RetractOnReleaseCommand(this, 10.0 /* inchs */, 1.0));
         grp.addSequential(subGrp);
         grp.addSequential(new NextModeCmd(Modes.Drive)); // go back to driving configuration
         return grp;
@@ -674,7 +674,6 @@ public class CommandManager {
             setMode(mode2set);
         }
     }
-
 
     class FlipCmd extends InstantCommand {
         @Override

@@ -17,16 +17,21 @@ public class MoveAtHeightDefault extends Command {
     public final double kHeightMin = 2.0; // inches
     public final double kHeightMax = 96.0; // inches
 
-    final double DeliveryCargoHeights[] = { 26.875, 55.0, 84.0 }; // TODO: fix the numbers
-    final double DeliveryHatchHeights[] = { 27.5, 55.0, 82.0 };
-    final double deliveryProjection[] = { 25.0, 25.0, 25.0 }; // TODO: fix the numbers
+    // Positions in form (InversionState, Height, Position)
+    final double DeliveryCargoPositions[][][] = { { { 26.875, 25.0 }, { 55.0, 25.0 }, { 84.0, 25.0 } },
+            { { 26.875, -25.0 }, { 55.0, -25.0 }, { 84.0, -25.0 } } };
+    final double DeliveryHatchPositions[][][] = { { { 27.5, 25.0 }, { 55.0, 25.0 }, { 82.0, 25.0 } },
+            { { 27.5, -25.0 }, { 55.0, -25.0 }, { 82.0, -25.0 } } };
+    final double HuntPositions[][][] = { { { 5.0, 23.0 }, { 17.5, 23.5 }, { 24.0, 24.0 } },
+            { { 5.0, -23.0 }, { 17.5, -23.5 }, { 24.0, -24.0 } } }; // 0: Floor, 1: Cargo, 2: Hatch
+    public final double[][][] DrivePositions = { { { 49.5, 14.0 }, { 50, 12.0 } }, { { 49.5, -14.0 }, { 50, -12.0 } } };
+
+    private double stateH;
+    private double stateP;
 
     private RateLimiter heightLimiter;
     private RateLimiter projectionLimiter;
     private LimitedIntegrator projectionAdjustLimiter;
-
-    private double stateH;
-    private double stateX;
 
     public MoveAtHeightDefault() {
         requires(Robot.arm);
@@ -60,7 +65,10 @@ public class MoveAtHeightDefault extends Command {
 
     @Override
     protected void execute() {
+        // Update position based on current mode
         Modes curMode = Robot.m_cmdMgr.getCurMode();
+        int positionIndex = Robot.m_cmdMgr.getPositionIndex();
+        updatePosition(curMode, positionIndex);
 
         // Get input
         heightLimiter.execute();
@@ -99,6 +107,57 @@ public class MoveAtHeightDefault extends Command {
         return false;
     }
 
+    private void updatePosition(Modes curMode, int index) {
+        int invert = getInversionStatus() ? 1 : 0;
+        switch (curMode) {
+        case Construction:
+            break;
+        case SettingZeros:
+            break;
+        case HuntGameStart:
+            break;
+        case HuntingHatch:
+            stateH = HuntPositions[invert][2][0];
+            stateP = HuntPositions[invert][2][1];
+            break;
+        case HuntingCargo:
+            stateH = HuntPositions[invert][1][0];
+            stateP = HuntPositions[invert][1][1];
+            break;
+        case HuntingFloor:
+            stateH = HuntPositions[invert][0][0];
+            stateP = HuntPositions[invert][0][1];
+            break;
+        case Drive:
+            stateH = DrivePositions[invert][index][0];
+            stateP = DrivePositions[invert][index][1];
+            break;
+        case DeliverHatch:
+            stateH = DeliveryHatchPositions[invert][index][0];
+            stateP = DeliveryHatchPositions[invert][index][1];
+            break;
+        case DeliverCargo:
+            stateH = DeliveryCargoPositions[invert][index][0];
+            stateP = DeliveryCargoPositions[invert][index][1];
+            break;
+        case Flipping:
+            break;
+        case Releasing:
+            break;
+        default:
+            break;
+        }
+    }
+
+    /**
+     * Gets whether the arm is inverted
+     * 
+     * @return Inversion status
+     */
+    public boolean getInversionStatus() {
+        return arm.getRealAngle() < 0;
+    }
+
     private double getHeightCommanded() {
         double h_driverOffset = heightAdjustCap * Robot.m_oi.adjustHeight(); // driver contrib from triggers
         double h = stateH - h_driverOffset; // state machine + driver so both are rate filtered
@@ -107,7 +166,7 @@ public class MoveAtHeightDefault extends Command {
 
     private double getProjectionCommanded() {
         double x_driverOffset = projectionAdjustLimiter.get(); // co-driver's offset.
-        double x = stateX + x_driverOffset;
+        double x = stateP + x_driverOffset;
         return x;
     }
 
@@ -115,11 +174,13 @@ public class MoveAtHeightDefault extends Command {
         heightLimiter.setConstraints(minHeight, maxHeight, fallSpeed, raiseSpeed);
     }
 
-    public void setProjectionLimiter(double minProjection, double maxProjection, double retractSpeed, double extendSpeed) {
+    public void setProjectionLimiter(double minProjection, double maxProjection, double retractSpeed,
+            double extendSpeed) {
         projectionLimiter.setConstraints(minProjection, maxProjection, retractSpeed, extendSpeed);
     }
 
-    public void setDriverAdjustLimiter(double inputGain, double minExtension, double maxExtension, double retractSpeed, double extendSpeed) {
+    public void setDriverAdjustLimiter(double inputGain, double minExtension, double maxExtension, double retractSpeed,
+            double extendSpeed) {
         projectionAdjustLimiter.setConstraints(inputGain, minExtension, maxExtension, retractSpeed, extendSpeed);
     }
 }
