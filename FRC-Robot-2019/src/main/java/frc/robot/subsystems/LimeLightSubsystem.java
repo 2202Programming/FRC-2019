@@ -138,9 +138,9 @@ public class LimeLightSubsystem extends Subsystem {
             return average; 
         }
         else return 0;
-
         
     }
+    
 
     public double getY() {
          return y;

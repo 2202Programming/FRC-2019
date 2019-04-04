@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.commands.util.ExpoShaper;
-import frc.robot.input.LimeLightXValueInput;
+import frc.robot.input.LimeLightXFilteredInput;
 import frc.robot.output.FakePIDOutput;
 import frc.robot.subsystems.DriveTrainSubsystem;
 
@@ -26,7 +26,7 @@ public class LimeLightArcadeDriveCommand extends Command {
     // Use requires() here to declare subsystem dependencies
     requires(Robot.driveTrain);
     driveTrain = Robot.driveTrain;
-    controller = new PIDController(P, I, D, new LimeLightXValueInput(), new FakePIDOutput());
+    controller = new PIDController(P, I, D, new LimeLightXFilteredInput(), new FakePIDOutput());
     speedShaper = new ExpoShaper(0.6);        //0 no change,  1.0 max flatness
     this.maxSpeed = maxSpeed;
   }
