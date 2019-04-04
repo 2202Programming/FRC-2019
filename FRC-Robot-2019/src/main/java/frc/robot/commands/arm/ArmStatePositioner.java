@@ -10,7 +10,7 @@ import frc.robot.subsystems.ArmSubsystem;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
-public class MoveAtHeightDefault extends Command {
+public class ArmStatePositioner extends Command {
     private ArmSubsystem arm;
     // Height of point of rotation for the arm in inches
     public final double heightAdjustCap = 4.0; // inch/joy units TODO: put in better place
@@ -33,7 +33,7 @@ public class MoveAtHeightDefault extends Command {
     private RateLimiter projectionLimiter;
     private LimitedIntegrator projectionAdjustLimiter;
 
-    public MoveAtHeightDefault() {
+    public ArmStatePositioner() {
         requires(Robot.arm);
         arm = Robot.arm;
 
