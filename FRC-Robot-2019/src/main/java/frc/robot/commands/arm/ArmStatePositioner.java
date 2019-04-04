@@ -85,14 +85,14 @@ public class ArmStatePositioner extends Command {
 
         // Calculate the angle
         double calculatedAngle = 0.0;
-        if (Math.abs(x_cmd) <= 1e-6) {
+        if (Math.abs(x_cmd) >= 1e-6) {
             calculatedAngle = 90 - Math.toDegrees(Math.atan(heightAbovePivot / x_cmd));
         }
         double curAngle = MathUtil.limit(calculatedAngle, arm.PHI_MIN, arm.PHI_MAX);
 
         // Calculate extension based on current angle
         double calculatedExtension = heightAbovePivot;
-        if (Math.abs(arm.getRealAngle()) <= 1e-6) {
+        if (Math.abs(arm.getRealAngle()) >= 1e-6) {
             calculatedExtension = (x_cmd / Math.sin(arm.getRealAngle())) - arm.ARM_BASE_LENGTH - arm.WRIST_LENGTH;
         }
         // Limiting here is technically unnecessary because limiting is also done in
