@@ -55,7 +55,7 @@ public class RetractOnReleaseCommand extends Command {
   protected void end() {
     // we are done, we timed out or we got the vacuum release signal,  move us back.
     double x = init_x;
-    x -= Robot.arm.getInversionConstant()*x_retract;   //move back a bit, account for side.
+    x -= x_retract;   //move back a bit, account for side.
     armPositioner.setPosition(init_h, x);
   }
 

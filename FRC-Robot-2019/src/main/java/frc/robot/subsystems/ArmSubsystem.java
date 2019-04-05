@@ -90,7 +90,6 @@ public class ArmSubsystem extends ExtendedSubSystem {
   // outputs in robot coordinates h,ext (inches)
   Position position = new Position();
 
-  private short inversionConstant;
   private boolean minExtensionOverrided;
   private boolean maxExtensionOverrided;
 
@@ -129,7 +128,6 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
     zeroArm(); // will also get called on transition to teleOp, should arms be moved
 
-    inversionConstant = 1;
     minExtensionOverrided = false;
     maxExtensionOverrided = false;
   }
@@ -182,12 +180,6 @@ public class ArmSubsystem extends ExtendedSubSystem {
     double counts = armRotationMotor.getSelectedSensorPosition();
     double angle = PHI0 - counts * kDeg_per_count;
     return angle;
-  }
-
-  public double getAbsoluteAngle() {
-    double counts = armRotationMotor.getSelectedSensorPosition();
-    double angle = PHI0 - counts * kDeg_per_count;
-    return inversionConstant * angle;
   }
 
   /**
@@ -319,7 +311,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * horizontal zero
    */
   public Position getArmPosition() {
-    double phi = getAbsoluteAngle();
+    double phi = getRealAngle();
     double rads = Math.toRadians(phi);
     double ext = getExtension(); // includes angle compensation
     double desired_l = ARM_BASE_LENGTH + WRIST_LENGTH + ext;
@@ -364,15 +356,6 @@ public class ArmSubsystem extends ExtendedSubSystem {
   @Override
   public Command zeroSubsystem() {
     return new ArmZero();
-  }
-
-  public int invert() {
-    inversionConstant *= -1;
-    return inversionConstant;
-  }
-
-  public short getInversionConstant() {
-    return inversionConstant;
   }
 
   public void log(int interval) {

@@ -21,7 +21,7 @@ public class ClimbGroup extends CommandGroup {
         CommandGroup armGrp = new CommandGroup();
         //move the arm to the back side
         armGrp.addSequential(new GripperPositionCommand(64.0, 1.0, 0.05, longTO)); 
-        armGrp.addSequential(new CallFunctionCommand(Robot.arm::invert));
+        //TODO: do this flip with new style
         armGrp.addSequential(new GripperPositionCommand(64.0, 5.0, 0.05, longTO));
         armGrp.addSequential(new GripperPositionCommand(25.0, 40.0, 0.05, longTO));
 
