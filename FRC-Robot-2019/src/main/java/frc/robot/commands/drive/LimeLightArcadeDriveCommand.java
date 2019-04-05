@@ -15,7 +15,7 @@ import frc.robot.subsystems.DriveTrainSubsystem;
  */
 public class LimeLightArcadeDriveCommand extends Command {
   private DriveTrainSubsystem driveTrain;
-  private final double P = 0.11;
+  private final double P = 0.055;
   private final double I = 0.0;
   private final double D = 0.0;
   private PIDController controller;
@@ -27,7 +27,7 @@ public class LimeLightArcadeDriveCommand extends Command {
     requires(Robot.driveTrain);
     driveTrain = Robot.driveTrain;
     controller = new PIDController(P, I, D, new LimeLightXFilteredInput(), new FakePIDOutput());
-    speedShaper = new ExpoShaper(0.6);        //0 no change,  1.0 max flatness
+    speedShaper = new ExpoShaper(0.6); // 0 no change, 1.0 max flatness
     this.maxSpeed = maxSpeed;
   }
 
@@ -50,9 +50,15 @@ public class LimeLightArcadeDriveCommand extends Command {
   // Temporary until we get the XboxController wrapper for joystick
   @Override
   protected void execute() {
-    //We invert the PID controller value so the feedback loop is negative and not positive
+    // We invert the PID controller value so the feedback loop is negative and not
+    // positive
     double speed = maxSpeed * speedShaper.expo(Robot.m_oi.getDriverController().getY(Hand.kLeft));
     double rotation = -controller.get();
+
+    if (Math.abs(rotation) <= 0.12) {
+      rotation = Math.signum(rotation) * 0.12;
+    }
+
     Robot.driveTrain.ArcadeDrive(speed, rotation, true);
     SmartDashboard.putData(controller);
   }
