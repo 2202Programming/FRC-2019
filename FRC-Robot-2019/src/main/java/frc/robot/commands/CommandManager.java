@@ -15,7 +15,6 @@ import frc.robot.commands.intake.VacuumCommand;
 import frc.robot.commands.intake.WristTrackAngle;
 import frc.robot.commands.util.MathUtil;
 import frc.robot.commands.util.TriggerTimeoutCommand;
-import frc.robot.subsystems.ArmSubsystem.Position;
 import frc.robot.subsystems.VacuumSensorSystem;
 
 /**
