@@ -90,8 +90,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   // outputs in robot coordinates h,ext (inches)
   Position position = new Position();
 
-  private boolean minExtensionOverrided;
-  private boolean maxExtensionOverrided;
+  private boolean extensionOverrided;
 
   /**
    * Creates a new arm/lift subsystem.
@@ -128,8 +127,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
     zeroArm(); // will also get called on transition to teleOp, should arms be moved
 
-    minExtensionOverrided = false;
-    maxExtensionOverrided = false;
+    extensionOverrided = false;
   }
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
@@ -200,7 +198,10 @@ public class ArmSubsystem extends ExtendedSubSystem {
     // Limit Extension
     double min_l_at_phi = getMinExtension(angle);
     double max_l_at_phi = getMaxExtension(angle);
-    desired_L = MathUtil.limit(desired_L, min_l_at_phi, max_l_at_phi);
+    double limited_L = MathUtil.limit(desired_L, min_l_at_phi, max_l_at_phi);
+
+    // Set extensionOverrided boolean
+    extensionOverrided = limited_L == desired_L;
 
     // Print Warning
     if (desired_L < min_l_at_phi) {
@@ -208,12 +209,13 @@ public class ArmSubsystem extends ExtendedSubSystem {
     } else if (desired_L > max_l_at_phi) {
       System.out.println("Desired Arm:Extension above maximum of " + max_l_at_phi + " inches.");
     }
+    
 
-    SmartDashboard.putNumber("Extension Calculated", desired_L);
+    SmartDashboard.putNumber("Extension Calculated", limited_L);
 
     // Adjust length to match L0 and account for compLen
     double compLen = ((angle - PHI0) * k_dl_dphi); // ext due to rotation to compensate for
-    double cmd_L = desired_L - L0 - compLen;
+    double cmd_L = limited_L - L0 - compLen;
     SmartDashboard.putNumber("Extension Compensation", compLen);
     SmartDashboard.putNumber("Extension Set", cmd_L);
 
@@ -230,10 +232,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
    */
   public double getMinExtension(double angle) {
     if (-35.0 < angle && angle < 30.5) {
-      minExtensionOverrided = true;
       return STARTING_EXTENSION;
     }
-    minExtensionOverrided = false;
     return EXTEND_MIN;
   }
 
@@ -254,10 +254,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
     double absAngle = Math.abs(angle);
     if (absAngle < PhiCrit) {
-      maxExtensionOverrided = true;
       return EXTEND_MAX;
     }
-    maxExtensionOverrided = false;
     return (MAX_PROJECTION / Math.sin(Math.toRadians(absAngle))) - ARM_BASE_LENGTH - WRIST_LENGTH;
   }
 
@@ -341,7 +339,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   }
 
   public boolean isExtensionOverrided() {
-    return minExtensionOverrided || maxExtensionOverrided;
+    return extensionOverrided;
   }
   @Override
   public void initDefaultCommand() {
