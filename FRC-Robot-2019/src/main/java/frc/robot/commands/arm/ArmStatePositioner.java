@@ -121,7 +121,7 @@ public class ArmStatePositioner extends Command {
     }
 
     private void updatePosition(Modes curMode, int index) {
-        int invert = getInversionStatus() ? 1 : 0;
+        int invert = arm.getInversionStatus() ? 1 : 0;
         switch (curMode) {
         case Construction:
             break;
@@ -161,15 +161,6 @@ public class ArmStatePositioner extends Command {
             break;
         }
         prevMode = curMode;
-    }
-
-    /**
-     * Gets whether the arm is inverted
-     * 
-     * @return Inversion status
-     */
-    public boolean getInversionStatus() {
-        return arm.getRealAngle() < 0;
     }
 
     public double getStateHeight() {

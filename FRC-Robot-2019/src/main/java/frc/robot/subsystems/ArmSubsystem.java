@@ -330,6 +330,15 @@ public class ArmSubsystem extends ExtendedSubSystem {
     return (ArmStatePositioner) getDefaultCommand();
   }
 
+  /**
+     * Gets whether the arm is inverted
+     * 
+     * @return Inversion status
+     */
+    public boolean getInversionStatus() {
+      return getRealAngle() < 0;
+  }
+
   @Override
   public void initDefaultCommand() {
     setDefaultCommand(new ArmStatePositioner());

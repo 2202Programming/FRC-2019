@@ -10,7 +10,6 @@ import frc.robot.subsystems.DriveTrainSubsystem;
  */
 public class ThrottleCommand extends Command {
   private final double CYCLE_TIME_IN_SECONDS = 0.020;
-  private DriveTrainSubsystem driveTrain;
   private int cycleCount;
   private int maxCycles;
   private double stepValue;
@@ -23,7 +22,6 @@ public class ThrottleCommand extends Command {
   public ThrottleCommand(double rampTime, double startValue, double endValue) {
     // Use requires() here to declare subsystem dependencies
     requires(Robot.driveTrain);
-    driveTrain = Robot.driveTrain;
     maxCycles = (int) Math.ceil(rampTime / CYCLE_TIME_IN_SECONDS);
     this.startValue = startValue;
     stepValue = (endValue - startValue) / maxCycles;
