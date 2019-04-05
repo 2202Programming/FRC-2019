@@ -28,6 +28,7 @@ public class ArmStatePositioner extends Command {
 
     private double stateH;
     private double stateP;
+    private Modes prevMode;
 
     private RateLimiter heightLimiter;
     private RateLimiter projectionLimiter;
@@ -77,7 +78,10 @@ public class ArmStatePositioner extends Command {
         // Update position based on current mode
         Modes curMode = Robot.m_cmdMgr.getCurMode();
         int positionIndex = Robot.m_cmdMgr.getPositionIndex();
-        updatePosition(curMode, positionIndex);
+        if(curMode != prevMode) {
+            // Update position only if state changes to allow something to override position for that state
+            updatePosition(curMode, positionIndex);
+        }
 
         // Get input
         heightLimiter.execute();
@@ -156,6 +160,7 @@ public class ArmStatePositioner extends Command {
         default:
             break;
         }
+        prevMode = curMode;
     }
 
     /**
@@ -185,6 +190,11 @@ public class ArmStatePositioner extends Command {
         double x_driverOffset = projectionAdjustLimiter.get(); // co-driver's offset.
         double x = stateP + x_driverOffset;
         return x;
+    }
+
+    public void setPosition(double height, double projection) {
+        stateH = height;
+        stateP = projection;
     }
 
     public void setHeightLimiter(double minHeight, double maxHeight, double fallSpeed, double raiseSpeed) {

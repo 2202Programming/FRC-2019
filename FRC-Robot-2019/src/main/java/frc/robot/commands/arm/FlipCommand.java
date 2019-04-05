@@ -52,9 +52,6 @@ public class FlipCommand extends Command {
 
     @Override
     protected void end() {
-        //tell the cmdmgr where we ended up, in case we need XY control after flip.
-        ArmSubsystem.Position armPos = Robot.arm.getArmPosition();
-        Robot.m_cmdMgr.cmdPosition(armPos.height, armPos.projection);
     }
 
 }

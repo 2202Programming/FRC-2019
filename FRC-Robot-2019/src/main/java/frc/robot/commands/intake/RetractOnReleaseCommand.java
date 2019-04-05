@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.commands.CommandManager;
+import frc.robot.commands.arm.ArmStatePositioner;
+import frc.robot.subsystems.ArmSubsystem;
 
 public class RetractOnReleaseCommand extends Command {
   BooleanSupplier releaseCheckFunc;
@@ -13,6 +15,7 @@ public class RetractOnReleaseCommand extends Command {
   CommandManager cmdMgr;
   double init_x;
   double init_h;
+  private ArmStatePositioner armPositioner;
 
   public RetractOnReleaseCommand(CommandManager cmdMgr, double x_retract, double timeout) {
     //could require(vacSensor0)
@@ -25,9 +28,11 @@ public class RetractOnReleaseCommand extends Command {
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    // Assume that the ArmStatePositioner is the only type of default command used
+    armPositioner = (ArmStatePositioner) (Robot.arm.getDefaultCommand());
     //save were we are so we can tweek it on finish
-    init_x = cmdMgr.gripperXProjectionOut();
-    init_h = cmdMgr.gripperHeightOut();
+    init_x = armPositioner.getProjectionCommanded();
+    init_h = armPositioner.getHeightCommanded();
     setTimeout(timeout);
   }
 
@@ -51,7 +56,7 @@ public class RetractOnReleaseCommand extends Command {
     // we are done, we timed out or we got the vacuum release signal,  move us back.
     double x = init_x;
     x -= Robot.arm.getInversion()*x_retract;   //move back a bit, account for side.
-    cmdMgr.cmdPosition(init_h, x);
+    armPositioner.setPosition(init_h, x);
   }
 
   // Called when another command which requires one or more of the same
