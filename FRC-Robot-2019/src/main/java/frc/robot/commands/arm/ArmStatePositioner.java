@@ -15,16 +15,16 @@ public class ArmStatePositioner extends Command {
     // Height of point of rotation for the arm in inches
     public final double heightAdjustCap = 4.0; // inch/joy units TODO: put in better place
     public final double kHeightMin = 2.0; // inches
-    public final double kHeightMax = 96.0; // inches
+    public final double kHeightMax = 96.0; // TODO: Find real max
 
     // Positions in form (InversionState, Height, Position)
-    final double DeliveryCargoPositions[][][] = { { { 26.875, 25.0 }, { 55.0, 25.0 }, { 84.0, 25.0 } },
+    public static final double DeliveryCargoPositions[][][] = { { { 26.875, 25.0 }, { 55.0, 25.0 }, { 84.0, 25.0 } },
             { { 26.875, -25.0 }, { 55.0, -25.0 }, { 84.0, -25.0 } } };
-    final double DeliveryHatchPositions[][][] = { { { 27.5, 25.0 }, { 55.0, 25.0 }, { 82.0, 25.0 } },
+    public static final double DeliveryHatchPositions[][][] = { { { 27.5, 25.0 }, { 55.0, 25.0 }, { 82.0, 25.0 } },
             { { 27.5, -25.0 }, { 55.0, -25.0 }, { 82.0, -25.0 } } };
-    final double HuntPositions[][][] = { { { 5.0, 23.0 }, { 17.5, 23.5 }, { 24.0, 24.0 } },
+    public static final double HuntPositions[][][] = { { { 5.0, 23.0 }, { 17.5, 23.5 }, { 24.0, 24.0 } },
             { { 5.0, -23.0 }, { 17.5, -23.5 }, { 24.0, -24.0 } } }; // 0: Floor, 1: Cargo, 2: Hatch
-    public final double[][][] DrivePositions = { { { 49.5, 14.0 }, { 50, 12.0 } }, { { 49.5, -14.0 }, { 50, -12.0 } } };
+    public static final double[][][] DrivePositions = { { { 49.5, 14.0 }, { 50, 12.0 } }, { { 49.5, -14.0 }, { 50, -12.0 } } };
 
     private double stateH;
     private double stateP;
@@ -61,6 +61,15 @@ public class ArmStatePositioner extends Command {
                 -80.0, // inches/sec // falling rate limit
                 80.0, // inches/sec //raising rate limit
                 InputModel.Position);
+    }
+
+    @Override
+    protected void initialize() {
+        heightLimiter.initialize();
+        projectionLimiter.initialize();
+        projectionAdjustLimiter.initialize();
+        stateH = arm.getHeight();
+        stateP = arm.getProjection();
     }
 
     @Override
@@ -158,13 +167,21 @@ public class ArmStatePositioner extends Command {
         return arm.getRealAngle() < 0;
     }
 
-    private double getHeightCommanded() {
+    public double getStateHeight() {
+        return stateH;
+    }
+
+    public double getStateProjection() {
+        return stateP;
+    }
+ 
+    public double getHeightCommanded() {
         double h_driverOffset = heightAdjustCap * Robot.m_oi.adjustHeight(); // driver contrib from triggers
         double h = stateH - h_driverOffset; // state machine + driver so both are rate filtered
         return h;
     }
 
-    private double getProjectionCommanded() {
+    public double getProjectionCommanded() {
         double x_driverOffset = projectionAdjustLimiter.get(); // co-driver's offset.
         double x = stateP + x_driverOffset;
         return x;

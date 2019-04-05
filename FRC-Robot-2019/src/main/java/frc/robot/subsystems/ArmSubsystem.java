@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
+import frc.robot.commands.arm.ArmStatePositioner;
 import frc.robot.commands.arm.ArmZero;
 import frc.robot.commands.util.MathUtil;
 import frc.robot.commands.util.RateLimiter;
@@ -327,7 +328,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
   @Override
   public void initDefaultCommand() {
-    // no default commands, CommandManager will switch out the command groups
+    setDefaultCommand(new ArmStatePositioner());
   }
 
   /**

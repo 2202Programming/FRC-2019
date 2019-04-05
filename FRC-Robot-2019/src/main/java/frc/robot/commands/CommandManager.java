@@ -8,16 +8,12 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
+import frc.robot.commands.arm.ArmStatePositioner;
 import frc.robot.commands.arm.FlipCommand;
-import frc.robot.commands.arm.MoveArmAtHeight;
 import frc.robot.commands.intake.RetractOnReleaseCommand;
 import frc.robot.commands.intake.VacuumCommand;
 import frc.robot.commands.intake.WristTrackAngle;
-import frc.robot.commands.util.ExpoShaper;
-import frc.robot.commands.util.LimitedIntegrator;
 import frc.robot.commands.util.MathUtil;
-import frc.robot.commands.util.RateLimiter;
-import frc.robot.commands.util.RateLimiter.InputModel;
 import frc.robot.commands.util.TriggerTimeoutCommand;
 import frc.robot.subsystems.ArmSubsystem.Position;
 import frc.robot.subsystems.VacuumSensorSystem;
@@ -31,20 +27,29 @@ public class CommandManager {
     public final double kCapHeight = 4.0; // inch/joy units TODO: put in better place
     public final double kHeightMin = 2.0; // inches
     public final double kHeightMax = 96.0; // inches
-
+    
     int logCnt = 0;
     private long logTimer;
-
+    
     // Button Commands
     Command huntSelectCmd;
     Command heightSelectCmd;
     Command captRelCmd;
     Command flipCmd;
-
-    // takes a stick input and uses as a rate command.
-    ExpoShaper xprojShaper;
-    LimitedIntegrator xprojStick;
-
+    
+    // Command Sets - one created for each major operation of the robot.
+    CommandGroup zeroRobotGrp;
+    CommandGroup huntGameStartGrp;
+    CommandGroup huntingHatchGrp;
+    CommandGroup huntingCargoGrp;
+    CommandGroup huntingHFloorGrp;
+    CommandGroup captureGrp;
+    CommandGroup deliveryGrp;
+    CommandGroup releaseGrp;
+    CommandGroup flipGrp;
+    CommandGroup driveGrp;
+    CommandGroup currentGrp; // what is running
+    
     // Modes of behavior
     public enum Modes {
         Construction(0), // system still coming up... not operational
@@ -78,54 +83,17 @@ public class CommandManager {
         }
     }
 
-    // Command Sets - one created for each major operation of the robot.
-    CommandGroup zeroRobotGrp;
-    CommandGroup huntGameStartGrp;
-    CommandGroup huntingHatchGrp;
-    CommandGroup huntingCargoGrp;
-    CommandGroup huntingHFloorGrp;
-    CommandGroup captureGrp;
-    CommandGroup deliveryGrp;
-    CommandGroup releaseGrp;
-    CommandGroup flipGrp;
-
-    CommandGroup driveGrp;
-
     // Target States - think of this as desired command vector
     Modes currentMode; // what we think are doing now
     Modes prevHuntMode = Modes.HuntingHatch; // what we caught, used to tell if hatch or cargo
     Modes prevMode;
 
-    CommandGroup currentGrp; // what is running
-
-    // gripper commanded postion - main output of the controls
-    // RateLimiter rp_h;
-    RateLimiter xprojRL; // rate limited Xprojection output (inches)
-    RateLimiter heightRL; // rate limited height output (inches)
-    // step command values used as inputs to RateLimiters, inches these get smoothed
-    double gripperX_cmd = 0.0; // (inches) Projection of arm/extender/wrist/cup
-    double gripperH_cmd = 0.0; // (inches) composite of arm/extender/wrist/cup
-    double wristAngle = 0.0;
-
     // internal states
-    int delHeightIdx = 0; // used in Delivery<Cargo/Hatch>Heights[]
-
-    // Data points - shares delheightidx, must be same length
-    final double DeliveryCargoHeights[] = { 25.0, 55.0, 84.0 }; // TODO: fix the numbers
-    final double DeliveryHatchHeights[] = { 25.5, 55.0, 82.0 };
-    final double deliveryProjection[] = { 25.0, 25.0, 25.0 }; // TODO: fix the numbers
-
-    final Modes huntingModes[] = { Modes.HuntingFloor, Modes.HuntingCargo, Modes.HuntingHatch };
-    final double HuntHeights[] = { 5.0, 17.5, 24.0 }; // height from floor, H,C,Floor TODO:fix numbers
-    final double huntProjection[] = { 23.0, 23.5, 24.0 }; // TODO: fix the numbers
-    int huntModeIdx = 2; // hatch
-
+    private final Modes huntingModes[] = { Modes.HuntingFloor, Modes.HuntingCargo, Modes.HuntingHatch };
+    private int huntModeIdx = 2; // hatch
+    private int delHeightIdx = 0; // used in Delivery<Cargo/Hatch>Heights[]
     private int driveIdx = 1;
-    // Declare Drive Positions: First element is Height, second is projection
-    public final double[][] DrivePositions = { { 49.5, 14 }, { 50, 12 } }; // TODO: Find real values
-
-    // Phyical values from sub-systems as needed
-    Position armPosition;
+    private double wristAngle = 0.0;
 
     public CommandManager() {
         currentMode = Modes.Construction;
@@ -151,32 +119,6 @@ public class CommandManager {
         }
 
         logTimer = System.currentTimeMillis();
-        armPosition = Robot.arm.getArmPosition();
-
-        xprojShaper = new ExpoShaper(0.5, Robot.m_oi::extensionInput); // joystick defined in m_oi.
-        xprojStick = new LimitedIntegrator(Robot.dT, xprojShaper::get, // shaped joystick input
-                -25.0, // kGain, 20 in/sec on the joystick (neg. gain, forward stick is neg.)
-                -25.0, // xmin inches true pos limit enforced by arm sub-sys
-                25.0, // x_max inches
-                -25.0, // dx_falling rate inch/sec
-                25.0); // dx_raise rate inch/sec
-        xprojStick.setDeadZone(0.5); // in/sec deadzone
-
-        xprojRL = new RateLimiter(Robot.dT, this::get_gripperX_cmd, // inputFunc gripperX_cmd
-                this::measProjection, // phy position func
-                Robot.arm.getInversion() * Robot.arm.MIN_PROJECTION, // output min
-                Robot.arm.getInversion() * Robot.arm.MAX_PROJECTION, // output max
-                -50.0, // inches/sec // falling rate limit
-                50.0, // inches/sec //raising rate limit
-                InputModel.Position);
-
-        heightRL = new RateLimiter(Robot.dT, this::get_gripperH_cmd, // gripperH_cmd var as set by this module
-                this::measHeight, // phy position func
-                kHeightMin, // output min
-                kHeightMax, // output max
-                -80.0, // inches/sec // falling rate limit
-                80.0, // inches/sec //raising rate limit
-                InputModel.Position);
 
         // Construct our major modes from their command factories
         zeroRobotGrp = CmdFactoryZeroRobot();
@@ -271,7 +213,6 @@ public class CommandManager {
         prevMode = currentMode;
         currentMode = mode;
         // calculate the height and extension, set gripperH_cmd, and gripperE_cmd
-        setGripperPosition();
         installGroup(nextCmd);
     }
 
@@ -341,10 +282,7 @@ public class CommandManager {
      * 
      */
     private int autoTriggerCapture() {
-        if (currentMode == Modes.HuntingFloor) {
-            // just move up if we are on the floor - user still needs to hit 'A'
-            gripperH_cmd += kCapHeight;
-        } else if (isHunting()) {
+        if (isHunting()) {
             prevHuntMode = currentMode;
             setMode(Modes.Drive); // got it, go to Drive
         }
@@ -387,13 +325,11 @@ public class CommandManager {
         } else if (isDelivering()) {
             int idx = delHeightIdx + direction; // next height
             // make sure index fits in array
-            delHeightIdx = MathUtil.limit(idx, 0, DeliveryCargoHeights.length - 1);
-            setGripperPosition();
+            delHeightIdx = MathUtil.limit(idx, 0, ArmStatePositioner.DeliveryCargoPositions[0].length - 1);
             return delHeightIdx;
         } else if (isDriving()) {
             int idx = driveIdx + direction; // next height
-            driveIdx = MathUtil.limit(idx, 0, DrivePositions.length - 1); // make sure index fits in array
-            setGripperPosition();
+            driveIdx = MathUtil.limit(idx, 0, ArmStatePositioner.DrivePositions[0].length - 1); // make sure index fits in array
 
             return driveIdx;
         }
@@ -436,54 +372,10 @@ public class CommandManager {
         return wristAngle;
     }
 
-    /**
-     * setGripperPositon()
-     * 
-     * Called on mode change to set arm location. Sets the commanded height and
-     * projection for the gripper when the mode changes. H, Proj are rate limited.
-     * 
-     */
-    void setGripperPosition() {
-        double h;
-        if (isHunting()) {
-            // Hunting, use the HuntHeights table and that height index
-            cmdPosition(HuntHeights[huntModeIdx], Robot.arm.getInversion() * huntProjection[huntModeIdx]);
-            xprojStick.setX(0.0);
-        } else if (isDelivering()) {
-            // Delivering
-            h = (prevHuntMode == Modes.HuntingCargo) ? DeliveryCargoHeights[delHeightIdx]
-                    : DeliveryHatchHeights[delHeightIdx];
-            cmdPosition(h, Robot.arm.getInversion() * deliveryProjection[delHeightIdx]);
-            xprojStick.setX(0.0); // reset to baseline extension
-        } else if (isDriving()) {
-            cmdPosition(DrivePositions[driveIdx][0], DrivePositions[driveIdx][1]);
-            xprojStick.setX(0.0);
-        }
-        // Other mode changes just stay where we are at
-    }
-
-    /**************************************************************************************************************/
-    /**
-     * Expose desired gripper height & extension with double supplier functions
-     */
-    public double gripperHeightOut() {
-        return heightRL.get();
-    }
-
-    public double gripperXProjectionOut() {
-        double xproj = xprojRL.get();
-        return xproj;
-    }
-
     /************************************************************************************************************/
 
     // called every frame, reads inputs, does rate limiting
     public void execute() {
-        armPosition = Robot.arm.getArmPosition();
-        xprojStick.execute(); // reads joystick, sets co-driver xprojection offset
-        // read inputs, apply rate limits to commands
-        xprojRL.execute();
-        heightRL.execute();
     }
 
     /**
@@ -493,55 +385,7 @@ public class CommandManager {
      * Return only needed because it's invokeds as a FunctionCommand
      */
     int initialize() {
-        armPosition = Robot.arm.getArmPosition(); // update position
-        cmdPosition(armPosition.height, armPosition.projection);
-        xprojStick.initialize();
-        xprojRL.initialize();
-        heightRL.initialize();
         return 0;
-    }
-
-    /**
-     * cmdPosition(h,x) - allow external systems to command the arm H and projection
-     * x.
-     * 
-     * @param h
-     * @param x
-     */
-    public void cmdPosition(double h, double x) {
-        gripperH_cmd = h;
-        gripperX_cmd = x;
-    }
-
-    /**
-     * 
-     * get_gripper[HX]_cmd() - these functions return our commanded height and x
-     * projection we want from the arm.
-     * 
-     * The values are largely determined by the state machine, but also from some
-     * driver inputs from the triggers or joystick.
-     * 
-     */
-    private double get_gripperH_cmd() {
-        double h_driverOffset = kCapHeight * Robot.m_oi.adjustHeight(); // driver contrib from triggers
-        double h = gripperH_cmd - h_driverOffset; // state machine + driver so both are rate filtered
-        return h;
-    }
-
-    private double get_gripperX_cmd() {
-        double x_driverOffset = xprojStick.get(); // co-driver's offset.
-        double x = gripperX_cmd + x_driverOffset;
-        return x;
-    }
-
-    /****************************************************************************************/
-    // physical postions at this point in time as measured this frame
-    double measProjection() {
-        return armPosition.projection;
-    }
-
-    double measHeight() {
-        return armPosition.height;
     }
 
     /****************************************************************************************/
@@ -563,7 +407,6 @@ public class CommandManager {
     private CommandGroup CmdFactoryHuntHatch() {
         CommandGroup grp = new CommandGroup("HuntHatch");
         grp.addSequential(new VacuumCommand(true, 0.0));
-        grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
         grp.addParallel(new WristTrackAngle(WristTrackAngle.Angle.Parallel.getAngle()));
         return grp;
     }
@@ -571,7 +414,6 @@ public class CommandManager {
     private CommandGroup CmdFactoryHuntCargo() {
         CommandGroup grp = new CommandGroup("HuntCargo");
         grp.addSequential(new VacuumCommand(true, 0.0));
-        grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
         grp.addParallel(new WristTrackAngle(WristTrackAngle.Angle.Perpendicular_Down.getAngle()));
         return grp;
     }
@@ -579,7 +421,6 @@ public class CommandManager {
     private CommandGroup CmdFactoryHuntHatchFloor() {
         CommandGroup grp = new CommandGroup("HuntHatchFloor");
         grp.addSequential(new VacuumCommand(true, 0.0));
-        grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
         grp.addParallel(new WristTrackAngle(WristTrackAngle.Angle.Perpendicular_Down.getAngle()));
         return grp;
     }
@@ -593,7 +434,6 @@ public class CommandManager {
         VacuumSensorSystem vs = Robot.intake.getVacuumSensor();
         grp.addSequential(new VacuumCommand(true, 0.0)); // no timeout
         grp.addParallel(new WristTrackAngle(WristTrackAngle.Angle.Starting_Hatch_Hunt.getAngle()));
-        grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
         grp.addSequential(new GripperPositionCommand(5.7, 11.5, 0.05, 0.5)); // Move arm up and back to avoid moving
                                                                              // hatch
         grp.addSequential(new GripperPositionCommand(5.7, 13.8, 0.05, 0.5)); // Move arm into hatch and intake
@@ -617,7 +457,6 @@ public class CommandManager {
 
     private CommandGroup CmdFactoryDrive() {
         CommandGroup grp = new CommandGroup("Drive");
-        grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
         grp.addParallel(new WristTrackAngle(WristTrackAngle.Angle.Parallel.getAngle()));
         grp.addParallel(new WristTrackAngle(WristTrackAngle.Angle.Parallel.getAngle()));
         return grp;
@@ -625,7 +464,6 @@ public class CommandManager {
 
     private CommandGroup CmdFactoryDelivery() {
         CommandGroup grp = new CommandGroup("Deliver");
-        grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
         grp.addParallel(new WristTrackAngle(this::customWristAngle));
         return grp;
     }
@@ -707,10 +545,6 @@ public class CommandManager {
         if ((logTimer + interval) < System.currentTimeMillis()) { // only post to smartdashboard every interval ms
             logTimer = System.currentTimeMillis();
             SmartDashboard.putString("Command Mode", currentMode.toString());
-            SmartDashboard.putNumber("GripHCmd", gripperH_cmd);
-            SmartDashboard.putNumber("GripX_RL", heightRL.get());
-            SmartDashboard.putNumber("GripXCmd", gripperX_cmd);
-            SmartDashboard.putNumber("GripX_RL", xprojRL.get());
         }
         SmartDashboard.putString("Current Position", logCurHeight());
     }
