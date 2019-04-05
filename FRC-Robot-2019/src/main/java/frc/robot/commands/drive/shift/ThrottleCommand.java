@@ -53,7 +53,6 @@ public class ThrottleCommand extends Command {
     double rightSpeed = Math.abs(driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
     double curSpeed = (leftSpeed + rightSpeed) / 2.0;
     double shiftSpeed = AutomaticGearShiftCommand.DOWNSHIFT_SPEED_LOW * AutomaticGearShiftCommand.MAXSPEED_IN_COUNTS_PER_SECOND;
-    System.out.println("Throttle Finished: " + (cycleCount >= maxCycles || curSpeed < shiftSpeed));
     return cycleCount >= maxCycles || curSpeed < shiftSpeed;
   }
 
