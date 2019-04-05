@@ -47,8 +47,11 @@ public class ThrottleCommand extends Command {
 
   @Override
   protected boolean isFinished() {
-    double throttle = Robot.m_oi.getDriverController().getY(Hand.kLeft);
-    return cycleCount >= maxCycles || throttle < 0.3;
+    double leftSpeed = Math.abs(driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity());
+    double rightSpeed = Math.abs(driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
+    double curSpeed = (leftSpeed + rightSpeed) / 2.0;
+    double shiftSpeed = AutomaticGearShiftCommand.DOWNSHIFT_SPEED_LOW * AutomaticGearShiftCommand.MAXSPEED_IN_COUNTS_PER_SECOND;
+    return cycleCount >= maxCycles || curSpeed < shiftSpeed;
   }
 
   @Override

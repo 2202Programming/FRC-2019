@@ -103,8 +103,10 @@ public class DriveTrainSubsystem extends Subsystem {
       SmartDashboard.putData(this);
       SmartDashboard.putNumber("Left Encoder Count", getLeftEncoderTalon().getSelectedSensorPosition());
       SmartDashboard.putNumber("Left Encoder Rate", getLeftEncoderTalon().getSelectedSensorVelocity());
+      SmartDashboard.putNumber("Left Motor Output", getLeftEncoderTalon().getMotorOutputPercent());
       SmartDashboard.putNumber("Right Encoder Count", getRightEncoderTalon().getSelectedSensorPosition());
       SmartDashboard.putNumber("Right Encoder Rate", getRightEncoderTalon().getSelectedSensorVelocity());
+      SmartDashboard.putNumber("Right Motor Output", getRightEncoderTalon().getMotorOutputPercent());
     }
   }
 
