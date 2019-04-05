@@ -1,20 +1,16 @@
 package frc.robot.commands.climb;
 
-import frc.robot.commands.drive.DriveByPowerAndJoystickCommand;
-import frc.robot.commands.drive.DriveByPowerCommand;
 import edu.wpi.first.wpilibj.command.CommandGroup;
-import edu.wpi.first.wpilibj.command.WaitCommand;
-import frc.robot.commands.CallFunctionCommand;
 import frc.robot.Robot;
-import frc.robot.commands.GripperPositionCommand;
-import frc.robot.commands.arm.FlipCommand;
-import frc.robot.commands.arm.MoveArmAtHeight;
+import frc.robot.commands.CallFunctionCommand;
+import frc.robot.commands.arm.MoveArmToRawPosition;
+import frc.robot.commands.drive.DriveByPowerAndJoystickCommand;
 
 public class PullUpPartial extends CommandGroup {
     public PullUpPartial(double climbHeight, double retractHeight) {
         double drivePower = 0.35; // Positive power goes to negative direction
 
-        addSequential(new FlipCommand(90, -90, 12, 0.5, 20));
+        addSequential(new MoveArmToRawPosition(-90, 12, 0.5, 20));
         CommandGroup forwardCmds3 = new CommandGroup("going forward 3");
         forwardCmds3.addSequential(new PawlSureFire(Robot.climber.Retract,  5));
         forwardCmds3.addParallel(new DeployClimbFoot(-0.50, retractHeight));    // neg power retract / limit sw

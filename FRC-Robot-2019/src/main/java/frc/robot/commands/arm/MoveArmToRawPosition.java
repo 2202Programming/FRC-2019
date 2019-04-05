@@ -4,8 +4,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
 //Commands the arm to follow an arc
-public class FlipCommand extends Command {
-    private double startAngle;
+public class MoveArmToRawPosition extends Command {
     private double endAngle;
     private double extension;
     private double curAngle;
@@ -13,21 +12,19 @@ public class FlipCommand extends Command {
     private double step;
     private double degreesPerSecond;
 
-    public FlipCommand(double startAngle, double endAngle, double extension, double endTolerance,
-            double degreesPerSecond) {
+    public MoveArmToRawPosition(double angle, double extension, double endTolerance, double degreesPerSecond) {
         requires(Robot.arm);
-        this.startAngle = startAngle;
-        this.endAngle = endAngle;
+        this.endAngle = angle;
         this.extension = extension;
         tolerance = endTolerance;
     }
 
     @Override
     protected void initialize() {
-        curAngle = startAngle;
-        step = Math.signum(startAngle - endAngle) * (degreesPerSecond * Robot.kDefaultPeriod); // step is the # of
-                                                                                               // degrees to change per
-                                                                                               // cycle
+        curAngle = Robot.arm.getRealAngle();
+        step = Math.signum(curAngle - endAngle) * (degreesPerSecond * Robot.kDefaultPeriod); // step is the # of
+                                                                                             // degrees to change per
+                                                                                             // cycle
         execute();
     }
 

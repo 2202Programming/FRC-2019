@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.commands.arm.ArmStatePositioner;
-import frc.robot.commands.arm.FlipCommand;
+import frc.robot.commands.arm.MoveArmToRawPosition;
 import frc.robot.commands.arm.MoveArmToPosition;
 import frc.robot.commands.intake.RetractOnReleaseCommand;
 import frc.robot.commands.intake.VacuumCommand;
@@ -474,7 +474,7 @@ public class CommandManager {
     private CommandGroup CmdFactoryFlip() {
         CommandGroup grp = new CommandGroup("Flip");
         grp.addSequential(new WristSetAngleCommand(0.0));
-        grp.addSequential(new FlipCommand(50.0, -50.0, 12.0, 1.0, 20));
+        grp.addSequential(new MoveArmToRawPosition(-50.0, 12.0, 1.0, 20));
         grp.addSequential(new PrevCmd());
         /*
          * grp.addParallel(new WristTrackFunction(this::wristTrackZero));
