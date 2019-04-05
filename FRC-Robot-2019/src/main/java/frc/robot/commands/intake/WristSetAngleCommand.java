@@ -1,7 +1,5 @@
 package frc.robot.commands.intake;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.wpilibj.command.TimedCommand;
 import frc.robot.Robot;
 

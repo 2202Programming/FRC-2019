@@ -13,6 +13,7 @@ import frc.robot.commands.arm.FlipCommand;
 import frc.robot.commands.intake.RetractOnReleaseCommand;
 import frc.robot.commands.intake.VacuumCommand;
 import frc.robot.commands.intake.WristTrackAngle;
+import frc.robot.commands.util.Angle;
 import frc.robot.commands.util.MathUtil;
 import frc.robot.commands.util.TriggerTimeoutCommand;
 import frc.robot.subsystems.VacuumSensorSystem;
@@ -187,13 +188,13 @@ public class CommandManager {
         // DeliveryModes
         case DeliverHatch: // based on what we captured
             delHeightIdx = 0; // start at lowest
-            wristAngle = WristTrackAngle.Angle.Hatch_Delivery.getAngle();
+            wristAngle = Angle.Hatch_Delivery.getAngle();
             nextCmd = deliveryGrp;
             break;
 
         case DeliverCargo: // based on what we captured
             delHeightIdx = 0;
-            wristAngle = WristTrackAngle.Angle.Cargo_Delivery.getAngle();
+            wristAngle = Angle.Cargo_Delivery.getAngle();
             nextCmd = deliveryGrp;
             break;
 
@@ -406,21 +407,21 @@ public class CommandManager {
     private CommandGroup CmdFactoryHuntHatch() {
         CommandGroup grp = new CommandGroup("HuntHatch");
         grp.addSequential(new VacuumCommand(true, 0.0));
-        grp.addParallel(new WristTrackAngle(WristTrackAngle.Angle.Parallel.getAngle()));
+        grp.addParallel(new WristTrackAngle(Angle.Parallel.getAngle()));
         return grp;
     }
 
     private CommandGroup CmdFactoryHuntCargo() {
         CommandGroup grp = new CommandGroup("HuntCargo");
         grp.addSequential(new VacuumCommand(true, 0.0));
-        grp.addParallel(new WristTrackAngle(WristTrackAngle.Angle.Perpendicular_Down.getAngle()));
+        grp.addParallel(new WristTrackAngle(Angle.Perpendicular_Down.getAngle()));
         return grp;
     }
 
     private CommandGroup CmdFactoryHuntHatchFloor() {
         CommandGroup grp = new CommandGroup("HuntHatchFloor");
         grp.addSequential(new VacuumCommand(true, 0.0));
-        grp.addParallel(new WristTrackAngle(WristTrackAngle.Angle.Perpendicular_Down.getAngle()));
+        grp.addParallel(new WristTrackAngle(Angle.Perpendicular_Down.getAngle()));
         return grp;
     }
 
@@ -432,13 +433,13 @@ public class CommandManager {
         CommandGroup grp = new CommandGroup("HuntGameStart");
         VacuumSensorSystem vs = Robot.intake.getVacuumSensor();
         grp.addSequential(new VacuumCommand(true, 0.0)); // no timeout
-        grp.addParallel(new WristTrackAngle(WristTrackAngle.Angle.Starting_Hatch_Hunt.getAngle()));
+        grp.addParallel(new WristTrackAngle(Angle.Starting_Hatch_Hunt.getAngle()));
         grp.addSequential(new GripperPositionCommand(5.7, 11.5, 0.05, 0.5)); // Move arm up and back to avoid moving
                                                                              // hatch
         grp.addSequential(new GripperPositionCommand(5.7, 13.8, 0.05, 0.5)); // Move arm into hatch and intake
         grp.addSequential(new GripperPositionCommand(5.7, 14.5, 0.05, 1.0)); // Move arm into hatch and intake
         grp.addSequential(new TriggerTimeoutCommand(vs::hasVacuum, 1.0)); // waits or sees vacuum and finsishes
-        grp.addParallel(new WristTrackAngle(WristTrackAngle.Angle.Parallel.getAngle()));
+        grp.addParallel(new WristTrackAngle(Angle.Parallel.getAngle()));
         grp.addSequential(new NextModeCmd(Modes.HuntingHatch)); // Capture the right previous state
         grp.addSequential(new NextModeCmd(Modes.Drive));
         grp.addSequential(new NextModeCmd(Modes.DeliverHatch));
@@ -456,8 +457,8 @@ public class CommandManager {
 
     private CommandGroup CmdFactoryDrive() {
         CommandGroup grp = new CommandGroup("Drive");
-        grp.addParallel(new WristTrackAngle(WristTrackAngle.Angle.Parallel.getAngle()));
-        grp.addParallel(new WristTrackAngle(WristTrackAngle.Angle.Parallel.getAngle()));
+        grp.addParallel(new WristTrackAngle(Angle.Parallel.getAngle()));
+        grp.addParallel(new WristTrackAngle(Angle.Parallel.getAngle()));
         return grp;
     }
 
