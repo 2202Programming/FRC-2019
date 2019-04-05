@@ -42,7 +42,7 @@ public class WristStatePositioner extends Command {
     protected void execute() {
         // Update position based on current mode
         Modes curMode = Robot.m_cmdMgr.getCurMode();
-        int invert = Robot.arm.getInversionStatus() ? 1 : 0;
+        int invert = Robot.arm.isInverted() ? 1 : 0;
         int index = Robot.m_cmdMgr.getPositionIndex();
         if (curMode != prevMode) {
             // Update position only if state changes to allow something to override position

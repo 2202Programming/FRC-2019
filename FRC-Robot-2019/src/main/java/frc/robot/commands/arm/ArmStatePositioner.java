@@ -121,7 +121,7 @@ public class ArmStatePositioner extends Command {
     }
 
     private void updatePosition(Modes curMode, int index) {
-        int invert = arm.getInversionStatus() ? 1 : 0;
+        int invert = arm.isInverted() ? 1 : 0;
         switch (curMode) {
         case Construction:
             break;

@@ -344,7 +344,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * 
    * @return Inversion status
    */
-  public boolean getInversionStatus() {
+  public boolean isInverted() {
     return getRealAngle() < 0;
   }
 
@@ -371,7 +371,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
     return inversionConstant;
   }
 
-  public short getInversion() {
+  public short getInversionConstant() {
     return inversionConstant;
   }
 
