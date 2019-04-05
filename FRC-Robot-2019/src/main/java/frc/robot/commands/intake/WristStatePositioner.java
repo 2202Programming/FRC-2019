@@ -35,10 +35,7 @@ public class WristStatePositioner extends Command {
     };
 
     public WristStatePositioner() {
-    }
-
-    @Override
-    protected void initialize() {
+        requires(Robot.intake);
     }
 
     @Override

@@ -2,7 +2,6 @@ package frc.robot.commands.arm;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.subsystems.ArmSubsystem;
 
 //Commands the arm to follow an arc
 public class FlipCommand extends Command {

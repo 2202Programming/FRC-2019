@@ -21,11 +21,6 @@ public class WristTrackAngle extends Command {
     }
 
     @Override
-    protected void initialize() {
-        Robot.intake.setDefaultCommand(this);
-    }
-
-    @Override
     protected void execute() {
         // intake angle is relative to arm
         double offset = Robot.arm.getRealAngle() - angleSupplier.getAsDouble() * Robot.arm.getInversion();

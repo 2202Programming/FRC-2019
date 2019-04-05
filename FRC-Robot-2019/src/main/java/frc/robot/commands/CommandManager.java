@@ -10,8 +10,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.commands.arm.ArmStatePositioner;
 import frc.robot.commands.arm.FlipCommand;
+import frc.robot.commands.arm.MoveArmToPosition;
 import frc.robot.commands.intake.RetractOnReleaseCommand;
 import frc.robot.commands.intake.VacuumCommand;
+import frc.robot.commands.intake.WristSetAngleCommand;
 import frc.robot.commands.intake.WristTrackAngle;
 import frc.robot.commands.util.Angle;
 import frc.robot.commands.util.MathUtil;
@@ -27,16 +29,16 @@ public class CommandManager {
     public final double kCapHeight = 4.0; // inch/joy units TODO: put in better place
     public final double kHeightMin = 2.0; // inches
     public final double kHeightMax = 96.0; // inches
-    
+
     int logCnt = 0;
     private long logTimer;
-    
+
     // Button Commands
     Command huntSelectCmd;
     Command heightSelectCmd;
     Command captRelCmd;
     Command flipCmd;
-    
+
     // Command Sets - one created for each major operation of the robot.
     CommandGroup zeroRobotGrp;
     CommandGroup huntGameStartGrp;
@@ -49,7 +51,7 @@ public class CommandManager {
     CommandGroup flipGrp;
     CommandGroup driveGrp;
     CommandGroup currentGrp; // what is running
-    
+
     // Modes of behavior
     public enum Modes {
         Construction(0), // system still coming up... not operational
@@ -93,7 +95,6 @@ public class CommandManager {
     private int huntModeIdx = 2; // hatch
     private int delHeightIdx = 0; // used in Delivery<Cargo/Hatch>Heights[]
     private int driveIdx = 1;
-    private double wristAngle = 0.0;
 
     public CommandManager() {
         currentMode = Modes.Construction;
@@ -188,13 +189,11 @@ public class CommandManager {
         // DeliveryModes
         case DeliverHatch: // based on what we captured
             delHeightIdx = 0; // start at lowest
-            wristAngle = Angle.Hatch_Delivery.getAngle();
             nextCmd = deliveryGrp;
             break;
 
         case DeliverCargo: // based on what we captured
             delHeightIdx = 0;
-            wristAngle = Angle.Cargo_Delivery.getAngle();
             nextCmd = deliveryGrp;
             break;
 
@@ -329,7 +328,8 @@ public class CommandManager {
             return delHeightIdx;
         } else if (isDriving()) {
             int idx = driveIdx + direction; // next height
-            driveIdx = MathUtil.limit(idx, 0, ArmStatePositioner.DrivePositions[0].length - 1); // make sure index fits in array
+            driveIdx = MathUtil.limit(idx, 0, ArmStatePositioner.DrivePositions[0].length - 1); // make sure index fits
+                                                                                                // in array
 
             return driveIdx;
         }
@@ -368,10 +368,6 @@ public class CommandManager {
         return (nextMode.get());
     }
 
-    private double customWristAngle() {
-        return wristAngle;
-    }
-
     /************************************************************************************************************/
 
     // called every frame, reads inputs, does rate limiting
@@ -407,21 +403,18 @@ public class CommandManager {
     private CommandGroup CmdFactoryHuntHatch() {
         CommandGroup grp = new CommandGroup("HuntHatch");
         grp.addSequential(new VacuumCommand(true, 0.0));
-        grp.addParallel(new WristTrackAngle(Angle.Parallel.getAngle()));
         return grp;
     }
 
     private CommandGroup CmdFactoryHuntCargo() {
         CommandGroup grp = new CommandGroup("HuntCargo");
         grp.addSequential(new VacuumCommand(true, 0.0));
-        grp.addParallel(new WristTrackAngle(Angle.Perpendicular_Down.getAngle()));
         return grp;
     }
 
     private CommandGroup CmdFactoryHuntHatchFloor() {
         CommandGroup grp = new CommandGroup("HuntHatchFloor");
         grp.addSequential(new VacuumCommand(true, 0.0));
-        grp.addParallel(new WristTrackAngle(Angle.Perpendicular_Down.getAngle()));
         return grp;
     }
 
@@ -434,10 +427,10 @@ public class CommandManager {
         VacuumSensorSystem vs = Robot.intake.getVacuumSensor();
         grp.addSequential(new VacuumCommand(true, 0.0)); // no timeout
         grp.addParallel(new WristTrackAngle(Angle.Starting_Hatch_Hunt.getAngle()));
-        grp.addSequential(new GripperPositionCommand(5.7, 11.5, 0.05, 0.5)); // Move arm up and back to avoid moving
-                                                                             // hatch
-        grp.addSequential(new GripperPositionCommand(5.7, 13.8, 0.05, 0.5)); // Move arm into hatch and intake
-        grp.addSequential(new GripperPositionCommand(5.7, 14.5, 0.05, 1.0)); // Move arm into hatch and intake
+        grp.addSequential(new MoveArmToPosition(5.7, 11.5, 0.05, 0.5)); // Move arm up and back to avoid moving
+                                                                        // hatch
+        grp.addSequential(new MoveArmToPosition(5.7, 13.8, 0.05, 0.5)); // Move arm into hatch and intake
+        grp.addSequential(new MoveArmToPosition(5.7, 14.5, 0.05, 1.0)); // Move arm into hatch and intake
         grp.addSequential(new TriggerTimeoutCommand(vs::hasVacuum, 1.0)); // waits or sees vacuum and finsishes
         grp.addParallel(new WristTrackAngle(Angle.Parallel.getAngle()));
         grp.addSequential(new NextModeCmd(Modes.HuntingHatch)); // Capture the right previous state
@@ -457,14 +450,11 @@ public class CommandManager {
 
     private CommandGroup CmdFactoryDrive() {
         CommandGroup grp = new CommandGroup("Drive");
-        grp.addParallel(new WristTrackAngle(Angle.Parallel.getAngle()));
-        grp.addParallel(new WristTrackAngle(Angle.Parallel.getAngle()));
         return grp;
     }
 
     private CommandGroup CmdFactoryDelivery() {
         CommandGroup grp = new CommandGroup("Deliver");
-        grp.addParallel(new WristTrackAngle(this::customWristAngle));
         return grp;
     }
 
@@ -483,8 +473,8 @@ public class CommandManager {
     // TODO: Check for working w/ higher speeds
     private CommandGroup CmdFactoryFlip() {
         CommandGroup grp = new CommandGroup("Flip");
+        grp.addSequential(new WristSetAngleCommand(0.0));
         grp.addSequential(new FlipCommand(50.0, -50.0, 12.0, 1.0, 20));
-        grp.addSequential(new CallFunctionCmd(Robot.arm::invert));
         grp.addSequential(new PrevCmd());
         /*
          * grp.addParallel(new WristTrackFunction(this::wristTrackZero));
