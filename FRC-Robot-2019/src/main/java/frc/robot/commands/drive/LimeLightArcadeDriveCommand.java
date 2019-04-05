@@ -15,9 +15,9 @@ import frc.robot.subsystems.DriveTrainSubsystem;
  */
 public class LimeLightArcadeDriveCommand extends Command {
   private DriveTrainSubsystem driveTrain;
-  private final double P = 0.055;
+  private final double P = 0.22;
   private final double I = 0.0;
-  private final double D = 0.0;
+  private final double D = 0.1;
   private PIDController controller;
   private ExpoShaper speedShaper;
   private double maxSpeed;
@@ -54,10 +54,12 @@ public class LimeLightArcadeDriveCommand extends Command {
     // positive
     double speed = maxSpeed * speedShaper.expo(Robot.m_oi.getDriverController().getY(Hand.kLeft));
     double rotation = -controller.get();
-
+ 
     if (Math.abs(rotation) <= 0.12) {
       rotation = Math.signum(rotation) * 0.12;
     }
+
+    SmartDashboard.putNumber("PID Error", controller.getError());
 
     Robot.driveTrain.ArcadeDrive(speed, rotation, true);
     SmartDashboard.putData(controller);
