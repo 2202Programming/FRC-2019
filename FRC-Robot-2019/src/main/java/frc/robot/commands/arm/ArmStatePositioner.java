@@ -13,9 +13,9 @@ import frc.robot.Robot;
 public class ArmStatePositioner extends Command {
     private ArmSubsystem arm;
     // Height of point of rotation for the arm in inches
-    public final double heightAdjustCap = 4.0; // inch/joy units TODO: put in better place
-    public final double kHeightMin = 2.0; // inches
-    public final double kHeightMax = 96.0; // TODO: Find real max
+    public static final double heightAdjustCap = 4.0; // inch/joy units TODO: put in better place
+    public static final double kHeightMin = 2.0; // inches
+    public static final double kHeightMax = 96.0; // TODO: Find real max
 
     // Positions in form (InversionState, Height, Position)
     public static final double DeliveryCargoPositions[][][] = { { { 26.875, 25.0 }, { 55.0, 25.0 }, { 84.0, 25.0 } },
@@ -209,5 +209,17 @@ public class ArmStatePositioner extends Command {
     public void setDriverAdjustLimiter(double inputGain, double minExtension, double maxExtension, double retractSpeed,
             double extendSpeed) {
         projectionAdjustLimiter.setConstraints(inputGain, minExtension, maxExtension, retractSpeed, extendSpeed);
+    }
+
+    public RateLimiter getHeightLimiter() {
+        return heightLimiter;
+    }
+
+    public RateLimiter getProjectionLimiter() {
+        return projectionLimiter;
+    }
+
+    public LimitedIntegrator getDriverAdjustLimiter() {
+        return projectionAdjustLimiter;
     }
 }

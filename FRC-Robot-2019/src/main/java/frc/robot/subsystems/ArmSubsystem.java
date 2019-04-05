@@ -326,6 +326,10 @@ public class ArmSubsystem extends ExtendedSubSystem {
     return (compLen);
   }
 
+  public ArmStatePositioner getArmPositioner() {
+    return (ArmStatePositioner) getDefaultCommand();
+  }
+
   @Override
   public void initDefaultCommand() {
     setDefaultCommand(new ArmStatePositioner());

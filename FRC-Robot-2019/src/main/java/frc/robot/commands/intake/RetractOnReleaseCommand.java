@@ -1,12 +1,12 @@
 package frc.robot.commands.intake;
 
 import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.commands.CommandManager;
 import frc.robot.commands.arm.ArmStatePositioner;
-import frc.robot.subsystems.ArmSubsystem;
 
 public class RetractOnReleaseCommand extends Command {
   BooleanSupplier releaseCheckFunc;
@@ -29,7 +29,7 @@ public class RetractOnReleaseCommand extends Command {
   @Override
   protected void initialize() {
     // Assume that the ArmStatePositioner is the only type of default command used
-    armPositioner = (ArmStatePositioner) (Robot.arm.getDefaultCommand());
+    armPositioner = Robot.arm.getArmPositioner();;
     //save were we are so we can tweek it on finish
     init_x = armPositioner.getProjectionCommanded();
     init_h = armPositioner.getHeightCommanded();

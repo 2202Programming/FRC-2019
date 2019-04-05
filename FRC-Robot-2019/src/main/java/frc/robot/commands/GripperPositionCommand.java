@@ -33,7 +33,7 @@ public class GripperPositionCommand extends Command {
   protected void initialize() {
       setTimeout(timeout);
       // Assume that the ArmStatePositioner is the only type of default command used
-      armPositioner = (ArmStatePositioner) (Robot.arm.getDefaultCommand());
+      armPositioner = Robot.arm.getArmPositioner();;
       armPositioner.setPosition(height, projx); // sets the CommandManagers h/x output
       armPosition = Robot.arm.getArmPosition();
   }
