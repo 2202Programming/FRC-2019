@@ -48,7 +48,8 @@ public class CommandManager {
     CommandGroup captureGrp;
     CommandGroup deliveryGrp;
     CommandGroup releaseGrp;
-    CommandGroup flipGrp;
+    CommandGroup flipToFrontGrp;
+    CommandGroup flipToBackGrp;
     CommandGroup driveGrp;
     CommandGroup currentGrp; // what is running
 
@@ -131,7 +132,8 @@ public class CommandManager {
         driveGrp = CmdFactoryDrive();
         deliveryGrp = CmdFactoryDelivery();
         releaseGrp = CmdFactoryRelease();
-        flipGrp = CmdFactoryFlip(); // (dpl - keep from mistakes for now) CmdFactoryFlip();
+        flipToFrontGrp = CmdFactoryFlipToFront(); // (dpl - keep from mistakes for now) CmdFactoryFlip();
+        flipToBackGrp = CmdFactoryFlipToBack();
     }
 
     /**
@@ -202,7 +204,11 @@ public class CommandManager {
             nextCmd = releaseGrp;
             break;
         case Flipping:
-            nextCmd = flipGrp;
+            if(Robot.arm.isInverted()) {
+                nextCmd = flipToFrontGrp;
+            } else {
+                nextCmd = flipToBackGrp;
+            }
             break;
         default:
             break;
@@ -471,10 +477,29 @@ public class CommandManager {
     }
 
     // TODO: Check for working w/ higher speeds
-    private CommandGroup CmdFactoryFlip() {
+    private CommandGroup CmdFactoryFlipToBack() {
         CommandGroup grp = new CommandGroup("Flip");
         grp.addSequential(new WristSetAngleCommand(0.0));
         grp.addSequential(new MoveArmToRawPosition(-50.0, 12.0, 1.0, 20));
+        grp.addSequential(new PrevCmd());
+        /*
+         * grp.addParallel(new WristTrackFunction(this::wristTrackZero));
+         * grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut,
+         * this::gripperXProjectionOut)); grp.addSequential(new
+         * GripperPositionCommand(66, 18, 1.0, 3.0)); grp.addSequential(new
+         * GripperPositionCommand(70, 0.5, 1.0, 4.0)); grp.addSequential(new
+         * CallFunctionCmd(Robot.arm::invert)); grp.addSequential(new
+         * GripperPositionCommand(70, 0.5, 1.0, 4.0)); grp.addSequential(new
+         * GripperPositionCommand(66, 18, 1.0, 3.0)); grp.addSequential(new PrevCmd());
+         */
+        return grp;
+    }
+
+    // TODO: Check for working w/ higher speeds
+    private CommandGroup CmdFactoryFlipToFront() {
+        CommandGroup grp = new CommandGroup("Flip");
+        grp.addSequential(new WristSetAngleCommand(0.0));
+        grp.addSequential(new MoveArmToRawPosition(50.0, 12.0, 1.0, 20));
         grp.addSequential(new PrevCmd());
         /*
          * grp.addParallel(new WristTrackFunction(this::wristTrackZero));
