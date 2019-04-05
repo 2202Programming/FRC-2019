@@ -3,7 +3,6 @@ package frc.robot.commands.drive.shift;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.subsystems.DriveTrainSubsystem;
 
 /**
  * An example command. You can replace me with your own command.
@@ -47,8 +46,8 @@ public class ThrottleCommand extends Command {
 
   @Override
   protected boolean isFinished() {
-    double leftSpeed = Math.abs(driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity());
-    double rightSpeed = Math.abs(driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
+    double leftSpeed = Math.abs(Robot.driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity());
+    double rightSpeed = Math.abs(Robot.driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
     double curSpeed = (leftSpeed + rightSpeed) / 2.0;
     double shiftSpeed = AutomaticGearShiftCommand.DOWNSHIFT_SPEED_LOW * AutomaticGearShiftCommand.MAXSPEED_IN_COUNTS_PER_SECOND;
     return cycleCount >= maxCycles || curSpeed < shiftSpeed;
