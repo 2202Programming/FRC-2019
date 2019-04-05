@@ -31,7 +31,7 @@ public class MoveArmToRawPosition extends Command {
     @Override
     protected void execute() {
         Robot.arm.setExtension(extension);
-        if (Math.abs(Robot.arm.getExtension() - extension) <= 0.5) {
+        if (Math.abs(Robot.arm.getExtension() - extension) <= 0.5 || Robot.arm.isExtensionOverrided()) {
             Robot.arm.setAngle(curAngle);
 
             if (step < 0) {

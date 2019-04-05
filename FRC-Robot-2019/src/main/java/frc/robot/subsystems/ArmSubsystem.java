@@ -12,7 +12,6 @@ import frc.robot.RobotMap;
 import frc.robot.commands.arm.ArmStatePositioner;
 import frc.robot.commands.arm.ArmZero;
 import frc.robot.commands.util.MathUtil;
-import frc.robot.commands.util.RateLimiter;
 
 /**
  * Arm based lifter subsystem.
@@ -42,12 +41,12 @@ public class ArmSubsystem extends ExtendedSubSystem {
   private DigitalInput extensionAtMin = new DigitalInput(RobotMap.ARM_MIN_EXTENSION_SENSOR_PIN);
 
   // Constants used by commands as measured
-  //When on the ground we can't touch the hard stop. We are off by ~1 degree
-  public final double PHI0 = 158.0; // degrees, starting position - encoder zero 
+  // When on the ground we can't touch the hard stop. We are off by ~1 degree
+  public final double PHI0 = 158.0; // degrees, starting position - encoder zero
   public final double PHI_MAX = 158.0; // In Degrees, Positive is foward, bottom front
   public final double PHI_FRONT_MIN = 25.0; // In Degrees, Near top front
   public final double PHI_BACK_MAX = -25.0; // In degrees
-  public final double PHI_MIN = -140.0;     // In degress
+  public final double PHI_MIN = -140.0; // In degress
 
   private final double kCounts_per_deg = 600; // back to practice bot
   private final double kDeg_per_count = 1.0 / kCounts_per_deg;
@@ -57,7 +56,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public final double MIN_FRONT_PROJECTION = PIVOT_TO_FRONT - 6.5; // inches from pivot to close arm position
   public final double MIN_BACK_PROJECTION = -MIN_FRONT_PROJECTION;
   public final double MAX_PROJECTION = PIVOT_TO_FRONT + Robot.kProjectConstraint; //
-  public final double MIN_PROJECTION = -MAX_PROJECTION - 1.0; // In inches with a offset because the pivot isn't in the center
+  public final double MIN_PROJECTION = -MAX_PROJECTION - 1.0; // In inches with a offset because the pivot isn't in the
+                                                              // center
 
   // Extender phyiscal numbers
   public final double L0 = 8.875; // inches - starting point, encoder zero -set 2/24/2019
@@ -91,6 +91,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
   Position position = new Position();
 
   private short inversionConstant;
+  private boolean minExtensionOverrided;
+  private boolean maxExtensionOverrided;
 
   /**
    * Creates a new arm/lift subsystem.
@@ -128,6 +130,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
     zeroArm(); // will also get called on transition to teleOp, should arms be moved
 
     inversionConstant = 1;
+    minExtensionOverrided = false;
+    maxExtensionOverrided = false;
   }
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
@@ -233,9 +237,11 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * @return
    */
   public double getMinExtension(double angle) {
-    if(-35.0 < angle && angle < 30.5) {
+    if (-35.0 < angle && angle < 30.5) {
+      minExtensionOverrided = true;
       return STARTING_EXTENSION;
     }
+    minExtensionOverrided = false;
     return EXTEND_MIN;
   }
 
@@ -255,8 +261,11 @@ public class ArmSubsystem extends ExtendedSubSystem {
     final double PhiCrit = Math.toDegrees(Math.asin((MAX_PROJECTION) / (WRIST_LENGTH + ARM_BASE_LENGTH + EXTEND_MAX)));
 
     double absAngle = Math.abs(angle);
-    if (absAngle < PhiCrit)
+    if (absAngle < PhiCrit) {
+      maxExtensionOverrided = true;
       return EXTEND_MAX;
+    }
+    maxExtensionOverrided = false;
     return (MAX_PROJECTION / Math.sin(Math.toRadians(absAngle))) - ARM_BASE_LENGTH - WRIST_LENGTH;
   }
 
@@ -331,14 +340,17 @@ public class ArmSubsystem extends ExtendedSubSystem {
   }
 
   /**
-     * Gets whether the arm is inverted
-     * 
-     * @return Inversion status
-     */
-    public boolean getInversionStatus() {
-      return getRealAngle() < 0;
+   * Gets whether the arm is inverted
+   * 
+   * @return Inversion status
+   */
+  public boolean getInversionStatus() {
+    return getRealAngle() < 0;
   }
 
+  public boolean isExtensionOverrided() {
+    return minExtensionOverrided || maxExtensionOverrided;
+  }
   @Override
   public void initDefaultCommand() {
     setDefaultCommand(new ArmStatePositioner());
