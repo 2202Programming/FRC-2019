@@ -55,7 +55,7 @@ public class SensorSubsystem extends Subsystem {
   }
 
   public void disableLED() {
-    limeLight.disableLED();
+    //limeLight.disableLED();
   }
 
   public void enableLED() {
@@ -70,6 +70,7 @@ public class SensorSubsystem extends Subsystem {
       SmartDashboard.putNumber("Back Distance", getDistanceBack());
       SmartDashboard.putNumber("Limelight Angle Distance", getLimelightDistanceByAngle());
       SmartDashboard.putNumber("Limelight Area Distance", getLimelightDistanceByArea());
+      SmartDashboard.putBoolean("Limelight Has Target", limeLight.hasTarget());
     }
   }
  

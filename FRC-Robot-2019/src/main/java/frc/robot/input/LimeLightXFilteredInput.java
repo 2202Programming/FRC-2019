@@ -12,7 +12,7 @@ public class LimeLightXFilteredInput implements PIDSource{
 	//Wrapper class to get X Values from the LimeLightSubsystem
 	public LimeLightXFilteredInput() {
         sourceType = PIDSourceType.kDisplacement;
-        lowPassFilter = LinearDigitalFilter.movingAverage(new LimeLightXValueInput(), 10);
+        lowPassFilter = LinearDigitalFilter.movingAverage(new LimeLightXValueInput(), 5);
     }
     
     @Override
