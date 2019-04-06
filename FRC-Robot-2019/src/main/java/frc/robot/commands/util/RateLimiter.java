@@ -76,6 +76,7 @@ public class RateLimiter {
     // start where we are according to the device if we have one
     // otherwise use the initial value of the input command, cmd.
     Xprev = (devPos != Double.NaN) ? devPos : cmd;
+    X = Xprev;
     devPosPrev = Xprev;
   }
 

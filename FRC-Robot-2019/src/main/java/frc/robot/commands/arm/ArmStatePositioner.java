@@ -90,6 +90,7 @@ public class ArmStatePositioner extends Command {
         // Get input
         heightLimiter.execute();
         projectionLimiter.execute();
+        projectionAdjustLimiter.execute();
         double h_cmd = heightLimiter.get();
         double x_cmd = projectionLimiter.get();
         System.out.println("ArmStatePositioner height: " + h_cmd);
@@ -115,7 +116,7 @@ public class ArmStatePositioner extends Command {
             calculatedExtension = (x_cmd / Math.sin(Math.toRadians(arm.getRealAngle()))) - arm.ARM_BASE_LENGTH - arm.WRIST_LENGTH;
         }
         // setExtension
-        double extensionLength = MathUtil.limit(calculatedExtension, -arm.STARTING_EXTENSION, arm.EXTEND_MAX);
+        double extensionLength = MathUtil.limit(calculatedExtension, arm.EXTEND_MIN, arm.EXTEND_MAX);
 
         System.out.println("ArmStatePositioner Angle: " + curAngle);
         System.out.println("ArmStatePositioner Extension: " + extensionLength);

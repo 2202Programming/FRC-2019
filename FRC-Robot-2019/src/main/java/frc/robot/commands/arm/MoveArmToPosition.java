@@ -89,7 +89,7 @@ public class MoveArmToPosition extends Command {
         }
         // Limiting here is technically unnecessary because limiting is also done in
         // setExtension
-        double extensionLength = MathUtil.limit(calculatedExtension, -arm.STARTING_EXTENSION, arm.EXTEND_MAX);
+        double extensionLength = MathUtil.limit(calculatedExtension, arm.EXTEND_MIN, arm.EXTEND_MAX);
 
         System.out.println("MoveArmToPosition Angle: " + curAngle);
         System.out.println("MoveArmToPosition Extension: " + extensionLength);
