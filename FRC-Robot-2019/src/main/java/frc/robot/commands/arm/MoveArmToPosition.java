@@ -77,15 +77,15 @@ public class MoveArmToPosition extends Command {
 
         // Calculate the angle
         double calculatedAngle = 0.0;
-        if (Math.abs(x_cmd) >= 1e-6) {
-            calculatedAngle = 90 - Math.toDegrees(Math.atan(heightAbovePivot / x_cmd));
+        if (Math.abs(heightAbovePivot) >= 1e-6) {
+            calculatedAngle = (90 - Math.toDegrees(Math.atan(heightAbovePivot / Math.abs(x_cmd)))) * Math.signum(x_cmd);
         }
         double curAngle = MathUtil.limit(calculatedAngle, arm.PHI_MIN, arm.PHI_MAX);
 
         // Calculate extension based on current angle
-        double calculatedExtension = heightAbovePivot;
+        double calculatedExtension = arm.STARTING_EXTENSION;
         if (Math.abs(arm.getRealAngle()) >= 1e-6) {
-            calculatedExtension = (x_cmd / Math.sin(arm.getRealAngle())) - arm.ARM_BASE_LENGTH - arm.WRIST_LENGTH;
+            calculatedExtension = (x_cmd / Math.sin(Math.toRadians(arm.getRealAngle()))) - arm.ARM_BASE_LENGTH - arm.WRIST_LENGTH;
         }
         // Limiting here is technically unnecessary because limiting is also done in
         // setExtension
