@@ -98,9 +98,9 @@ public class ArmStatePositioner extends Command {
         }
 
         // Calculate the angle
-        double calculatedAngle = 0.0;
-        if (Math.abs(x_cmd) >= 1e-6) {
-            calculatedAngle = 90 - Math.toDegrees(Math.atan(heightAbovePivot / x_cmd));
+        double calculatedAngle = 90.0;
+        if (Math.abs(heightAbovePivot) >= 1e-6) {
+            calculatedAngle = Math.toDegrees(Math.atan(x_cmd / heightAbovePivot));
         }
         double curAngle = MathUtil.limit(calculatedAngle, arm.PHI_MIN, arm.PHI_MAX);
 
