@@ -41,7 +41,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
   // Constants used by commands as measured
   //When on the ground we can't touch the hard stop. We are off by ~1 degree
-  public final double PHI0 = 158.0; // degrees, starting position - encoder zero 
+  public double PHI0 = 158.0; // degrees, starting position - encoder zero 
   public final double PHI_MAX = 158.0; // In Degrees, Positive is foward, bottom front
   public final double PHI_MIN = 18.0; // In Degrees, Near top front
 
@@ -135,6 +135,22 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
     armRotationMotor.setSelectedSensorPosition(0);
     armRotationMotor.setIntegralAccumulator(0.0, PIDIdx, TO);
+  }
+
+  /**
+   * Changes the PHI0 variable.
+   * @param newPhi0 the new PHI0 value
+   */
+  public void changePhi0(double newPhi0) {
+    PHI0 = newPhi0;
+  }
+
+  /**
+   * Resets the PHI0 variable to its initial value, 158.0.
+   * TODO: Delete if unnecessary.
+   */
+  public void resetPhi0() {
+    PHI0 = 158.0;
   }
 
   /**
