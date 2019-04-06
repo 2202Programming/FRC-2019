@@ -138,10 +138,10 @@ public class ArmSubsystem extends ExtendedSubSystem {
   }
 
   /**
-   * Changes the PHI0 variable.
+   * Sets the PHI0 variable.
    * @param newPhi0 the new PHI0 value
    */
-  public void changePhi0(double newPhi0) {
+  public void setPhi0(double newPhi0) {
     PHI0 = newPhi0;
   }
 
