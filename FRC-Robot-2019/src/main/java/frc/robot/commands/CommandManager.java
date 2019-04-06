@@ -115,7 +115,7 @@ public class CommandManager {
     // Data points - shares delheightidx, must be same length
     final double DeliveryCargoHeights[] = { 25.0, 55.0, 84.0 }; // TODO: fix the numbers
     final double DeliveryHatchHeights[] = { 25.5, 55.0, 82.0 }; 
-    final double deliveryProjection[] = { 25.0, 25.0, 25.0 }; // TODO: fix the numbers
+    final double deliveryProjection[] = { 25.0, 17.5, 17.5 }; // TODO: fix the numbers
 
     final Modes huntingModes[] = { Modes.HuntingFloor, Modes.HuntingCargo, Modes.HuntingHatch };
     final double HuntHeights[] = { 5.0, 17.5, 24.0 }; // height from floor, H,C,Floor TODO:fix numbers

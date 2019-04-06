@@ -43,7 +43,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   //When on the ground we can't touch the hard stop. We are off by ~1 degree
   public final double PHI0 = 158.0; // degrees, starting position - encoder zero 
   public final double PHI_MAX = 158.0; // In Degrees, Positive is foward, bottom front
-  public final double PHI_MIN = 25.0; // In Degrees, Near top front
+  public final double PHI_MIN = 18.0; // In Degrees, Near top front
 
   private final double kCounts_per_deg = 600; //back to practice bot
   private final double kDeg_per_count = 1.0 / kCounts_per_deg;
