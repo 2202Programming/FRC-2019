@@ -34,7 +34,7 @@ public class MoveArmToPosition extends Command {
         this.error = Math.abs(error);
 
         arm = Robot.arm;
-        projectionLimiter = new RateLimiter(Robot.dT, () -> projection, // inputFunc gripperX_cmd
+        projectionLimiter = new RateLimiter(Robot.dT, () -> this.projection, // inputFunc gripperX_cmd
                 arm::getProjection, // phy position func
                 Robot.arm.MIN_PROJECTION, // output min
                 Robot.arm.MAX_PROJECTION, // output max
@@ -42,7 +42,7 @@ public class MoveArmToPosition extends Command {
                 50.0, // inches/sec //raising rate limit
                 InputModel.Position);
 
-        heightLimiter = new RateLimiter(Robot.dT, () -> height, // gripperH_cmd var as set by this module
+        heightLimiter = new RateLimiter(Robot.dT, () -> this.height, // gripperH_cmd var as set by this module
                 arm::getHeight, // phy position func
                 ArmStatePositioner.kHeightMin, // output min
                 ArmStatePositioner.kHeightMax, // output max

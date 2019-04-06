@@ -295,12 +295,12 @@ public class ArmSubsystem extends ExtendedSubSystem {
   }
 
   public double getHeight() {
-    double height = Math.cos(Math.toRadians(getRealAngle())) * getExtension() + ARM_PIVOT_HEIGHT;
+    double height = Math.cos(Math.toRadians(getRealAngle())) * (getExtension() + ARM_BASE_LENGTH + WRIST_LENGTH) + ARM_PIVOT_HEIGHT;
     return height;
   }
 
   public double getProjection() {
-    double projection = Math.sin(Math.toRadians(getRealAngle())) * getExtension();
+    double projection = Math.sin(Math.toRadians(getRealAngle())) * (getExtension() + ARM_BASE_LENGTH + WRIST_LENGTH);
     return projection;
   }
 
