@@ -70,18 +70,21 @@ public class ArmStatePositioner extends Command {
         heightLimiter.initialize();
         projectionLimiter.initialize();
         projectionAdjustLimiter.initialize();
-        stateH = arm.getHeight();
-        stateP = arm.getProjection();
     }
 
     @Override
     protected void execute() {
         // Update position based on current mode
         Modes curMode = Robot.m_cmdMgr.getCurMode();
+        System.out.println(Robot.m_cmdMgr.logCurHeight());
         int positionIndex = Robot.m_cmdMgr.getPositionIndex();
         if(curMode != prevMode || positionIndex != prevIndex) {
             // Update position only if state changes to allow something to override position for that state
             updatePosition(curMode, positionIndex);
+        }
+
+        if(curMode.equals(Modes.Construction) || curMode.equals(Modes.SettingZeros)) {
+            return;
         }
 
         // Get input
@@ -89,6 +92,8 @@ public class ArmStatePositioner extends Command {
         projectionLimiter.execute();
         double h_cmd = heightLimiter.get();
         double x_cmd = projectionLimiter.get();
+        System.out.println("ArmStatePositioner height: " + h_cmd);
+        System.out.println("ArmStatePositioner projection: " + x_cmd);
         double heightAbovePivot = h_cmd - arm.ARM_PIVOT_HEIGHT;
 
         // Adjusts x_cmd so h_cmd is always reached
@@ -113,6 +118,9 @@ public class ArmStatePositioner extends Command {
         // setExtension
         double extensionLength = MathUtil.limit(calculatedExtension, arm.EXTEND_MIN, arm.EXTEND_MAX);
 
+        System.out.println("ArmStatePositioner Angle: " + curAngle);
+        System.out.println("ArmStatePositioner Extension: " + extensionLength);
+
         arm.setAngle(curAngle);
         arm.setExtension(extensionLength);
     }
@@ -127,6 +135,8 @@ public class ArmStatePositioner extends Command {
         case Construction:
             break;
         case SettingZeros:
+            stateH = arm.getHeight();
+            stateP = arm.getProjection();
             break;
         case HuntGameStart:
             break;

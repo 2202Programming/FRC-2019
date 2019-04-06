@@ -57,7 +57,6 @@ public class MoveArmToPosition extends Command {
         setTimeout(timeout);
         heightLimiter.initialize();
         projectionLimiter.initialize();
-        execute();
     }
 
     @Override
@@ -66,6 +65,8 @@ public class MoveArmToPosition extends Command {
         projectionLimiter.execute();
         double h_cmd = heightLimiter.get();
         double x_cmd = projectionLimiter.get();
+        System.out.println("MoveArmToPosition height: " + h_cmd);
+        System.out.println("MoveArmToPosition projection: " + x_cmd);
         double heightAbovePivot = h_cmd - arm.ARM_PIVOT_HEIGHT;
 
         // Adjusts x_cmd so h_cmd is always reached
@@ -90,6 +91,8 @@ public class MoveArmToPosition extends Command {
         // setExtension
         double extensionLength = MathUtil.limit(calculatedExtension, arm.EXTEND_MIN, arm.EXTEND_MAX);
 
+        System.out.println("MoveArmToPosition Angle: " + curAngle);
+        System.out.println("MoveArmToPosition Extension: " + extensionLength);
         arm.setAngle(curAngle);
         arm.setExtension(extensionLength);
     }
