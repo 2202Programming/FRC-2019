@@ -55,7 +55,7 @@ public class SensorSubsystem extends Subsystem {
   }
 
   public void disableLED() {
-    //limeLight.disableLED();
+    limeLight.disableLED();
   }
 
   public void enableLED() {

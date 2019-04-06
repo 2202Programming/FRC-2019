@@ -77,7 +77,7 @@ public class Robot extends TimedRobot {
     m_testRobot  = new RobotTest();
     m_cmdMgr = new CommandManager();
     m_cmdMgr.setMode(Modes.Construction);   // schedules the mode's function
-    sensorSubystem.enableLED(); //disable blinding green LED that Trevor hates
+    sensorSubystem.disableLED(); //disable blinding green LED that Trevor hates
     NetworkTableEntry cameraSelect = NetworkTableInstance.getDefault().getEntry("/PiSwitch");
     // 0=front cam, 1= rear cam, 2 = arm  (pi camera server defines this - could change)
     cameraSelect.setDouble(1);    
@@ -186,7 +186,7 @@ public class Robot extends TimedRobot {
    @Override
    public void testInit() {
      m_testRobot.initialize();
-     sensorSubystem.enableLED(); //active limelight LED when operational
+     sensorSubystem.disableLED(); //active limelight LED when operational
      Scheduler.getInstance().enable();   //### hack? or required?  Seems required otherwise nothing runs 
    }
 
