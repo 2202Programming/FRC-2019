@@ -84,8 +84,8 @@ public class MoveArmToPosition extends Command {
 
         // Calculate extension based on current angle
         double calculatedExtension = arm.STARTING_EXTENSION;
-        if (Math.abs(arm.getRealAngle()) >= 1e-6) {
-            calculatedExtension = (x_cmd / Math.sin(Math.toRadians(arm.getRealAngle()))) - arm.ARM_BASE_LENGTH - arm.WRIST_LENGTH;
+        if (Math.abs(curAngle) >= 1e-6) {
+            calculatedExtension = (x_cmd / Math.sin(Math.toRadians(curAngle))) - arm.ARM_BASE_LENGTH - arm.WRIST_LENGTH;
         }
         // Limiting here is technically unnecessary because limiting is also done in
         // setExtension
