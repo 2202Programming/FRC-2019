@@ -114,9 +114,8 @@ public class ArmStatePositioner extends Command {
         if (Math.abs(arm.getRealAngle()) >= 1e-6) {
             calculatedExtension = (x_cmd / Math.sin(Math.toRadians(arm.getRealAngle()))) - arm.ARM_BASE_LENGTH - arm.WRIST_LENGTH;
         }
-        // Limiting here is technically unnecessary because limiting is also done in
         // setExtension
-        double extensionLength = MathUtil.limit(calculatedExtension, arm.EXTEND_MIN, arm.EXTEND_MAX);
+        double extensionLength = MathUtil.limit(calculatedExtension, -arm.STARTING_EXTENSION, arm.EXTEND_MAX);
 
         System.out.println("ArmStatePositioner Angle: " + curAngle);
         System.out.println("ArmStatePositioner Extension: " + extensionLength);
