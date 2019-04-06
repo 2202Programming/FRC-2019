@@ -31,7 +31,7 @@ public class ChangePhi0Command extends Command {
     }
 
     @Override
-    protected void execute() {
+    protected void initialize() {
         Robot.arm.setPhi0(initialPhi0 + incrementValue);
     }
 
