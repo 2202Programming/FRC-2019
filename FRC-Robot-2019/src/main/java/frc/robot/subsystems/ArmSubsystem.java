@@ -41,7 +41,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
   // Constants used by commands as measured
   //When on the ground we can't touch the hard stop. We are off by ~1 degree
-  public double PHI0 = 158.0; // degrees, starting position - encoder zero 
+  private double PHI0 = 158.0; // degrees, starting position - encoder zero 
   public final double PHI_MAX = 158.0; // In Degrees, Positive is foward, bottom front
   public final double PHI_MIN = 18.0; // In Degrees, Near top front
 
@@ -151,6 +151,14 @@ public class ArmSubsystem extends ExtendedSubSystem {
    */
   public void resetPhi0() {
     PHI0 = 158.0;
+  }
+
+  /**
+   * Gets the current value of PHI0.
+   * @return the vlaue of PHI0
+   */
+  public double getPhi0() {
+    return PHI0;
   }
 
   /**
