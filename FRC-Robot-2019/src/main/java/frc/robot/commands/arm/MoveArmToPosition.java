@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 import frc.robot.commands.util.MathUtil;
 import frc.robot.commands.util.RateLimiter;
+import frc.robot.commands.util.RateLimiter.InputModel;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.Position;
 
@@ -23,7 +24,6 @@ public class MoveArmToPosition extends Command {
 
     // Phyical values from sub-systems as needed
     private Position armPosition;
-    private ArmStatePositioner armPositioner;
     private RateLimiter heightLimiter;
     private RateLimiter projectionLimiter;
 
@@ -34,9 +34,21 @@ public class MoveArmToPosition extends Command {
         this.error = Math.abs(error);
 
         arm = Robot.arm;
-        armPositioner = Robot.arm.getArmPositioner();
-        projectionLimiter = armPositioner.getProjectionLimiter();
-        heightLimiter = armPositioner.getHeightLimiter();
+        projectionLimiter = new RateLimiter(Robot.dT, () -> projection, // inputFunc gripperX_cmd
+                arm::getProjection, // phy position func
+                Robot.arm.MIN_PROJECTION, // output min
+                Robot.arm.MAX_PROJECTION, // output max
+                -50.0, // inches/sec // falling rate limit
+                50.0, // inches/sec //raising rate limit
+                InputModel.Position);
+
+        heightLimiter = new RateLimiter(Robot.dT, () -> height, // gripperH_cmd var as set by this module
+                arm::getHeight, // phy position func
+                ArmStatePositioner.kHeightMin, // output min
+                ArmStatePositioner.kHeightMax, // output max
+                -80.0, // inches/sec // falling rate limit
+                80.0, // inches/sec //raising rate limit
+                InputModel.Position);
     }
 
     @Override
@@ -80,7 +92,7 @@ public class MoveArmToPosition extends Command {
         arm.setAngle(curAngle);
         arm.setExtension(extensionLength);
     }
-    
+
     @Override
     protected boolean isFinished() {
         armPosition = Robot.arm.getArmPosition();
@@ -88,5 +100,22 @@ public class MoveArmToPosition extends Command {
         double x_err = Math.abs(armPosition.projection - projection);
         boolean posGood = (h_err < error) && (x_err < error);
         return posGood || isTimedOut();
+    }
+
+    public void setHeightLimiter(double minHeight, double maxHeight, double fallSpeed, double raiseSpeed) {
+        heightLimiter.setConstraints(minHeight, maxHeight, fallSpeed, raiseSpeed);
+    }
+
+    public void setProjectionLimiter(double minProjection, double maxProjection, double retractSpeed,
+            double extendSpeed) {
+        projectionLimiter.setConstraints(minProjection, maxProjection, retractSpeed, extendSpeed);
+    }
+
+    public RateLimiter getHeightLimiter() {
+        return heightLimiter;
+    }
+
+    public RateLimiter getProjectionLimiter() {
+        return projectionLimiter;
     }
 }
