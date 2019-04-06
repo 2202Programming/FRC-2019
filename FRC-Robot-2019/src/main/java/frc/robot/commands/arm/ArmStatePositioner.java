@@ -163,6 +163,7 @@ public class ArmStatePositioner extends Command {
         }
         prevMode = curMode;
         prevIndex = index;
+        projectionAdjustLimiter.setX(0.0);
     }
 
     public double getStateHeight() {

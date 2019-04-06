@@ -28,6 +28,7 @@ public class MoveArmToPosition extends Command {
     private RateLimiter projectionLimiter;
 
     public MoveArmToPosition(double height, double projection, double error, double timeout) {
+        requires(Robot.arm);
         this.height = height;
         this.projection = projection;
         this.timeout = timeout;
