@@ -29,6 +29,7 @@ public class ArmStatePositioner extends Command {
     private double stateH;
     private double stateP;
     private Modes prevMode;
+    private int prevIndex;
 
     private RateLimiter heightLimiter;
     private RateLimiter projectionLimiter;
@@ -78,7 +79,7 @@ public class ArmStatePositioner extends Command {
         // Update position based on current mode
         Modes curMode = Robot.m_cmdMgr.getCurMode();
         int positionIndex = Robot.m_cmdMgr.getPositionIndex();
-        if(curMode != prevMode) {
+        if(curMode != prevMode || positionIndex != prevIndex) {
             // Update position only if state changes to allow something to override position for that state
             updatePosition(curMode, positionIndex);
         }
@@ -161,6 +162,7 @@ public class ArmStatePositioner extends Command {
             break;
         }
         prevMode = curMode;
+        prevIndex = index;
     }
 
     public double getStateHeight() {

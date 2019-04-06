@@ -8,6 +8,7 @@ import frc.robot.commands.util.Angle;
 public class WristStatePositioner extends Command {
     private double curAngle;
     private Modes prevMode;
+    private int prevIndex;
 
     // 3D tensor of angles: format is [state][inversionStatus][index]
     private double[][][] angles = { { { Angle.Parallel.getAngle() }, { Angle.Back_Parallel.getAngle() } }, // Construction
@@ -44,11 +45,12 @@ public class WristStatePositioner extends Command {
         Modes curMode = Robot.m_cmdMgr.getCurMode();
         int invert = Robot.arm.isInverted() ? 1 : 0;
         int index = Robot.m_cmdMgr.getPositionIndex();
-        if (curMode != prevMode) {
+        if (curMode != prevMode || index != prevIndex) {
             // Update position only if state changes to allow something to override position
             // for that state
             curAngle = angles[curMode.get()][invert][index];
             prevMode = curMode;
+            prevIndex = index;
         }
 
         // intake angle is relative to arm
