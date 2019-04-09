@@ -30,6 +30,7 @@ public class ArmStatePositioner extends Command {
     private double stateP;
     private Modes prevMode;
     private int prevIndex;
+    private boolean checkInverted;
 
     private RateLimiter heightLimiter;
     private RateLimiter projectionLimiter;
@@ -70,10 +71,18 @@ public class ArmStatePositioner extends Command {
         heightLimiter.initialize();
         projectionLimiter.initialize();
         projectionAdjustLimiter.initialize();
+        checkInverted = arm.isInverted();
     }
 
     @Override
     protected void execute() {
+        // Update Ratelimiter if we just flipped
+        if(checkInverted != arm.isInverted()) {
+            initialize();
+            checkInverted = arm.isInverted();
+            return;
+        }
+
         // Update position based on current mode
         Modes curMode = Robot.m_cmdMgr.getCurMode();
         System.out.println(Robot.m_cmdMgr.logCurHeight());
