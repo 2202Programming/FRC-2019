@@ -94,7 +94,6 @@ public class Robot extends TimedRobot {
     CommandGroup level3Retract = new PullUpPartial(25.5, 0);
     m_oi.climbUp.whenPressed(level3Retract);
     m_oi.climbUp.whenReleased(new CancelCommand(level3Retract));
-    Robot.intake.setDefaultCommand(new WristTrackAngle(Angle.Parallel.getAngle()));
   }
 
   /**

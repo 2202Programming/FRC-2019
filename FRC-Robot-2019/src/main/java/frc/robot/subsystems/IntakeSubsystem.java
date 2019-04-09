@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.Spark;
 import frc.robot.subsystems.ExtendedSubSystem;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
-
+import frc.robot.commands.intake.WristStatePositioner;
 //used for CustomServo
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
@@ -113,6 +113,7 @@ public class IntakeSubsystem extends ExtendedSubSystem {
 
   @Override
   public void initDefaultCommand() {
+    setDefaultCommand(new WristStatePositioner());
   }
 
   //expose the vacuum sensor if it is good for commands
