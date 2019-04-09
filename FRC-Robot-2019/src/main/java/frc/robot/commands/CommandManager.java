@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.buttons.Trigger;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.command.WaitCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.commands.arm.FlipCommand;
@@ -625,6 +626,7 @@ public class CommandManager {
         grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
         grp.addParallel(new WristTrackFunction(this::wristTrackParallel));
         grp.addSequential(new RetractCargoTrapCommand());
+        grp.addSequential(new WaitCommand(2.0));
         return grp;
     }
 
