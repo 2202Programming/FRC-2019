@@ -146,11 +146,11 @@ public class ArmSubsystem extends ExtendedSubSystem {
   }
 
   /**
-   * Resets the PHI0 variable to its initial value, 158.0.
-   * TODO: Delete if unnecessary.
+   * Resets the PHI0 variable to its current position.
+   * TODO: Check to make sure it works.
    */
   public void resetPhi0() {
-    PHI0 = 158.0;
+    PHI0 = armRotationMotor.getSelectedSensorPosition() * kDeg_per_count;
   }
 
   /**
