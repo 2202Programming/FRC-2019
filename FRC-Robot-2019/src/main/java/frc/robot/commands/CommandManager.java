@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.commands.arm.FlipCommand;
 import frc.robot.commands.arm.MoveArmAtHeight;
+import frc.robot.commands.cargo.RetractCargoTrapCommand;
 import frc.robot.commands.intake.RetractOnReleaseCommand;
 import frc.robot.commands.intake.VacuumCommand;
 import frc.robot.commands.intake.WristTrackFunction;
@@ -623,6 +624,7 @@ public class CommandManager {
         CommandGroup grp = new CommandGroup("Drive");
         grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut, this::gripperXProjectionOut));
         grp.addParallel(new WristTrackFunction(this::wristTrackParallel));
+        grp.addSequential(new RetractCargoTrapCommand());
         return grp;
     }
 
