@@ -19,10 +19,14 @@ public class WristStatePositioner extends Command {
             { { Angle.Perpendicular_Down.getAngle() }, { Angle.Perpendicular_Down.getAngle() } }, // HuntingFloor
             { { Angle.Parallel.getAngle() }, { Angle.Back_Parallel.getAngle() } }, // Capturing
             { { Angle.Parallel.getAngle() }, { Angle.Back_Parallel.getAngle() } }, // Recapturing
-            { { Angle.Parallel.getAngle() }, { Angle.Back_Parallel.getAngle() } }, // Drive
+            { { Angle.Parallel.getAngle(), Angle.Parallel.getAngle(), Angle.Parallel.getAngle() }, { Angle.Back_Parallel.getAngle(), Angle.Back_Parallel.getAngle()  } }, // Drive
             { { Angle.Parallel.getAngle() }, { Angle.Back_Parallel.getAngle() } }, // Defense
-            { { Angle.Hatch_Delivery.getAngle() }, { Angle.Back_Hatch_Delivery.getAngle() } }, // DeliverHatch
-            { { Angle.Cargo_Delivery.getAngle() }, { Angle.Back_Cargo_Delivery.getAngle() } }, // DeliverCargo
+            { { Angle.Hatch_Delivery.getAngle(), Angle.Hatch_Delivery.getAngle(), Angle.Hatch_Delivery.getAngle() },
+                    { Angle.Back_Hatch_Delivery.getAngle(), Angle.Back_Hatch_Delivery.getAngle(),
+                            Angle.Back_Hatch_Delivery.getAngle() } }, // DeliverHatch
+            { { Angle.Cargo_Delivery.getAngle(), Angle.Cargo_Delivery.getAngle(), Angle.Cargo_Delivery.getAngle() },
+                    { Angle.Back_Cargo_Delivery.getAngle(), Angle.Back_Cargo_Delivery.getAngle(),
+                            Angle.Back_Cargo_Delivery.getAngle() } }, // DeliverCargo
             { { Angle.Parallel.getAngle() }, { Angle.Back_Parallel.getAngle() } }, // Flipping
             { { Angle.Parallel.getAngle() }, { Angle.Back_Parallel.getAngle() } }, //
             { { Angle.Parallel.getAngle() }, { Angle.Back_Parallel.getAngle() } }, //
