@@ -22,7 +22,7 @@ public class MoveArmToRawPosition extends Command {
     @Override
     protected void initialize() {
         curAngle = Robot.arm.getRealAngle();
-        step = Math.signum(curAngle - endAngle) * (degreesPerSecond * Robot.kDefaultPeriod); // step is the # of
+        step = Math.signum(endAngle - curAngle) * (degreesPerSecond * Robot.kDefaultPeriod); // step is the # of
                                                                                              // degrees to change per
                                                                                              // cycle
         execute();

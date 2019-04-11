@@ -476,16 +476,6 @@ public class CommandManager {
         grp.addSequential(new WristSetAngleCommand(0.0));
         grp.addSequential(new MoveArmToRawPosition(-50.0, 12.0, 1.0, 20));
         grp.addSequential(new PrevCmd());
-        /*
-         * grp.addParallel(new WristTrackFunction(this::wristTrackZero));
-         * grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut,
-         * this::gripperXProjectionOut)); grp.addSequential(new
-         * GripperPositionCommand(66, 18, 1.0, 3.0)); grp.addSequential(new
-         * GripperPositionCommand(70, 0.5, 1.0, 4.0)); grp.addSequential(new
-         * CallFunctionCmd(Robot.arm::invert)); grp.addSequential(new
-         * GripperPositionCommand(70, 0.5, 1.0, 4.0)); grp.addSequential(new
-         * GripperPositionCommand(66, 18, 1.0, 3.0)); grp.addSequential(new PrevCmd());
-         */
         return grp;
     }
 
@@ -495,16 +485,6 @@ public class CommandManager {
         grp.addSequential(new WristSetAngleCommand(0.0));
         grp.addSequential(new MoveArmToRawPosition(50.0, 12.0, 1.0, 20));
         grp.addSequential(new PrevCmd());
-        /*
-         * grp.addParallel(new WristTrackFunction(this::wristTrackZero));
-         * grp.addParallel(new MoveArmAtHeight(this::gripperHeightOut,
-         * this::gripperXProjectionOut)); grp.addSequential(new
-         * GripperPositionCommand(66, 18, 1.0, 3.0)); grp.addSequential(new
-         * GripperPositionCommand(70, 0.5, 1.0, 4.0)); grp.addSequential(new
-         * CallFunctionCmd(Robot.arm::invert)); grp.addSequential(new
-         * GripperPositionCommand(70, 0.5, 1.0, 4.0)); grp.addSequential(new
-         * GripperPositionCommand(66, 18, 1.0, 3.0)); grp.addSequential(new PrevCmd());
-         */
         return grp;
     }
 
