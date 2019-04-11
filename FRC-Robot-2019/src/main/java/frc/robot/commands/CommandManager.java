@@ -237,12 +237,6 @@ public class CommandManager {
 
     public int getPositionIndex() {
         switch (getCurMode()) {
-        case HuntingHatch:
-            return huntModeIdx;
-        case HuntingCargo:
-            return huntModeIdx;
-        case HuntingFloor:
-            return huntModeIdx;
         case Drive:
             return driveIdx;
         case DeliverHatch:

@@ -24,7 +24,8 @@ public class ArmStatePositioner extends Command {
             { { 27.5, -17.5 }, { 55.0, -17.5 }, { 82.0, -17.5 } } };
     public static final double HuntPositions[][][] = { { { 5.0, 23.0 }, { 17.5, 23.5 }, { 24.0, 24.0 } },
             { { 5.0, -23.0 }, { 17.5, -23.5 }, { 24.0, -24.0 } } }; // 0: Floor, 1: Cargo, 2: Hatch
-    public static final double[][][] DrivePositions = { { { 49.5, 14.0 }, { 50, 12.0 } }, { { 49.5, -14.0 }, { 50, -12.0 } } };
+    public static final double[][][] DrivePositions = { { { 49.5, 14.0 }, { 50, 12.0 } },
+            { { 49.5, -14.0 }, { 50, -12.0 } } };
 
     private double stateH;
     private double stateP;
@@ -76,23 +77,23 @@ public class ArmStatePositioner extends Command {
 
     @Override
     protected void execute() {
-        // Update Ratelimiter if we just flipped
-        if(checkInverted != arm.isInverted()) {
-            initialize();
-            checkInverted = arm.isInverted();
-            return;
-        }
-
         // Update position based on current mode
         Modes curMode = Robot.m_cmdMgr.getCurMode();
         System.out.println(Robot.m_cmdMgr.logCurHeight());
         int positionIndex = Robot.m_cmdMgr.getPositionIndex();
-        if(curMode != prevMode || positionIndex != prevIndex) {
-            // Update position only if state changes to allow something to override position for that state
+        if (curMode != prevMode || positionIndex != prevIndex) {
+            // Update Ratelimiter if we just flipped
+            if (checkInverted != arm.isInverted()) {
+                initialize();
+                checkInverted = arm.isInverted();
+                return;
+            }
+            // Update position only if state changes to allow something to override position
+            // for that state
             updatePosition(curMode, positionIndex);
         }
 
-        if(curMode.equals(Modes.Construction) || curMode.equals(Modes.SettingZeros)) {
+        if (curMode.equals(Modes.Construction) || curMode.equals(Modes.SettingZeros)) {
             return;
         }
 
@@ -126,9 +127,6 @@ public class ArmStatePositioner extends Command {
         }
         // setExtension
         double extensionLength = MathUtil.limit(calculatedExtension, arm.EXTEND_MIN, arm.EXTEND_MAX);
-
-        System.out.println("ArmStatePositioner Angle: " + curAngle);
-        System.out.println("ArmStatePositioner Extension: " + extensionLength);
 
         arm.setAngle(curAngle);
         arm.setExtension(extensionLength);
@@ -192,7 +190,7 @@ public class ArmStatePositioner extends Command {
     public double getStateProjection() {
         return stateP;
     }
- 
+
     public double getHeightCommanded() {
         double h_driverOffset = heightAdjustCap * Robot.m_oi.adjustHeight(); // driver contrib from triggers
         double h = stateH - h_driverOffset; // state machine + driver so both are rate filtered
