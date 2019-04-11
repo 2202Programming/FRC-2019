@@ -116,7 +116,7 @@ public class OI {
         .whileHeld(new AutoCargoIntakeCommand(0.4));
     new JoystickTrigger(driver, XboxControllerButtonCode.TRIGGER_RIGHT.getCode(), 0.75)
         .whileHeld(new OuttakeTestCmd(0.4));
-    new JoystickButton(assistant, 9).whileHeld(new CopilotControlCommand(0.4, 0.3));;
+    new JoystickButton(assistant, 9).whileHeld(new CopilotControlCommand(0.4, 0.35));;
 
     // Switchboard Assignments 
     /**

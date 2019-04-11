@@ -259,13 +259,13 @@ public class CommandManager {
             break;
         // DeliveryModes
         case DeliverHatch: // based on what we captured
-            delHeightIdx = 0; // start at lowest
+            delHeightIdx = 1; // start at lowest
             wristOffset = 20.0;
             nextCmd = deliveryGrp;
             break;
 
         case DeliverCargo: // based on what we captured
-            delHeightIdx = 0;
+            delHeightIdx = 1;
             wristOffset = 30.0;
             nextCmd = deliveryGrp;
             break;
