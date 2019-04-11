@@ -15,6 +15,5 @@ public class InvertDriveControlsCommand extends InstantCommand {
     @Override
     protected void execute() {
         driveTrain.invertControls();
-        System.out.println("Controls Inverted \t Status: " + driveTrain.getInversionConstant());
     }
 }
