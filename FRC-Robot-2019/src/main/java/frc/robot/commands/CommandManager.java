@@ -204,7 +204,7 @@ public class CommandManager {
             nextCmd = releaseGrp;
             break;
         case Flipping:
-            if(Robot.arm.isInverted()) {
+            if (Robot.arm.isInverted()) {
                 nextCmd = flipToFrontGrp;
             } else {
                 nextCmd = flipToBackGrp;
@@ -427,10 +427,10 @@ public class CommandManager {
         VacuumSensorSystem vs = Robot.intake.getVacuumSensor();
         grp.addSequential(new VacuumCommand(true, 0.0)); // no timeout
         grp.addParallel(new WristTrackAngle(Angle.Starting_Hatch_Hunt.getAngle()));
-        grp.addSequential(new MoveArmToPosition(5.7, 14.5, 0.05, 5)); // Move arm up and back to avoid moving
+        grp.addSequential(new MoveArmToPosition(5.7, 14.5, 0.05, 0.5)); // Move arm up and back to avoid moving
                                                                         // hatch
-        grp.addSequential(new MoveArmToPosition(5.7, 15.8, 0.05, 5)); // Move arm into hatch and intake
-        grp.addSequential(new MoveArmToPosition(5.7, 15.5, 0.05, 5)); // Move arm into hatch and intake
+        grp.addSequential(new MoveArmToPosition(5.7, 15.8, 0.05, 1)); // Move arm into hatch and intake
+        grp.addSequential(new MoveArmToPosition(5.7, 15.5, 0.05, 0.5)); // Move arm into hatch and intake
         grp.addSequential(new TriggerTimeoutCommand(vs::hasVacuum, 1.0)); // waits or sees vacuum and finsishes
         grp.addParallel(new WristTrackAngle(Angle.Parallel.getAngle()));
         grp.addSequential(new NextModeCmd(Modes.HuntingHatch)); // Capture the right previous state
@@ -472,7 +472,7 @@ public class CommandManager {
 
     // TODO: Check for working w/ higher speeds
     private CommandGroup CmdFactoryFlipToBack() {
-        CommandGroup grp = new CommandGroup("Flip");
+        CommandGroup grp = new CommandGroup("FlipToBack");
         grp.addSequential(new WristSetAngleCommand(0.0));
         grp.addSequential(new MoveArmToRawPosition(-50.0, 12.0, 1.0, 20));
         grp.addSequential(new PrevCmd());
@@ -481,7 +481,7 @@ public class CommandManager {
 
     // TODO: Check for working w/ higher speeds
     private CommandGroup CmdFactoryFlipToFront() {
-        CommandGroup grp = new CommandGroup("Flip");
+        CommandGroup grp = new CommandGroup("FlipToFront");
         grp.addSequential(new WristSetAngleCommand(0.0));
         grp.addSequential(new MoveArmToRawPosition(50.0, 12.0, 1.0, 20));
         grp.addSequential(new PrevCmd());

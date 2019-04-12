@@ -15,11 +15,8 @@ public class WristStatePositioner extends Command {
             { { Angle.Parallel.getAngle() }, { Angle.Back_Parallel.getAngle() } }, // Setting Zeros
             { { Angle.Starting_Hatch_Hunt.getAngle() }, { Angle.Back_Parallel.getAngle() } }, // HuntGameStart
             { { Angle.Parallel.getAngle() }, { Angle.Back_Parallel.getAngle() } }, // HuntingHatch
-            { { Angle.Perpendicular_Down.getAngle() }, { Angle.Perpendicular_Up.getAngle() } }, // HuntingCargo (When
-                                                                                                // inverted
-                                                                                                // perpendicular up is
-                                                                                                // actually down)
-            { { Angle.Perpendicular_Down.getAngle() }, { Angle.Perpendicular_Up.getAngle() } }, // HuntingFloor
+            { { Angle.Perpendicular_Down.getAngle() }, { Angle.Back_Perpendicular_Down.getAngle() } }, // HuntingCargo
+            { { Angle.Perpendicular_Down.getAngle() }, { Angle.Back_Perpendicular_Down.getAngle() } }, // HuntingFloor
             { { Angle.Parallel.getAngle() }, { Angle.Back_Parallel.getAngle() } }, // Capturing
             { { Angle.Parallel.getAngle() }, { Angle.Back_Parallel.getAngle() } }, // Recapturing
             { { Angle.Parallel.getAngle(), Angle.Parallel.getAngle(), Angle.Parallel.getAngle() },
@@ -69,5 +66,20 @@ public class WristStatePositioner extends Command {
     @Override
     protected boolean isFinished() {
         return false;
+    }
+
+    @Override
+    protected void interrupted() {
+        // Update position based on current mode
+        Modes curMode = Robot.m_cmdMgr.getCurMode();
+        int invert = Robot.arm.isInverted() ? 1 : 0;
+        int index = Robot.m_cmdMgr.getPositionIndex();
+        if (curMode != prevMode || index != prevIndex) {
+            // Update position only if state changes to allow something to override position
+            // for that state
+            curAngle = angles[curMode.get()][invert][index];
+            prevMode = curMode;
+            prevIndex = index;
+        }
     }
 }

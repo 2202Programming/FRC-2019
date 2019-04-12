@@ -65,6 +65,7 @@ public class ArmStatePositioner extends Command {
                 -80.0, // inches/sec // falling rate limit
                 80.0, // inches/sec //raising rate limit
                 InputModel.Position);
+                checkInverted = arm.isInverted();
     }
 
     @Override
@@ -72,14 +73,12 @@ public class ArmStatePositioner extends Command {
         heightLimiter.initialize();
         projectionLimiter.initialize();
         projectionAdjustLimiter.initialize();
-        checkInverted = arm.isInverted();
     }
 
     @Override
     protected void execute() {
         // Update position based on current mode
         Modes curMode = Robot.m_cmdMgr.getCurMode();
-        System.out.println(Robot.m_cmdMgr.logCurHeight());
         int positionIndex = Robot.m_cmdMgr.getPositionIndex();
         if (curMode != prevMode || positionIndex != prevIndex) {
             // Update Ratelimiter if we just flipped
@@ -90,6 +89,7 @@ public class ArmStatePositioner extends Command {
             }
             // Update position only if state changes to allow something to override position
             // for that state
+            System.out.println("Switch States from " + prevMode + " to " + curMode);
             updatePosition(curMode, positionIndex);
         }
 
@@ -103,8 +103,6 @@ public class ArmStatePositioner extends Command {
         projectionAdjustLimiter.execute();
         double h_cmd = heightLimiter.get();
         double x_cmd = projectionLimiter.get();
-        System.out.println("ArmStatePositioner height: " + h_cmd);
-        System.out.println("ArmStatePositioner projection: " + x_cmd);
         double heightAbovePivot = h_cmd - arm.ARM_PIVOT_HEIGHT;
 
         // Adjusts x_cmd so h_cmd is always reached
@@ -134,6 +132,24 @@ public class ArmStatePositioner extends Command {
 
     protected boolean isFinished() {
         return false;
+    }
+
+    @Override
+    protected void interrupted() {
+        Modes curMode = Robot.m_cmdMgr.getCurMode();
+        int positionIndex = Robot.m_cmdMgr.getPositionIndex();
+        if (curMode != prevMode || positionIndex != prevIndex) {
+            // Update Ratelimiter if we just flipped
+            if (checkInverted != arm.isInverted()) {
+                initialize();
+                checkInverted = arm.isInverted();
+                return;
+            }
+            // Update position only if state changes to allow something to override position
+            // for that state
+            System.out.println("Switch States from " + prevMode + " to " + curMode);
+            updatePosition(curMode, positionIndex);
+        }
     }
 
     private void updatePosition(Modes curMode, int index) {
