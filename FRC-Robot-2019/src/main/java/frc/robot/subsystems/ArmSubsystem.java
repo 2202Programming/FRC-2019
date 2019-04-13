@@ -201,7 +201,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
     double limited_L = MathUtil.limit(desired_L, min_l_at_phi, max_l_at_phi);
 
     // Set extensionOverrided boolean
-    extensionOverrided = !(Math.abs(limited_L - desired_L) <= 10e6);
+    extensionOverrided = !(Math.abs(limited_L - desired_L) <= 1e-6);
 
     // Print Warning
     if (desired_L < min_l_at_phi) {
