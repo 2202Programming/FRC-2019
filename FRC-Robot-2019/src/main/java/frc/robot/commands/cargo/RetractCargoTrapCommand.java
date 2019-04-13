@@ -18,5 +18,6 @@ public class RetractCargoTrapCommand extends InstantCommand {
     @Override
     protected void execute() {
         Robot.cargoTrap.retractTrap();
+        Robot.cargoTrap.setIntake(0.0);
     }
 }

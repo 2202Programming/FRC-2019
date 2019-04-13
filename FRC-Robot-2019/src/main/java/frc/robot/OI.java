@@ -110,13 +110,13 @@ public class OI {
     new JoystickButton(driver, XboxControllerButtonCode.B.getCode())
         .whenPressed(new ToggleAutomaticGearShiftingCommand());
     new JoystickButton(driver, XboxControllerButtonCode.X.getCode()).whenPressed(new InvertDriveControlsCommand());
-    new JoystickButton(driver, XboxControllerButtonCode.LB.getCode()).whileHeld(new LimeLightArcadeDriveCommand(0.4));
+    new JoystickButton(driver, XboxControllerButtonCode.LB.getCode()).whileHeld(new LimeLightArcadeDriveCommand(0.8));
     new JoystickButton(driver, XboxControllerButtonCode.RB.getCode()).whenPressed(new AutomaticUpShiftCommand());
     new JoystickTrigger(driver, XboxControllerButtonCode.TRIGGER_LEFT.getCode(), 0.75)
         .whileHeld(new AutoCargoIntakeCommand(0.4));
     new JoystickTrigger(driver, XboxControllerButtonCode.TRIGGER_RIGHT.getCode(), 0.75)
         .whileHeld(new OuttakeTestCmd(0.4));
-    new JoystickButton(assistant, 9).whileHeld(new CopilotControlCommand(0.4, 0.3));;
+    new JoystickButton(assistant, 9).whileHeld(new CopilotControlCommand(0.4, 0.35));;
 
     // Switchboard Assignments 
     /**

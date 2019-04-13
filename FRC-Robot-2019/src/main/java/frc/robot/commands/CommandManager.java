@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.buttons.Trigger;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj.command.WaitCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.commands.arm.ArmStatePositioner;
@@ -190,12 +191,12 @@ public class CommandManager {
             break;
         // DeliveryModes
         case DeliverHatch: // based on what we captured
-            delHeightIdx = 0; // start at lowest
+            delHeightIdx = 1; // start at lowest
             nextCmd = deliveryGrp;
             break;
 
         case DeliverCargo: // based on what we captured
-            delHeightIdx = 0;
+            delHeightIdx = 1;
             nextCmd = deliveryGrp;
             break;
 

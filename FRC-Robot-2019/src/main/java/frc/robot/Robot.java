@@ -184,7 +184,7 @@ public class Robot extends TimedRobot {
    @Override
    public void testInit() {
      m_testRobot.initialize();
-     sensorSubystem.enableLED(); //active limelight LED when operational
+     sensorSubystem.disableLED(); //active limelight LED when operational
      Scheduler.getInstance().enable();   //### hack? or required?  Seems required otherwise nothing runs 
    }
 
