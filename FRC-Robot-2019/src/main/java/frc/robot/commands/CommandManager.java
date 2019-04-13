@@ -50,7 +50,9 @@ public class CommandManager {
     CommandGroup deliveryGrp;
     CommandGroup releaseGrp;
     CommandGroup flipToFrontGrp;
+    CommandGroup flipToFrontGrpFast;
     CommandGroup flipToBackGrp;
+    CommandGroup flipToBackGrpFast;
     CommandGroup driveGrp;
     CommandGroup currentGrp; // what is running
 
@@ -134,7 +136,9 @@ public class CommandManager {
         deliveryGrp = CmdFactoryDelivery();
         releaseGrp = CmdFactoryRelease();
         flipToFrontGrp = CmdFactoryFlipToFront(); // (dpl - keep from mistakes for now) CmdFactoryFlip();
+        flipToFrontGrpFast = CmdFactoryFlipToFrontFast(); // (dpl - keep from mistakes for now) CmdFactoryFlip();
         flipToBackGrp = CmdFactoryFlipToBack();
+        flipToBackGrpFast = CmdFactoryFlipToBackFast();
     }
 
     /**
@@ -206,9 +210,17 @@ public class CommandManager {
             break;
         case Flipping:
             if (Robot.arm.isInverted()) {
-                nextCmd = flipToFrontGrp;
+                if (Robot.intake.getVacuumSensor().hasVacuum()) {
+                    nextCmd = flipToFrontGrp;
+                } else {
+                    nextCmd = flipToFrontGrpFast;
+                }
             } else {
-                nextCmd = flipToBackGrp;
+                if (Robot.intake.getVacuumSensor().hasVacuum()) {
+                    nextCmd = flipToBackGrp;
+                } else {
+                    nextCmd = flipToBackGrpFast;
+                }
             }
             break;
         default:
@@ -481,10 +493,28 @@ public class CommandManager {
     }
 
     // TODO: Check for working w/ higher speeds
+    private CommandGroup CmdFactoryFlipToBackFast() {
+        CommandGroup grp = new CommandGroup("FlipToBack");
+        grp.addSequential(new WristSetAngleCommand(0.0));
+        grp.addSequential(new MoveArmToRawPosition(-35.0, 12.0, 1.0, 360));
+        grp.addSequential(new PrevCmd());
+        return grp;
+    }
+
+    // TODO: Check for working w/ higher speeds
     private CommandGroup CmdFactoryFlipToFront() {
         CommandGroup grp = new CommandGroup("FlipToFront");
         grp.addSequential(new WristSetAngleCommand(0.0));
         grp.addSequential(new MoveArmToRawPosition(35.0, 12.0, 1.0, 180));
+        grp.addSequential(new PrevCmd());
+        return grp;
+    }
+
+    // TODO: Check for working w/ higher speeds
+    private CommandGroup CmdFactoryFlipToFrontFast() {
+        CommandGroup grp = new CommandGroup("FlipToFront");
+        grp.addSequential(new WristSetAngleCommand(0.0));
+        grp.addSequential(new MoveArmToRawPosition(35.0, 12.0, 1.0, 360));
         grp.addSequential(new PrevCmd());
         return grp;
     }
