@@ -494,7 +494,7 @@ public class CommandManager {
 
     // TODO: Check for working w/ higher speeds
     private CommandGroup CmdFactoryFlipToBackFast() {
-        CommandGroup grp = new CommandGroup("FlipToBack");
+        CommandGroup grp = new CommandGroup("FlipToBackFast");
         grp.addSequential(new WristSetAngleCommand(0.0));
         grp.addSequential(new MoveArmToRawPosition(-35.0, 12.0, 1.0, 360));
         grp.addSequential(new PrevCmd());
@@ -512,7 +512,7 @@ public class CommandManager {
 
     // TODO: Check for working w/ higher speeds
     private CommandGroup CmdFactoryFlipToFrontFast() {
-        CommandGroup grp = new CommandGroup("FlipToFront");
+        CommandGroup grp = new CommandGroup("FlipToFrontFast");
         grp.addSequential(new WristSetAngleCommand(0.0));
         grp.addSequential(new MoveArmToRawPosition(35.0, 12.0, 1.0, 360));
         grp.addSequential(new PrevCmd());
