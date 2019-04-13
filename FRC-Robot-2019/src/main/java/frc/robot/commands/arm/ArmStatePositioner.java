@@ -139,15 +139,8 @@ public class ArmStatePositioner extends Command {
         Modes curMode = Robot.m_cmdMgr.getCurMode();
         int positionIndex = Robot.m_cmdMgr.getPositionIndex();
         if (curMode != prevMode || positionIndex != prevIndex) {
-            // Update Ratelimiter if we just flipped
-            if (checkInverted != arm.isInverted()) {
-                initialize();
-                checkInverted = arm.isInverted();
-                return;
-            }
             // Update position only if state changes to allow something to override position
             // for that state
-            System.out.println("Switch States from " + prevMode + " to " + curMode);
             updatePosition(curMode, positionIndex);
         }
     }
