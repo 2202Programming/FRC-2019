@@ -19,8 +19,7 @@ public class ClimbGroup extends CommandGroup {
 
         //if separate command to bring up robot change to parallel
         addSequential(Robot.climber.zeroSubsystem());   //hack to zero counters
-        //addSequential(new FlipCommand(97, 90, 22, 0.5, 20));
-        addParallel(new FlipCommand(90, -90, 12, 0.5, 20));        
+        addParallel(new MoveArmToRawPosition(-90, 12, 0.5, 20));        
         addSequential(new PawlSureFire(Robot.climber.Extend, 4));
         addSequential(new DeployClimbFoot(0.9, climbHeight));    // 20.5 uses limit switch
         //go forward while driving foot
