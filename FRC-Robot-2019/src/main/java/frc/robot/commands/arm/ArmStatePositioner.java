@@ -19,13 +19,13 @@ public class ArmStatePositioner extends Command {
 
     // Positions in form (InversionState, Height, Position)
     public static final double DeliveryCargoPositions[][][] = { { { 26.875, 17.5 }, { 55.0, 17.5 }, { 84.0, 17.5 } },
-            { { 26.875, -17.5 }, { 55.0, -17.5 }, { 84.0, -17.5 } } };
+            { { 28.875, -17.5 }, { 57.0, -17.5 }, { 86.0, -17.5 } } };
     public static final double DeliveryHatchPositions[][][] = { { { 27.5, 17.5 }, { 55.0, 17.5 }, { 82.0, 17.5 } },
-            { { 27.5, -17.5 }, { 55.0, -17.5 }, { 82.0, -17.5 } } };
+            { { 29.5, -17.5 }, { 57.0, -17.5 }, { 84.0, -17.5 } } };
     public static final double HuntPositions[][][] = { { { 5.0, 23.0 }, { 17.5, 23.5 }, { 24.0, 24.0 } },
-            { { 5.0, -23.0 }, { 17.5, -23.5 }, { 24.0, -24.0 } } }; // 0: Floor, 1: Cargo, 2: Hatch
+            { { 7.0, -23.0 }, { 19.5, -23.5 }, { 28.5, -24.0 } } }; // 0: Floor, 1: Cargo, 2: Hatch
     public static final double[][][] DrivePositions = { { { 49.5, 14.0 }, { 50, 12.0 } },
-            { { 49.5, -14.0 }, { 50, -12.0 } } };
+            { { 51.5, -14.0 }, { 52, -12.0 } } };
 
     private double stateH;
     private double stateP;
@@ -201,13 +201,15 @@ public class ArmStatePositioner extends Command {
     }
 
     public double getHeightCommanded() {
-        double h_driverOffset = heightAdjustCap * Robot.m_oi.adjustHeight(); // driver contrib from triggers
+        int invertMultiplier = Robot.arm.isInverted()? -1 : 1;
+        double h_driverOffset = invertMultiplier * heightAdjustCap * Robot.m_oi.adjustHeight(); // driver contrib from triggers
         double h = stateH - h_driverOffset; // state machine + driver so both are rate filtered
         return h;
     }
 
     public double getProjectionCommanded() {
-        double x_driverOffset = projectionAdjustLimiter.get(); // co-driver's offset.
+        int invertMultiplier = Robot.arm.isInverted()? -1 : 1;
+        double x_driverOffset = invertMultiplier * projectionAdjustLimiter.get(); // co-driver's offset.
         double x = stateP + x_driverOffset;
         return x;
     }

@@ -16,6 +16,7 @@ public class MoveArmToRawPosition extends Command {
         requires(Robot.arm);
         this.endAngle = angle;
         this.extension = extension;
+        this.degreesPerSecond = degreesPerSecond;
         tolerance = endTolerance;
     }
 

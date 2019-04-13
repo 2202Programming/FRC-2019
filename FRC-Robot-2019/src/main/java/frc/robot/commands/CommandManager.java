@@ -474,7 +474,7 @@ public class CommandManager {
     private CommandGroup CmdFactoryFlipToBack() {
         CommandGroup grp = new CommandGroup("FlipToBack");
         grp.addSequential(new WristSetAngleCommand(0.0));
-        grp.addSequential(new MoveArmToRawPosition(-50.0, 12.0, 1.0, 20));
+        grp.addSequential(new MoveArmToRawPosition(-35.0, 12.0, 1.0, 180));
         grp.addSequential(new PrevCmd());
         return grp;
     }
@@ -483,7 +483,7 @@ public class CommandManager {
     private CommandGroup CmdFactoryFlipToFront() {
         CommandGroup grp = new CommandGroup("FlipToFront");
         grp.addSequential(new WristSetAngleCommand(0.0));
-        grp.addSequential(new MoveArmToRawPosition(50.0, 12.0, 1.0, 20));
+        grp.addSequential(new MoveArmToRawPosition(35.0, 12.0, 1.0, 180));
         grp.addSequential(new PrevCmd());
         return grp;
     }
