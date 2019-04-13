@@ -121,7 +121,7 @@ public class CommandManager {
 
     final Modes huntingModes[] = { Modes.HuntingFloor, Modes.HuntingCargo, Modes.HuntingHatch };
     final double HuntHeights[] = { 5.0, 17.5, 24.0 }; // height from floor, H,C,Floor TODO:fix numbers
-    final double huntProjection[] = { 23.0, 23.5, 24.0 }; // TODO: fix the numbers
+    final double huntProjection[] = { 23.0, 21.0, 24.0 }; // TODO: fix the numbers
     int huntModeIdx = 2; // hatch
 
     private int driveIdx = 1;
