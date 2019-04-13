@@ -65,7 +65,7 @@ public class ArmStatePositioner extends Command {
                 -80.0, // inches/sec // falling rate limit
                 80.0, // inches/sec //raising rate limit
                 InputModel.Position);
-                checkInverted = arm.isInverted();
+        checkInverted = arm.isInverted();
     }
 
     @Override
@@ -81,15 +81,15 @@ public class ArmStatePositioner extends Command {
         Modes curMode = Robot.m_cmdMgr.getCurMode();
         int positionIndex = Robot.m_cmdMgr.getPositionIndex();
         if (curMode != prevMode || positionIndex != prevIndex) {
+            // Update position only if state changes to allow something to override position
+            // for that state
+            System.out.println("Switch States from " + prevMode + " to " + curMode);
             // Update Ratelimiter if we just flipped
             if (checkInverted != arm.isInverted()) {
                 initialize();
                 checkInverted = arm.isInverted();
                 return;
             }
-            // Update position only if state changes to allow something to override position
-            // for that state
-            System.out.println("Switch States from " + prevMode + " to " + curMode);
             updatePosition(curMode, positionIndex);
         }
 
