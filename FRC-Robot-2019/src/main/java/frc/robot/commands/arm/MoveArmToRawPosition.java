@@ -41,6 +41,7 @@ public class MoveArmToRawPosition extends Command {
             } else {
                 curAngle = Math.min(curAngle + step, endAngle);
             }
+            System.out.println("MoveArmToRawPosition New Angle: " + curAngle);
         }
     }
 
