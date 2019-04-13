@@ -21,19 +21,17 @@ public class MoveArmToRawPosition extends Command {
 
     @Override
     protected void initialize() {
+        System.out.println("MoveArmToRawPosition EndAngle: " + endAngle);
         curAngle = Robot.arm.getRealAngle();
-        step = Math.signum(endAngle - curAngle) * (degreesPerSecond * Robot.kDefaultPeriod); // step is the # of
-                                                                                             // degrees to change per
-                                                                                             // cycle
-        execute();
+        step = Math.copySign(degreesPerSecond * Robot.kDefaultPeriod, endAngle - curAngle); // step is the # of
+                                                                                            // degrees to change per
+                                                                                            // cycle
+        System.out.println("MoveArmToRawPosition Step: " + step);
     }
 
     @Override
     protected void execute() {
         Robot.arm.setExtension(extension);
-        System.out.println("MoveArmToRawPosition Extension: " + extension);
-        System.out.println("MoveArmToRawPosition Tolerance within: " + (Math.abs(Robot.arm.getExtension() - extension) <= 0.5));
-        System.out.println("MoveArmToRawPosition Extension Overrided: " + Robot.arm.isExtensionOverrided());
         if (Math.abs(Robot.arm.getExtension() - extension) <= 0.5 || Robot.arm.isExtensionOverrided()) {
             System.out.println("MoveArmToRawPosition Angle: " + curAngle);
             Robot.arm.setAngle(curAngle);
