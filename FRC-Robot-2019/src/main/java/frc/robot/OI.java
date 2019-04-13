@@ -142,6 +142,8 @@ public class OI {
 
     new GeneralTrigger(Robot.arm::extensionAtMin).whenPressed(new ResetArmCommand());
 
+    new GeneralTrigger(Robot.arm::extensionAtMin).whenPressed(new ResetArmCommand());
+
     // setup buttons for use in CommandManager
     heightDownSelect = new JoystickButton(assistant, XboxControllerButtonCode.LB.getCode());
     heightUpSelect = new JoystickButton(assistant, XboxControllerButtonCode.RB.getCode());

@@ -9,6 +9,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
+import frc.robot.commands.arm.ArmStatePositioner;
 import frc.robot.subsystems.ArmSubsystem.Position;
 
 public class GripperPositionCommand extends Command {
@@ -19,6 +20,7 @@ public class GripperPositionCommand extends Command {
   
   // Phyical values from sub-systems as needed
   Position armPosition;
+  private ArmStatePositioner armPositioner;
 
   public GripperPositionCommand(double height, double projx, double error, double timeout) {
       this.height = height;
@@ -30,7 +32,9 @@ public class GripperPositionCommand extends Command {
   @Override
   protected void initialize() {
       setTimeout(timeout);
-      Robot.m_cmdMgr.cmdPosition(height, projx); // sets the CommandManagers h/x output
+      // Assume that the ArmStatePositioner is the only type of default command used
+      armPositioner = Robot.arm.getArmPositioner();;
+      armPositioner.setPosition(height, projx); // sets the CommandManagers h/x output
       armPosition = Robot.arm.getArmPosition();
   }
 

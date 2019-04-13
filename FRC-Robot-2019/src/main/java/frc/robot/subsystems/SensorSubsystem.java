@@ -70,7 +70,6 @@ public class SensorSubsystem extends Subsystem {
       SmartDashboard.putNumber("Back Distance", getDistanceBack());
       SmartDashboard.putNumber("Limelight Angle Distance", getLimelightDistanceByAngle());
       SmartDashboard.putNumber("Limelight Area Distance", getLimelightDistanceByArea());
-      SmartDashboard.putBoolean("Limelight Has Target", limeLight.hasTarget());
     }
   }
  

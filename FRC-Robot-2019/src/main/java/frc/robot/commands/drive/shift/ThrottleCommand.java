@@ -3,14 +3,12 @@ package frc.robot.commands.drive.shift;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.subsystems.DriveTrainSubsystem;
 
 /**
  * An example command. You can replace me with your own command.
  */
 public class ThrottleCommand extends Command {
   private final double CYCLE_TIME_IN_SECONDS = 0.020;
-  private DriveTrainSubsystem driveTrain;
   private int cycleCount;
   private int maxCycles;
   private double stepValue;
@@ -23,7 +21,6 @@ public class ThrottleCommand extends Command {
   public ThrottleCommand(double rampTime, double startValue, double endValue) {
     // Use requires() here to declare subsystem dependencies
     requires(Robot.driveTrain);
-    driveTrain = Robot.driveTrain;
     maxCycles = (int) Math.ceil(rampTime / CYCLE_TIME_IN_SECONDS);
     this.startValue = startValue;
     stepValue = (endValue - startValue) / maxCycles;
@@ -49,8 +46,8 @@ public class ThrottleCommand extends Command {
 
   @Override
   protected boolean isFinished() {
-    double leftSpeed = Math.abs(driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity());
-    double rightSpeed = Math.abs(driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
+    double leftSpeed = Math.abs(Robot.driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity());
+    double rightSpeed = Math.abs(Robot.driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
     double curSpeed = (leftSpeed + rightSpeed) / 2.0;
     double shiftSpeed = AutomaticGearShiftCommand.DOWNSHIFT_SPEED_LOW * AutomaticGearShiftCommand.MAXSPEED_IN_COUNTS_PER_SECOND;
     return cycleCount >= maxCycles || curSpeed < shiftSpeed;

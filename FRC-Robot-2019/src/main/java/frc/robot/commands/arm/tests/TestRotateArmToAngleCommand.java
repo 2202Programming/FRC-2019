@@ -29,7 +29,7 @@ public class TestRotateArmToAngleCommand extends Command {
     }
 
     protected boolean isFinished() {
-        boolean pos = Math.abs(Robot.arm.getAbsoluteAngle() - angle) < kTolerance; 
+        boolean pos = Math.abs(Robot.arm.getRealAngle() - angle) < kTolerance; 
         return pos || isTimedOut();  
     }
 }

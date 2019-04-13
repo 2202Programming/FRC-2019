@@ -1,14 +1,12 @@
 package frc.robot.commands.climb;
 
-import frc.robot.commands.drive.DriveByPowerAndJoystickCommand;
-import frc.robot.commands.drive.DriveByPowerCommand;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.WaitCommand;
-import frc.robot.commands.CallFunctionCommand;
 import frc.robot.Robot;
+import frc.robot.commands.CallFunctionCommand;
 import frc.robot.commands.GripperPositionCommand;
-import frc.robot.commands.arm.FlipCommand;
-import frc.robot.commands.arm.MoveArmAtHeight;
+import frc.robot.commands.arm.MoveArmToRawPosition;
+import frc.robot.commands.drive.DriveByPowerAndJoystickCommand;
 
 public class ClimbGroup extends CommandGroup {
     public ClimbGroup(double climbHeight, double retractHeight) {
