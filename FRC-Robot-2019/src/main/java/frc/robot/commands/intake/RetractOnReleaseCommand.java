@@ -1,33 +1,40 @@
 package frc.robot.commands.intake;
 
 import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.commands.CommandManager;
+import frc.robot.commands.arm.ArmStatePositioner;
 
 public class RetractOnReleaseCommand extends Command {
   BooleanSupplier releaseCheckFunc;
   double x_retract;
   double timeout;
-  CommandManager cmdMgr;
   double init_x;
   double init_h;
+  private ArmStatePositioner armPositioner;
 
   public RetractOnReleaseCommand(CommandManager cmdMgr, double x_retract, double timeout) {
     //could require(vacSensor0)
     this.releaseCheckFunc = Robot.intake.getVacuumSensor()::hasReleased;
     this.x_retract = x_retract;
     this.timeout = timeout;
-    this.cmdMgr = cmdMgr;
   }
 
   // Called just before this Command runs the first time
   @Override
   protected void initialize() {
+    // Assume that the ArmStatePositioner is the only type of default command used
+    armPositioner = Robot.arm.getArmPositioner();;
     //save were we are so we can tweek it on finish
-    init_x = cmdMgr.gripperXProjectionOut();
-    init_h = cmdMgr.gripperHeightOut();
+    init_x = armPositioner.getProjectionCommanded();
+    init_h = armPositioner.getHeightCommanded();
+    double x = init_x;
+    int invertMultiplier = Robot.arm.isInverted()? -1 : 1;
+    x -= invertMultiplier * x_retract;   //move back a bit, account for side.
+    armPositioner.setPosition(init_h, x);
     setTimeout(timeout);
   }
 
@@ -37,6 +44,7 @@ public class RetractOnReleaseCommand extends Command {
    //DEBUG CODE
     boolean rc= releaseCheckFunc.getAsBoolean();
     SmartDashboard.putBoolean("ReleaseSensor", rc);
+    // we are done, we timed out or we got the vacuum release signal,  move us back.
   }
 
   // Make this return true when this Command no longer needs to run execute()
@@ -48,10 +56,6 @@ public class RetractOnReleaseCommand extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    // we are done, we timed out or we got the vacuum release signal,  move us back.
-    double x = init_x;
-    x -= Robot.arm.getInversion()*x_retract;   //move back a bit, account for side.
-    cmdMgr.cmdPosition(init_h, x);
   }
 
   // Called when another command which requires one or more of the same

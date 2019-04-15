@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
+import frc.robot.commands.arm.ArmStatePositioner;
 import frc.robot.commands.arm.ArmZero;
 import frc.robot.commands.util.MathUtil;
 
@@ -40,18 +41,23 @@ public class ArmSubsystem extends ExtendedSubSystem {
   private DigitalInput extensionAtMin = new DigitalInput(RobotMap.ARM_MIN_EXTENSION_SENSOR_PIN);
 
   // Constants used by commands as measured
-  //When on the ground we can't touch the hard stop. We are off by ~1 degree
-  private double PHI0 = 158.0; // degrees, starting position - encoder zero 
+  // When on the ground we can't touch the hard stop. We are off by ~1 degree
+  public final double PHI0 = 158.0; // degrees, starting position - encoder zero
   public final double PHI_MAX = 158.0; // In Degrees, Positive is foward, bottom front
-  public final double PHI_MIN = 18.0; // In Degrees, Near top front
+  public final double PHI_FRONT_MIN = 25.0; // In Degrees, Near top front
+  public final double PHI_BACK_MAX = -25.0; // In degrees
+  public final double PHI_MIN = -140.0; // In degress
 
-  private final double kCounts_per_deg = 600; //back to practice bot
+  private final double kCounts_per_deg = 600; // back to practice bot
   private final double kDeg_per_count = 1.0 / kCounts_per_deg;
 
   // Geometry of the arm's pivot point
   public final double PIVOT_TO_FRONT = 16.5; // inches pivot center to the frame
-  public final double MIN_PROJECTION = PIVOT_TO_FRONT - 6.5; // inches from pivot to close arm position
+  public final double MIN_FRONT_PROJECTION = PIVOT_TO_FRONT - 6.5; // inches from pivot to close arm position
+  public final double MIN_BACK_PROJECTION = -MIN_FRONT_PROJECTION;
   public final double MAX_PROJECTION = PIVOT_TO_FRONT + Robot.kProjectConstraint; //
+  public final double MIN_PROJECTION = -MAX_PROJECTION - 1.0; // In inches with a offset because the pivot isn't in the
+                                                              // center
 
   // Extender phyiscal numbers
   public final double L0 = 8.875; // inches - starting point, encoder zero -set 2/24/2019
@@ -61,6 +67,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public final double ARM_BASE_LENGTH = 18.0; // inches - measured practice bot (from pivot center) xg 2/16/19
   public final double ARM_PIVOT_HEIGHT = 30.25; // inches - measured practice bot
   public final double WRIST_LENGTH = 4.5; // inches - measured practice bot 2/26/19
+  public final double MAX_ARM_LENGTH = EXTEND_MAX + ARM_BASE_LENGTH + WRIST_LENGTH; // TODO: Find real max length of arm
 
   private final double kCounts_per_in = -600.0; // measured practice bot 2/24/2019
   private final double kIn_per_count = 1.0 / kCounts_per_in;
@@ -71,19 +78,19 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
   // talon controls
   final int PIDIdx = 0; // using pid 0 on talon
-  final int TO = 30; // timeout 30ms
+  final int TO = 30; // timeout, we shouldn't really need one TODO try 0
 
   private long logTimer;
 
   public class Position {
-    public double height;
-    public double projection;
+    public double height; // inches above floor
+    public double projection; // inches in front of pivot point
   };
 
   // outputs in robot coordinates h,ext (inches)
   Position position = new Position();
 
-  private short inversionConstant;
+  private boolean extensionOverrided;
 
   /**
    * Creates a new arm/lift subsystem.
@@ -107,7 +114,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
     armExtensionMotor.config_kP(0, 0.6);
     armExtensionMotor.config_kD(0, 0.8);
     armExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
-    armExtensionMotor.setIntegralAccumulator(0, 0, 30);
+    armExtensionMotor.setIntegralAccumulator(0, 0, TO);
     armExtensionMotor.setSensorPhase(false);
     armExtensionMotor.setInverted(true);
     armExtensionMotor.configPeakOutputForward(0.5);
@@ -120,7 +127,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
     zeroArm(); // will also get called on transition to teleOp, should arms be moved
 
-    inversionConstant = 1;
+    extensionOverrided = false;
   }
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
@@ -180,7 +187,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
    */
   public void setAngle(double angle) {
     // If inverted, translate based on max angle backwards
-    double counts = (PHI0 - inversionConstant * angle) * kCounts_per_deg;
+    double counts = (PHI0 - angle) * kCounts_per_deg;
     armRotationMotor.set(ControlMode.Position, counts);
   }
 
@@ -197,41 +204,42 @@ public class ArmSubsystem extends ExtendedSubSystem {
     return angle;
   }
 
-  public double getAbsoluteAngle() {
-    double counts = armRotationMotor.getSelectedSensorPosition();
-    double angle = PHI0 - counts * kDeg_per_count;
-    return inversionConstant * angle;
-  }
-
   /**
    * Extends the extension to the length given. Compensate for the arm angle, phi,
    * so the desired extension is maintained.
    * 
-   * Because the encoders are zeroed at PHI0 and D0 they must be accounted for...
+   * Because the encoders are zeroed at PHI0 and L0 they must be accounted for...
    * At phi == phi0 there is no changes in length.
    * 
-   * @param extendInch (inches) to set the arm.
+   * If we reset the talon with limit switch, we set new Phi0_l0 and L0
+   * 
+   * @param desired_L The desired extension of the Arm from beginning of the arm
+   *                  housing to the back of the wrist motor
    */
   public void setExtension(double desired_L) {
     double angle = getRealAngle(); // current angle
 
-    //Limit Extension
+    // Limit Extension
     double min_l_at_phi = getMinExtension(angle);
     double max_l_at_phi = getMaxExtension(angle);
-    desired_L = MathUtil.limit(desired_L, min_l_at_phi, max_l_at_phi);
+    double limited_L = MathUtil.limit(desired_L, min_l_at_phi, max_l_at_phi);
 
-    //Print Warning
+    // Set extensionOverrided boolean
+    extensionOverrided = !(Math.abs(limited_L - desired_L) <= 1e-6);
+
+    // Print Warning
     if (desired_L < min_l_at_phi) {
       System.out.println("Desired Arm:Extension below minimum of " + min_l_at_phi + " inches.");
-    } else if(desired_L > max_l_at_phi) {
+    } else if (desired_L > max_l_at_phi) {
       System.out.println("Desired Arm:Extension above maximum of " + max_l_at_phi + " inches.");
     }
     
-    SmartDashboard.putNumber("Extension Calculated", desired_L);
+
+    SmartDashboard.putNumber("Extension Calculated", limited_L);
 
     // Adjust length to match L0 and account for compLen
-    double compLen = ((angle - PHI0) * k_dl_dphi); // ext due to rotation to compensate for 
-    double cmd_L = desired_L - L0 - compLen;
+    double compLen = ((angle - PHI0) * k_dl_dphi); // ext due to rotation to compensate for
+    double cmd_L = limited_L - L0 - compLen;
     SmartDashboard.putNumber("Extension Compensation", compLen);
     SmartDashboard.putNumber("Extension Set", cmd_L);
 
@@ -240,35 +248,38 @@ public class ArmSubsystem extends ExtendedSubSystem {
   }
 
   /**
-   *  Returns the minimal extention in inches based on an arm angle in degrees.
-   * Vaild over full range of phi 
+   * Returns the minimal extention in inches based on an arm angle in degrees.
+   * Vaild over full range of phi
    * 
    * @param angle
    * @return
    */
   public double getMinExtension(double angle) {
-    if(-35.0 < angle && angle < 31.0) {
+    if(-35.0 < angle && angle < 32.0) {
       return STARTING_EXTENSION;
     }
     return EXTEND_MIN;
   }
 
   /**
-   * Returns the max extension based on arm angle.
-   * PhiCrit is the cutoff where we need to make sure we limit our max length.
-   * Less than PhiCrit we can have full extension and stay in the box.
+   * Returns the max extension based on arm angle. PhiCrit is the cutoff where we
+   * need to make sure we limit our max length. Less than PhiCrit we can have full
+   * extension and stay in the box.
    * 
-   * Valid over full range of Phi, except for minor error if we are on the backside
-   * of the robot. On backside, the MAX_PROJECTION is off by about 1/2 inch.
+   * Valid over full range of Phi, except for minor error if we are on the
+   * backside of the robot. On backside, the MAX_PROJECTION is off by about 1/2
+   * inch.
    * 
    * @param angle
    * @return
    */
   public double getMaxExtension(double angle) {
-    final double PhiCrit = Math.toDegrees(Math.asin(  (MAX_PROJECTION)/(WRIST_LENGTH + ARM_BASE_LENGTH + EXTEND_MAX) ));
+    final double PhiCrit = Math.toDegrees(Math.asin((MAX_PROJECTION) / (WRIST_LENGTH + ARM_BASE_LENGTH + EXTEND_MAX)));
 
-    double absAngle =Math.abs(angle);
-    if ( absAngle < PhiCrit ) return EXTEND_MAX;
+    double absAngle = Math.abs(angle);
+    if (absAngle < PhiCrit) {
+      return EXTEND_MAX;
+    }
     return (MAX_PROJECTION / Math.sin(Math.toRadians(absAngle))) - ARM_BASE_LENGTH - WRIST_LENGTH;
   }
 
@@ -276,7 +287,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * Gets the extension length of the extension (l) in inches. This is not the
    * total arm lenght, it is just the extension.
    * 
-   * @return extension (l), in inches.
+   * @return extension (desired_l), in inches.
    */
   public double getExtension() {
     int counts = armExtensionMotor.getSelectedSensorPosition();
@@ -286,13 +297,13 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
   /**
    * Gets whether or not the arm is at the state of being the least extended it
-   * can.  Active low on the wiring, we invert the signal
+   * can. Active low on the wiring, we invert the signal
    * 
    * @return <code>true</code> if the arm is at the minimum extension state,
    *         <code>false</code> otherwise.
    */
   public boolean extensionAtMin() {
-    //this signal is active low
+    // this signal is active low
     return !extensionAtMin.get();
   }
 
@@ -307,17 +318,27 @@ public class ArmSubsystem extends ExtendedSubSystem {
     return armExtensionMotor.getSensorCollection().isFwdLimitSwitchClosed();
   }
 
+  public double getHeight() {
+    double height = Math.cos(Math.toRadians(getRealAngle())) * (getExtension() + ARM_BASE_LENGTH + WRIST_LENGTH) + ARM_PIVOT_HEIGHT;
+    return height;
+  }
+
+  public double getProjection() {
+    double projection = Math.sin(Math.toRadians(getRealAngle())) * (getExtension() + ARM_BASE_LENGTH + WRIST_LENGTH);
+    return projection;
+  }
+
   /**
    * Computes height of gripper and projection on floor from pivot, pivot is
    * horizontal zero
    */
   public Position getArmPosition() {
-    double phi = getAbsoluteAngle();
-    double rads = Math.toRadians(90 - phi);
+    double phi = getRealAngle();
+    double rads = Math.toRadians(phi);
     double ext = getExtension(); // includes angle compensation
-    double l = ARM_BASE_LENGTH + WRIST_LENGTH + ext;
-    position.height = ARM_PIVOT_HEIGHT + l * Math.sin(rads);
-    position.projection = l * Math.cos(rads);
+    double desired_l = ARM_BASE_LENGTH + WRIST_LENGTH + ext;
+    position.height = ARM_PIVOT_HEIGHT + desired_l * Math.cos(rads);
+    position.projection = desired_l * Math.sin(rads);
     return position;
   }
 
@@ -328,9 +349,25 @@ public class ArmSubsystem extends ExtendedSubSystem {
     return (compLen);
   }
 
+  public ArmStatePositioner getArmPositioner() {
+    return (ArmStatePositioner) getDefaultCommand();
+  }
+
+  /**
+   * Gets whether the arm is inverted
+   * 
+   * @return Inversion status
+   */
+  public boolean isInverted() {
+    return getRealAngle() < 0;
+  }
+
+  public boolean isExtensionOverrided() {
+    return extensionOverrided;
+  }
   @Override
   public void initDefaultCommand() {
-    // no default commands, CommandManager will switch out the command groups
+    setDefaultCommand(new ArmStatePositioner());
   }
 
   /**
@@ -341,15 +378,6 @@ public class ArmSubsystem extends ExtendedSubSystem {
   @Override
   public Command zeroSubsystem() {
     return new ArmZero();
-  }
-
-  public int invert() {
-    inversionConstant *= -1;
-    return inversionConstant;
-  }
-
-  public short getInversion() {
-    return inversionConstant;
   }
 
   public void log(int interval) {
