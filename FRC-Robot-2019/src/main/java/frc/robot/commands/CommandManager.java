@@ -113,7 +113,7 @@ public class CommandManager {
         // Rumble on vacuum
         VacuumSensorSystem vs = Robot.intake.getVacuumSensor();
         if ((vs != null) && vs.isGood()) {
-            Command vacRumble = new RumbleCommand(Robot.m_oi.getAssistantController(), vs::hasVacuum);
+            // Command vacRumble = new RumbleCommand(Robot.m_oi.getAssistantController(), vs::hasVacuum);
             // capture trigger on vacuum
             Trigger capTrigger = new Trigger() {
                 public boolean get() {
