@@ -440,11 +440,11 @@ public class CommandManager {
         VacuumSensorSystem vs = Robot.intake.getVacuumSensor();
         grp.addSequential(new VacuumCommand(true, 0.0)); // no timeout
         grp.addParallel(new WristTrackAngle(Angle.Starting_Hatch_Hunt.getAngle()));
-        grp.addSequential(new MoveArmToPosition(5.7, 14.5, 0.05, 0.5)); // Move arm up and back to avoid moving
-                                                                        // hatch
-        grp.addSequential(new MoveArmToPosition(5.7, 15.8, 0.05, 1)); // Move arm into hatch and intake
-        grp.addSequential(new MoveArmToPosition(5.7, 15.5, 0.05, 0.5)); // Move arm into hatch and intake
-        grp.addSequential(new TriggerTimeoutCommand(vs::hasVacuum, 1.0)); // waits or sees vacuum and finsishes
+        grp.addSequential(new MoveArmToPosition(4, 11, 0.05, 1)); // Move arm up and back to avoid moving hatch
+        grp.addSequential(new MoveArmToPosition(4, 12.5, 0.05, 1)); // Move arm into hatch and intake
+        grp.addSequential(new MoveArmToPosition(4, 13, 0.05, 1)); // Move arm into hatch and intake
+        grp.addSequential(new TriggerTimeoutCommand(vs::hasVacuum, 5.0)); // waits or sees vacuum and finsishes
+        grp.addSequential(new MoveArmToPosition(13, 12, 0.05, 2));
         grp.addParallel(new WristTrackAngle(Angle.Parallel.getAngle()));
         grp.addSequential(new NextModeCmd(Modes.HuntingHatch)); // Capture the right previous state
         grp.addSequential(new NextModeCmd(Modes.Drive));

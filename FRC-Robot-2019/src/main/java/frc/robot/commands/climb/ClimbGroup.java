@@ -13,13 +13,14 @@ public class ClimbGroup extends CommandGroup {
         double longTO = 5.0;
         double timeToDriveForward = 3.0;
         double rollPower = 0.5;
-        double drivePower = 0.35; // Positive power goes to negative direction
+        double drivePower = 0.4; // Positive power goes to negative direction
+
 
        // addSequential(armGrp);
 
         //if separate command to bring up robot change to parallel
         addSequential(Robot.climber.zeroSubsystem());   //hack to zero counters
-        addParallel(new MoveArmToRawPosition(-90, 12, 0.5, 20));        
+        addSequential(new MoveArmToRawPosition(90, 12, 0.5, 180));        
         addSequential(new PawlSureFire(Robot.climber.Extend, 4));
         addSequential(new DeployClimbFoot(0.9, climbHeight));    // 20.5 uses limit switch
         //go forward while driving foot
@@ -31,17 +32,16 @@ public class ClimbGroup extends CommandGroup {
         timeToDriveForward = 3.0;
         CommandGroup forwardCmds2 = new CommandGroup("going forward2");
         forwardCmds2.addParallel(new ClimbRollForward(rollPower, timeToDriveForward ));   // power, timeout
-        forwardCmds2.addParallel(new DriveByPowerAndJoystickCommand(drivePower, 0.25, 0.5, timeToDriveForward)); // power, timeout
+        forwardCmds2.addParallel(new DriveByPowerAndJoystickCommand(drivePower, 0.25, 0.6, timeToDriveForward)); // power, timeout
 
         addSequential(forwardCmds2);
-        addParallel(new DriveByPowerAndJoystickCommand(drivePower, 0.25, 0.5, timeToDriveForward));
-        //addParallel(new FlipCommand(90, -90, 12, 0.5, 20));
+        addParallel(new DriveByPowerAndJoystickCommand(drivePower, 0.25, 0.6, 30.0));
+        addSequential(new MoveArmToRawPosition(-90, 9, 0.6, 180));
         CommandGroup forwardCmds3 = new CommandGroup("going forward 3");
         forwardCmds3.addSequential(new PawlSureFire(Robot.climber.Retract,  6));
         forwardCmds3.addParallel(new DeployClimbFoot(-0.50, retractHeight));    // neg power retract / limit sw
-        forwardCmds3.addParallel(new DriveByPowerAndJoystickCommand(drivePower, 0.25, 0.5, 3.0)); // neg power drive reverse
+        forwardCmds3.addParallel(new DriveByPowerAndJoystickCommand(drivePower, 0.25, 0.6, 3.0)); // neg power drive reverse
         addSequential(forwardCmds3);
-        addSequential(new CallFunctionCommand(this::holdSlide));
     }
 
     /*
@@ -62,17 +62,6 @@ public class ClimbGroup extends CommandGroup {
 
     pawl piston is foot, m23 is foot extension motor, m22 is motor to move foot
     */
-
-    private int releaseSlide() {
-        Robot.climber.setDrawerSlide(Robot.climber.ReleaseSlide);
-        return 0;
-    }
-
-    private int holdSlide() {
-
-        Robot.climber.setDrawerSlide(Robot.climber.HoldSlide);
-        return 0;
-    }
 
     @Override
     protected void interrupted() {
