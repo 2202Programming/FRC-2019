@@ -6,15 +6,19 @@ import frc.robot.Robot;
 import frc.robot.commands.arm.MoveArmToRawPosition;
 import frc.robot.commands.drive.DriveByPowerAndJoystickCommand;
 import frc.robot.commands.drive.HABDriveByPowerAndJoystickCommand;
+import frc.robot.commands.intake.WristSetAngleCommand;
+import frc.robot.commands.intake.WristTrackAngle;
+import frc.robot.commands.util.Angle;
 
 public class ClimbGroup extends CommandGroup {
     public ClimbGroup(double climbHeight, double retractHeight) {
-        double timeToDriveForward = 3.0;
+        double timeToDriveForward = 30.0;
         double rollPower = 0.5;
         double drivePower = 0.4; // Positive power goes to negative direction
 
         //if separate command to bring up robot change to parallel
         addSequential(Robot.climber.zeroSubsystem());   //hack to zero counters
+        addSequential(new WristSetAngleCommand(0));
         addSequential(new MoveArmToRawPosition(90, 12, 0.5, 180));        
         addSequential(new PawlSureFire(Robot.climber.Extend, 4));
         addSequential(new DeployClimbFoot(0.9, climbHeight));    // 20.5 uses limit switch
@@ -25,12 +29,16 @@ public class ClimbGroup extends CommandGroup {
 
         addSequential(forwardCmds);
         addSequential(new MoveArmToRawPosition(-90, 9, 0.6, 180));
-        addSequential(new WaitCommand(3));
+        addSequential(new WaitCommand(1));
         CommandGroup forwardCmds3 = new CommandGroup("Going forward 2");
         forwardCmds3.addSequential(new PawlSureFire(Robot.climber.Retract,  6));
         forwardCmds3.addParallel(new DeployClimbFoot(-0.50, retractHeight));    // neg power retract / limit sw
         forwardCmds3.addParallel(new DriveByPowerAndJoystickCommand(drivePower, 0.25, 0.6, timeToDriveForward)); // neg power drive reverse
         addSequential(forwardCmds3);
+
+        addSequential(new MoveArmToRawPosition(-90, 1, 0.6, 180));
+        addParallel(new WristTrackAngle(Angle.Back_Perpendicular_Down.getAngle()));
+        addSequential(new DriveByPowerAndJoystickCommand(drivePower, 0.25, 0.6, 200.0));
     }
 
     /*
