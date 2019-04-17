@@ -12,8 +12,7 @@ public class ClimbRollForward extends Command {
     //private RateLimiter sLimit;
     private double limitFactor = 10.0;
 
-    public ClimbRollForward(double rollerSpeed, double timeout) {
-        this.timeout = timeout;
+    public ClimbRollForward(double rollerSpeed) {
         this.rollerSpeed = rollerSpeed;
         requires(Robot.climber);
         //sLimit = new RateLimiter(Robot.dT, this::getRollerSpeed, null, 0, this.rollerSpeed, 0, (rollerSpeed/limitFactor), InputModel.Position);
@@ -42,6 +41,6 @@ public class ClimbRollForward extends Command {
     }
 
     protected boolean isFinished() {
-        return isTimedOut();
+        return Robot.climber.climberAgainstWall();
     }
 }

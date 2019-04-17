@@ -79,6 +79,7 @@ public class RobotMap {
   public static final int CLIMB_SLIDE_RELEASE_PCM = 5;
   public static final int CLIMB_MAX_EXTENSION_CH = 8;
   public static final int CLIMB_MIN_EXTENSION_CH = 9;
+  public static final int CLIMB_DRAWER_SLIDE_MIN = 1;
 
   //LIDAR sensors
   public static final int LEFT_FRONT_LIDAR = 3;
