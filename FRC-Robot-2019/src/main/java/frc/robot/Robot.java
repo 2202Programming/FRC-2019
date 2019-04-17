@@ -82,10 +82,10 @@ public class Robot extends TimedRobot {
     // 0=front cam, 1= rear cam, 2 = arm  (pi camera server defines this - could change)
     cameraSelect.setDouble(1);    
     m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function    
-    CommandGroup level3Climb = new ClimbGroup(30, 0.0);  // extend/retract in inches
+    CommandGroup level3Climb = new ClimbGroup(100, -5.0);  // extend/retract in inches
     m_oi.climbButton.whenPressed(level3Climb);
     m_oi.climbButton.whenReleased(new CancelCommand(level3Climb));
-    CommandGroup level2Climb = new ClimbGroup(9.0, 0.0);
+    CommandGroup level2Climb = new ClimbGroup(9.0, -5.0);
     m_oi.shortClimbButton.whenPressed(level2Climb);
     m_oi.shortClimbButton.whenReleased(new CancelCommand(level2Climb));
     CommandGroup level3Up = new ClimbUpPartial(25.5, 0);
