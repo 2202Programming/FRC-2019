@@ -63,6 +63,7 @@ public class ClimberSubsystem extends ExtendedSubSystem {
 
     private DigitalInput extensionAtMax = new DigitalInput(RobotMap.CLIMB_MAX_EXTENSION_CH);
     private DigitalInput extensionAtMin = new DigitalInput(RobotMap.CLIMB_MIN_EXTENSION_CH);
+    private DigitalInput drawerSlideAtMin = new DigitalInput(RobotMap.CLIMB_DRAWER_SLIDE_MIN);
 
     // think we need to add an encoder
     public ClimberSubsystem() {
@@ -133,6 +134,11 @@ public class ClimberSubsystem extends ExtendedSubSystem {
     public boolean footAtRetract() {
         //active low
         return !extensionAtMin.get();
+    }
+
+    public boolean climberAgainstWall() {
+        // Active low
+        return !drawerSlideAtMin.get();
     }
 
     @Override

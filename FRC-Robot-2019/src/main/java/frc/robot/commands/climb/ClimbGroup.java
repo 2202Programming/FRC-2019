@@ -3,45 +3,42 @@ package frc.robot.commands.climb;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.WaitCommand;
 import frc.robot.Robot;
-import frc.robot.commands.CallFunctionCommand;
-import frc.robot.commands.GripperPositionCommand;
+import frc.robot.commands.CommandManager.Modes;
 import frc.robot.commands.arm.MoveArmToRawPosition;
 import frc.robot.commands.drive.DriveByPowerAndJoystickCommand;
+import frc.robot.commands.drive.HABDriveByPowerAndJoystickCommand;
+import frc.robot.commands.intake.WristSetAngleCommand;
+import frc.robot.commands.intake.WristTrackAngle;
+import frc.robot.commands.util.Angle;
 
 public class ClimbGroup extends CommandGroup {
     public ClimbGroup(double climbHeight, double retractHeight) {
-        double longTO = 5.0;
-        double timeToDriveForward = 3.0;
-        double rollPower = 0.5;
+        double timeToDriveForward = 30.0;
+        double rollPower = 0.6;
         double drivePower = 0.4; // Positive power goes to negative direction
-
-
-       // addSequential(armGrp);
 
         //if separate command to bring up robot change to parallel
         addSequential(Robot.climber.zeroSubsystem());   //hack to zero counters
-        addSequential(new MoveArmToRawPosition(90, 12, 0.5, 180));        
+        addSequential(new WristSetAngleCommand(0));
+        addSequential(new MoveArmToRawPosition(-95, 12, 0.5, 180));        
         addSequential(new PawlSureFire(Robot.climber.Extend, 4));
-        addSequential(new DeployClimbFoot(0.9, climbHeight));    // 20.5 uses limit switch
-        //go forward while driving foot
-        CommandGroup forwardCmds = new CommandGroup("going forward1");
-        forwardCmds.addParallel(new ClimbRollForward(rollPower, timeToDriveForward ));   // power, timeout
-        
+        addSequential(new DeployClimbFoot(0.95, climbHeight));    // 20.5 uses limit switch
+        addSequential(new WaitCommand(0.5));
+
+        CommandGroup forwardCmds = new CommandGroup("Going forward");
+        forwardCmds.addParallel(new ClimbRollForward(rollPower));   // power, timeout
+        forwardCmds.addParallel(new HABDriveByPowerAndJoystickCommand(drivePower, 0.25, 0.6)); // power, timeout
+
         addSequential(forwardCmds);
-
-        timeToDriveForward = 3.0;
-        CommandGroup forwardCmds2 = new CommandGroup("going forward2");
-        forwardCmds2.addParallel(new ClimbRollForward(rollPower, timeToDriveForward ));   // power, timeout
-        forwardCmds2.addParallel(new DriveByPowerAndJoystickCommand(drivePower, 0.25, 0.6, timeToDriveForward)); // power, timeout
-
-        addSequential(forwardCmds2);
-        addParallel(new DriveByPowerAndJoystickCommand(drivePower, 0.25, 0.6, 30.0));
-        addSequential(new MoveArmToRawPosition(-90, 9, 0.6, 180));
-        CommandGroup forwardCmds3 = new CommandGroup("going forward 3");
+        CommandGroup forwardCmds3 = new CommandGroup("Going forward 2");
         forwardCmds3.addSequential(new PawlSureFire(Robot.climber.Retract,  6));
-        forwardCmds3.addParallel(new DeployClimbFoot(-0.50, retractHeight));    // neg power retract / limit sw
-        forwardCmds3.addParallel(new DriveByPowerAndJoystickCommand(drivePower, 0.25, 0.6, 3.0)); // neg power drive reverse
+        forwardCmds3.addParallel(new DeployClimbFoot(-0.9, retractHeight));    // neg power retract / limit sw
+        forwardCmds3.addParallel(new DriveByPowerAndJoystickCommand(drivePower, 0.25, 0.6, timeToDriveForward)); // neg power drive reverse
         addSequential(forwardCmds3);
+
+        addSequential(new MoveArmToRawPosition(-90, 6, 0.6, 180));
+        addParallel(new WristTrackAngle(Angle.Back_Perpendicular_Down.getAngle()));
+        addSequential(new DriveByPowerAndJoystickCommand(drivePower, 0.25, 0.6, 200.0));
     }
 
     /*
@@ -70,5 +67,10 @@ public class ClimbGroup extends CommandGroup {
         Robot.climber.setExtenderSpeed(0.0);
         Robot.climber.setPawl(Robot.climber.Retract);
         Robot.climber.setDrawerSlide(Robot.climber.HoldSlide);
+        Robot.m_cmdMgr.setMode(Modes.Drive);
+    }
+
+    protected void end() {
+
     }
 }

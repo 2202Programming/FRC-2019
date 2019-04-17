@@ -9,6 +9,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.arm.ResetArmCommand;
 import frc.robot.commands.cargo.AutoCargoIntakeCommand;
@@ -79,8 +80,8 @@ public class OI {
   public JoystickButton endDriveMode; // Switches state out of drive
   public JoystickButton goToPrevMode; // Goes to previous state (only works for recapturing)
 
-  public JoystickButton climbButton;
-  public JoystickButton shortClimbButton;
+  public Button climbButton;
+  public Button shortClimbButton;
   public JoystickButton climbUp;
   public JoystickButton pullUp;
 
@@ -151,8 +152,8 @@ public class OI {
     goToPrevMode = new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode());
 
     //TODO: Billy / Zander / driveteam pick a real place for this - 3/23/19
-    climbButton = new JoystickButton(switchBoard, 7);
-    shortClimbButton = new JoystickButton(switchBoard, 8);
+    climbButton = new GeneralTrigger(() -> switchBoard.getRawButton(7) && switchBoard.getRawButton(12));
+    shortClimbButton = new GeneralTrigger(() -> switchBoard.getRawButton(8) && switchBoard.getRawButton(12));
     climbUp = new JoystickButton(switchBoard, 9);
     pullUp = new JoystickButton(switchBoard, 10);
   }
