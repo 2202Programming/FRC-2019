@@ -54,16 +54,16 @@ public class ArmStatePositioner extends Command {
                 arm::getProjection, // phy position func
                 Robot.arm.MIN_PROJECTION, // output min
                 Robot.arm.MAX_PROJECTION, // output max
-                -50.0, // inches/sec // falling rate limit
-                50.0, // inches/sec //raising rate limit
+                -75.0, // inches/sec // falling rate limit
+                75.0, // inches/sec //raising rate limit
                 InputModel.Position);
 
         heightLimiter = new RateLimiter(Robot.dT, this::getHeightCommanded, // gripperH_cmd var as set by this module
                 arm::getHeight, // phy position func
                 kHeightMin, // output min
                 kHeightMax, // output max
-                -80.0, // inches/sec // falling rate limit
-                80.0, // inches/sec //raising rate limit
+                -100.0, // inches/sec // falling rate limit
+                100.0, // inches/sec //raising rate limit
                 InputModel.Position);
         checkInverted = arm.isInverted();
     }
