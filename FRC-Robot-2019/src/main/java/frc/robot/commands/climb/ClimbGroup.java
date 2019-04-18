@@ -26,7 +26,7 @@ public class ClimbGroup extends CommandGroup {
         addSequential(new WaitCommand(0.5));
 
         CommandGroup forwardCmds = new CommandGroup("Going forward");
-        forwardCmds.addParallel(new ClimbRollForward(rollPower));   // power, timeout
+        forwardCmds.addParallel(new ClimbRollForward(rollPower, 0.6));   // power, timeout
         forwardCmds.addParallel(new HABDriveByPowerAndJoystickCommand(drivePower, 0.25, 0.6)); // power, timeout
         
         addSequential(forwardCmds);
