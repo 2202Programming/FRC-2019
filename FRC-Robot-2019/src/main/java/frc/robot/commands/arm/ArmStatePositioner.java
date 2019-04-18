@@ -18,12 +18,12 @@ public class ArmStatePositioner extends Command {
     public static final double kHeightMax = 96.0; // TODO: Find real max
 
     // Positions in form (InversionState, Height, Position)
-    public static final double DeliveryCargoPositions[][][] = { { { 26.875, 17.5 }, { 55.0, 17.5 }, { 84.0, 17.5 } },
+    public static final double DeliveryCargoPositions[][][] = { { { 26.875, 17.5 }, { 54.0, 17.5 }, { 84.0, 17.5 } },
             { { 28.875, -17.5 }, { 57.0, -17.5 }, { 86.0, -17.5 } } };
     public static final double DeliveryHatchPositions[][][] = { { { 27.5, 17.5 }, { 55.0, 17.5 }, { 82.0, 17.5 } },
             { { 29.5, -17.5 }, { 57.0, -17.5 }, { 84.0, -17.5 } } };
     public static final double HuntPositions[][][] = { { { 5.0, 23.0 }, { 17.5, 23.5 }, { 24.0, 24.0 } },
-            { { 7.0, -23.0 }, { 19.5, -23.5 }, { 28.5, -24.0 } } }; // 0: Floor, 1: Cargo, 2: Hatch
+            { { 7.0, -23.0 }, { 19.5, -23.5 }, { 28.0, -24.0 } } }; // 0: Floor, 1: Cargo, 2: Hatch
     public static final double[][][] DrivePositions = { { { 49.5, 14.0 }, { 50, 12.0 } },
             { { 51.5, -14.0 }, { 52, -12.0 } } };
 
@@ -54,16 +54,16 @@ public class ArmStatePositioner extends Command {
                 arm::getProjection, // phy position func
                 Robot.arm.MIN_PROJECTION, // output min
                 Robot.arm.MAX_PROJECTION, // output max
-                -50.0, // inches/sec // falling rate limit
-                50.0, // inches/sec //raising rate limit
+                -75.0, // inches/sec // falling rate limit
+                75.0, // inches/sec //raising rate limit
                 InputModel.Position);
 
         heightLimiter = new RateLimiter(Robot.dT, this::getHeightCommanded, // gripperH_cmd var as set by this module
                 arm::getHeight, // phy position func
                 kHeightMin, // output min
                 kHeightMax, // output max
-                -80.0, // inches/sec // falling rate limit
-                80.0, // inches/sec //raising rate limit
+                -100.0, // inches/sec // falling rate limit
+                100.0, // inches/sec //raising rate limit
                 InputModel.Position);
         checkInverted = arm.isInverted();
     }
