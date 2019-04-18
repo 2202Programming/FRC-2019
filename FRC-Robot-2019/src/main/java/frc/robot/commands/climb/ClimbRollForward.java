@@ -6,17 +6,19 @@ import frc.robot.Robot;
 public class ClimbRollForward extends Command {
     private double rollerSpeed;
     private double curSpeed;
+    private double startSpeed;
     private double acceleration;
 
-    public ClimbRollForward(double rollerSpeed, double powerAcceleration) {
+    public ClimbRollForward(double startSpeed, double rollerSpeed, double powerAcceleration) {
         requires(Robot.climber);
+        this.startSpeed = startSpeed;
         this.rollerSpeed = rollerSpeed;
         this.acceleration = powerAcceleration * Robot.kDefaultPeriod;
     }
 
     protected void initialize() {
         Robot.climber.setRollerSpeed(0);
-        curSpeed = 0;
+        curSpeed = startSpeed;
     }
 
     protected void execute() {
