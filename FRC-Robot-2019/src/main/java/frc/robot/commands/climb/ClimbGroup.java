@@ -20,7 +20,7 @@ public class ClimbGroup extends CommandGroup {
         //if separate command to bring up robot change to parallel
         addSequential(Robot.climber.zeroSubsystem());   //hack to zero counters
         addSequential(new WristSetAngleCommand(0));
-        addSequential(new MoveArmToRawPosition(-95, 12, 0.5, 180));        
+        addSequential(new MoveArmToRawPosition(90, 12, 0.5, 180));        
         addSequential(new PawlSureFire(Robot.climber.Extend, 4));
         addSequential(new DeployClimbFoot(0.95, climbHeight));    // 20.5 uses limit switch
         addSequential(new WaitCommand(0.5));
@@ -28,7 +28,8 @@ public class ClimbGroup extends CommandGroup {
         CommandGroup forwardCmds = new CommandGroup("Going forward");
         forwardCmds.addParallel(new ClimbRollForward(rollPower));   // power, timeout
         forwardCmds.addParallel(new HABDriveByPowerAndJoystickCommand(drivePower, 0.25, 0.6)); // power, timeout
-
+        
+        addSequential(new MoveArmToRawPosition(-90, 12, 0.6, 180));
         addSequential(forwardCmds);
         CommandGroup forwardCmds3 = new CommandGroup("Going forward 2");
         forwardCmds3.addSequential(new PawlSureFire(Robot.climber.Retract,  6));
