@@ -29,6 +29,7 @@ public class RobotTest {
         // remove defaultCommands so only testing is being done.
         Robot.intake.setDefaultCommand(null);
         Robot.gearShifter.setDefaultCommand(null);
+        Robot.arm.setDefaultCommand(null);
         Robot.arm.zeroArm();
 
         // TESTING Commands, only get scheduled if we enter Test mode
@@ -76,10 +77,10 @@ public class RobotTest {
 
         Robot.arm.log();
         Robot.arm.logTalons();
- 
         SmartDashboard.putData(Scheduler.getInstance()); 
         //SmartDashboard.putData(driveTrain);
         //SmartDashboard.putData(gearShifter);
+        
       }
     
       private void resetAllDashBoardSensors() {

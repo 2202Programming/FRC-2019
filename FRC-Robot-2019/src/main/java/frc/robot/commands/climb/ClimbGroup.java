@@ -69,7 +69,7 @@ public class ClimbGroup extends CommandGroup {
         Robot.climber.setExtenderSpeed(0.0);
         Robot.climber.setPawl(Robot.climber.Retract);
         Robot.climber.setDrawerSlide(Robot.climber.HoldSlide);
-        Robot.m_cmdMgr.setMode(Modes.Drive);
+        //Robot.m_cmdMgr.setMode(Modes.Drive);
     }
 
     protected void end() {

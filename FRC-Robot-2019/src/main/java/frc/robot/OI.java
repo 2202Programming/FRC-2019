@@ -97,7 +97,7 @@ public class OI {
     }
 
     // If the Test Button on the switchboard is active, select for TestBinding
-    if (false/* switchBoard.getRawButton(11) */) {
+    if (true/* switchBoard.getRawButton(11) */) {
       bindTestButtons();
       System.out.println("Using Test OI");
     } else {
@@ -196,6 +196,12 @@ public class OI {
     captureRelease = new JoystickButton(phantom, XboxControllerButtonCode.Y.getCode());
     flip = new JoystickButton(phantom, XboxControllerButtonCode.X.getCode());
     endDriveMode = new JoystickButton(phantom, XboxControllerButtonCode.B.getCode());
+    goToPrevMode = new JoystickButton(phantom, XboxControllerButtonCode.Y.getCode());    
+    //TODO: Billy / Zander / driveteam pick a real place for this - 3/23/19
+    climbButton = new GeneralTrigger(() -> false);
+    shortClimbButton = new GeneralTrigger(() -> false);
+    climbUp = new JoystickButton(phantom, 9);
+    pullUp = new JoystickButton(phantom, 10);
   }
 
   // Bind analog controls to functions to use by the commands

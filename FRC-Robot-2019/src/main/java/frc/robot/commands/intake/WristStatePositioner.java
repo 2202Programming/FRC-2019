@@ -46,17 +46,17 @@ public class WristStatePositioner extends Command {
 
     @Override
     protected void execute() {
-        // Update position based on current mode
-        Modes curMode = Robot.m_cmdMgr.getCurMode();
-        int invert = Robot.arm.isInverted() ? 1 : 0;
-        int index = Robot.m_cmdMgr.getPositionIndex();
-        if (curMode != prevMode || index != prevIndex) {
-            // Update position only if state changes to allow something to override position
-            // for that state
-            curAngle = angles[curMode.get()][invert][index];
-            prevMode = curMode;
-            prevIndex = index;
-        }
+        // // Update position based on current mode
+        // //Modes curMode = Robot.m_cmdMgr.getCurMode();
+        // int invert = Robot.arm.isInverted() ? 1 : 0;
+        // //int index = Robot.m_cmdMgr.getPositionIndex();
+        // if (curMode != prevMode || index != prevIndex) {
+        //     // Update position only if state changes to allow something to override position
+        //     // for that state
+        //     curAngle = angles[curMode.get()][invert][index];
+        //     prevMode = curMode;
+        //     prevIndex = index;
+        // }
 
         // intake angle is relative to arm
         double offset = Robot.arm.getRealAngle() - curAngle;
@@ -71,13 +71,13 @@ public class WristStatePositioner extends Command {
     @Override
     protected void interrupted() {
         // Update position based on current mode
-        Modes curMode = Robot.m_cmdMgr.getCurMode();
-        int index = Robot.m_cmdMgr.getPositionIndex();
-        if (curMode != prevMode || index != prevIndex) {
-            // Update position only if state changes to allow something to override position
-            // for that state
-            prevMode = curMode;
-            prevIndex = index;
-        }
+        //Modes curMode = Robot.m_cmdMgr.getCurMode();
+        //int index = Robot.m_cmdMgr.getPositionIndex();
+        // if (curMode != prevMode || index != prevIndex) {
+        //     // Update position only if state changes to allow something to override position
+        //     // for that state
+        //     prevMode = curMode;
+        //     prevIndex = index;
+        // }
     }
 }

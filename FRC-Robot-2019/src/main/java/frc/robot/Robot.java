@@ -61,7 +61,7 @@ public class Robot extends TimedRobot {
 
   public static OI m_oi = new OI(); //OI Depends on the subsystems and must be last (boolean is whether we are testing or not)
 
-  public static CommandManager m_cmdMgr;    //fix the public later
+  //public static CommandManager m_cmdMgr;    //fix the public later
   private RobotTest m_testRobot;
 
   boolean doneOnce = false;   //single execute our zero 

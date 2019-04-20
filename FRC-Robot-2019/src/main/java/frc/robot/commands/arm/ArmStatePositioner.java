@@ -78,24 +78,24 @@ public class ArmStatePositioner extends Command {
     @Override
     protected void execute() {
         // Update position based on current mode
-        Modes curMode = Robot.m_cmdMgr.getCurMode();
-        int positionIndex = Robot.m_cmdMgr.getPositionIndex();
-        if (curMode != prevMode || positionIndex != prevIndex) {
-            // Update position only if state changes to allow something to override position
-            // for that state
-            System.out.println("Switch States from " + prevMode + " to " + curMode);
-            // Update Ratelimiter if we just flipped
-            if (checkInverted != arm.isInverted()) {
-                initialize();
-                checkInverted = arm.isInverted();
-                return;
-            }
-            updatePosition(curMode, positionIndex);
-        }
+        // Modes curMode = Robot.m_cmdMgr.getCurMode();
+        // int positionIndex = Robot.m_cmdMgr.getPositionIndex();
+        // if (curMode != prevMode || positionIndex != prevIndex) {
+        //     // Update position only if state changes to allow something to override position
+        //     // for that state
+        //     System.out.println("Switch States from " + prevMode + " to " + curMode);
+        //     // Update Ratelimiter if we just flipped
+        //     if (checkInverted != arm.isInverted()) {
+        //         initialize();
+        //         checkInverted = arm.isInverted();
+        //         return;
+        //     }
+        //     updatePosition(curMode, positionIndex);
+        // }
 
-        if (curMode.equals(Modes.Construction) || curMode.equals(Modes.SettingZeros)) {
-            return;
-        }
+        // if (curMode.equals(Modes.Construction) || curMode.equals(Modes.SettingZeros)) {
+        //     return;
+        // }
 
         // Get input
         heightLimiter.execute();
@@ -136,13 +136,13 @@ public class ArmStatePositioner extends Command {
 
     @Override
     protected void interrupted() {
-        Modes curMode = Robot.m_cmdMgr.getCurMode();
-        int positionIndex = Robot.m_cmdMgr.getPositionIndex();
-        if (curMode != prevMode || positionIndex != prevIndex) {
-            // Update position only if state changes to allow something to override position
-            // for that state
-            updatePosition(curMode, positionIndex);
-        }
+        // Modes curMode = Robot.m_cmdMgr.getCurMode();
+        // int positionIndex = Robot.m_cmdMgr.getPositionIndex();
+        // if (curMode != prevMode || positionIndex != prevIndex) {
+        //     // Update position only if state changes to allow something to override position
+        //     // for that state
+        //     updatePosition(curMode, positionIndex);
+        // }
     }
 
     private void updatePosition(Modes curMode, int index) {
