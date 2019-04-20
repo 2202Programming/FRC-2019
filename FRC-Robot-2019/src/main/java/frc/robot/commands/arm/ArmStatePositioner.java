@@ -201,8 +201,7 @@ public class ArmStatePositioner extends Command {
     }
 
     public double getHeightCommanded() {
-        int invertMultiplier = Robot.arm.isInverted()? -1 : 1;
-        double h_driverOffset = invertMultiplier * heightAdjustCap * Robot.m_oi.adjustHeight(); // driver contrib from triggers
+        double h_driverOffset = heightAdjustCap * Robot.m_oi.adjustHeight(); // driver contrib from triggers
         double h = stateH - h_driverOffset; // state machine + driver so both are rate filtered
         return h;
     }

@@ -104,8 +104,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
     // Arm
     armRotationMotor.config_kP(0, 0.5);
     armExtensionMotor.config_kD(0, 4.0);
-    armRotationMotor.configPeakOutputForward(0.3);
-    armRotationMotor.configPeakOutputReverse(-0.3);
+    armRotationMotor.configPeakOutputForward(0.5);
+    armRotationMotor.configPeakOutputReverse(-0.5);
     armRotationMotor.configAllowableClosedloopError(0, 100);
     armRotationMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     armRotationMotor.setInverted(true);
