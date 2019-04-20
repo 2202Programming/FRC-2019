@@ -17,7 +17,7 @@ import frc.robot.commands.cargo.DeployCargoTrapCommand;
 import frc.robot.commands.cargo.RetractCargoTrapCommand;
 import frc.robot.commands.cargo.tests.IntakeTestCmd;
 import frc.robot.commands.cargo.tests.OuttakeTestCmd;
-
+import frc.robot.commands.climb.PawlSureFire;
 import frc.robot.commands.climb.tests.CharonSolenoidTestCmd;
 import frc.robot.commands.climb.tests.ClimbMotorTestCmd;
 import frc.robot.commands.climb.tests.PawlSolenoidTestCmd;
@@ -130,15 +130,15 @@ public class OI {
 
     // Climber tests - temporary added to field
     //execute Pawl only on change
-    new JoystickButton(switchBoard, 1).whenPressed(new PawlSolenoidTestCmd(true));
-    new JoystickButton(switchBoard, 1).whenReleased(new PawlSolenoidTestCmd(false));
+    new JoystickButton(switchBoard, 1).whenPressed(new PawlSureFire(Robot.climber.Extend, 3));
+    new JoystickButton(switchBoard, 1).whenReleased(new PawlSureFire(Robot.climber.Retract, 3));
     new JoystickButton(switchBoard, 2).whileActive(new ClimbMotorTestCmd(0.3));
     
     //execute Charon only on button change
     new JoystickButton(switchBoard, 3).whenPressed(new CharonSolenoidTestCmd(true));
     new JoystickButton(switchBoard, 3).whenReleased(new CharonSolenoidTestCmd(false));
 
-    new JoystickButton(switchBoard, 4).whileActive(new RollerMotorTestCmd(0.5));
+    new JoystickButton(switchBoard, 4).whileActive(new RollerMotorTestCmd(0.25));
     new JoystickButton(switchBoard, 5).whileActive(new ClimbMotorTestCmd(-0.3));
 
     new GeneralTrigger(Robot.arm::extensionAtMin).whenPressed(new ResetArmCommand());
@@ -152,8 +152,8 @@ public class OI {
     goToPrevMode = new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode());
 
     //TODO: Billy / Zander / driveteam pick a real place for this - 3/23/19
-    climbButton = new GeneralTrigger(() -> switchBoard.getRawButton(7) && switchBoard.getRawButton(12));
-    shortClimbButton = new GeneralTrigger(() -> switchBoard.getRawButton(8) && switchBoard.getRawButton(12));
+    climbButton = new GeneralTrigger(() -> switchBoard.getRawButton(7) && switchBoard.getRawButton(11));
+    shortClimbButton = new GeneralTrigger(() -> switchBoard.getRawButton(8) && switchBoard.getRawButton(11));
     climbUp = new JoystickButton(switchBoard, 9);
     pullUp = new JoystickButton(switchBoard, 10);
   }
