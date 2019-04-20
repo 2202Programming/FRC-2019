@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.WaitCommand;
 import frc.robot.Robot;
 import frc.robot.commands.CommandManager.Modes;
+import frc.robot.commands.arm.MoveArmToPosition;
 import frc.robot.commands.arm.MoveArmToRawPosition;
 import frc.robot.commands.drive.DriveByPowerAndJoystickCommand;
 import frc.robot.commands.drive.HABDriveByPowerAndJoystickCommand;
@@ -20,13 +21,13 @@ public class ClimbGroup extends CommandGroup {
         //if separate command to bring up robot change to parallel
         addSequential(Robot.climber.zeroSubsystem());   //hack to zero counters
         addSequential(new WristSetAngleCommand(0));
-        addSequential(new MoveArmToRawPosition(90, 12, 0.5, 180));        
+        addSequential(new MoveArmToRawPosition(-35, 1, 0.5, 180));    
         addSequential(new PawlSureFire(Robot.climber.Extend, 4));
         addSequential(new DeployClimbFoot(1.0, climbHeight));    // 20.5 uses limit switch
         addSequential(new WaitCommand(0.5));
 
         CommandGroup forwardCmds = new CommandGroup("Going forward");
-        forwardCmds.addParallel(new ClimbRollForward(0.2, rollPower, 0.3));   // power, timeout
+        forwardCmds.addParallel(new ClimbRollForward(0.15, rollPower, 0.2));   // power, timeout
         forwardCmds.addParallel(new HABDriveByPowerAndJoystickCommand(drivePower, 0.25, 0.6)); // power, timeout
         
         addSequential(forwardCmds);
