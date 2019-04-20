@@ -102,27 +102,23 @@ public class ArmSubsystem extends ExtendedSubSystem {
 
     // Set Talon postion mode gains and power limits
     // Arm
-    armRotationMotor.config_kP(0, 0.5);
-    armExtensionMotor.config_kD(0, 4.0);
-    armRotationMotor.configPeakOutputForward(0.3);
-    armRotationMotor.configPeakOutputReverse(-0.3);
+    armRotationMotor.configPeakOutputForward(1.0);
+    armRotationMotor.configPeakOutputReverse(-1.0);
     armRotationMotor.configAllowableClosedloopError(0, 100);
     armRotationMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     armRotationMotor.setInverted(true);
 
     // Extension on power will be out at L0.
-    armExtensionMotor.config_kP(0, 0.6);
-    armExtensionMotor.config_kD(0, 0.8);
     armExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     armExtensionMotor.setIntegralAccumulator(0, 0, TO);
     armExtensionMotor.setSensorPhase(false);
     armExtensionMotor.setInverted(true);
-    armExtensionMotor.configPeakOutputForward(0.5);
-    armExtensionMotor.configPeakOutputReverse(-0.5);
+    armExtensionMotor.configPeakOutputForward(1.0);
+    armExtensionMotor.configPeakOutputReverse(-1.0);
     armExtensionMotor.configAllowableClosedloopError(0, 100);
 
-    System.out.println("Warning - Arm Rotation has moderate Kp values & reduced power 30% limits");
-    System.out.println("Warning - Arm Extension has moderate Kp values & reduced power 50% limits");
+    System.out.println("Warning - Arm Rotation has full power");
+    System.out.println("Warning - Arm Extension has full power");
     logTimer = System.currentTimeMillis();
 
     zeroArm(); // will also get called on transition to teleOp, should arms be moved
@@ -164,7 +160,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public void setAngle(double angle) {
     // If inverted, translate based on max angle backwards
     double counts = (PHI0 - angle) * kCounts_per_deg;
-    armRotationMotor.set(ControlMode.Position, counts);
+    armRotationMotor.set(ControlMode.PercentOutput, counts);
   }
 
   /**
