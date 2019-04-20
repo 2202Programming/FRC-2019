@@ -107,6 +107,9 @@ public class ArmSubsystem extends ExtendedSubSystem {
     armRotationMotor.configAllowableClosedloopError(0, 100);
     armRotationMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
     armRotationMotor.setInverted(true);
+    armRotationMotor.configMotionAcceleration((int) kCounts_per_deg * 54);
+    armRotationMotor.configMotionCruiseVelocity( (int) kCounts_per_deg * 18);
+    armRotationMotor.configMotionSCurveStrength(1);
 
     // Extension on power will be out at L0.
     armExtensionMotor.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
@@ -116,6 +119,9 @@ public class ArmSubsystem extends ExtendedSubSystem {
     armExtensionMotor.configPeakOutputForward(1.0);
     armExtensionMotor.configPeakOutputReverse(-1.0);
     armExtensionMotor.configAllowableClosedloopError(0, 100);
+    armExtensionMotor.configMotionAcceleration((int) kCounts_per_in * 12);
+    armExtensionMotor.configMotionCruiseVelocity((int) kCounts_per_in * 3);
+    armRotationMotor.configMotionSCurveStrength(1);
 
     System.out.println("Warning - Arm Rotation has full power");
     System.out.println("Warning - Arm Extension has full power");
