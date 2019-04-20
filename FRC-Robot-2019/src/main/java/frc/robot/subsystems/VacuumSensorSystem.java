@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
 
  public class VacuumSensorSystem extends ExtendedSubSystem {
     //physical units
-    final double vacuumTriggerV = 0.36; // volts about 8psi 
+    final double vacuumTriggerV = 0.34; // volts about 8psi 
     final double vacuumBiasV = 0.15;    // part or wiring is bad, 25% lower than expected .2v
     final double vacuumReleaseV = 0.22;  //point where we say we let the payload go - near bias v
 
