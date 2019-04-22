@@ -20,6 +20,7 @@ import frc.robot.commands.arm.MoveArmAtHeight;
 import frc.robot.commands.climb.CheckSolenoids;
 import frc.robot.commands.climb.ClimbGroup;
 import frc.robot.commands.climb.ClimbUpPartial;
+import frc.robot.commands.climb.Level2ClimbGroup;
 import frc.robot.commands.climb.PullUpPartial;
 import frc.robot.commands.intake.WristTrackAngle;
 import frc.robot.commands.util.Angle;
@@ -85,7 +86,7 @@ public class Robot extends TimedRobot {
     CommandGroup level3Climb = new ClimbGroup(100, -5.0);  // extend/retract in inches
     m_oi.climbButton.whenPressed(level3Climb);
     m_oi.climbButton.whenReleased(new CancelCommand(level3Climb));
-    CommandGroup level2Climb = new ClimbGroup(9.0, -5.0);
+    CommandGroup level2Climb = new Level2ClimbGroup(15.0, -5.0);
     m_oi.shortClimbButton.whenPressed(level2Climb);
     m_oi.shortClimbButton.whenReleased(new CancelCommand(level2Climb));
     CommandGroup level3Up = new ClimbUpPartial(25.5, 0);
