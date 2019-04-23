@@ -89,12 +89,6 @@ public class Robot extends TimedRobot {
     CommandGroup level2Climb = new Level2ClimbGroup(15.0, -5.0);
     m_oi.shortClimbButton.whenPressed(level2Climb);
     m_oi.shortClimbButton.whenReleased(new CancelCommand(level2Climb));
-    CommandGroup level3Up = new ClimbUpPartial(25.5, 0);
-    m_oi.climbUp.whenPressed(level3Up);
-    m_oi.climbUp.whenReleased(new CancelCommand(level3Up));
-    CommandGroup level3Retract = new PullUpPartial(25.5, 0);
-    m_oi.climbUp.whenPressed(level3Retract);
-    m_oi.climbUp.whenReleased(new CancelCommand(level3Retract));
   }
 
   /**

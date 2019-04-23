@@ -82,8 +82,6 @@ public class OI {
 
   public Button climbButton;
   public Button shortClimbButton;
-  public JoystickButton climbUp;
-  public JoystickButton pullUp;
 
   private ExpoShaper rotateShaper = new ExpoShaper(.7); // fairly flat curve
 
@@ -154,8 +152,6 @@ public class OI {
     //TODO: Billy / Zander / driveteam pick a real place for this - 3/23/19
     climbButton = new GeneralTrigger(() -> switchBoard.getRawButton(7) && switchBoard.getRawButton(11));
     shortClimbButton = new GeneralTrigger(() -> switchBoard.getRawButton(8) && switchBoard.getRawButton(11));
-    climbUp = new JoystickButton(switchBoard, 9);
-    pullUp = new JoystickButton(switchBoard, 10);
   }
 
 
