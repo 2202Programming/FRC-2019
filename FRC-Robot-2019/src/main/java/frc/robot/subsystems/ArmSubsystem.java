@@ -48,7 +48,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public final double PHI_BACK_MAX = -25.0; // In degrees
   public final double PHI_MIN = -140.0; // In degress
 
-  private final double kCounts_per_deg = 600; // back to practice bot
+  private final double kCounts_per_deg = 843; // back to practice bot
   private final double kDeg_per_count = 1.0 / kCounts_per_deg;
 
   // Geometry of the arm's pivot point
@@ -69,7 +69,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public final double WRIST_LENGTH = 4.5; // inches - measured practice bot 2/26/19
   public final double MAX_ARM_LENGTH = EXTEND_MAX + ARM_BASE_LENGTH + WRIST_LENGTH; // TODO: Find real max length of arm
 
-  private final double kCounts_per_in = -600.0; // measured practice bot 2/24/2019
+  private final double kCounts_per_in = -607.0; // measured competition bot 4/24/2019
   private final double kIn_per_count = 1.0 / kCounts_per_in;
 
   // Coupling between Phi and extension, as arm moves, so does d
