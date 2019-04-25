@@ -14,7 +14,7 @@ public class WristStatePositioner extends Command {
     private double[][][] angles = { { { Angle.Parallel.getAngle() }, { Angle.Back_Parallel.getAngle() } }, // Construction
             { { Angle.Parallel.getAngle() }, { Angle.Back_Parallel.getAngle() } }, // Setting Zeros
             { { Angle.Starting_Hatch_Hunt.getAngle() }, { Angle.Back_Parallel.getAngle() } }, // HuntGameStart
-            { { Angle.Parallel.getAngle() }, { Angle.Back_Parallel.getAngle() } }, // HuntingHatch
+            { { Angle.Hatch_Pickup.getAngle() }, { Angle.Back_Parallel.getAngle() } }, // HuntingHatch
             { { Angle.Perpendicular_Down.getAngle() }, { Angle.Back_Perpendicular_Down.getAngle() } }, // HuntingCargo
             { { Angle.Perpendicular_Down.getAngle() }, { Angle.Back_Perpendicular_Down.getAngle() } }, // HuntingFloor
             { { Angle.Parallel.getAngle() }, { Angle.Back_Parallel.getAngle() } }, // Capturing
