@@ -22,7 +22,7 @@ public class ArmStatePositioner extends Command {
             { { 28.875, -17.5 }, { 57.0, -17.5 }, { 86.0, -17.5 } } };
     public static final double DeliveryHatchPositions[][][] = { { { 27.5, 17.5 }, { 55.0, 17.5 }, { 82.0, 17.5 } },
             { { 30.35, -17.5 }, { 57.375, -17.5 }, { 83.75, -17.5 } } };
-    public static final double HuntPositions[][][] = { { { 5.0, 23.0 }, { 17.5, 23.5 }, { 24.0, 24.0 } },
+    public static final double HuntPositions[][][] = { { { 5.0, 23.0 }, { 17.5, 23.5 }, { 24.625, 24.0 } },
             { { 7.0, -23.0 }, { 19.5, -23.5 }, { 28.0, -24.0 } } }; // 0: Floor, 1: Cargo, 2: Hatch
     public static final double[][][] DrivePositions = { { { 49.5, 14.0 }, { 50, 12.0 } },
             { { 51.5, -14.0 }, { 52, -12.0 } } };

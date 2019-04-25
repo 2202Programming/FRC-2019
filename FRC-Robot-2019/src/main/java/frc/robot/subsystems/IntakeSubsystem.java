@@ -73,15 +73,15 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   Subsystem intakeVacuum;
 
   // Vacuum mode is the default for the solenoid, power it to drop the payload
-  public final double kRelease = 1.0;   //powered will open solenoid
-  public final double kVacuum = 0.0;    //unpower will restore vacuum
+  public final double kRelease = 1.0; // powered will open solenoid
+  public final double kVacuum = 0.0; // unpower will restore vacuum
 
   // Physical devices
-  protected CustomServo wristServo;             // positive angle, wrist up, when arm is forward
-  protected DigitalInput cargoSwitch;           // true when cargo switch is pressed by ball
-  protected SpeedController vacuumPump;         // motor control for vacuum pump
-  protected SpeedController vacuumSol;          // solenoid to hold and relase ball/hatch
-  protected VacuumSensorSystem vacuumSensor;    // sensor to tell if we suck.
+  protected CustomServo wristServo; // positive angle, wrist up, when arm is forward
+  protected DigitalInput cargoSwitch; // true when cargo switch is pressed by ball
+  protected SpeedController vacuumPump; // motor control for vacuum pump
+  protected SpeedController vacuumSol; // solenoid to hold and relase ball/hatch
+  protected VacuumSensorSystem vacuumSensor; // sensor to tell if we suck.
 
   /**
    * Creates an intake subsystem.
@@ -96,11 +96,11 @@ public class IntakeSubsystem extends ExtendedSubSystem {
     vacuumPump = new Spark(RobotMap.INTAKE_VACUUM_SPARK_PWM);
     vacuumSol = new Spark(RobotMap.INTAKE_VAC_RELEASE_SPARK_PWM);
     vacuumSensor = new VacuumSensorSystem(RobotMap.INTAKE_VAC_SENSOR_AD);
-    
+
     // addChild("In:Wrist", (Sendable) wristServo);
     // addChild("In:VacPump", vacuumPump);
-    //addChild("In:CargoSw", cargoSwitch);   //dpl not using 3/14/2019
-    //addChild("In:VacSol",  vacuumSol);     //switched to spark
+    // addChild("In:CargoSw", cargoSwitch); //dpl not using 3/14/2019
+    // addChild("In:VacSol", vacuumSol); //switched to spark
 
     intakeVacuum = new Subsystem("Intake:Vac") {
       @Override
@@ -116,10 +116,11 @@ public class IntakeSubsystem extends ExtendedSubSystem {
     setDefaultCommand(new WristStatePositioner());
   }
 
-  //expose the vacuum sensor if it is good for commands
+  // expose the vacuum sensor if it is good for commands
   // Note: it might be cleaner to just accept a command to run on the sensor.
   public VacuumSensorSystem getVacuumSensor() {
-    if (vacuumSensor.isGood()) return vacuumSensor;
+    if (vacuumSensor.isGood())
+      return vacuumSensor;
     return null;
   }
 
@@ -147,15 +148,14 @@ public class IntakeSubsystem extends ExtendedSubSystem {
     return this.intakeVacuum;
   }
 
-  //true - will release the payload
-  //false - returns to vacuum postion for Solenoid
+  // true - will release the payload
+  // false - returns to vacuum postion for Solenoid
   //
   // A short toggle should release the payload
   public void releaseSolenoid(boolean direction) {
     if (direction == true) {
       vacuumSol.set(kRelease);
-    }
-    else {
+    } else {
       vacuumSol.set(kVacuum);
     }
   }
@@ -163,12 +163,11 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   public void setVacuum(boolean on) {
     if (on) {
       vacuumPump.set(PumpSpeed);
-      releaseSolenoid(false);      //if we want vacuum, releaseSolenoid must be off.
+      releaseSolenoid(false); // if we want vacuum, releaseSolenoid must be off.
     } else {
       vacuumPump.stopMotor();
     }
   }
-
 
   public boolean isVacuum() {
     boolean v = (vacuumSol.get() == kVacuum);
@@ -180,8 +179,8 @@ public class IntakeSubsystem extends ExtendedSubSystem {
    */
 
   private void zeroIntake() {
-    setVacuum(false);           //power off
-    releaseSolenoid(false);     //power off 
+    setVacuum(false); // power off
+    releaseSolenoid(false); // power off
   }
 
   /**
@@ -228,11 +227,11 @@ public class IntakeSubsystem extends ExtendedSubSystem {
     return new IntakeZeroCmd(this);
   }
 
- // public void log() {
- //   SmartDashboard.putData("intake0", this);
- //   SmartDashboard.putNumber("In:Wr(deg)", getAngle());
- //   SmartDashboard.putNumber("In:Vac(c)", vacuumSensor.getRawVacuum() );
- // }
+  // public void log() {
+  // SmartDashboard.putData("intake0", this);
+  // SmartDashboard.putNumber("In:Wr(deg)", getAngle());
+  // SmartDashboard.putNumber("In:Vac(c)", vacuumSensor.getRawVacuum() );
+  // }
 
   /**
    * The Servo used by the Wrist has been modified to extend the range. It also
@@ -353,7 +352,8 @@ public class IntakeSubsystem extends ExtendedSubSystem {
 
       SmartDashboard.putNumber("In:Wr(deg)", getAngle());
       SmartDashboard.putNumber("In:VacCurr(amp)", getPumpCurrent());
-      SmartDashboard.putNumber("In:Vac(c)", vacuumSensor.getRawVacuum() );
+      SmartDashboard.putNumber("In:Vac(c)", vacuumSensor.getRawVacuum());
+      SmartDashboard.putNumber("Vaccum Pressure", getVacuumSensor().getRawVacuum());
     }
   }
 
