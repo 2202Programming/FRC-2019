@@ -353,7 +353,7 @@ public class IntakeSubsystem extends ExtendedSubSystem {
       SmartDashboard.putNumber("In:Wr(deg)", getAngle());
       SmartDashboard.putNumber("In:VacCurr(amp)", getPumpCurrent());
       SmartDashboard.putNumber("In:Vac(c)", vacuumSensor.getRawVacuum());
-      SmartDashboard.putNumber("Vaccum Pressure", getVacuumSensor().getRawVacuum());
+      
     }
   }
 

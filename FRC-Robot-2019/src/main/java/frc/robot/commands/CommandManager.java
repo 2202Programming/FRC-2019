@@ -475,10 +475,8 @@ public class CommandManager {
         double vacTimeout = 0.20; // seconds
         CommandGroup grp = new CommandGroup("Release");
         // grp.AddSequential(new Extend_Drive_To_Deliver());
-        CommandGroup subGrp = new CommandGroup("ReleaseSub");
-        subGrp.addParallel(new VacuumCommand(false, vacTimeout));
-        subGrp.addParallel(new RetractOnReleaseCommand(this, 10.0 /* inchs */, 1.0));
-        grp.addSequential(subGrp);
+        grp.addSequential(new VacuumCommand(false, vacTimeout));
+        grp.addSequential(new RetractOnReleaseCommand(this, 10.0 /* inchs */, 1.0));
         grp.addSequential(new NextModeCmd(Modes.Drive)); // go back to driving configuration
         return grp;
     }
