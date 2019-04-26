@@ -47,21 +47,27 @@ public class RetractOnReleaseCommand extends Command {
     boolean rc= releaseCheckFunc.getAsBoolean();
     SmartDashboard.putBoolean("ReleaseSensor", rc);
     // we are done, we timed out or we got the vacuum release signal,  move us back.
+    // RC is good, move arm back now
+    if (rc) {
+       armPositioner.setPosition(init_h, x_new); 
+    }
+
+  }
+
+  boolean checkArmPos() {
+    double curX_proj_err = Math.abs(Robot.arm.getProjection() - x_new);
+    return ( curX_proj_err < .25) || Robot.arm.isExtensionOverrided();  //.25 inch
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
-    return isTimedOut() || releaseCheckFunc.getAsBoolean();
+    return isTimedOut() || checkArmPos();
   }
 
   // Called once after isFinished returns true
   @Override
   protected void end() {
-    //We are released according to the sensor, NOW move the arm, if we didnt timeout.
-    if (!isTimedOut()) {
-       armPositioner.setPosition(init_h, x_new); 
-    }
   }
 
   // Called when another command which requires one or more of the same
