@@ -14,6 +14,8 @@ public class RetractOnReleaseCommand extends Command {
   double timeout;
   double init_x;
   double init_h;
+  double x_new;    //x to jump to when the sensor says we are released
+
   private ArmStatePositioner armPositioner;
 
   public RetractOnReleaseCommand(CommandManager cmdMgr, double x_retract, double timeout) {
@@ -31,10 +33,10 @@ public class RetractOnReleaseCommand extends Command {
     //save were we are so we can tweek it on finish
     init_x = armPositioner.getProjectionCommanded();
     init_h = armPositioner.getHeightCommanded();
-    double x = init_x;
+    x_new = init_x;
     int invertMultiplier = Robot.arm.isInverted()? -1 : 1;
-    x -= invertMultiplier * x_retract;   //move back a bit, account for side.
-    armPositioner.setPosition(init_h, x);
+    x_new -= invertMultiplier * x_retract;   //move back a bit, account for side.
+    
     setTimeout(timeout);
   }
 
@@ -56,6 +58,10 @@ public class RetractOnReleaseCommand extends Command {
   // Called once after isFinished returns true
   @Override
   protected void end() {
+    //We are released according to the sensor, NOW move the arm, if we didnt timeout.
+    if (!isTimedOut()) {
+       armPositioner.setPosition(init_h, x_new); 
+    }
   }
 
   // Called when another command which requires one or more of the same
