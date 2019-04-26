@@ -39,7 +39,7 @@ public class ClimbGroup extends CommandGroup {
        
         
         // Drive into HAB Sequence
-        addSequential(new MoveArmToRawPosition(-135, 19.0, 0.5, 180));        
+        addSequential(new MoveArmToRawPosition(-135, 20.0, 0.5, 180));        
         addSequential(forwardCmds);
         CommandGroup forwardCmds3 = new CommandGroup("Going forward 2");
         forwardCmds3.addSequential(new PawlSureFire(Robot.climber.Retract,  6));
