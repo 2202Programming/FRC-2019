@@ -24,7 +24,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
     //physical units
     final double vacuumTriggerV = 0.34; // volts about 8psi 
     final double vacuumBiasV = 0.15;    // part or wiring is bad, 25% lower than expected .2v
-    final double vacuumReleaseVtoll = 0.015;  //tollerance on vac to consider released (10% v) 
+    final double vacuumReleaseVtoll = 0.020;  //tollerance on vac to consider released (10% v) 
 
     // a/d is 12 bits + extra bits added via over sample, 
 	// so 12 + 3 ==> 15 bits 0 - 32767 range on averageValue
