@@ -18,7 +18,7 @@ public class ArmStatePositioner extends Command {
     public static final double kHeightMax = 96.0; // TODO: Find real max
 
     // Positions in form (InversionState, Height, Position)
-    public static final double DeliveryCargoPositions[][][] = { { { 26.875, 23 }, { 54.0, 17.5 }, { 84.0, 17.5 } },
+    public static final double DeliveryCargoPositions[][][] = { { { 26.25, 23 }, { 54.0, 17.5 }, { 84.0, 17.5 } },
             { { 28.875, -23 }, { 57.0, -17.5 }, { 86.0, -17.5 } } };
     public static final double DeliveryHatchPositions[][][] = { { { 26.5, 23 }, { 55.0, 17.5 }, { 82.0, 17.5 } },
             { { 30.35, -23 }, { 57.375, -17.5 }, { 83.75, -17.5 } } };
