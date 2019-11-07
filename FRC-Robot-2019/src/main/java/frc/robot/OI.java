@@ -9,6 +9,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.arm.ResetArmCommand;
 import frc.robot.commands.cargo.AutoCargoIntakeCommand;
@@ -16,7 +17,7 @@ import frc.robot.commands.cargo.DeployCargoTrapCommand;
 import frc.robot.commands.cargo.RetractCargoTrapCommand;
 import frc.robot.commands.cargo.tests.IntakeTestCmd;
 import frc.robot.commands.cargo.tests.OuttakeTestCmd;
-
+import frc.robot.commands.climb.PawlSureFire;
 import frc.robot.commands.climb.tests.CharonSolenoidTestCmd;
 import frc.robot.commands.climb.tests.ClimbMotorTestCmd;
 import frc.robot.commands.climb.tests.PawlSolenoidTestCmd;
@@ -79,10 +80,8 @@ public class OI {
   public JoystickButton endDriveMode; // Switches state out of drive
   public JoystickButton goToPrevMode; // Goes to previous state (only works for recapturing)
 
-  public JoystickButton climbButton;
-  public JoystickButton shortClimbButton;
-  public JoystickButton climbUp;
-  public JoystickButton pullUp;
+  public Button climbButton;
+  public Button shortClimbButton;
 
   private ExpoShaper rotateShaper = new ExpoShaper(.7); // fairly flat curve
 
@@ -110,13 +109,13 @@ public class OI {
     new JoystickButton(driver, XboxControllerButtonCode.B.getCode())
         .whenPressed(new ToggleAutomaticGearShiftingCommand());
     new JoystickButton(driver, XboxControllerButtonCode.X.getCode()).whenPressed(new InvertDriveControlsCommand());
-    new JoystickButton(driver, XboxControllerButtonCode.LB.getCode()).whileHeld(new LimeLightArcadeDriveCommand(0.4));
+    new JoystickButton(driver, XboxControllerButtonCode.LB.getCode()).whileHeld(new LimeLightArcadeDriveCommand(1.0));
     new JoystickButton(driver, XboxControllerButtonCode.RB.getCode()).whenPressed(new AutomaticUpShiftCommand());
     new JoystickTrigger(driver, XboxControllerButtonCode.TRIGGER_LEFT.getCode(), 0.75)
         .whileHeld(new AutoCargoIntakeCommand(0.4));
     new JoystickTrigger(driver, XboxControllerButtonCode.TRIGGER_RIGHT.getCode(), 0.75)
         .whileHeld(new OuttakeTestCmd(0.4));
-    new JoystickButton(assistant, 9).whileHeld(new CopilotControlCommand(0.4, 0.3));;
+    new JoystickButton(assistant, 9).whileHeld(new CopilotControlCommand(0.4, 0.4));;
 
     // Switchboard Assignments 
     /**
@@ -129,15 +128,15 @@ public class OI {
 
     // Climber tests - temporary added to field
     //execute Pawl only on change
-    new JoystickButton(switchBoard, 1).whenPressed(new PawlSolenoidTestCmd(true));
-    new JoystickButton(switchBoard, 1).whenReleased(new PawlSolenoidTestCmd(false));
+    new JoystickButton(switchBoard, 1).whenPressed(new PawlSureFire(Robot.climber.Extend, 3));
+    new JoystickButton(switchBoard, 1).whenReleased(new PawlSureFire(Robot.climber.Retract, 3));
     new JoystickButton(switchBoard, 2).whileActive(new ClimbMotorTestCmd(0.3));
     
     //execute Charon only on button change
     new JoystickButton(switchBoard, 3).whenPressed(new CharonSolenoidTestCmd(true));
     new JoystickButton(switchBoard, 3).whenReleased(new CharonSolenoidTestCmd(false));
 
-    new JoystickButton(switchBoard, 4).whileActive(new RollerMotorTestCmd(0.5));
+    new JoystickButton(switchBoard, 4).whileActive(new RollerMotorTestCmd(0.25));
     new JoystickButton(switchBoard, 5).whileActive(new ClimbMotorTestCmd(-0.3));
 
     new GeneralTrigger(Robot.arm::extensionAtMin).whenPressed(new ResetArmCommand());
@@ -151,10 +150,8 @@ public class OI {
     goToPrevMode = new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode());
 
     //TODO: Billy / Zander / driveteam pick a real place for this - 3/23/19
-    climbButton = new JoystickButton(switchBoard, 7);
-    shortClimbButton = new JoystickButton(switchBoard, 8);
-    climbUp = new JoystickButton(switchBoard, 9);
-    pullUp = new JoystickButton(switchBoard, 10);
+    climbButton = new GeneralTrigger(() -> switchBoard.getRawButton(7) && switchBoard.getRawButton(11));
+    shortClimbButton = new GeneralTrigger(() -> switchBoard.getRawButton(8) && switchBoard.getRawButton(11));
   }
 
 

@@ -2,38 +2,31 @@ package frc.robot.commands.climb;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
-import frc.robot.commands.util.RateLimiter;
-import frc.robot.commands.util.RateLimiter.InputModel;
 
 public class ClimbRollForward extends Command {
-    private double timeout;
     private double rollerSpeed;
     private double curSpeed;
-    //private RateLimiter sLimit;
-    private double limitFactor = 10.0;
+    private double startSpeed;
+    private double acceleration;
 
-    public ClimbRollForward(double rollerSpeed, double timeout) {
-        this.timeout = timeout;
-        this.rollerSpeed = rollerSpeed;
+    public ClimbRollForward(double startSpeed, double rollerSpeed, double powerAcceleration) {
         requires(Robot.climber);
-        //sLimit = new RateLimiter(Robot.dT, this::getRollerSpeed, null, 0, this.rollerSpeed, 0, (rollerSpeed/limitFactor), InputModel.Position);
-    }
-
-    private double getRollerSpeed() {
-        return rollerSpeed;
+        this.startSpeed = startSpeed;
+        this.rollerSpeed = rollerSpeed;
+        this.acceleration = powerAcceleration * Robot.kDefaultPeriod;
     }
 
     protected void initialize() {
-        setTimeout(timeout);
         Robot.climber.setRollerSpeed(0);
-        curSpeed = 0;
+        curSpeed = startSpeed;
     }
 
     protected void execute() {
-        curSpeed += rollerSpeed / limitFactor;
-        if (curSpeed > rollerSpeed) curSpeed = rollerSpeed;
-        //sLimit.execute();
-        //double speed = sLimit.get();
+        if(rollerSpeed > 0) {
+            curSpeed = Math.min(rollerSpeed, curSpeed + acceleration);
+        } else {
+            Math.max(rollerSpeed, curSpeed - acceleration);
+        }
         Robot.climber.setRollerSpeed(curSpeed);
     }
 
@@ -42,6 +35,6 @@ public class ClimbRollForward extends Command {
     }
 
     protected boolean isFinished() {
-        return isTimedOut();
+        return Robot.climber.climberAgainstWall();
     }
 }

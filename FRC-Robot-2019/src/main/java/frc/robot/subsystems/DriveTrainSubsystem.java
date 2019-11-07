@@ -103,8 +103,10 @@ public class DriveTrainSubsystem extends Subsystem {
       SmartDashboard.putData(this);
       SmartDashboard.putNumber("Left Encoder Count", getLeftEncoderTalon().getSelectedSensorPosition());
       SmartDashboard.putNumber("Left Encoder Rate", getLeftEncoderTalon().getSelectedSensorVelocity());
+      SmartDashboard.putNumber("Left Motor Output", getLeftEncoderTalon().getMotorOutputPercent());
       SmartDashboard.putNumber("Right Encoder Count", getRightEncoderTalon().getSelectedSensorPosition());
       SmartDashboard.putNumber("Right Encoder Rate", getRightEncoderTalon().getSelectedSensorVelocity());
+      SmartDashboard.putNumber("Right Motor Output", getRightEncoderTalon().getMotorOutputPercent());
     }
   }
 
@@ -115,8 +117,8 @@ public class DriveTrainSubsystem extends Subsystem {
     talon.enableCurrentLimit(true);
     talon.configOpenloopRamp(0.08, 10);
     talon.setNeutralMode(NeutralMode.Brake);
-    talon.configPeakOutputForward(0.9);
-    talon.configPeakOutputReverse(-0.9);
+    talon.configPeakOutputForward(0.95);
+    talon.configPeakOutputReverse(-0.95);
   }
 
   @Override

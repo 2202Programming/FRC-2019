@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.commands.util.ExpoShaper;
-import frc.robot.input.LimeLightXValueInput;
+import frc.robot.input.LimeLightXFilteredInput;
 import frc.robot.output.FakePIDOutput;
 import frc.robot.subsystems.DriveTrainSubsystem;
 
@@ -15,9 +15,9 @@ import frc.robot.subsystems.DriveTrainSubsystem;
  */
 public class LimeLightArcadeDriveCommand extends Command {
   private DriveTrainSubsystem driveTrain;
-  private final double P = 0.055;
+  private final double P = 0.22;
   private final double I = 0.0;
-  private final double D = 0.0;
+  private final double D = 0.3;
   private PIDController controller;
   private ExpoShaper speedShaper;
   private double maxSpeed;
@@ -26,8 +26,8 @@ public class LimeLightArcadeDriveCommand extends Command {
     // Use requires() here to declare subsystem dependencies
     requires(Robot.driveTrain);
     driveTrain = Robot.driveTrain;
-    controller = new PIDController(P, I, D, new LimeLightXValueInput(), new FakePIDOutput());
-    speedShaper = new ExpoShaper(0.6);        //0 no change,  1.0 max flatness
+    controller = new PIDController(P, I, D, new LimeLightXFilteredInput(), new FakePIDOutput());
+    speedShaper = new ExpoShaper(0.6); // 0 no change, 1.0 max flatness
     this.maxSpeed = maxSpeed;
   }
 
@@ -50,9 +50,17 @@ public class LimeLightArcadeDriveCommand extends Command {
   // Temporary until we get the XboxController wrapper for joystick
   @Override
   protected void execute() {
-    //We invert the PID controller value so the feedback loop is negative and not positive
+    // We invert the PID controller value so the feedback loop is negative and not
+    // positive
     double speed = maxSpeed * speedShaper.expo(Robot.m_oi.getDriverController().getY(Hand.kLeft));
     double rotation = -controller.get();
+ 
+    if (Math.abs(rotation) <= 0.12) {
+      rotation = Math.signum(rotation) * 0.12;
+    }
+
+    SmartDashboard.putNumber("PID Error", controller.getError());
+
     Robot.driveTrain.ArcadeDrive(speed, rotation, true);
     SmartDashboard.putData(controller);
   }

@@ -20,9 +20,10 @@ import frc.robot.commands.arm.MoveArmAtHeight;
 import frc.robot.commands.climb.CheckSolenoids;
 import frc.robot.commands.climb.ClimbGroup;
 import frc.robot.commands.climb.ClimbUpPartial;
+import frc.robot.commands.climb.Level2ClimbGroup;
 import frc.robot.commands.climb.PullUpPartial;
-import frc.robot.commands.intake.CheckSucc;
-import frc.robot.commands.intake.WristTrackFunction;
+import frc.robot.commands.intake.WristTrackAngle;
+import frc.robot.commands.util.Angle;
 import frc.robot.commands.util.CancelCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CameraSubsystem;
@@ -82,20 +83,12 @@ public class Robot extends TimedRobot {
     // 0=front cam, 1= rear cam, 2 = arm  (pi camera server defines this - could change)
     cameraSelect.setDouble(1);    
     m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function    
-    CommandGroup level3Climb = new ClimbGroup(25.5, 0.0);  // extend/retract in inches
+    CommandGroup level3Climb = new ClimbGroup(100, -5.0);  // extend/retract in inches
     m_oi.climbButton.whenPressed(level3Climb);
     m_oi.climbButton.whenReleased(new CancelCommand(level3Climb));
-    CommandGroup level2Climb = new ClimbGroup(9.0, 0.0);
+    CommandGroup level2Climb = new Level2ClimbGroup(15.0, -5.0);
     m_oi.shortClimbButton.whenPressed(level2Climb);
     m_oi.shortClimbButton.whenReleased(new CancelCommand(level2Climb));
-    CommandGroup level3Up = new ClimbUpPartial(25.5, 0);
-    m_oi.climbUp.whenPressed(level3Up);
-    m_oi.climbUp.whenReleased(new CancelCommand(level3Up));
-    CommandGroup level3Retract = new PullUpPartial(25.5, 0);
-    m_oi.climbUp.whenPressed(level3Retract);
-    m_oi.climbUp.whenReleased(new CancelCommand(level3Retract));
-    Robot.arm.setDefaultCommand(new MoveArmAtHeight(m_cmdMgr::gripperHeightOut, m_cmdMgr::gripperXProjectionOut));
-    Robot.intake.setDefaultCommand(new WristTrackFunction(m_cmdMgr::wristTrackParallel));
   }
 
   /**
@@ -186,7 +179,7 @@ public class Robot extends TimedRobot {
    @Override
    public void testInit() {
      m_testRobot.initialize();
-     sensorSubystem.enableLED(); //active limelight LED when operational
+     sensorSubystem.disableLED(); //active limelight LED when operational
      Scheduler.getInstance().enable();   //### hack? or required?  Seems required otherwise nothing runs 
    }
 
@@ -211,7 +204,7 @@ public class Robot extends TimedRobot {
     m_cmdMgr.log(interval+23);
     intake.log(interval+29);
     climber.log(interval+31);
-
+    SmartDashboard.putNumber("Vaccum Pressure", intake.getVacuumSensor().getRawVacuum() / (Math.pow(2, 12 + 4) / 4));
     
     SmartDashboard.putData(Scheduler.getInstance()); 
     SmartDashboard.putData(arm);
