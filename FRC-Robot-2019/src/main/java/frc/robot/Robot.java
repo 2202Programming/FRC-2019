@@ -34,6 +34,9 @@ import frc.robot.subsystems.GearShifterSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.SensorSubsystem;
 
+import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.SerialPort;
+
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the TimedRobot
@@ -59,6 +62,7 @@ public class Robot extends TimedRobot {
   public static PowerDistributionPanel pdp = new PowerDistributionPanel(0);
   public static CameraSubsystem cameraSubsystem = new CameraSubsystem();
   public static SensorSubsystem sensorSubystem = new SensorSubsystem();
+  public static AHRS ahrs = new AHRS(SerialPort.Port.kMXP); /* Alternatives:  SPI.Port.kMXP, I2C.Port.kMXP or SerialPort.Port.kUSB */
 
   public static OI m_oi = new OI(); //OI Depends on the subsystems and must be last (boolean is whether we are testing or not)
 
