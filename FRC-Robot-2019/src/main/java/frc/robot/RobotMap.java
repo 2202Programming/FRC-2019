@@ -77,8 +77,8 @@ public class RobotMap {
   public static final int CLIMB_PAWL_ENGAGE_PCM = 3;
   public static final int CLIMB_SLIDE_PULL_PCM = 4;
   public static final int CLIMB_SLIDE_RELEASE_PCM = 5;
-  public static final int CLIMB_MAX_EXTENSION_CH = 8;
-  public static final int CLIMB_MIN_EXTENSION_CH = 9;
+  public static final int CLIMB_MAX_EXTENSION_CH = 3;
+  public static final int CLIMB_MIN_EXTENSION_CH = 2;
   public static final int CLIMB_DRAWER_SLIDE_MIN = 1;
 
   //LIDAR sensors
@@ -88,8 +88,8 @@ public class RobotMap {
   public static final int RIGHT_BACK_LIDAR = 2;
 
   //camera paths
-  public static final String FRONT_DRIVE_CAMERA_PATH = "/dev/video0";
-  public static final String REAR_DRIVE_CAMERA_PATH = "/dev/video1";
+  public static final String FRONT_DRIVE_CAMERA_PATH = "/dev/video1";
+  public static final String REAR_DRIVE_CAMERA_PATH = "/dev/video0";
   public static final String ARM_CAMERA_PATH = "/dev/video2";
   
 }

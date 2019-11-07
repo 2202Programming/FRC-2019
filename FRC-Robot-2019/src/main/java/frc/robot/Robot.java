@@ -204,7 +204,7 @@ public class Robot extends TimedRobot {
     m_cmdMgr.log(interval+23);
     intake.log(interval+29);
     climber.log(interval+31);
-
+    SmartDashboard.putNumber("Vaccum Pressure", intake.getVacuumSensor().getRawVacuum() / (Math.pow(2, 12 + 4) / 4));
     
     SmartDashboard.putData(Scheduler.getInstance()); 
     SmartDashboard.putData(arm);

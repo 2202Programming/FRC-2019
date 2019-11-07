@@ -46,6 +46,7 @@ public class VacuumCommand extends Command {
         //just wait for time out or we are done.
     }
 
+    // When we release we blow air when we retract, sensor goes below baseline - problem...
     @Override
     protected boolean isFinished() {
         // put the solenoid back to vacuum on timeout.

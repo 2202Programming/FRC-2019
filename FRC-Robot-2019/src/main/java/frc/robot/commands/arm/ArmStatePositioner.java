@@ -18,11 +18,11 @@ public class ArmStatePositioner extends Command {
     public static final double kHeightMax = 96.0; // TODO: Find real max
 
     // Positions in form (InversionState, Height, Position)
-    public static final double DeliveryCargoPositions[][][] = { { { 26.875, 17.5 }, { 54.0, 17.5 }, { 84.0, 17.5 } },
-            { { 28.875, -17.5 }, { 57.0, -17.5 }, { 86.0, -17.5 } } };
-    public static final double DeliveryHatchPositions[][][] = { { { 27.5, 17.5 }, { 55.0, 17.5 }, { 82.0, 17.5 } },
-            { { 30.35, -17.5 }, { 57.375, -17.5 }, { 83.75, -17.5 } } };
-    public static final double HuntPositions[][][] = { { { 5.0, 23.0 }, { 17.5, 23.5 }, { 24.0, 24.0 } },
+    public static final double DeliveryCargoPositions[][][] = { { { 26.25, 23 }, { 54.0, 17.5 }, { 84.0, 17.5 } },
+            { { 28.875, -23 }, { 57.0, -17.5 }, { 86.0, -17.5 } } };
+    public static final double DeliveryHatchPositions[][][] = { { { 26.5, 23 }, { 55.0, 17.5 }, { 82.0, 17.5 } },
+            { { 30.35, -23 }, { 57.375, -17.5 }, { 83.75, -17.5 } } };
+    public static final double HuntPositions[][][] = { { { 5.5, 23.0 }, { 18, 22 }, { 24.75, 24.0 } },
             { { 7.0, -23.0 }, { 19.5, -23.5 }, { 28.0, -24.0 } } }; // 0: Floor, 1: Cargo, 2: Hatch
     public static final double[][][] DrivePositions = { { { 49.5, 14.0 }, { 50, 12.0 } },
             { { 51.5, -14.0 }, { 52, -12.0 } } };
@@ -43,11 +43,11 @@ public class ArmStatePositioner extends Command {
 
         ExpoShaper projectionShaper = new ExpoShaper(0.5, Robot.m_oi::extensionInput); // joystick defined in m_oi.
         projectionAdjustLimiter = new LimitedIntegrator(Robot.dT, projectionShaper::get, // shaped joystick input
-                -25.0, // kGain, 25 in/sec on the joystick (neg. gain, forward stick is neg.)
+                -30.0, // kGain, 25 in/sec on the joystick (neg. gain, forward stick is neg.)
                 -25.0, // xmin inches true pos limit enforced by arm sub-sys
                 25.0, // x_max inches
-                -25.0, // dx_falling rate inch/sec
-                25.0); // dx_raise rate inch/sec
+                -30.0, // dx_falling rate inch/sec
+                30.0); // dx_raise rate inch/sec
         projectionAdjustLimiter.setDeadZone(0.5); // in/sec deadzone
 
         projectionLimiter = new RateLimiter(Robot.dT, this::getProjectionCommanded, // inputFunc gripperX_cmd
@@ -147,6 +147,7 @@ public class ArmStatePositioner extends Command {
 
     private void updatePosition(Modes curMode, int index) {
         int invert = arm.isInverted() ? 1 : 0;
+        boolean resetProjectionAdjust = true;
         switch (curMode) {
         case Construction:
             break;
@@ -183,13 +184,16 @@ public class ArmStatePositioner extends Command {
         case Flipping:
             break;
         case Releasing:
+            resetProjectionAdjust = false;
             break;
         default:
             break;
         }
         prevMode = curMode;
         prevIndex = index;
-        projectionAdjustLimiter.setX(0.0);
+        if(resetProjectionAdjust) {
+            projectionAdjustLimiter.setX(0.0);
+        }
     }
 
     public double getStateHeight() {
@@ -213,6 +217,12 @@ public class ArmStatePositioner extends Command {
         return x;
     }
 
+    /**
+     * Set's the arm's position
+     * Only used by external commands
+     * @param height
+     * @param projection
+     */
     public void setPosition(double height, double projection) {
         stateH = height;
         stateP = projection;

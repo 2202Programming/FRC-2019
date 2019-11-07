@@ -117,8 +117,8 @@ public class DriveTrainSubsystem extends Subsystem {
     talon.enableCurrentLimit(true);
     talon.configOpenloopRamp(0.08, 10);
     talon.setNeutralMode(NeutralMode.Brake);
-    talon.configPeakOutputForward(0.9);
-    talon.configPeakOutputReverse(-0.9);
+    talon.configPeakOutputForward(0.95);
+    talon.configPeakOutputReverse(-0.95);
   }
 
   @Override

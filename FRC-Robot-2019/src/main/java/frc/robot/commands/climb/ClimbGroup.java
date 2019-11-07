@@ -21,7 +21,7 @@ public class ClimbGroup extends CommandGroup {
 
         // Climb Sequence
         addSequential(Robot.climber.zeroSubsystem());   //hack to zero counters
-        addSequential(new VacuumCommand(false, 0.02));
+        addSequential(new VacuumCommand(false, 0.04));
         addSequential(new WristSetAngleCommand(-90));
         addSequential(new MoveArmToRawPosition(-90, 12, 0.5, 180));    
         addSequential(new PawlSureFire(Robot.climber.Extend, 4));
@@ -39,7 +39,7 @@ public class ClimbGroup extends CommandGroup {
        
         
         // Drive into HAB Sequence
-        addSequential(new MoveArmToRawPosition(-133, 19.0, 0.5, 180));        
+        addSequential(new MoveArmToRawPosition(-135, 20.0, 0.5, 180));        
         addSequential(forwardCmds);
         CommandGroup forwardCmds3 = new CommandGroup("Going forward 2");
         forwardCmds3.addSequential(new PawlSureFire(Robot.climber.Retract,  6));
@@ -48,7 +48,7 @@ public class ClimbGroup extends CommandGroup {
         
         // Retract Sequence
         addSequential(new WristSetAngleCommand(0));
-        addSequential(new MoveArmToRawPosition(-90, 18, 0.6, 180));
+        addSequential(new MoveArmToRawPosition(-90, 14, 0.6, 180));
         addSequential(forwardCmds3);
 
         //Drive fully onto HAB sequence 

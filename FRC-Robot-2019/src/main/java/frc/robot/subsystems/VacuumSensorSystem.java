@@ -24,7 +24,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
     //physical units
     final double vacuumTriggerV = 0.34; // volts about 8psi 
     final double vacuumBiasV = 0.15;    // part or wiring is bad, 25% lower than expected .2v
-    final double vacuumReleaseV = 0.22;  //point where we say we let the payload go - near bias v
+    final double vacuumReleaseVtoll = 0.020;  //tollerance on vac to consider released (10% v) 
 
     // a/d is 12 bits + extra bits added via over sample, 
 	// so 12 + 3 ==> 15 bits 0 - 32767 range on averageValue
@@ -37,7 +37,10 @@ import edu.wpi.first.wpilibj.AnalogInput;
     // convert physical units to scaled ints for tests
     final int vacTriggerC = (int)(vacuumTriggerV * kMax);
     final int vacBiasC = (int)(vacuumBiasV * kMax); 
-    final int vacRelease = (int)(vacuumReleaseV * kMax);   //TODO: need to test value and airpuff effect
+    // calc range to declare we are at atmos pressure
+    final int vacReleaseToll = (int)(vacuumReleaseVtoll * kMax);   //TODO: need to test value and airpuff effect
+    final int vacRelMin =  vacBiasC - vacReleaseToll;
+    final int vacRelMax = vacBiasC + vacReleaseToll;
 
     //Hz to run the A/D on. sampRate / 16 samples ==> 3906.25hz
     final int kSampleRate = 62500;  
@@ -82,8 +85,10 @@ import edu.wpi.first.wpilibj.AnalogInput;
 
     // on release, the vac pressure should be down around the bias value.
     public boolean hasReleased() {
+        // ave value will return to our bias value when no payload
         int ave = sensor.getAverageValue();
-        boolean retval = (ave <= vacRelease) ? true : false;
+        // between the ranges - declare we released
+        boolean retval = ( (ave > vacRelMin) && (ave < vacRelMax)) ? true : false;
         return retval;
     }
 
@@ -97,7 +102,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
     @Override
     protected void initDefaultCommand() {
         // could put the trigger here if good, but may just want to do in state manager or owning subsytem
-    
+
     }
 
     @Override

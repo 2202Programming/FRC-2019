@@ -17,7 +17,7 @@ public class LimeLightArcadeDriveCommand extends Command {
   private DriveTrainSubsystem driveTrain;
   private final double P = 0.22;
   private final double I = 0.0;
-  private final double D = 0.1;
+  private final double D = 0.3;
   private PIDController controller;
   private ExpoShaper speedShaper;
   private double maxSpeed;
