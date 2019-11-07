@@ -107,7 +107,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    logSmartDashboardSensors(500); //call smartdashboard logging, 500ms update rate
+    logSmartDashboardSensors(100); //call smartdashboard logging, 500ms update rate
     sensorSubystem.processSensors();
   }
 
@@ -214,6 +214,10 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData(Scheduler.getInstance()); 
     SmartDashboard.putData(arm);
     SmartDashboard.putData(intake);
+    SmartDashboard.putNumber("Pitch", ahrs.getPitch());
+    SmartDashboard.putNumber("Roll", ahrs.getRoll());
+    SmartDashboard.putNumber("Yaw", ahrs.getYaw());
+
 }
 
   private void resetAllDashBoardSensors() {
