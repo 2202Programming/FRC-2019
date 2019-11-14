@@ -23,7 +23,6 @@ public class LimeLightSubsystem extends Subsystem {
     private Deque<Double> areaArray = new ArrayDeque<Double>();
     private Deque<Double> targetArray = new ArrayDeque<Double>();
 
-    
     public LimeLightSubsystem() {
         logTimer = System.currentTimeMillis();
     }
@@ -35,23 +34,21 @@ public class LimeLightSubsystem extends Subsystem {
 
     public void log(int interval) {
 
-        if ((logTimer + interval) < System.currentTimeMillis()) { //only post to smartdashboard every interval ms
-          logTimer = System.currentTimeMillis();
+        if ((logTimer + interval) < System.currentTimeMillis()) { // only post to smartdashboard every interval ms
+            logTimer = System.currentTimeMillis();
 
-          SmartDashboard.putNumber("LimelightX", getX());
-          SmartDashboard.putNumber("LimelightY", getY());
-          SmartDashboard.putNumber("LimelightArea", getArea());
-          SmartDashboard.putBoolean("LimeTarget", hasTarget());
+            SmartDashboard.putNumber("LimelightX", getX());
+            SmartDashboard.putNumber("LimelightY", getY());
+            SmartDashboard.putNumber("LimelightArea", getArea());
+            SmartDashboard.putBoolean("LimeTarget", hasTarget());
 
-          SmartDashboard.putNumber("Avg Limelight X", getXAvg());
-          SmartDashboard.putNumber("Avg Limelight Y", getYAvg());
-          SmartDashboard.putNumber("Avg Limelight Area", getAreaAvg());
-          SmartDashboard.putBoolean("Target Reliability", hasTargetReliable());
-
-
+            SmartDashboard.putNumber("Avg Limelight X", getXAvg());
+            SmartDashboard.putNumber("Avg Limelight Y", getYAvg());
+            SmartDashboard.putNumber("Avg Limelight Area", getAreaAvg());
+            SmartDashboard.putBoolean("Target Reliability", hasTargetReliable());
 
         }
-      }
+    }
 
     public void populateLimelight() {
         table = NetworkTableInstance.getDefault().getTable("limelight");
@@ -61,40 +58,41 @@ public class LimeLightSubsystem extends Subsystem {
         NetworkTableEntry tv = table.getEntry("tv");
         NetworkTableEntry cameraSelect = table.getEntry("cameraSelect");
 
-        //read values periodically
+        // read values periodically
         x = tx.getDouble(0.0);
         y = ty.getDouble(0.0);
         area = ta.getDouble(0.0);
         target = tv.getDouble(0.0);
 
-        xArray.add(x);//add to rolling average array
-        if(xArray.size() > 10)//keep most recent 10 valuse in array
+        xArray.add(x);// add to rolling average array
+        if (xArray.size() > 10)// keep most recent 10 valuse in array
         {
-          xArray.remove(); //remove oldest reading (queue)
+            xArray.remove(); // remove oldest reading (queue)
         }
 
-        yArray.add(y);//add to rolling average array
-        if(yArray.size() > 10)//keep most recent 10 valuse in array
+        yArray.add(y);// add to rolling average array
+        if (yArray.size() > 10)// keep most recent 10 valuse in array
         {
-          yArray.remove(); //remove oldest reading (queue)
+            yArray.remove(); // remove oldest reading (queue)
         }
 
-        areaArray.add(area);//add to rolling average array
-        if(areaArray.size() > 10)//keep most recent 10 valuse in array
+        areaArray.add(area);// add to rolling average array
+        if (areaArray.size() > 10)// keep most recent 10 valuse in array
         {
-          areaArray.remove(); //remove oldest reading (queue)
+            areaArray.remove(); // remove oldest reading (queue)
         }
 
-        targetArray.add(target);//add to rolling average array
-        if(targetArray.size() > 10)//keep most recent 10 valuse in array
+        targetArray.add(target);// add to rolling average array
+        if (targetArray.size() > 10)// keep most recent 10 valuse in array
         {
-          targetArray.remove(); //remove oldest reading (queue)
+            targetArray.remove(); // remove oldest reading (queue)
         }
 
-
-        //put cameraselect value into network tables
-        if(Robot.driveTrain.getInversionConstant()>0) cameraSelect.setDouble(0);
-        else cameraSelect.setDouble(1);
+        // put cameraselect value into network tables
+        if (Robot.driveTrain.getInversionConstant() > 0)
+            cameraSelect.setDouble(0);
+        else
+            cameraSelect.setDouble(1);
 
         return;
     }
@@ -113,111 +111,146 @@ public class LimeLightSubsystem extends Subsystem {
 
     public double getX() {
         return x;
-    } 
+    }
 
-    public double getXAvg() { //gets olympic avg of x coordinate lydar
+    public double getXAvg() { // gets olympic avg of x coordinate lydar
         double average = 0.0;
         double sum = 0.0;
         double max = 0.0;
         double min = 10000.0;
         Double[] tempArray = xArray.toArray(new Double[0]);
-    
-        for (int i = 0; i< xArray.size(); i++) {//gets min and max (so it can remove min and max)
-          if(tempArray[i] > max)
-          {
-            max = tempArray[i];
-          }
-          if(tempArray[i] < min)
-          {
-            min = tempArray[i];
-          }
-          sum = sum + tempArray[i];
+
+        for (int i = 0; i < xArray.size(); i++) {// gets min and max (so it can remove min and max)
+            if (tempArray[i] > max) {
+                max = tempArray[i];
+            }
+            if (tempArray[i] < min) {
+                min = tempArray[i];
+            }
+            sum = sum + tempArray[i];
         }
-        if ((xArray.size()-2)!=0) { //make sure not to divide by zero if array is small
-            average = (sum-max-min) / (xArray.size()-2); //return average, not including max or min reading (olympic)  
-            return average; 
-        }
-        else return 0;
-        
+        if ((xArray.size() - 2) != 0) { // make sure not to divide by zero if array is small
+            average = (sum - max - min) / (xArray.size() - 2); // return average, not including max or min reading
+                                                               // (olympic)
+            return average;
+        } else
+            return 0;
+
     }
-    
 
     public double getY() {
-         return y;
+        return y;
     }
 
-    public double getYAvg() {//gets olympic avg of y coordinate lydar
+    public double getYAvg() {// gets olympic avg of y coordinate lydar
         double average = 0;
         double sum = 0;
         double max = 0;
         double min = 10000;
         Double[] tempArray = yArray.toArray(new Double[0]);
-    
-        for (int i = 0; i< yArray.size(); i++) {
-          if(tempArray[i] > max)
-          {
-            max = tempArray[i];
-          }
-          if(tempArray[i] < min)
-          {
-            min = tempArray[i];
-          }
-          sum = sum + tempArray[i];
+
+        for (int i = 0; i < yArray.size(); i++) {
+            if (tempArray[i] > max) {
+                max = tempArray[i];
+            }
+            if (tempArray[i] < min) {
+                min = tempArray[i];
+            }
+            sum = sum + tempArray[i];
         }
 
-        if ((yArray.size()-2)!=0) { //make sure not to divide by zero if array is small
-            average = (sum-max-min) / (yArray.size()-2); //return average, not including max or min reading (olympic)  
-            return average; 
-            }
-            else return 0;        
+        if ((yArray.size() - 2) != 0) { // make sure not to divide by zero if array is small
+            average = (sum - max - min) / (yArray.size() - 2); // return average, not including max or min reading
+                                                               // (olympic)
+            return average;
+        } else
+            return 0;
     }
 
     public double getArea() {
         return area;
     }
 
-    public double getAreaAvg() {//get area olypmic average
+    public double getAreaAvg() {// get area olypmic average
         double average = 0;
         double sum = 0;
         double max = 0;
         double min = 10000;
         Double[] tempArray = areaArray.toArray(new Double[0]);
-    
-        for (int i = 0; i< areaArray.size(); i++) {
-          if(tempArray[i] > max)
-          {
-            max = tempArray[i];
-          }
-          if(tempArray[i] < min)
-          {
-            min = tempArray[i];
-          }
-          sum = sum + tempArray[i];
-        }
-        if ((areaArray.size()-2)!=0) { //make sure not to divide by zero if array is small
-            average = (sum-max-min) / (areaArray.size()-2); //return average, not including max or min reading (olympic)  
-            return average; 
-        }
-        else return 0;
-    } 
 
-    public Boolean hasTarget() {
-        if (target < 1) return false;
-        else return true;
+        for (int i = 0; i < areaArray.size(); i++) {
+            if (tempArray[i] > max) {
+                max = tempArray[i];
+            }
+            if (tempArray[i] < min) {
+                min = tempArray[i];
+            }
+            sum = sum + tempArray[i];
+        }
+        if ((areaArray.size() - 2) != 0) { // make sure not to divide by zero if array is small
+            average = (sum - max - min) / (areaArray.size() - 2); // return average, not including max or min reading
+                                                                  // (olympic)
+            return average;
+        } else
+            return 0;
     }
 
-    public Boolean hasTargetReliable() { //determines how reliable target is; if any of the values are 0 it isn't reliable
+    public Boolean hasTarget() {
+        if (target < 1)
+            return false;
+        else
+            return true;
+    }
+
+    public Boolean hasTargetReliable() { // determines how reliable target is; if any of the values are 0 it isn't
+                                         // reliable
         Double[] tempArray = targetArray.toArray(new Double[0]);
 
-        for (int i = 0; i < targetArray.size(); i++)
-        {
-            if(tempArray[i] == 0)
-            {
+        for (int i = 0; i < targetArray.size(); i++) {
+            if (tempArray[i] == 0) {
                 return false;
             }
         }
-        return true; 
+        return true;
 
+    }
+
+    // TODO: This currently assumes the limelight has a fixed angle
+    /**
+     * Gets the ground distance from the target (along the z-axis). This is
+     * essentially the distance from the limelight to the point under the target,
+     * where the distance between that point and the ground is equal to the distance
+     * between the limelight and the ground.
+     * 
+     * @param targetHeightFromGround the height the target is from the ground
+     * @return the distance from the target to the limelight along the z-axis
+     */
+    public double getDistanceFromTarget(double targetHeightFromGround) {
+        double angle = 0; // TODO: Set this respectively (and find out if degrees or radians)
+        double cameraHeightFromGround = 0; // TODO: And this (should be constants)
+
+        double yAboveCursor = getYAvg(); // TODO: getY() or getYAvg()?
+        double relHeight = cameraHeightFromGround - targetHeightFromGround;
+        return relHeight / Math.tan(angle + yAboveCursor);
+    }
+
+    // TODO: This currently assumes the limelight has a fixed angle
+    /**
+     * Gets the distance from the target (along the y-z plane). The result of
+     * <code>getHypDistanceFromTarget(targetHeightFromGround)</code> should be
+     * approximately equal to
+     * <code>Math.sqrt(Math.pow(getDistanceFromTarget(targetHeightFromGround), 2) + targetHeightFromGround * targetHeightFromGround)</code>
+     * 
+     * @param targetHeightFromGround the height the target is from the ground
+     * @return the distance from the target to the limelight along the y-z plane
+     */
+    public double getHypDistanceFromTarget(double targetHeightFromGround) {
+        double angle = 0; // TODO: Set this respectively (and find out if degrees or radians)
+        double cameraHeightFromGround = 0; // TODO: And this (should be constants)
+
+        double yAboveCursor = getYAvg(); // TODO: getY() or getYAvg()?
+        double relHeight = cameraHeightFromGround - targetHeightFromGround;
+        return relHeight / Math.sin(angle + yAboveCursor);
     }
 
 }
