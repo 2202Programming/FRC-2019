@@ -7,8 +7,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.commands.CommandManager;
 import frc.robot.commands.arm.ArmStatePositioner;
+import frc.robot.subsystems.VacuumSensorSystem;
 
-public class RetractOnReleaseCommand extends Command {
+public class RetractOnReleaseCommand extends Command { 
+  VacuumSensorSystem vs;
   BooleanSupplier releaseCheckFunc;
   double x_retract;
   double timeout;
@@ -20,13 +22,19 @@ public class RetractOnReleaseCommand extends Command {
 
   public RetractOnReleaseCommand(CommandManager cmdMgr, double x_retract, double timeout) {
     // could require(vacSensor0)
-    this.releaseCheckFunc = Robot.intake.getVacuumSensor()::hasReleased;
-    this.x_retract = x_retract;
-    this.timeout = timeout;
+    try {
+      vs = Robot.intake.getVacuumSensor();
+      if (vs != null) 
+        releaseCheckFunc = vs::hasReleased;
+      this.x_retract = x_retract;
+      this.timeout = timeout;
+    }
+    finally {
+      if (vs != null) vs.close();
+    }
   }
 
   // Called just before this Command runs the first time
-  @Override
   protected void initialize() {
     // Assume that the ArmStatePositioner is the only type of default command used
     armPositioner = Robot.arm.getArmPositioner();

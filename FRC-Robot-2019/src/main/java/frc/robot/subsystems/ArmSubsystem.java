@@ -391,7 +391,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * @param talon the WPI_TalonSRX to log.
    */
   private void logTalon(WPI_TalonSRX talon) {
-    SmartDashboard.putNumber(talon.getName() + " Current", talon.getOutputCurrent());
+    SmartDashboard.putNumber(talon.getName() + " Current", talon.getSupplyCurrent() );
     SmartDashboard.putNumber(talon.getName() + " Percent Output", talon.getMotorOutputPercent());
   }
 

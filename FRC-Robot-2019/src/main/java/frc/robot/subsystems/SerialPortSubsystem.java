@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class SerialPortSubsystem extends Subsystem {
 
 private int[] distanceArray = new int[4];
-private ArrayList<Deque> distanceAvgArray;
+private ArrayList<Deque<Integer>> distanceAvgArray;
 private StringBuilder serialResults = new StringBuilder();
 private SerialPort arduinoSerial;
 private boolean serialExists = true;
@@ -31,7 +31,7 @@ private long logTimer;
     }
 
     logTimer = System.currentTimeMillis();
-    distanceAvgArray = new ArrayList<Deque>(); //4 elements, each is a Deque for 10 elements of distance
+    distanceAvgArray = new ArrayList<Deque<Integer>>(); //4 elements, each is a Deque for 10 elements of distance
     distanceAvgArray.add(0, new ArrayDeque<Integer>());
     distanceAvgArray.add(1, new ArrayDeque<Integer>());
     distanceAvgArray.add(2, new ArrayDeque<Integer>());
@@ -176,6 +176,7 @@ private long logTimer;
     int flushAmount = arduinoSerial.getBytesReceived()-bufferLimit;
     if(flushAmount>0) {
       try{
+        @SuppressWarnings("unused")
         byte[] temp = arduinoSerial.read(flushAmount);
         System.out.println("Flushed " + (flushAmount) + " bytes from serial buffer");
       } 

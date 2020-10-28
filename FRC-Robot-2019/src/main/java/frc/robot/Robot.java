@@ -16,14 +16,14 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.CommandManager;
 import frc.robot.commands.CommandManager.Modes;
-import frc.robot.commands.arm.MoveArmAtHeight;
+//import frc.robot.commands.arm.MoveArmAtHeight;
 import frc.robot.commands.climb.CheckSolenoids;
 import frc.robot.commands.climb.ClimbGroup;
-import frc.robot.commands.climb.ClimbUpPartial;
+//import frc.robot.commands.climb.ClimbUpPartial;
 import frc.robot.commands.climb.Level2ClimbGroup;
-import frc.robot.commands.climb.PullUpPartial;
-import frc.robot.commands.intake.WristTrackAngle;
-import frc.robot.commands.util.Angle;
+//import frc.robot.commands.climb.PullUpPartial;
+//import frc.robot.commands.intake.WristTrackAngle;
+//import frc.robot.commands.util.Angle;
 import frc.robot.commands.util.CancelCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CameraSubsystem;
@@ -63,6 +63,7 @@ public class Robot extends TimedRobot {
   public static CameraSubsystem cameraSubsystem = new CameraSubsystem();
   public static SensorSubsystem sensorSubystem = new SensorSubsystem();
   public static AHRS ahrs;
+  /* 
   static {
     Waypoint[] points = new Waypoint[] {
       new Waypoint(-4, -1, Pathfinder.d2r(-45)),      // Waypoint @ x=-4, y=-1, exit angle=-45 degrees
@@ -73,6 +74,7 @@ public class Robot extends TimedRobot {
   Trajectory.Config config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_HIGH, 0.05, 1.7, 2.0, 60.0);
   Trajectory trajectory = Pathfinder.generate(points, config);
   }
+*/
 
   public static OI m_oi = new OI(); //OI Depends on the subsystems and must be last (boolean is whether we are testing or not)
 
@@ -80,7 +82,6 @@ public class Robot extends TimedRobot {
   private RobotTest m_testRobot;
 
   boolean doneOnce = false;   //single execute our zero 
-  private Integer currentCamera = 1;
 
   /**
    * This function is run when the robot is first started up and should be used

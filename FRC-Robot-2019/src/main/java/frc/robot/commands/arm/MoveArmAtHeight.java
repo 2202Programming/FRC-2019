@@ -19,11 +19,11 @@ public class MoveArmAtHeight extends Command {
     //ArmSubsystem  arm = Robot.arm;
 
     // Length of the arm from pivot point without extension in inches
-    private final double armInitialLength = Robot.arm.EXTEND_MIN + Robot.arm.ARM_BASE_LENGTH
+    public final double armInitialLength = Robot.arm.EXTEND_MIN + Robot.arm.ARM_BASE_LENGTH
             + Robot.intake.WristDistToPivot + Robot.arm.L0;
 
     // Height of point of rotation for the arm in inches
-    private final double pivotHeight = Robot.arm.ARM_PIVOT_HEIGHT;
+    public final double pivotHeight = Robot.arm.ARM_PIVOT_HEIGHT;
 
     // Make an h' to more easily construct a triangle, relative to pivot height
     private double h;
@@ -66,7 +66,7 @@ public class MoveArmAtHeight extends Command {
         
         double projLen= Math.sqrt( h*h + xProjection * xProjection);    //total length of arm, from pivot point
         double ext  = projLen - (Robot.arm.ARM_BASE_LENGTH + Robot.arm.WRIST_LENGTH);   // extension required
-        
+        @SuppressWarnings("unused")
         double compLen = Robot.arm.getCompLen(angle);
 
         //limit within range, TODO: do we need to account for phi/ext interaction here?

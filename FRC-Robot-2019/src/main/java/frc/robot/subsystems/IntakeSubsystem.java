@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Solenoid;
+//import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.SpeedController;
 //import edu.wpi.first.wpilibj.Solenoid.Value;
@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Spark;
-import frc.robot.subsystems.ExtendedSubSystem;
+//import frc.robot.subsystems.ExtendedSubSystem;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 import frc.robot.commands.intake.WristStatePositioner;
@@ -17,6 +17,7 @@ import frc.robot.commands.intake.WristStatePositioner;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 
 /**
  * Authors: Derek Laufenberg
@@ -90,7 +91,7 @@ public class IntakeSubsystem extends ExtendedSubSystem {
     super("Intake");
     wristServo = new CustomServo(RobotMap.INTAKE_WRIST_SERVO_PWM, WristMinDegrees, WristMaxDegrees, kServoMinPWM,
         kServoMaxPWM);
-    wristServo.setName(this.getSubsystem(), "wrist");
+    SendableRegistry.setName(wristServo, this.getSubsystem(), "wrist");
 
     cargoSwitch = new DigitalInput(RobotMap.INTAKE_CARGO_SWITCH_MXP_CH);
     vacuumPump = new Spark(RobotMap.INTAKE_VACUUM_SPARK_PWM);
@@ -290,7 +291,7 @@ public class IntakeSubsystem extends ExtendedSubSystem {
       setPeriodMultiplier(PeriodMultiplier.k4X);
 
       HAL.report(tResourceType.kResourceType_Servo, getChannel());
-      setName("CustomServo", getChannel());
+      SendableRegistry.setName(this, "CustomServo", getChannel());
     }
 
     /**

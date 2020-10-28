@@ -1,6 +1,4 @@
 package frc.robot.commands.util;
-
-import frc.robot.commands.util.MathUtil;
 import java.util.function.DoubleSupplier;
 
 /**

@@ -7,17 +7,18 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.arm.TeleopArmControlCommand;
 import frc.robot.commands.arm.tests.TestArmRateCmd;
-import frc.robot.commands.intake.tests.TestWristPositionCommand;
-
 
 public class RobotTest {
+    @SuppressWarnings("unused")
     private XboxController driver = Robot.m_oi.getDriverController();
     private XboxController assistant = Robot.m_oi.getAssistantController();
+    @SuppressWarnings("unused")
     private XboxController switchBoard = Robot.m_oi.getAssistantController();
 
     // TESTING Started in TestInit
     Command testWristCmd;
     TestArmRateCmd testArmCmd;
+    @SuppressWarnings("unused")
     private Command armTest;
 
     public RobotTest() {
@@ -53,6 +54,7 @@ public class RobotTest {
      * 
      * 
      */
+    @SuppressWarnings("unused")
     private double Wrist_AssistLeftTrigger() {
         //rescale as expected by wrist test
         double temp = -1.0 +2.0*Robot.m_oi.getAssistantController().getTriggerAxis(Hand.kLeft);
@@ -81,7 +83,8 @@ public class RobotTest {
         //SmartDashboard.putData(driveTrain);
         //SmartDashboard.putData(gearShifter);
       }
-    
+      
+      @SuppressWarnings("unused")
       private void resetAllDashBoardSensors() {
         Robot.driveTrain.getLeftEncoderTalon().setSelectedSensorPosition(0);
         Robot.driveTrain.getRightEncoderTalon().setSelectedSensorPosition(0);

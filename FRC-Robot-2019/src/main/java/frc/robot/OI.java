@@ -7,14 +7,14 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.Joystick;
+//import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.commands.arm.ResetArmCommand;
 import frc.robot.commands.cargo.AutoCargoIntakeCommand;
-import frc.robot.commands.cargo.DeployCargoTrapCommand;
-import frc.robot.commands.cargo.RetractCargoTrapCommand;
+//import frc.robot.commands.cargo.DeployCargoTrapCommand;
+//import frc.robot.commands.cargo.RetractCargoTrapCommand;
 import frc.robot.commands.cargo.tests.IntakeTestCmd;
 import frc.robot.commands.cargo.tests.OuttakeTestCmd;
 import frc.robot.commands.climb.PawlSureFire;
@@ -85,26 +85,13 @@ public class OI {
 
   private ExpoShaper rotateShaper = new ExpoShaper(.7); // fairly flat curve
 
-  @SuppressWarnings({ "resource", })
   public OI() {
-    // Wait until we get the first switchboard input - hack we know.
-    try {
-      Thread.sleep(250);
-    } catch (InterruptedException e) {
-      // don't care - won't happen
-    }
-
-    // If the Test Button on the switchboard is active, select for TestBinding
-    if (false/* switchBoard.getRawButton(11) */) {
-      bindTestButtons();
-      System.out.println("Using Test OI");
-    } else {
       bindFieldButtons();
-      System.out.println("Using Field OI");
-    }
+      
   }
 
   private void bindFieldButtons() {
+    System.out.println("Using Field OI");
     // Drive Train Commands
     new JoystickButton(driver, XboxControllerButtonCode.B.getCode())
         .whenPressed(new ToggleAutomaticGearShiftingCommand());
@@ -118,14 +105,7 @@ public class OI {
     new JoystickButton(assistant, 9).whileHeld(new CopilotControlCommand(0.4, 0.4));;
 
     // Switchboard Assignments 
-    /**
-     * 
-     * TODO: are these used???  Temp adding Climber tests buttons to live code to help debug CommandGroup
-     * DPL - 3/23/19
-    new JoystickButton(switchBoard, 1).whenPressed(new DeployCargoTrapCommand());
-    new JoystickButton(switchBoard, 2).whenPressed(new RetractCargoTrapCommand());
-    */
-
+    
     // Climber tests - temporary added to field
     //execute Pawl only on change
     new JoystickButton(switchBoard, 1).whenPressed(new PawlSureFire(Robot.climber.Extend, 3));
@@ -149,7 +129,6 @@ public class OI {
     endDriveMode = new JoystickButton(assistant, XboxControllerButtonCode.B.getCode());
     goToPrevMode = new JoystickButton(assistant, XboxControllerButtonCode.Y.getCode());
 
-    //TODO: Billy / Zander / driveteam pick a real place for this - 3/23/19
     climbButton = new GeneralTrigger(() -> switchBoard.getRawButton(7) && switchBoard.getRawButton(11));
     shortClimbButton = new GeneralTrigger(() -> switchBoard.getRawButton(8) && switchBoard.getRawButton(11));
   }

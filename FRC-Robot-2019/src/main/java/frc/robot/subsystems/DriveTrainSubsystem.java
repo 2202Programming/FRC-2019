@@ -378,6 +378,6 @@ public class DriveTrainSubsystem extends Subsystem {
    * @param talon the talon to be logged.
    */
   public void logTalon(WPI_TalonSRX talon) {
-    SmartDashboard.putNumber(talon.getName() + " Current", talon.getOutputCurrent());
+    SmartDashboard.putNumber(talon.getName() + " Current", talon.getSupplyCurrent());
   }
 }

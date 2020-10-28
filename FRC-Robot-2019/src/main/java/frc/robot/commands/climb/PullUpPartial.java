@@ -37,12 +37,14 @@ public class PullUpPartial extends CommandGroup {
 
     pawl piston is foot, m23 is foot extension motor, m22 is motor to move foot
     */
-
-    private int releaseSlide() {
+    /***
+     * 
+     * @return
+        private int releaseSlide() {
         Robot.climber.setDrawerSlide(Robot.climber.ReleaseSlide);
         return 0;
     }
-
+        ***/
     private int holdSlide() {
 
         Robot.climber.setDrawerSlide(Robot.climber.HoldSlide);
