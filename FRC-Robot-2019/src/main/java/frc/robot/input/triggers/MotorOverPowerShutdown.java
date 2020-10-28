@@ -1,20 +1,18 @@
 package frc.robot.input.triggers;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import edu.wpi.first.wpilibj.filters.LinearDigitalFilter;
-import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.PIDSourceType;
+import edu.wpi.first.wpilibj.LinearFilter;
 import edu.wpi.first.wpilibj.buttons.Trigger;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.robot.Robot;
 
-public class MotorOverPowerShutdown extends Trigger implements PIDSource {
+public class MotorOverPowerShutdown extends Trigger  {
     final int TAP_MAX = 25;   // this is 0.5 seconds normally
     WPI_TalonSRX motor;
     double powerLimit;
     double avgPower;          //watts
     Command saveMotorCmd;
-    LinearDigitalFilter movingWindow;
+    LinearFilter movingWindow;
 
     public MotorOverPowerShutdown(WPI_TalonSRX motor, double powerLimit, double seconds) {
         this.powerLimit = powerLimit;
@@ -23,7 +21,7 @@ public class MotorOverPowerShutdown extends Trigger implements PIDSource {
         int taps = (int) Math.floor(seconds / Robot.dT);
     
         // build a moving average window
-        movingWindow = LinearDigitalFilter.movingAverage(this, taps);
+        movingWindow = LinearFilter.movingAverage(taps);
         this.saveMotorCmd = new SaveMotor();
 
         //install the command and hope it is never used
@@ -36,34 +34,20 @@ public class MotorOverPowerShutdown extends Trigger implements PIDSource {
     public boolean get() {
         // this is called each frame, so call pidGet() here.
         // Not really a pid, but this is how the filter class works
-        pidGet();   //reads values, computes power and saves in the window
+
+        double power = movingWindow.calculate(readPower());
         // look for too much average power 
-        if (movingWindow.get() > powerLimit) return true;
+        if (power >= powerLimit) return true;
         return false;
     }
 
-    // monitor power
+    // monitor power for the averaging filter
     double readPower() {
-        double oi = motor.getOutputCurrent();
+        double oi = motor.getSupplyCurrent();
         double ov = motor.getMotorOutputVoltage();
         return Math.abs(oi*ov);
     }
 
-    @Override
-    public void setPIDSourceType(PIDSourceType pidSource) {
-        //dpl - don't think this matters
-    }
-
-    @Override
-    public PIDSourceType getPIDSourceType() {
-        return  PIDSourceType.kDisplacement;    //dpl should not matter for our use as a filter
-    }
-
-    // inserts value into the filter, called by filter.
-    @Override
-    public double pidGet() {
-        return readPower();  //value used for filter
-	}
 
     // SaveMotor will disable the motor and set speed to zero of the overpower triggers
     class SaveMotor extends Command {
