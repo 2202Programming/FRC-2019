@@ -1,6 +1,6 @@
 package frc.robot.commands.arm;
 
-import edu.wpi.first.wpilibj.TimedCommand;
+import edu.wpi.first.wpilibj.command.TimedCommand;
 import frc.robot.Robot;
 import frc.robot.subsystems.ArmSubsystem;
 

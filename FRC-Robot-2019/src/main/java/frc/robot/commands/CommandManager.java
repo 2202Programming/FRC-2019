@@ -4,8 +4,7 @@ import java.util.function.IntSupplier;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandGroupBase;
-import edu.wpi.first.wpilibj2.command.CommandGroup;
+import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
@@ -41,20 +40,20 @@ public class CommandManager {
     Command flipCmd;
 
     // Command Sets - one created for each major operation of the robot.
-    CommandGroupBase zeroRobotGrp;
-    CommandGroupBase huntGameStartGrp;
-    CommandGroupBase huntingHatchGrp;
-    CommandGroupBase huntingCargoGrp;
-    CommandGroupBase huntingHFloorGrp;
-    CommandGroupBase captureGrp;
-    CommandGroupBase deliveryGrp;
-    CommandGroupBase releaseGrp;
-    CommandGroupBase flipToFrontGrp;
-    CommandGroupBase flipToFrontGrpFast;
-    CommandGroupBase flipToBackGrp;
-    CommandGroupBase flipToBackGrpFast;
-    CommandGroupBase driveGrp;
-    CommandGroupBase currentGrp; // what is running
+    CommandGroup zeroRobotGrp;
+    CommandGroup huntGameStartGrp;
+    CommandGroup huntingHatchGrp;
+    CommandGroup huntingCargoGrp;
+    CommandGroup huntingHFloorGrp;
+    CommandGroup captureGrp;
+    CommandGroup deliveryGrp;
+    CommandGroup releaseGrp;
+    CommandGroup flipToFrontGrp;
+    CommandGroup flipToFrontGrpFast;
+    CommandGroup flipToBackGrp;
+    CommandGroup flipToBackGrpFast;
+    CommandGroup driveGrp;
+    CommandGroup currentGrp; // what is running
 
     // Modes of behavior
     public enum Modes {
@@ -157,7 +156,7 @@ public class CommandManager {
      * gripperHeight functions assigned.
      */
     public void setMode(Modes mode) {
-        CommandGroupBase nextCmd = null;
+        CommandGroup nextCmd = null;
 
         switch (mode) {
         case Construction:
@@ -235,7 +234,7 @@ public class CommandManager {
     }
 
     // Starts new group.
-    void installGroup(CommandGroupBase grp) {
+    void installGroup(CommandGroup grp) {
         if (grp == null)
             return;
         if (currentGrp != null)
@@ -401,8 +400,8 @@ public class CommandManager {
 
     // Command Factories that build command sets for each mode of operation
     // These are largely interruptable so we can switch as state changes
-    private CommandGroupBase CmdFactoryZeroRobot() {
-        CommandGroupBase grp = new CommandGroup("ZeroRobot");
+    private CommandGroup CmdFactoryZeroRobot() {
+        CommandGroup grp = new CommandGroup("ZeroRobot");
         grp.addSequential(Robot.arm.zeroSubsystem());
         grp.addSequential(Robot.intake.zeroSubsystem());
         grp.addSequential(Robot.climber.zeroSubsystem());
@@ -413,20 +412,20 @@ public class CommandManager {
         return grp;
     }
 
-    private CommandGroupBase CmdFactoryHuntHatch() {
-        CommandGroupBase grp = new CommandGroup("HuntHatch");
+    private CommandGroup CmdFactoryHuntHatch() {
+        CommandGroup grp = new CommandGroup("HuntHatch");
         grp.addSequential(new VacuumCommand(true, 0.0));
         return grp;
     }
 
-    private CommandGroupBase CmdFactoryHuntCargo() {
-        CommandGroupBase grp = new CommandGroup("HuntCargo");
+    private CommandGroup CmdFactoryHuntCargo() {
+        CommandGroup grp = new CommandGroup("HuntCargo");
         grp.addSequential(new VacuumCommand(true, 0.0));
         return grp;
     }
 
-    private CommandGroupBase CmdFactoryHuntHatchFloor() {
-        CommandGroupBase grp = new CommandGroup("HuntHatchFloor");
+    private CommandGroup CmdFactoryHuntHatchFloor() {
+        CommandGroup grp = new CommandGroup("HuntHatchFloor");
         grp.addSequential(new VacuumCommand(true, 0.0));
         return grp;
     }
@@ -435,8 +434,8 @@ public class CommandManager {
     // that will require some special motion, turn on vacuum,
     // and finaly go into delivery.
     //
-    private CommandGroupBase CmdFactoryHuntGameStart() {
-        CommandGroupBase grp = new CommandGroup("HuntGameStart");
+    private CommandGroup CmdFactoryHuntGameStart() {
+        CommandGroup grp = new CommandGroup("HuntGameStart");
         VacuumSensorSystem vs = Robot.intake.getVacuumSensor();
         grp.addSequential(new VacuumCommand(true, 0.0)); // no timeout
         grp.addParallel(new WristTrackAngle(Angle.Starting_Hatch_Hunt.getAngle()));
@@ -452,8 +451,8 @@ public class CommandManager {
         return grp;
     }
 
-    private CommandGroupBase CmdFactoryCapture() {
-        CommandGroupBase grp = new CommandGroup("Capture");
+    private CommandGroup CmdFactoryCapture() {
+        CommandGroup grp = new CommandGroup("Capture");
         grp.addSequential(new VacuumCommand(true, 0.0)); // no timeout
         // grp.addSequential(new MoveDownToCapture(Capture_dDown), 3.5 ); //TODO: fix
         // 3.5 seconds const
@@ -461,19 +460,19 @@ public class CommandManager {
         return grp;
     }
 
-    private CommandGroupBase CmdFactoryDrive() {
-        CommandGroupBase grp = new CommandGroup("Drive");
+    private CommandGroup CmdFactoryDrive() {
+        CommandGroup grp = new CommandGroup("Drive");
         return grp;
     }
 
-    private CommandGroupBase CmdFactoryDelivery() {
-        CommandGroupBase grp = new CommandGroup("Deliver");
+    private CommandGroup CmdFactoryDelivery() {
+        CommandGroup grp = new CommandGroup("Deliver");
         return grp;
     }
 
-    private CommandGroupBase CmdFactoryRelease() {
+    private CommandGroup CmdFactoryRelease() {
         double vacTimeout = 0.2; // seconds
-        CommandGroupBase grp = new CommandGroup("Release");
+        CommandGroup grp = new CommandGroup("Release");
         // grp.AddSequential(new Extend_Drive_To_Deliver());
         grp.addSequential(new VacuumCommand(false, vacTimeout));
         grp.addSequential(new RetractOnReleaseCommand(this, 4.0 /* inchs */, 1.0));
@@ -482,8 +481,8 @@ public class CommandManager {
     }
 
     // TODO: Check for working w/ higher speeds
-    private CommandGroupBase CmdFactoryFlipToBack() {
-        CommandGroupBase grp = new CommandGroup("FlipToBack");
+    private CommandGroup CmdFactoryFlipToBack() {
+        CommandGroup grp = new CommandGroup("FlipToBack");
         grp.addSequential(new WristSetAngleCommand(0.0));
         grp.addSequential(new MoveArmToRawPosition(-35.0, 12.0, 1.0, 180));
         grp.addSequential(new PrevCmd());
@@ -491,8 +490,8 @@ public class CommandManager {
     }
 
     // TODO: Check for working w/ higher speeds
-    private CommandGroupBase CmdFactoryFlipToBackFast() {
-        CommandGroupBase grp = new CommandGroup("FlipToBackFast");
+    private CommandGroup CmdFactoryFlipToBackFast() {
+        CommandGroup grp = new CommandGroup("FlipToBackFast");
         grp.addSequential(new WristSetAngleCommand(0.0));
         grp.addSequential(new MoveArmToRawPosition(-35.0, 12.0, 1.0, 360));
         grp.addSequential(new PrevCmd());
@@ -500,7 +499,7 @@ public class CommandManager {
     }
 
     // TODO: Check for working w/ higher speeds
-    private CommandGroup CmdFactoryFlipToFront() {
+    private Command CmdFactoryFlipToFront() {
         CommandGroup grp = new CommandGroup("FlipToFront");
         grp.addSequential(new WristSetAngleCommand(0.0));
         grp.addSequential(new MoveArmToRawPosition(35.0, 12.0, 1.0, 180));
