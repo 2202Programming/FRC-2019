@@ -7,10 +7,11 @@ import frc.robot.commands.util.MathUtil;
 import frc.robot.commands.util.RateLimiter;
 import frc.robot.commands.util.RateLimiter.InputModel;
 import frc.robot.subsystems.ArmSubsystem;
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 
-public class ArmStatePositioner extends Command {
+public class ArmStatePositioner extends CommandBase {
     private ArmSubsystem arm;
     // Height of point of rotation for the arm in inches
     public static final double heightAdjustCap = 4.0; // inch/joy units TODO: put in better place
@@ -37,8 +38,9 @@ public class ArmStatePositioner extends Command {
     private RateLimiter projectionLimiter;
     private LimitedIntegrator projectionAdjustLimiter;
 
-    public ArmStatePositioner() {
-        requires(Robot.arm);
+    public ArmStatePositioner() 
+    {
+        addRequirements(Robot.arm);
         arm = Robot.arm;
 
         ExpoShaper projectionShaper = new ExpoShaper(0.5, Robot.m_oi::extensionInput); // joystick defined in m_oi.

@@ -2,14 +2,15 @@ package frc.robot.commands.intake;
 
 import java.util.function.BooleanSupplier;
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.commands.CommandManager;
 import frc.robot.commands.arm.ArmStatePositioner;
 import frc.robot.subsystems.VacuumSensorSystem;
 
-public class RetractOnReleaseCommand extends Command { 
+public class RetractOnReleaseCommand extends CommandBase { 
   VacuumSensorSystem vs;
   BooleanSupplier releaseCheckFunc;
   double x_retract;

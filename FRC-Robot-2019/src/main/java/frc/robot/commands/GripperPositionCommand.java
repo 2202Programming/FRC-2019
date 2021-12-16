@@ -7,12 +7,13 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 import frc.robot.commands.arm.ArmStatePositioner;
 import frc.robot.subsystems.ArmSubsystem.Position;
 
-public class GripperPositionCommand extends Command {
+public class GripperPositionCommand extends CommandBase {
   double timeout;
   double height;
   double projx;

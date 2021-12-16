@@ -1,9 +1,10 @@
 package frc.robot.input.triggers;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import edu.wpi.first.wpilibj.LinearFilter;
-import edu.wpi.first.wpilibj.buttons.Trigger;
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.LinearFilter;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 
 public class MotorOverPowerShutdown extends Trigger  {
@@ -50,7 +51,7 @@ public class MotorOverPowerShutdown extends Trigger  {
 
 
     // SaveMotor will disable the motor and set speed to zero of the overpower triggers
-    class SaveMotor extends Command {
+    class SaveMotor extends CommandBase {
         SaveMotor() {           
         }
 

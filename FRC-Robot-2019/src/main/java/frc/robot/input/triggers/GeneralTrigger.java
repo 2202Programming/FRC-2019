@@ -3,7 +3,7 @@ package frc.robot.input.triggers;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.buttons.Button;
+import edu.wpi.first.wpilibj2.command.button.Button;
 
 public class GeneralTrigger extends Button {
     private final BooleanSupplier trigger;

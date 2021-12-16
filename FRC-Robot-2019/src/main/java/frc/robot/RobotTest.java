@@ -2,8 +2,8 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.arm.TeleopArmControlCommand;
 import frc.robot.commands.arm.tests.TestArmRateCmd;
@@ -26,7 +26,7 @@ public class RobotTest {
 
     public void initialize() {
         // Set commands here so they override the OI 
-        Scheduler.getInstance().removeAll();
+        CommandScheduler.getInstance().removeAll();
         // remove defaultCommands so only testing is being done.
         Robot.intake.setDefaultCommand(null);
         Robot.gearShifter.setDefaultCommand(null);
@@ -79,7 +79,7 @@ public class RobotTest {
         Robot.arm.log();
         Robot.arm.logTalons();
  
-        SmartDashboard.putData(Scheduler.getInstance()); 
+        SmartDashboard.putData(CommandScheduler.getInstance()); 
         //SmartDashboard.putData(driveTrain);
         //SmartDashboard.putData(gearShifter);
       }

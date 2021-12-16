@@ -1,7 +1,7 @@
 package frc.robot.commands;
 
 import java.util.function.IntSupplier;
-import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 
 public class CallFunctionCommand extends InstantCommand {
   IntSupplier workFunct;

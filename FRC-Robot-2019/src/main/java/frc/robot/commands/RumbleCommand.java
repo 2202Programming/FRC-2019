@@ -1,12 +1,13 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.buttons.Trigger;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import java.util.function.BooleanSupplier;
 
-public class RumbleCommand extends Command {
+public class RumbleCommand extends CommandBase {
   final double kRumbleTime = 2.300; //seconds - 300 ms to make noise
   
   BooleanSupplier boolFunc;
@@ -43,7 +44,7 @@ public class RumbleCommand extends Command {
   }
 
   @Override
-  protected void end() {
+  protected void () {
     ctrlr.setRumble(RumbleType.kRightRumble, 0.0);
     ctrlr.setRumble(RumbleType.kLeftRumble, 0.0);   
     System.out.print("N0 RUMBLE No RUMBLE n0 RUMBLE");

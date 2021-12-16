@@ -11,8 +11,8 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.command.CommandGroup;
-import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj2.command.CommandGroupBase;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.CommandManager;
 import frc.robot.commands.CommandManager.Modes;
@@ -134,7 +134,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-    Scheduler.getInstance().run();
+    CommandScheduler.getInstance().run();
     sensorSubystem.disableLED(); //disable blinding green LED that Trevor hates
   }
 
@@ -153,7 +153,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     resetAllDashBoardSensors();
-    Scheduler.getInstance().add(new CheckSolenoids());
+    CommandScheduler.getInstance().add(new CheckSolenoids());
 
     if(!doneOnce) {
       m_cmdMgr.setMode(Modes.HuntGameStart);   // schedules the mode's function
@@ -167,7 +167,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     m_cmdMgr.execute();
-    Scheduler.getInstance().run();
+    CommandScheduler.getInstance().run();
   }
 
   @Override
@@ -189,14 +189,14 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     m_cmdMgr.execute();
-    Scheduler.getInstance().run();
+    CommandScheduler.getInstance().run();
   }
 
    @Override
    public void testInit() {
      m_testRobot.initialize();
      sensorSubystem.disableLED(); //active limelight LED when operational
-     Scheduler.getInstance().enable();   //### hack? or required?  Seems required otherwise nothing runs 
+     CommandScheduler.getInstance().enable();   //### hack? or required?  Seems required otherwise nothing runs 
    }
 
   /**
@@ -204,7 +204,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
-    Scheduler.getInstance().run();
+    CommandScheduler.getInstance().run();
     m_testRobot.periodic();
   }
 
@@ -222,7 +222,7 @@ public class Robot extends TimedRobot {
     climber.log(interval+31);
     SmartDashboard.putNumber("Vaccum Pressure", intake.getVacuumSensor().getRawVacuum() / (Math.pow(2, 12 + 4) / 4));
     
-    SmartDashboard.putData(Scheduler.getInstance()); 
+    SmartDashboard.putData(CommandScheduler.getInstance()); 
     SmartDashboard.putData(arm);
     SmartDashboard.putData(intake);
     SmartDashboard.putNumber("Pitch", ahrs.getPitch());

@@ -1,6 +1,7 @@
 package frc.robot.commands.intake; 
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 
 
@@ -11,7 +12,7 @@ import frc.robot.Robot;
  * we aren't at the desired postion.  Time out gives it time to get there.
  * 
  */
-public class RotateWristCommand extends Command{
+public class RotateWristCommand extends CommandBase{
     private double angle;
     private double timeout;
 
@@ -26,7 +27,7 @@ public class RotateWristCommand extends Command{
     }
 
     @Override
-    protected void initialize() {
+    protected void initialize(){
         setTimeout(timeout);
     }
 

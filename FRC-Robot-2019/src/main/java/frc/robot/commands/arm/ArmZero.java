@@ -7,11 +7,12 @@
 
 package frc.robot.commands.arm;
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 import frc.robot.subsystems.ArmSubsystem;
 
-public class ArmZero extends Command {
+public class ArmZero extends CommandBase {
   ArmSubsystem arm = Robot.arm;
 
   /**
