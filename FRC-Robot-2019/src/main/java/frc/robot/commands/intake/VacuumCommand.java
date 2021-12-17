@@ -41,11 +41,6 @@ public class VacuumCommand extends WaitCommand {
         }
     }
 
-    @Override
-    public void execute() {
-        //just wait for time out or we are done.
-    }
-
     // When we release we blow air when we retract, sensor goes below baseline - problem...
     @Override
     public boolean isFinished() {

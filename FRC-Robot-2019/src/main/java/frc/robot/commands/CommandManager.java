@@ -4,8 +4,6 @@ import java.util.function.IntSupplier;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -28,7 +26,7 @@ import frc.robot.subsystems.VacuumSensorSystem;
  * 
  */
 public class CommandManager {
-    public final double kCapHeight = 4.0; // inch/joy units TODO: put in better place
+    public final double kCapHeight = 4.0; // inches
     public final double kHeightMin = 2.0; // inches
     public final double kHeightMax = 96.0; // inches
 
@@ -434,23 +432,20 @@ public class CommandManager {
     private Command CmdFactoryHuntGameStart() {
         VacuumSensorSystem vs = Robot.intake.getVacuumSensor();
         
-        return  new SequentialCommandGroup(
-    
-       new VacuumCommand(true, 0.0),
-        grp.addParallel(new WristTrackAngle(Angle.Starting_Hatch_Hunt.getAngle()));
-    
-       new MoveArmToPosition(4.875, 11, 0.05, 1),       // Move arm up and back to avoid moving hatch
-       new MoveArmToPosition(4.875, 12.75, 0.05, 1),    // Move arm into hatch and intake
-       new MoveArmToPosition(4.875, 13.5, 0.05, 1),     // Move arm into hatch and intake
-       new TriggerTimeoutCommand(vs::hasVacuum, 1.0),   // waits or sees vacuum and finsishes
-       new MoveArmToPosition(13, 12, 0.05, 1) );
-    
-        addParallel(new WristTrackAngle(Angle.Parallel.getAngle()));
-    
+        return new SequentialCommandGroup(    
+            new VacuumCommand(true, 0.0),
+            new MoveArmToPosition(4.875, 11, 0.05),       // Move arm up and back to avoid moving hatch
+            new MoveArmToPosition(4.875, 12.75, 0.05),    // Move arm into hatch and intake
+            new MoveArmToPosition(4.875, 13.5, 0.05),     // Move arm into hatch and intake
+            new TriggerTimeoutCommand(vs::hasVacuum, 1.0),   // waits or sees vacuum and finsishes
+            new MoveArmToPosition(13, 12, 0.05) )
+        .alongWith(
+            new WristTrackAngle(Angle.Starting_Hatch_Hunt.getAngle())
+        .andThen(
             new NextModeCmd(Modes.HuntingHatch), // Capture the right previous state
             new NextModeCmd(Modes.Drive),
-            new NextModeCmd(Modes.DeliverHatch),
-       ).withName("HuntGameStart");
+            new NextModeCmd(Modes.DeliverHatch))
+            .alongWith(new WristTrackAngle(Angle.Parallel.getAngle())) ).withName("HuntGameStart");
     }
 
     private Command CmdFactoryCapture() {
