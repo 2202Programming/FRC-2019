@@ -1,11 +1,11 @@
 package frc.robot.commands.intake;
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 import frc.robot.commands.CommandManager.Modes;
 import frc.robot.commands.util.Angle;
 
-public class WristStatePositioner extends Command {
+public class WristStatePositioner extends CommandBase {
     private double curAngle;
     private Modes prevMode;
     private int prevIndex;
@@ -41,11 +41,11 @@ public class WristStatePositioner extends Command {
     };
 
     public WristStatePositioner() {
-        requires(Robot.intake);
+        addRequirements(Robot.intake);
     }
 
     @Override
-    protected void execute() {
+    public void execute() {
         // Update position based on current mode
         Modes curMode = Robot.m_cmdMgr.getCurMode();
         int invert = Robot.arm.isInverted() ? 1 : 0;
@@ -64,12 +64,17 @@ public class WristStatePositioner extends Command {
     }
 
     @Override
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return false;
     }
 
-    @Override
-    protected void interrupted() {
+    public void end(boolean interrupted) {
+        if (interrupted) {
+            interrupted();
+        }
+    }
+
+    void interrupted() {
         // Update position based on current mode
         Modes curMode = Robot.m_cmdMgr.getCurMode();
         int index = Robot.m_cmdMgr.getPositionIndex();

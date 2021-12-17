@@ -1,11 +1,11 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.lang.Math;
 
-public class SensorSubsystem extends Subsystem {
+public class SensorSubsystem extends SubsystemBase {
 
   public static SerialPortSubsystem serialSubsystem;
   public static LimeLightSubsystem limeLight;
@@ -150,10 +150,5 @@ public class SensorSubsystem extends Subsystem {
     if (constant*a == 0) return 0;
     else return (Math.sqrt(1/(constant*a))) - 6;//6 is magic number...
 
-  }
-
-  @Override
-  public void initDefaultCommand() {
-      //set default command
   }
 }

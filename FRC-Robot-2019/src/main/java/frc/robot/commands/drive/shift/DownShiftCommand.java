@@ -1,15 +1,15 @@
 package frc.robot.commands.drive.shift;
 
-import edu.wpi.first.wpilibj.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Robot;
 
 public class DownShiftCommand extends InstantCommand {
     public DownShiftCommand() {
-        requires(Robot.gearShifter);
+        addRequirements(Robot.gearShifter);
     }
 
     @Override
-    protected void execute() {
+    public void execute() {
         Robot.gearShifter.shiftDown();
     }
 }

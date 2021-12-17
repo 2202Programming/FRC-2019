@@ -1,52 +1,39 @@
 package frc.robot.commands.drive;
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveTrainSubsystem;
 
 /**
  * An example command. You can replace me with your own command.
  */
-public class DriveByPowerCommand extends Command {
+public class DriveByPowerCommand extends WaitCommand {
   private DriveTrainSubsystem driveTrain = Robot.driveTrain;
   double power;
   double timeout;
 
   public DriveByPowerCommand(double power, double timeout) {
+    super(timeout);
     this.power = power;
     this.timeout = timeout;
-    // Use requires() here to declare subsystem dependencies
-    requires(Robot.driveTrain);
+    // Use addRequirements() here to declare subsystem dependencies
+    addRequirements(Robot.driveTrain);
   }
   
-  // Called just before this Command runs the first time
-  @Override
-  protected void initialize() {
-    //  driveTrain.stop();
-    // may want to check counters... if we try to control this...
-    setTimeout(timeout);
-  }
 
   // Read Controller Input from two joysticks.
   // Left joystick controls the left motors and the right joystick controls the
   // right motors
   // Temporary until we get the XboxController wrapper for joystick
   @Override
-  protected void execute() {
+  public void execute() {
     Robot.driveTrain.ArcadeDrive(power, 0.0, true);
   }
 
   @Override
-  protected boolean isFinished() {
-    return isTimedOut();
-  }
-
-  @Override
-  protected void end() {
+  public void end(boolean interrupted) {
+    super.end(interrupted);
     driveTrain.stop();
   }
 
-  @Override
-  protected void interrupted() {
-  }
 }

@@ -1,6 +1,6 @@
 package frc.robot.commands.intake; 
 
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 
@@ -17,7 +17,7 @@ public class RotateWristCommand extends CommandBase{
     private double timeout;
 
     public RotateWristCommand(double angle, double timeout){
-        requires(Robot.intake);
+        addRequirements(Robot.intake);
         this.angle = angle;
         this.timeout = timeout;
     }
@@ -27,17 +27,17 @@ public class RotateWristCommand extends CommandBase{
     }
 
     @Override
-    protected void initialize(){
+   public void initialize(){
         setTimeout(timeout);
     }
 
   @Override
-  protected void execute() {
+  public void execute() {
       Robot.intake.setAngle(angle);
   }
 
   @Override
-  protected boolean isFinished() {
+  public boolean isFinished() {
      // position in 1.0 degrees, but servo will always hit.
     double measAngle = Robot.intake.getAngle();
     boolean posHit = ( Math.abs(measAngle - angle) < 1.0 );
@@ -47,7 +47,7 @@ public class RotateWristCommand extends CommandBase{
   }
 
   @Override
-  protected void end() {
+  public void end(boolean interrupted) {
   }
 
   @Override

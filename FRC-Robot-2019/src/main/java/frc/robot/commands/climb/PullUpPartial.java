@@ -1,6 +1,6 @@
 package frc.robot.commands.climb;
 
-import edu.wpi.first.wpilibj.command.CommandGroup;
+import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import frc.robot.Robot;
 import frc.robot.commands.CallFunctionCommand;
 import frc.robot.commands.arm.MoveArmToRawPosition;

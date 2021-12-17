@@ -13,13 +13,13 @@ public class IntakeTestCommand extends InstantCommand {
     boolean vacuumOn;
 
     public IntakeTestCommand(boolean vacuumOn) {
-        requires(Robot.intake.getVacuumSubsystem());
+        addRequirements(Robot.intake.getVacuumSubsystem());
         this.setName("vac=" + vacuumOn);
         this.vacuumOn = vacuumOn;
     }
 
     @Override
-    protected void execute() {
+    public void execute() {
         Robot.intake.setVacuum(vacuumOn);
     }
 }

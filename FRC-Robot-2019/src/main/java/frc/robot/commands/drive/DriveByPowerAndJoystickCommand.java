@@ -1,7 +1,7 @@
 package frc.robot.commands.drive;
 
 import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Robot;
 import frc.robot.commands.util.ExpoShaper;
 import frc.robot.subsystems.DriveTrainSubsystem;
@@ -9,7 +9,7 @@ import frc.robot.subsystems.DriveTrainSubsystem;
 /**
  * An example command. You can replace me with your own command.
  */
-public class DriveByPowerAndJoystickCommand extends Command {
+public class DriveByPowerAndJoystickCommand extends WaitCommand {
   private DriveTrainSubsystem driveTrain = Robot.driveTrain;
   double power;
   double minPower;
@@ -19,47 +19,33 @@ public class DriveByPowerAndJoystickCommand extends Command {
   private ExpoShaper rotationShaper;
 
   public DriveByPowerAndJoystickCommand(double power, double minPower, double maxPower, double timeout) {
+    super(timeout);
     this.power = power;
     this.minPower = minPower;
     this.maxPower = maxPower;
     this.timeout = timeout;
     this.speedShaper = new ExpoShaper(0.6);        //0 no change,  1.0 max flatness
     this.rotationShaper = new ExpoShaper(0.5);
-    // Use requires() here to declare subsystem dependencies
-    requires(Robot.driveTrain);
+    // Use addRequirements() here to declare subsystem dependencies
+    addRequirements(Robot.driveTrain);
   }
   
-  // Called just before this Command runs the first time
-  @Override
-  protected void initialize() {
-    //  driveTrain.stop();
-    // may want to check counters... if we try to control this...
-    setTimeout(timeout);
-  }
-
   // Read Controller Input from two joysticks.
   // Left joystick controls the left motors and the right joystick controls the
   // right motors
   // Temporary until we get the XboxController wrapper for joystick
   @Override
-  protected void execute() {
+  public void execute() {
     double speedInput = speedShaper.expo(Robot.m_oi.getDriverController().getY(Hand.kLeft));
     double speedAdjust = speedInput > 0? speedInput * (maxPower - power): speedInput * (power - minPower);
     double rotation = 0.5 * rotationShaper.expo(Robot.m_oi.getDriverController().getX(Hand.kRight));
     Robot.driveTrain.ArcadeDrive(power + speedAdjust, rotation, true);
   }
 
+  
   @Override
-  protected boolean isFinished() {
-    return isTimedOut();
-  }
-
-  @Override
-  protected void end() {
+  public void end(boolean interrupted) {
+    super.end(interrupted);
     driveTrain.stop();
-  }
-
-  @Override
-  protected void interrupted() {
   }
 }

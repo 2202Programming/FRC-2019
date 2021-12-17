@@ -1,7 +1,7 @@
 package frc.robot.commands.drive;
 
 import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 import frc.robot.commands.util.ExpoShaper;
 import frc.robot.subsystems.DriveTrainSubsystem;
@@ -9,7 +9,7 @@ import frc.robot.subsystems.DriveTrainSubsystem;
 /**
  * An example command. You can replace me with your own command.
  */
-public class HABDriveByPowerAndJoystickCommand extends Command {
+public class HABDriveByPowerAndJoystickCommand extends CommandBase {
   private DriveTrainSubsystem driveTrain = Robot.driveTrain;
   double power;
   double minPower;
@@ -24,8 +24,8 @@ public class HABDriveByPowerAndJoystickCommand extends Command {
     this.maxPower = maxPower;
     this.speedShaper = new ExpoShaper(0.6);        //0 no change,  1.0 max flatness
     this.rotationShaper = new ExpoShaper(0.5);
-    // Use requires() here to declare subsystem dependencies
-    requires(Robot.driveTrain);
+    // Use addRequirements() here to declare subsystem dependencies
+    addRequirements(Robot.driveTrain);
   }
   
   // Read Controller Input from two joysticks.
@@ -33,7 +33,7 @@ public class HABDriveByPowerAndJoystickCommand extends Command {
   // right motors
   // Temporary until we get the XboxController wrapper for joystick
   @Override
-  protected void execute() {
+  public void execute() {
     double speedInput = speedShaper.expo(Robot.m_oi.getDriverController().getY(Hand.kLeft));
     double speedAdjust = speedInput > 0? speedInput * (maxPower - power): speedInput * (power - minPower);
     double rotation = 0.5 * rotationShaper.expo(Robot.m_oi.getDriverController().getX(Hand.kRight));
@@ -41,16 +41,12 @@ public class HABDriveByPowerAndJoystickCommand extends Command {
   }
 
   @Override
-  protected boolean isFinished() {
+  public boolean isFinished() {
     return Robot.climber.climberAgainstWall();
   }
 
   @Override
-  protected void end() {
+  public void end(boolean interrupted) {
     driveTrain.stop();
-  }
-
-  @Override
-  protected void interrupted() {
   }
 }

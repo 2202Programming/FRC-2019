@@ -1,25 +1,20 @@
 package frc.robot.commands.climb;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Robot;
 
-public class CheckSolenoids extends CommandBase {
+public class CheckSolenoids extends WaitCommand {
     public CheckSolenoids() {
-        requires(Robot.climber);
+        super(0.1);    // waits 0.1 seconds before calling end()
+        addRequirements(Robot.climber);
     }
     
-    protected void initialize() {
-        setTimeout(0.1);
+   public void initialize() {
         Robot.climber.setDrawerSlide(true);
         Robot.climber.setPawl(true);
     }
 
-    protected boolean isFinished() {
-        return isTimedOut();
-    }
-
-    protected void end() {
+    public void end(boolean interrupted) {
         Robot.climber.setDrawerSlide(false);
         Robot.climber.setPawl(false);
     }

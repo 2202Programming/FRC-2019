@@ -7,7 +7,6 @@
 
 package frc.robot.commands.arm;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 import frc.robot.subsystems.ArmSubsystem;
@@ -19,19 +18,19 @@ public class ArmZero extends CommandBase {
    * Creates an ArmZero command. This command zeros the arm's encoder.
    */
   public ArmZero() {
-    requires(arm);
+    addRequirements(arm);
   }
 
   /**
    * Zeros the arm's encoders - arm and extension are at starting point
    */
   @Override
-  protected void initialize() {
+ public void initialize() {
     arm.zeroArm();
   }
 
   @Override
-  protected boolean isFinished() {
+  public boolean isFinished() {
     return true;
   }
 }

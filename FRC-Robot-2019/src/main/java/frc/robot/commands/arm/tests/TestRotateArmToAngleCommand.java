@@ -1,17 +1,16 @@
 package frc.robot.commands.arm.tests;
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Robot;
 
-public class TestRotateArmToAngleCommand extends Command {
+public class TestRotateArmToAngleCommand extends WaitCommand {
     final private double kTolerance = 2.0;
     private double angle;
-    private double timeout;
 
     public TestRotateArmToAngleCommand(double angle, double timeout) {
+        super(timeout);
         this.angle = angle;
-        this.timeout = timeout;
-        requires(Robot.arm);
+        addRequirements(Robot.arm);
     }
     
     public TestRotateArmToAngleCommand(double angle)
@@ -19,17 +18,15 @@ public class TestRotateArmToAngleCommand extends Command {
         this(angle, 10);
     }
 
+
     @Override
-    protected void initialize() {
-        setTimeout(timeout);
-    }
-    @Override
-    protected void execute() {
+    public void execute() {
         Robot.arm.setAngle(angle);
     }
 
-    protected boolean isFinished() {
+    @Override
+    public boolean isFinished() {
         boolean pos = Math.abs(Robot.arm.getRealAngle() - angle) < kTolerance; 
-        return pos || isTimedOut();  
+        return pos || super.isFinished();  
     }
 }

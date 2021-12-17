@@ -1,6 +1,6 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Sendable;
 import frc.robot.Robot;
@@ -8,7 +8,7 @@ import frc.robot.RobotMap;
 import frc.robot.commands.drive.shift.AutomaticGearShiftCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class GearShifterSubsystem extends Subsystem {
+public class GearShifterSubsystem extends SubsystemBase {
     private long logTimer;
     private boolean isAutoShiftEnabled;
 

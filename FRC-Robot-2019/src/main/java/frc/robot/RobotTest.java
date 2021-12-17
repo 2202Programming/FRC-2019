@@ -26,7 +26,7 @@ public class RobotTest {
 
     public void initialize() {
         // Set commands here so they override the OI 
-        CommandScheduler.getInstance().removeAll();
+        CommandScheduler.getInstance().cancelAll();
         // remove defaultCommands so only testing is being done.
         Robot.intake.setDefaultCommand(null);
         Robot.gearShifter.setDefaultCommand(null);

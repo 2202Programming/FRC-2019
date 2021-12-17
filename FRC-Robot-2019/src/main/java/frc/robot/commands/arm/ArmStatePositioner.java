@@ -7,7 +7,6 @@ import frc.robot.commands.util.MathUtil;
 import frc.robot.commands.util.RateLimiter;
 import frc.robot.commands.util.RateLimiter.InputModel;
 import frc.robot.subsystems.ArmSubsystem;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 
@@ -19,9 +18,11 @@ public class ArmStatePositioner extends CommandBase {
     public static final double kHeightMax = 96.0; // TODO: Find real max
 
     // Positions in form (InversionState, Height, Position)
-    public static final double DeliveryCargoPositions[][][] = { { { 26.25, 23 }, { 54.0, 17.5 }, { 84.0, 17.5 } },
+    public static final double DeliveryCargoPositions[][][] =
+            { { { 26.25, 23 }, { 54.0, 17.5 }, { 84.0, 17.5 } },
             { { 28.875, -23 }, { 57.0, -17.5 }, { 86.0, -17.5 } } };
-    public static final double DeliveryHatchPositions[][][] = { { { 26.5, 23 }, { 55.0, 17.5 }, { 82.0, 17.5 } },
+    public static final double DeliveryHatchPositions[][][] = 
+            { { { 26.5, 23 }, { 55.0, 17.5 }, { 82.0, 17.5 } },
             { { 30.35, -23 }, { 57.375, -17.5 }, { 83.75, -17.5 } } };
     public static final double HuntPositions[][][] = { { { 5.5, 23.0 }, { 18, 22 }, { 24.75, 24.0 } },
             { { 7.0, -23.0 }, { 19.5, -23.5 }, { 28.0, -24.0 } } }; // 0: Floor, 1: Cargo, 2: Hatch
@@ -71,14 +72,14 @@ public class ArmStatePositioner extends CommandBase {
     }
 
     @Override
-    protected void initialize() {
+   public void initialize() {
         heightLimiter.initialize();
         projectionLimiter.initialize();
         projectionAdjustLimiter.initialize();
     }
 
     @Override
-    protected void execute() {
+    public void execute() {
         // Update position based on current mode
         Modes curMode = Robot.m_cmdMgr.getCurMode();
         int positionIndex = Robot.m_cmdMgr.getPositionIndex();
@@ -132,11 +133,17 @@ public class ArmStatePositioner extends CommandBase {
         arm.setExtension(extensionLength);
     }
 
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return false;
     }
 
     @Override
+    public void end(boolean interrupted) {
+        if (interrupted) {
+            this.interrupted();
+        }
+    }
+    
     protected void interrupted() {
         Modes curMode = Robot.m_cmdMgr.getCurMode();
         int positionIndex = Robot.m_cmdMgr.getPositionIndex();

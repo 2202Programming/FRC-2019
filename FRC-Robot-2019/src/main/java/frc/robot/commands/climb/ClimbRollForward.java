@@ -1,27 +1,27 @@
 package frc.robot.commands.climb;
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 
-public class ClimbRollForward extends Command {
+public class ClimbRollForward extends CommandBase {
     private double rollerSpeed;
     private double curSpeed;
     private double startSpeed;
     private double acceleration;
 
     public ClimbRollForward(double startSpeed, double rollerSpeed, double powerAcceleration) {
-        requires(Robot.climber);
+        addRequirements(Robot.climber);
         this.startSpeed = startSpeed;
         this.rollerSpeed = rollerSpeed;
         this.acceleration = powerAcceleration * Robot.kDefaultPeriod;
     }
 
-    protected void initialize() {
+   public void initialize() {
         Robot.climber.setRollerSpeed(0);
         curSpeed = startSpeed;
     }
 
-    protected void execute() {
+    public void execute() {
         if(rollerSpeed > 0) {
             curSpeed = Math.min(rollerSpeed, curSpeed + acceleration);
         } else {
@@ -30,11 +30,11 @@ public class ClimbRollForward extends Command {
         Robot.climber.setRollerSpeed(curSpeed);
     }
 
-    protected void end() {
+    public void end(boolean interrupted) {
         Robot.climber.setRollerSpeed(0);
     }
 
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return Robot.climber.climberAgainstWall();
     }
 }

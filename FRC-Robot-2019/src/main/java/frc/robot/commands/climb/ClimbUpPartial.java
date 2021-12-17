@@ -1,17 +1,17 @@
 package frc.robot.commands.climb;
 
-import edu.wpi.first.wpilibj.command.CommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Robot;
 import frc.robot.commands.arm.MoveArmToRawPosition;
 
-public class ClimbUpPartial extends CommandGroup {
+public class ClimbUpPartial extends SequentialCommandGroup {
     public ClimbUpPartial(double climbHeight, double retractHeight) {
 
-        //if separate command to bring up robot change to parallel
-        addSequential(Robot.climber.zeroSubsystem());   //hack to zero counters
-        addSequential(new MoveArmToRawPosition(90, 29, 0.5, 20));
-        addSequential(new PawlSureFire(Robot.climber.Extend, 4));
-        addSequential(new DeployClimbFoot(0.9, climbHeight));    // 20.5 uses limit switch
+        addCommands(Robot.climber.zeroSubsystem(),    //hack to zero counters
+            new MoveArmToRawPosition(90, 29, 0.5, 20),
+            new PawlSureFire(Robot.climber.Extend, 4),
+            new DeployClimbFoot(0.9, climbHeight)
+        );    // 20.5 uses limit switch
     }
 
     /*
@@ -34,7 +34,7 @@ public class ClimbUpPartial extends CommandGroup {
     */
 
     @Override
-    protected void interrupted() {
+    public void end(boolean interrupted) {
         Robot.driveTrain.stop();
         Robot.climber.setRollerSpeed(0.0);
         Robot.climber.setExtenderSpeed(0.0);

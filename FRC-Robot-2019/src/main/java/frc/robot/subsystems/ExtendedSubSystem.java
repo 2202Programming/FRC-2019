@@ -7,19 +7,22 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
  *  Extends the WPILIB Subsystem
  *  Require a few additional methods for our subsystems
  */
-  public abstract class ExtendedSubSystem extends Subsystem {
+  public abstract class ExtendedSubSystem extends SubsystemBase {
 
     ExtendedSubSystem(String name) {
-      super(name);
+      super();    //name figured out automatically??
     }
 
+    ExtendedSubSystem() {
+      super();
+    }
 
   // require subsystems to provide a zero command
   public abstract Command zeroSubsystem();

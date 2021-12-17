@@ -1,10 +1,10 @@
 package frc.robot.commands.arm;
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 
 //Commands the arm to follow an arc
-public class MoveArmToRawPosition extends Command {
+public class MoveArmToRawPosition extends CommandBase {
     private double endAngle;
     private double extension;
     private double curAngle;
@@ -13,7 +13,7 @@ public class MoveArmToRawPosition extends Command {
     private double degreesPerSecond;
 
     public MoveArmToRawPosition(double angle, double extension, double endTolerance, double degreesPerSecond) {
-        requires(Robot.arm);
+        addRequirements(Robot.arm);
         this.endAngle = angle;
         this.extension = extension;
         this.degreesPerSecond = degreesPerSecond;
@@ -21,7 +21,7 @@ public class MoveArmToRawPosition extends Command {
     }
 
     @Override
-    protected void initialize() {
+   public void initialize() {
         curAngle = Robot.arm.getRealAngle();
         step = Math.copySign(degreesPerSecond * Robot.kDefaultPeriod, endAngle - curAngle); // step is the # of
                                                                                             // degrees to change per
@@ -29,7 +29,7 @@ public class MoveArmToRawPosition extends Command {
     }
 
     @Override
-    protected void execute() {
+    public void execute() {
         Robot.arm.setExtension(extension);
         if (Math.abs(Robot.arm.getExtension() - extension) <= 0.5 || Robot.arm.isExtensionOverrided()) {
             Robot.arm.setAngle(curAngle);
@@ -42,12 +42,12 @@ public class MoveArmToRawPosition extends Command {
         }
     }
 
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return Math.abs(Robot.arm.getRealAngle() - endAngle) <= tolerance;
     }
 
     @Override
-    protected void end() {
+    public void end(boolean interrupted) {
     }
 
 }

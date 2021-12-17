@@ -7,7 +7,7 @@
 
 package frc.robot.commands.arm;
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 import frc.robot.commands.util.MathUtil;
 import frc.robot.commands.util.RateLimiter;
@@ -15,7 +15,7 @@ import frc.robot.commands.util.RateLimiter.InputModel;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ArmSubsystem.Position;
 
-public class MoveArmToPosition extends Command {
+public class MoveArmToPosition extends CommandBase {
     double timeout;
     double height;
     double projection;
@@ -27,11 +27,10 @@ public class MoveArmToPosition extends Command {
     private RateLimiter heightLimiter;
     private RateLimiter projectionLimiter;
 
-    public MoveArmToPosition(double height, double projection, double error, double timeout) {
-        requires(Robot.arm);
+    public MoveArmToPosition(double height, double projection, double error) {
+        addRequirements(Robot.arm);
         this.height = height;
         this.projection = projection;
-        this.timeout = timeout;
         this.error = Math.abs(error);
 
         arm = Robot.arm;
@@ -53,14 +52,13 @@ public class MoveArmToPosition extends Command {
     }
 
     @Override
-    protected void initialize() {
-        setTimeout(timeout);
+   public void initialize() {
         heightLimiter.initialize();
         projectionLimiter.initialize();
     }
 
     @Override
-    protected void execute() {
+    public void execute() {
         heightLimiter.execute();
         projectionLimiter.execute();
         double h_cmd = heightLimiter.get();
@@ -94,12 +92,12 @@ public class MoveArmToPosition extends Command {
     }
 
     @Override
-    protected boolean isFinished() {
+    public boolean isFinished() {
         armPosition = Robot.arm.getArmPosition();
         double h_err = Math.abs(armPosition.height - height);
         double x_err = Math.abs(armPosition.projection - projection);
         boolean posGood = (h_err < error) && (x_err < error);
-        return posGood || isTimedOut();
+        return posGood;
     }
 
     public void setHeightLimiter(double minHeight, double maxHeight, double fallSpeed, double raiseSpeed) {

@@ -1,22 +1,22 @@
 package frc.robot.commands.climb;
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 
-public class RetractClimbFoot extends Command {
+public class RetractClimbFoot extends CommandBase {
     public RetractClimbFoot() {
-        requires(Robot.climber);
+        addRequirements(Robot.climber);
     }
 
-    protected void execute() {
+    public void execute() {
         Robot.climber.setExtenderSpeed(-0.3);
     }
 
-    protected void end() {
+    public void end(boolean interrupted) {
         Robot.climber.setExtenderSpeed(0);
     }
 
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return Robot.climber.getExtension() <= 10; //TODO: Better stop at bottom
     }
 }

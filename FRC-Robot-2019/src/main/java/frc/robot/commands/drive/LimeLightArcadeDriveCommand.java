@@ -2,7 +2,7 @@ package frc.robot.commands.drive;
 
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.LinearFilter;
 import frc.robot.Robot;
@@ -12,7 +12,7 @@ import frc.robot.subsystems.DriveTrainSubsystem;
 /**
  * An example command. You can replace me with your own command.
  */
-public class LimeLightArcadeDriveCommand extends Command {
+public class LimeLightArcadeDriveCommand extends CommandBase {
   private DriveTrainSubsystem driveTrain;
   private final double P = 0.22;
   private final double I = 0.0;
@@ -27,8 +27,8 @@ public class LimeLightArcadeDriveCommand extends Command {
   private final double VEL_TOL = 0.05;  //TODO: units?
 
   public LimeLightArcadeDriveCommand(double maxSpeed) {
-    // Use requires() here to declare subsystem dependencies
-    requires(Robot.driveTrain);
+    // Use addRequirements() here to declare subsystem dependencies
+    addRequirements(Robot.driveTrain);
     driveTrain = Robot.driveTrain;
 
     speedShaper = new ExpoShaper(0.6); // 0 no change, 1.0 max flatness
@@ -43,7 +43,7 @@ public class LimeLightArcadeDriveCommand extends Command {
 
   // Called just before this Command runs the first time
   @Override
-  protected void initialize() {
+ public void initialize() {
     controller.reset();
     lowPass.reset();
 
@@ -52,7 +52,7 @@ public class LimeLightArcadeDriveCommand extends Command {
   }
 
   @Override
-  protected void execute() {
+  public void execute() {
 
     //DPL - 10/25/2020 not sure what the setpoint was, are we driving to zero from the Limelight?
     double setpoint = 0.0;  //### hack
@@ -76,12 +76,12 @@ public class LimeLightArcadeDriveCommand extends Command {
   }
 
   @Override
-  protected boolean isFinished() {
+  public boolean isFinished() {
     return false;
   }
 
   @Override
-  protected void end() {
+  public void end(boolean interrupted) {
     Robot.sensorSubystem.disableLED();
     controller.reset();
     driveTrain.stop();

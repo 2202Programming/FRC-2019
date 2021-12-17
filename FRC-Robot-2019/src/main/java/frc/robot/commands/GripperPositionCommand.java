@@ -7,7 +7,6 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 import frc.robot.commands.arm.ArmStatePositioner;
@@ -28,11 +27,12 @@ public class GripperPositionCommand extends CommandBase {
       this.projx = projx;
       this.timeout = timeout;
       this.error = Math.abs(error);
+      this.withTimeout(timeout);
   }
 
   @Override
-  protected void initialize() {
-      setTimeout(timeout);
+ public void initialize() {
+      //setTimeout(timeout);
       // Assume that the ArmStatePositioner is the only type of default command used
       armPositioner = Robot.arm.getArmPositioner();;
       armPositioner.setPosition(height, projx); // sets the CommandManagers h/x output
@@ -40,16 +40,16 @@ public class GripperPositionCommand extends CommandBase {
   }
 
   @Override
-  protected void execute() {
+  public void execute() {
     armPosition = Robot.arm.getArmPosition();
     //Robot.m_cmdMgr.cmdPosition(height, projx); // once should be fine
   }
 
   @Override
-  protected boolean isFinished() {
+  public boolean isFinished() {
       double h_err = Math.abs(armPosition.height - height);
       double x_err = Math.abs(armPosition.projection - projx);
       boolean posGood = (h_err < error) && (x_err < error);
-      return posGood || isTimedOut();
+      return posGood ; //|| isTimedOut();
   }
 }

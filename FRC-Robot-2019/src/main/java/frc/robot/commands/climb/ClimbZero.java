@@ -7,28 +7,28 @@
 
 package frc.robot.commands.climb;
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 
-public class ClimbZero extends Command {
+public class ClimbZero extends CommandBase {
 
   /**
    * Creates an ClimbZero command. This command zeros the climbers encoder.
    */
   public ClimbZero() {
-    requires(Robot.climber);
+    addRequirements(Robot.climber);
   }
 
   /**
    * Zeros encoders
    */
   @Override
-  protected void initialize() {
+ public void initialize() {
     Robot.climber.zeroClimber();
   }
 
   @Override
-  protected boolean isFinished() {
+  public boolean isFinished() {
     return true;
   }
 }

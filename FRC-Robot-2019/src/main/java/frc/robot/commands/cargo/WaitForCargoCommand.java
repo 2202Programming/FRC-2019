@@ -1,15 +1,15 @@
 package frc.robot.commands.cargo;
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 
-public class WaitForCargoCommand extends Command {
+public class WaitForCargoCommand extends CommandBase {
     public WaitForCargoCommand() {
-        requires(Robot.cargoTrap);
+        addRequirements(Robot.cargoTrap);
     }
 
     @Override
-    protected boolean isFinished() {
+    public boolean isFinished() {
        return Robot.cargoTrap.cargoInSight();
     }
 }

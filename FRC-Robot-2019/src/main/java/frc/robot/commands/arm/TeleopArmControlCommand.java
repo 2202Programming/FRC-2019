@@ -3,13 +3,13 @@ package frc.robot.commands.arm;
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.commands.util.MathUtil;
 
-public class TeleopArmControlCommand extends Command {
+public class TeleopArmControlCommand extends CommandBase {
     private ArmSubsystem arm;
     DoubleSupplier heightCmdFunct;
     DoubleSupplier projectionCmdFunct;
@@ -21,7 +21,7 @@ public class TeleopArmControlCommand extends Command {
     //        PositionEnum.HatchLow, PositionEnum.HatchMid, PositionEnum.HatchHigh };
 
     public TeleopArmControlCommand(DoubleSupplier heightCmdFunct, DoubleSupplier projectionCmdFunct) {
-        requires(Robot.arm);
+        addRequirements(Robot.arm);
         arm = Robot.arm;
         this.heightCmdFunct = heightCmdFunct;
         this.projectionCmdFunct = projectionCmdFunct;
@@ -31,7 +31,7 @@ public class TeleopArmControlCommand extends Command {
     }
 
     @Override
-    protected void initialize() {
+   public void initialize() {
         //dpl - can't reset encoders when command start.  Command could get enabled multiple times
         // read initial positions
         readInputs();
@@ -43,7 +43,7 @@ public class TeleopArmControlCommand extends Command {
     }
 
     @Override
-    protected void execute() {
+    public void execute() {
         updatePositionVector();
         double heightAbovePivot = height_cmd - arm.ARM_PIVOT_HEIGHT;
         double curAngle = -Math.toDegrees(Math.atan(heightAbovePivot / projection_cmd)) + 90;
@@ -80,12 +80,7 @@ public class TeleopArmControlCommand extends Command {
     }
 
     @Override
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return false;
-    }
-
-    @Override
-    protected void interrupted() {
-        return;
     }
 }

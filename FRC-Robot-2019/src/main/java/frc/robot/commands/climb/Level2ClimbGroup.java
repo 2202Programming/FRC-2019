@@ -1,7 +1,8 @@
 package frc.robot.commands.climb;
 
-import edu.wpi.first.wpilibj.command.CommandGroup;
-import edu.wpi.first.wpilibj.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.CommandGroupBase;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Robot;
 import frc.robot.commands.CommandManager.Modes;
 import frc.robot.commands.arm.MoveArmToRawPosition;
@@ -11,7 +12,7 @@ import frc.robot.commands.intake.WristSetAngleCommand;
 import frc.robot.commands.intake.WristTrackAngle;
 import frc.robot.commands.util.Angle;
 
-public class Level2ClimbGroup extends CommandGroup {
+public class Level2ClimbGroup extends SequentialCommandGroup {
     public Level2ClimbGroup(double climbHeight, double retractHeight) {
         double timeToDriveForward = 30.0;
         double rollPower = 0.6;
@@ -63,7 +64,7 @@ public class Level2ClimbGroup extends CommandGroup {
     */
 
     @Override
-    protected void interrupted() {
+    public void end(boolean interrupted) {
         Robot.driveTrain.stop();
         Robot.climber.setRollerSpeed(0.0);
         Robot.climber.setExtenderSpeed(0.0);
@@ -72,7 +73,4 @@ public class Level2ClimbGroup extends CommandGroup {
         Robot.m_cmdMgr.setMode(Modes.Drive);
     }
 
-    protected void end() {
-
-    }
 }

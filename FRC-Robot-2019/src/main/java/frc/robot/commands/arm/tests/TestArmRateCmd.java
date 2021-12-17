@@ -3,14 +3,14 @@ package frc.robot.commands.arm.tests;
 import java.util.function.DoubleConsumer;
 
 import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.CommandGroup;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.commands.util.RateLimiter;
 import frc.robot.commands.util.RateLimiter.InputModel;
 
-public class TestArmRateCmd extends CommandGroup {
+public class TestArmRateCmd extends ParallelCommandGroup {
 
     RateLimiter armRC;
     RateLimiter extenderRC;
@@ -35,21 +35,21 @@ public class TestArmRateCmd extends CommandGroup {
             5.0,  // dx_raising
             InputModel.Position); 
 
-        class RateCmd extends Command {
+        class RateCmd extends CommandBase {
             final RateLimiter rc;
             final DoubleConsumer outfunct;
 
             RateCmd(RateLimiter _rc, DoubleConsumer _outfunct) {
-                requires(Robot.arm);
+                addRequirements(Robot.arm);
                 rc = _rc;
                 outfunct = _outfunct;
             }
 
             @Override
-            protected void initialize() { rc.initialize();   }
+           public void initialize() { rc.initialize();   }
 
             @Override
-            protected void execute() { 
+            public void execute() { 
                 rc.execute();
                 outfunct.accept(rc.get());
             }
@@ -57,11 +57,9 @@ public class TestArmRateCmd extends CommandGroup {
             @Override
             public boolean isFinished() { return false;  }
         }
-
-        RateCmd shoulderCmd = new RateCmd(armRC, Robot.arm::setAngle);
-        RateCmd extenderCmd = new RateCmd(extenderRC, Robot.arm::setExtension);
-        addParallel(shoulderCmd);
-        addParallel(extenderCmd);
+        this.addCommands(
+            new RateCmd(armRC, Robot.arm::setAngle),
+            new RateCmd(extenderRC, Robot.arm::setExtension) );
     }
 
     public void log() {

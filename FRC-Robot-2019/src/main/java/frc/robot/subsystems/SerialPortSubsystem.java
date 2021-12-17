@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.hal.util.UncleanStatusException;
 import java.lang.StringBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 //Listens on USB Serial port for LIDAR distance data from the arduino
 
-public class SerialPortSubsystem extends Subsystem {
+public class SerialPortSubsystem extends SubsystemBase {
 
 private int[] distanceArray = new int[4];
 private ArrayList<Deque<Integer>> distanceAvgArray;
@@ -42,11 +42,6 @@ private long logTimer;
 
   public boolean isSerialEnabled() {
     return serialExists;
-  }
-
-  @Override
-  public void initDefaultCommand() {
-      //set default command
   }
 
   public int getDistance(int sensor) { //return last distance measure for LIDAR sensor

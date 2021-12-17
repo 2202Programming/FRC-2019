@@ -5,11 +5,11 @@ import java.util.Deque;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class LimeLightSubsystem extends Subsystem {
+public class LimeLightSubsystem extends SubsystemBase {
 
     private double x;
     private double y;
@@ -28,10 +28,6 @@ public class LimeLightSubsystem extends Subsystem {
         logTimer = System.currentTimeMillis();
     }
 
-    @Override
-    protected void initDefaultCommand() {
-
-    }
 
     public void log(int interval) {
 

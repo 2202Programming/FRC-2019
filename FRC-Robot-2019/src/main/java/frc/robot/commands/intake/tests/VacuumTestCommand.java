@@ -13,13 +13,13 @@ public class VacuumTestCommand extends InstantCommand {
     boolean enabled;
 
     public VacuumTestCommand(boolean enabled) {
-        requires(Robot.intake.getVacuumSubsystem());
+        addRequirements(Robot.intake.getVacuumSubsystem());
         this.setName("vac=" + enabled);
         this.enabled = enabled;
     }
 
     @Override
-    protected void execute() {
+    public void execute() {
         if (enabled) {
             // Transition to Off
             Robot.intake.setVacuum(true);

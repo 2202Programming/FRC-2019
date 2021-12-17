@@ -1,32 +1,21 @@
 package frc.robot.commands.intake;
 
-import edu.wpi.first.wpilibj.command.TimedCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Robot;
 
-public class WristSetAngleCommand extends TimedCommand {
+public class WristSetAngleCommand extends InstantCommand {
     private double angle;
 
     /**
      * Sets the wrist to a specific angle
-     */
-    public WristSetAngleCommand(double angle) {
-        this(angle, 0.0);
-    }
-
-    public WristSetAngleCommand(double angle, double timeout) {
-        super(timeout);
-        requires(Robot.intake);
+     * */
+    public WristSetAngleCommand(double angle) {   
+        addRequirements(Robot.intake);
         this.angle = angle;
     }
 
     @Override
-    protected void initialize() {
-        execute();
-    }
-
-    @Override
-    protected void execute() {
-        // intake angle is relative to servo
-        Robot.intake.setAngle(angle);
+   public void initialize() {
+        Robot.intake.setAngle(angle);   
     }
 }

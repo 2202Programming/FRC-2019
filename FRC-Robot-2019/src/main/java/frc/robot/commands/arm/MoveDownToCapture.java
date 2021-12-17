@@ -1,8 +1,8 @@
 package frc.robot.commands.arm;
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 
-public class MoveDownToCapture extends Command {
+public class MoveDownToCapture extends CommandBase {
     /*
     Constants should probably be moved to the subsystem?
     Many commands will be involved in moving the arm in an x-y coordinate system
@@ -22,13 +22,13 @@ public class MoveDownToCapture extends Command {
     private double down_cmd;   //inches to move down for pickup
 
     public MoveDownToCapture(double down){
-        requires(Robot.arm);
+        addRequirements(Robot.arm);
         down_cmd = down;
 
         
     }
 
-    protected void initialize() {
+   public void initialize() {
         curProjection = (armInitialLength + Robot.arm.getExtension()) * Math.cos(Robot.arm.getRealAngle());
         curCalcHeight = Math.sqrt((Robot.arm.getExtension() + armInitialLength) * (Robot.arm.getExtension() + armInitialLength) - curProjection * curProjection);
         endHeight = curCalcHeight + down_cmd; //Move down 5 inches (increase bc increasing distance from x-axis)
@@ -40,7 +40,7 @@ public class MoveDownToCapture extends Command {
 
     // A button will trigger this when the pilot expects to be over a hatch/cargo.
     // We need to move into capturing mode, move down. wait a bit
-    protected void execute() {
+    public void execute() {
         double angle = 90 + Math.toDegrees(Math.atan(endHeight / curProjection));
         double extension = Math.sqrt(endHeight * endHeight + curProjection * curProjection) - armInitialLength;
         //Move to the endHeight while maintaining curProjection
@@ -51,7 +51,7 @@ public class MoveDownToCapture extends Command {
 
     }
 
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return Math.abs(curCalcHeight - endHeight) < kTolerance;
     }
 }

@@ -1,21 +1,21 @@
 package frc.robot.commands.drive;
 
 import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.commands.util.ExpoShaper;
 /**
  * An example command. You can replace me with your own command.
  */
-public class ArcadeDriveCommand extends Command {
+public class ArcadeDriveCommand extends CommandBase {
   private DriveTrainSubsystem driveTrain;
   private ExpoShaper speedShaper;
   private ExpoShaper rotationShaper;
 
   public ArcadeDriveCommand() {
-    // Use requires() here to declare subsystem dependencies
-    requires(Robot.driveTrain);
+    // Use addRequirements() here to declare subsystem dependencies
+    addRequirements(Robot.driveTrain);
     driveTrain = Robot.driveTrain;
 
     speedShaper = new ExpoShaper(0.6);        //0 no change,  1.0 max flatness
@@ -24,7 +24,7 @@ public class ArcadeDriveCommand extends Command {
 
   // Called just before this Command runs the first time
   @Override
-  protected void initialize() {
+ public void initialize() {
     execute();
   }
 
@@ -33,7 +33,7 @@ public class ArcadeDriveCommand extends Command {
   // right motors
   // Temporary until we get the XboxController wrapper for joystick
   @Override
-  protected void execute() {
+  public void execute() {
     //Robot.driveTrain.ArcadeDrive(0.90, 0, true);
     double s = speedShaper.expo(Robot.m_oi.getDriverController().getY(Hand.kLeft));
     //soften the input by limiting the max input
@@ -42,12 +42,12 @@ public class ArcadeDriveCommand extends Command {
   }
 
   @Override
-  protected boolean isFinished() {
+  public boolean isFinished() {
     return false;
   }
 
   @Override
-  protected void end() {
+  public void end(boolean interrupted) {
     driveTrain.stop();
   }
 }

@@ -1,7 +1,8 @@
 package frc.robot.commands.arm;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+
 import frc.robot.Robot;
 
 public class ExtendArmToPositionCommand extends CommandBase {
@@ -10,15 +11,15 @@ public class ExtendArmToPositionCommand extends CommandBase {
 
     public ExtendArmToPositionCommand(double distance) {
         this.distance = distance;
-        requires(Robot.arm);
+        addRequirements((Subsystem)Robot.arm);
     }
 
     @Override
-    protected void execute() {
+    public void execute() {
         Robot.arm.setExtension(distance);
     }
 
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return Math.abs(Robot.arm.getExtension() - distance) < kTolerance;   
     }
 }

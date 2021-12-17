@@ -1,7 +1,7 @@
 package frc.robot.commands.intake.tests;
 
 import java.util.function.DoubleSupplier;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
@@ -12,7 +12,7 @@ public class TestWristPositionCommand extends CommandBase {
     RateLimiter wristPC;
 
     public TestWristPositionCommand(DoubleSupplier getter) {
-        requires(Robot.intake);
+        addRequirements(Robot.intake);
         wristPC = new RateLimiter(Robot.dT,
                 getter, 
                 Robot.intake::getAngle,
@@ -28,11 +28,11 @@ public class TestWristPositionCommand extends CommandBase {
     }
 
     
-    protected void initialize() {
+   public void initialize() {
         wristPC.initialize();
     }
 
-    protected void execute() {
+    public void execute() {
         wristPC.execute();
         Robot.intake.setAngle(wristPC.get());
     }

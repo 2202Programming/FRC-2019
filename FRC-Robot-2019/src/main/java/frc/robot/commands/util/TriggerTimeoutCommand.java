@@ -2,9 +2,9 @@ package frc.robot.commands.util;
 
 import java.util.function.BooleanSupplier;
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class TriggerTimeoutCommand extends Command {
+public class TriggerTimeoutCommand extends CommandBase {
     private BooleanSupplier event; 
     private double timeout;
 
@@ -14,12 +14,12 @@ public class TriggerTimeoutCommand extends Command {
     }
 
     @Override
-    protected void initialize() {
+   public void initialize() {
         setTimeout(timeout);
     }
 
     @Override
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return isTimedOut() || event.getAsBoolean();
     }
 }

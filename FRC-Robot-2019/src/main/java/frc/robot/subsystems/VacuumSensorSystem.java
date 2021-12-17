@@ -1,6 +1,6 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.AnalogInput;
 /**
  * VacuumSensor sub-system owned by the intake system
@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
  * 
  */
 
- public class VacuumSensorSystem extends ExtendedSubSystem {
+ public class VacuumSensorSystem extends SubsystemBase {
     //physical units
     final double vacuumTriggerV = 0.34; // volts about 8psi 
     final double vacuumBiasV = 0.15;    // part or wiring is bad, 25% lower than expected .2v
@@ -50,7 +50,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
 
     public VacuumSensorSystem(int ADchan)
     {
-        super("vacSensor"+ADchan);
+        this.setName("vacSensor" + ADchan);
         AnalogInput.setGlobalSampleRate(62500);   //warning this could affect others if other a/d used
         //setup sensor and test for it's goodness
 		sensor = new AnalogInput(ADchan);		
@@ -98,15 +98,4 @@ import edu.wpi.first.wpilibj.AnalogInput;
 
     public boolean isGood() {return sensorGood; }
 
-
-    @Override
-    protected void initDefaultCommand() {
-        // could put the trigger here if good, but may just want to do in state manager or owning subsytem
-
-    }
-
-    @Override
-    public Command zeroSubsystem() {   
-        return null;    //does not need a zeroSubsystem
-    }
 }

@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.SpeedController;
 //import edu.wpi.first.wpilibj.SpeedControllerGroup;
 //import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotMap;
@@ -22,7 +22,7 @@ import frc.robot.Robot;
 /**
  * The basic drive train subsystem for four motors
  */
-public class DriveTrainSubsystem extends Subsystem {
+public class DriveTrainSubsystem extends SubsystemBase {
 
   //values in inches 
   public final double ENCODER_RIGHT_DISTANCE_PER_PULSE = 0.002396219298;
@@ -121,7 +121,7 @@ public class DriveTrainSubsystem extends Subsystem {
     talon.configPeakOutputReverse(-0.95);
   }
 
-  @Override
+  // TODO - WIRE THIS UP -DPL  12/16/2021
   public void initDefaultCommand() {
     leftEncoder.setSelectedSensorPosition(0);
     rightEncoder.setSelectedSensorPosition(0);

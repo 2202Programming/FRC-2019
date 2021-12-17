@@ -1,15 +1,15 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-//import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.PWM;
 import edu.wpi.first.wpilibj.SpeedController;
-//import edu.wpi.first.wpilibj.Solenoid.Value;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Spark;
-//import frc.robot.subsystems.ExtendedSubSystem;
+
 import frc.robot.Robot;
 import frc.robot.RobotMap;
 import frc.robot.commands.intake.WristStatePositioner;
@@ -53,6 +53,18 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
  */
 
 public class IntakeSubsystem extends ExtendedSubSystem {
+
+  /**
+   * dpl 12/16/2021 - created class because inline doesnt work with new command
+   * structure.  Better question, why did we do this?  Is the vacuumSensor really the resource?
+   * TODO  - fix this slop
+   */
+  class IntakeVacuum extends SubsystemBase {
+    IntakeVacuum() {
+      this.setName("Intake:Vac");   
+    }
+  }
+
   // Local Constants that define facts about the intake system
   public final double WristMinDegrees = -100.0; // pointing down, relative to the arm //dpl hack
   public final double WristMaxDegrees = +100.0; // pointing up
@@ -71,7 +83,7 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   final double kServoMinPWM = 0.553;
   final double kServoMaxPWM = 2.455;
 
-  Subsystem intakeVacuum;
+  IntakeVacuum intakeVacuum;
 
   // Vacuum mode is the default for the solenoid, power it to drop the payload
   public final double kRelease = 1.0; // powered will open solenoid
@@ -97,26 +109,13 @@ public class IntakeSubsystem extends ExtendedSubSystem {
     vacuumPump = new Spark(RobotMap.INTAKE_VACUUM_SPARK_PWM);
     vacuumSol = new Spark(RobotMap.INTAKE_VAC_RELEASE_SPARK_PWM);
     vacuumSensor = new VacuumSensorSystem(RobotMap.INTAKE_VAC_SENSOR_AD);
+    intakeVacuum = new IntakeVacuum();    //DPL TODO What was this for?
 
-    // addChild("In:Wrist", (Sendable) wristServo);
-    // addChild("In:VacPump", vacuumPump);
-    // addChild("In:CargoSw", cargoSwitch); //dpl not using 3/14/2019
-    // addChild("In:VacSol", vacuumSol); //switched to spark
-
-    intakeVacuum = new Subsystem("Intake:Vac") {
-      @Override
-      protected void initDefaultCommand() {
-      } // none
-    };
-
+    setDefaultCommand(new WristStatePositioner());
     logTimer = System.currentTimeMillis();
   }
 
-  @Override
-  public void initDefaultCommand() {
-    setDefaultCommand(new WristStatePositioner());
-  }
-
+  
   // expose the vacuum sensor if it is good for commands
   // Note: it might be cleaner to just accept a command to run on the sensor.
   public VacuumSensorSystem getVacuumSensor() {
@@ -209,18 +208,18 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   @Override
   public Command zeroSubsystem() {
     // local class for zero
-    class IntakeZeroCmd extends Command {
+    class IntakeZeroCmd extends CommandBase {
       IntakeZeroCmd(Subsystem ss) {
-        requires(ss);
+        addRequirements(ss);
       }
 
       @Override
-      protected void initialize() {
+     public void initialize() {
         zeroIntake();
       }
 
       @Override
-      protected boolean isFinished() {
+      public boolean isFinished() {
         return true;
       }
     }

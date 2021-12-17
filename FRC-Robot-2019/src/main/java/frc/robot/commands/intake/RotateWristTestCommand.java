@@ -1,7 +1,7 @@
 package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 
@@ -21,16 +21,16 @@ public class RotateWristTestCommand extends CommandBase {
   private int currentIndex = 0;
 
   public RotateWristTestCommand() {
-    requires(Robot.intake);
+    addRequirements(Robot.intake);
   }
 
   @Override
-  protected void initialize() {
+ public void initialize() {
     Robot.intake.setAngle(positions[currentIndex]);
   }
 
   @Override
-  protected void execute() {
+  public void execute() {
     if (ctrl.getAButtonReleased()) { // TODO: change to respective button
       Robot.intake.setAngle(positions[currentIndex++]);
       if (currentIndex > positions.length) currentIndex = 0;
@@ -38,7 +38,7 @@ public class RotateWristTestCommand extends CommandBase {
   }
 
   @Override
-  protected boolean isFinished() {
+  public boolean isFinished() {
     return false;   //keep doing this until stopped
   }
 }

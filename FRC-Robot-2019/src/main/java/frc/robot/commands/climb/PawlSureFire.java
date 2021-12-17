@@ -1,6 +1,6 @@
 package frc.robot.commands.climb;
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import frc.robot.Robot;
 /**
@@ -8,7 +8,7 @@ import frc.robot.Robot;
  * first fires the motor in the opp direction to offload the gear.
  * 
  */
-public class PawlSureFire extends Command {
+public class PawlSureFire extends CommandBase {
     DoubleSolenoid.Value cmd;
     int kCount;
     int frameCount;
@@ -17,15 +17,15 @@ public class PawlSureFire extends Command {
     public PawlSureFire(DoubleSolenoid.Value cmd, int kCount) {
         this.cmd = cmd;
         this.kCount = kCount;
-        requires(Robot.climber);
+        addRequirements(Robot.climber);
     }
     
-    protected void initialize() {
+   public void initialize() {
         frameCount = kCount;
         done = false;
     }
 
-    protected void execute() {
+    public void execute() {
         // run motor opp of what we want to unload before switching
 
         if (cmd == Robot.climber.Extend) {
@@ -46,7 +46,7 @@ public class PawlSureFire extends Command {
         frameCount--;
     }
 
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return done;
     }
 }

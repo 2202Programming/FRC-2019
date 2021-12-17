@@ -1,6 +1,6 @@
 package frc.robot.commands.intake;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 
 /**
@@ -12,20 +12,20 @@ import frc.robot.Robot;
  * 
  *      Instantiate with one or other for what you need.
  */
-public class VacuumCommand extends Command {
+public class VacuumCommand extends CommandBase {
     boolean enable;
     boolean done = false;
     double timeout;
 
     public VacuumCommand(boolean enable, double timeout) {
-        requires(Robot.intake.getVacuumSubsystem());
+        addRequirements(Robot.intake.getVacuumSubsystem());
         this.setName("vac="+enable);
         this.enable = enable;
         this.timeout = timeout;
     }
 
     @Override
-    protected void initialize()
+   public void initialize()
     {
         done = false;          // turning off takes time.
         setTimeout(timeout); 
@@ -42,13 +42,13 @@ public class VacuumCommand extends Command {
     }
 
     @Override
-    protected void execute() {
+    public void execute() {
         //just wait for time out or we are done.
     }
 
     // When we release we blow air when we retract, sensor goes below baseline - problem...
     @Override
-    protected boolean isFinished() {
+    public boolean isFinished() {
         // put the solenoid back to vacuum on timeout.
         if (isTimedOut()) {
             Robot.intake.releaseSolenoid(false);  //unpowerered for vacuum

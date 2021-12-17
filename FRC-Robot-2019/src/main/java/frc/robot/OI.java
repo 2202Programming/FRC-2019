@@ -9,8 +9,8 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 //import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.buttons.Button;
-import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Button;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.arm.ResetArmCommand;
 import frc.robot.commands.cargo.AutoCargoIntakeCommand;
 //import frc.robot.commands.cargo.DeployCargoTrapCommand;
@@ -93,16 +93,13 @@ public class OI {
   private void bindFieldButtons() {
     System.out.println("Using Field OI");
     // Drive Train Commands
-    new JoystickButton(driver, XboxControllerButtonCode.B.getCode())
-        .whenPressed(new ToggleAutomaticGearShiftingCommand());
+    new JoystickButton(driver, XboxControllerButtonCode.B.getCode()).whenPressed(new ToggleAutomaticGearShiftingCommand());
     new JoystickButton(driver, XboxControllerButtonCode.X.getCode()).whenPressed(new InvertDriveControlsCommand());
     new JoystickButton(driver, XboxControllerButtonCode.LB.getCode()).whileHeld(new LimeLightArcadeDriveCommand(1.0));
     new JoystickButton(driver, XboxControllerButtonCode.RB.getCode()).whenPressed(new AutomaticUpShiftCommand());
-    new JoystickTrigger(driver, XboxControllerButtonCode.TRIGGER_LEFT.getCode(), 0.75)
-        .whileHeld(new AutoCargoIntakeCommand(0.4));
-    new JoystickTrigger(driver, XboxControllerButtonCode.TRIGGER_RIGHT.getCode(), 0.75)
-        .whileHeld(new OuttakeTestCmd(0.4));
-    new JoystickButton(assistant, 9).whileHeld(new CopilotControlCommand(0.4, 0.4));;
+    new JoystickTrigger(driver, XboxControllerButtonCode.TRIGGER_LEFT.getCode(), 0.75)  .whileHeld(new AutoCargoIntakeCommand(0.4));
+    new JoystickTrigger(driver, XboxControllerButtonCode.TRIGGER_RIGHT.getCode(), 0.75  .whileHeld(new OuttakeTestCmd(0.4));
+    new JoystickButton(assistant, 9).whileHeld(new CopilotControlCommand(0.4, 0.4));
 
     // Switchboard Assignments 
     

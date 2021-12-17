@@ -1,13 +1,13 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotMap;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode;
 import edu.wpi.cscore.VideoSink;
 import edu.wpi.first.cameraserver.*;
 
-public class CameraSubsystem extends Subsystem {
+public class CameraSubsystem extends SubsystemBase {
 
   private UsbCamera frontCamera;
   private UsbCamera rearCamera;
@@ -50,12 +50,5 @@ public class CameraSubsystem extends Subsystem {
       currentCamera = -1;
     }
   }
-  
- 
-  @Override
-  public void initDefaultCommand() {
-      //set default command
-  }
-
   
 }

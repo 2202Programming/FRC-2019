@@ -1,7 +1,7 @@
 package frc.robot.commands.intake;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Robot;
 
 /**
@@ -9,19 +9,19 @@ import frc.robot.Robot;
  */
 public class CheckSucc extends CommandBase {
     public CheckSucc() {
-        requires(Robot.intake);
+        addRequirements(Robot.intake);
     }
     
-    protected void initialize() {
+   public void initialize() {
         setTimeout(0.2);
         Robot.intake.releaseSolenoid(true);
     }
 
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return isTimedOut();
     }
 
-    protected void end() {
+    public void end(boolean interrupted) {
         Robot.intake.releaseSolenoid(false);
     }
 }

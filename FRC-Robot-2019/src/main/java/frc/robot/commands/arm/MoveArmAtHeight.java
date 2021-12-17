@@ -2,7 +2,7 @@ package frc.robot.commands.arm;
 
 import frc.robot.commands.util.MathUtil;
 import java.util.function.DoubleSupplier;
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 
 /** 
@@ -15,7 +15,7 @@ import frc.robot.Robot;
  *                   cleaned up constraints
  */
 
-public class MoveArmAtHeight extends Command {
+public class MoveArmAtHeight extends CommandBase {
     //ArmSubsystem  arm = Robot.arm;
 
     // Length of the arm from pivot point without extension in inches
@@ -36,7 +36,7 @@ public class MoveArmAtHeight extends Command {
     DoubleSupplier heightCmdFunct;
 
     public MoveArmAtHeight(DoubleSupplier heightCmdFunct, DoubleSupplier extCmdFunct) {
-        requires(Robot.arm);
+        addRequirements(Robot.arm);
         this.heightCmdFunct = heightCmdFunct;
         this.extCmdFunct = extCmdFunct;
     }
@@ -45,7 +45,7 @@ public class MoveArmAtHeight extends Command {
      * This only works for front side of robot...
      */
 
-    protected void execute() {
+    public void execute() {
         // read inputs
         double h_cmd = heightCmdFunct.getAsDouble(); //height above floor inches
         double l_cmd = extCmdFunct.getAsDouble();    //length from from pivot
@@ -81,7 +81,7 @@ public class MoveArmAtHeight extends Command {
          */
     }
 
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return false;
     }
 

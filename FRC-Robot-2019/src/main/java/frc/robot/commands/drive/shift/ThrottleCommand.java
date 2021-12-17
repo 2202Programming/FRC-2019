@@ -1,13 +1,13 @@
 package frc.robot.commands.drive.shift;
 
 import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 
 /**
  * An example command. You can replace me with your own command.
  */
-public class ThrottleCommand extends Command {
+public class ThrottleCommand extends CommandBase {
   private final double CYCLE_TIME_IN_SECONDS = 0.020;
   private int cycleCount;
   private int maxCycles;
@@ -19,8 +19,8 @@ public class ThrottleCommand extends Command {
    * @param rampTime Ramp up time in seconds
    */
   public ThrottleCommand(double rampTime, double startValue, double endValue) {
-    // Use requires() here to declare subsystem dependencies
-    requires(Robot.driveTrain);
+    // Use addRequirements() here to declare subsystem dependencies
+    addRequirements(Robot.driveTrain);
     maxCycles = (int) Math.ceil(rampTime / CYCLE_TIME_IN_SECONDS);
     this.startValue = startValue;
     stepValue = (endValue - startValue) / maxCycles;
@@ -28,7 +28,7 @@ public class ThrottleCommand extends Command {
 
   // Called just before this Command runs the first time
   @Override
-  protected void initialize() {
+ public void initialize() {
     cycleCount = 0;
     execute();
   }
@@ -37,7 +37,7 @@ public class ThrottleCommand extends Command {
   // Left joystick controls the left motors and the right joystick controls the
   // right motors
   @Override
-  protected void execute() {
+  public void execute() {
     double throttle = Robot.m_oi.getDriverController().getY(Hand.kLeft) * (startValue + stepValue * cycleCount);
     double turnRate = Robot.m_oi.getDriverController().getX(Hand.kRight) * (startValue + stepValue * cycleCount);
     cycleCount++;
@@ -45,7 +45,7 @@ public class ThrottleCommand extends Command {
   }
 
   @Override
-  protected boolean isFinished() {
+  public boolean isFinished() {
     double leftSpeed = Math.abs(Robot.driveTrain.getLeftEncoderTalon().getSelectedSensorVelocity());
     double rightSpeed = Math.abs(Robot.driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
     double curSpeed = (leftSpeed + rightSpeed) / 2.0;
@@ -54,6 +54,6 @@ public class ThrottleCommand extends Command {
   }
 
   @Override
-  protected void end() {
+  public void end(boolean interrupted) {
   }
 }

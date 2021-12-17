@@ -1,13 +1,13 @@
 package frc.robot.commands.climb.tests;
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 
 /**
  * 
  * Instantiate with one or other for what you need.
  */
-public class PawlSolenoidTestCmd extends Command {
+public class PawlSolenoidTestCmd extends CommandBase {
     // On state
     boolean enabled;
 
@@ -17,16 +17,16 @@ public class PawlSolenoidTestCmd extends Command {
     }
 
     @Override
-    protected void initialize() {
+   public void initialize() {
         Robot.climber.setPawl(enabled);
     }
 
     @Override
-    protected void execute() {      
+    public void execute() {      
     }
 
     @Override
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return true;
     }
 }

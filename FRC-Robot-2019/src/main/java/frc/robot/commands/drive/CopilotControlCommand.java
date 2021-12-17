@@ -1,14 +1,14 @@
 package frc.robot.commands.drive;
 
 import edu.wpi.first.wpilibj.GenericHID.Hand;
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.commands.util.ExpoShaper;
 /**
  * An example command. You can replace me with your own command.
  */
-public class CopilotControlCommand extends Command {
+public class CopilotControlCommand extends CommandBase {
   private DriveTrainSubsystem driveTrain;
   private ExpoShaper speedShaper;
   private ExpoShaper rotationShaper;
@@ -16,8 +16,8 @@ public class CopilotControlCommand extends Command {
   private double maxRotation;
 
   public CopilotControlCommand(double maxSpeed, double maxRotation) {
-    // Use requires() here to declare subsystem dependencies
-    requires(Robot.driveTrain);
+    // Use addRequirements() here to declare subsystem dependencies
+    addRequirements(Robot.driveTrain);
     driveTrain = Robot.driveTrain;
     this.maxSpeed = maxSpeed;
     this.maxRotation = maxRotation;
@@ -28,7 +28,7 @@ public class CopilotControlCommand extends Command {
 
   // Called just before this Command runs the first time
   @Override
-  protected void initialize() {
+ public void initialize() {
     execute();
   }
 
@@ -37,7 +37,7 @@ public class CopilotControlCommand extends Command {
   // right motors
   // Temporary until we get the XboxController wrapper for joystick
   @Override
-  protected void execute() {
+  public void execute() {
     //Robot.driveTrain.ArcadeDrive(0.90, 0, true);
     double s = maxSpeed * speedShaper.expo(Robot.m_oi.getAssistantController().getY(Hand.kRight));
     //soften the input by limiting the max input
@@ -46,12 +46,12 @@ public class CopilotControlCommand extends Command {
   }
 
   @Override
-  protected boolean isFinished() {
+  public boolean isFinished() {
     return false;
   }
 
   @Override
-  protected void end() {
+  public void end(boolean interrupted) {
     driveTrain.stop();
   }
 }

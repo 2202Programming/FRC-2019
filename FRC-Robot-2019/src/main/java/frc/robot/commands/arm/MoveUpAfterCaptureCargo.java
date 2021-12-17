@@ -1,8 +1,8 @@
 package frc.robot.commands.arm;
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 
-public class MoveUpAfterCaptureCargo extends Command {
+public class MoveUpAfterCaptureCargo extends CommandBase {
     /*
     Constants should probably be moved to the subsystem?
     Many commands will be involved in moving the arm in an x-y coordinate system
@@ -21,13 +21,13 @@ public class MoveUpAfterCaptureCargo extends Command {
     private double endHeight;
 
     public MoveUpAfterCaptureCargo(){
-        requires(Robot.arm);
+        addRequirements(Robot.arm);
         curProjection = (armInitialLength + Robot.arm.getExtension()) * Math.cos(Robot.arm.getRealAngle());
         curCalcHeight = Math.sqrt((Robot.arm.getExtension() + armInitialLength) * (Robot.arm.getExtension() + armInitialLength) - curProjection * curProjection);
         endHeight = curCalcHeight - 5.0; //Move up 5 inches (increase bc decreasing distance from x-axis)
     }
 
-    protected void execute() {
+    public void execute() {
         //Move to the endHeight while maintaining curProjection
         Robot.arm.setAngle(90 + Math.toDegrees(Math.atan(endHeight / curProjection)));
         //Add 90 bc calc goes below x axis
@@ -36,7 +36,7 @@ public class MoveUpAfterCaptureCargo extends Command {
             Math.sqrt(endHeight * endHeight + curProjection * curProjection) - armInitialLength);
     }
 
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return Math.abs(curCalcHeight - endHeight) < kTolerance;
     }
 }

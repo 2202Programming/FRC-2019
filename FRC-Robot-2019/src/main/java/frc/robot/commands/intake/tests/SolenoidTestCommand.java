@@ -15,13 +15,13 @@ public class SolenoidTestCommand extends InstantCommand {
     boolean vacuumCmd;
 
     public SolenoidTestCommand(boolean vacuumCmd) {
-        requires(Robot.intake.getVacuumSubsystem());
+        addRequirements(Robot.intake.getVacuumSubsystem());
         this.setName("solenoidTest=" + vacuumCmd);
         this.vacuumCmd = vacuumCmd;
     }
 
     @Override
-    protected void execute() {
+    public void execute() {
         Robot.intake.releaseSolenoid(vacuumCmd);
     }
 }

@@ -2,7 +2,7 @@ package frc.robot.commands.intake;
 
 import java.util.function.BooleanSupplier;
 
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
@@ -36,7 +36,7 @@ public class RetractOnReleaseCommand extends CommandBase {
   }
 
   // Called just before this Command runs the first time
-  protected void initialize() {
+ public void initialize() {
     // Assume that the ArmStatePositioner is the only type of default command used
     armPositioner = Robot.arm.getArmPositioner();
     ;
@@ -52,7 +52,7 @@ public class RetractOnReleaseCommand extends CommandBase {
 
   // Called repeatedly when this Command is scheduled to run
   @Override
-  protected void execute() {
+  public void execute() {
     // DEBUG CODE
     boolean rc = releaseCheckFunc.getAsBoolean();
     SmartDashboard.putBoolean("ReleaseSensor", rc);
@@ -72,13 +72,13 @@ public class RetractOnReleaseCommand extends CommandBase {
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
-  protected boolean isFinished() {
+  public boolean isFinished() {
     return isTimedOut() || checkArmPos();
   }
 
   // Called once after isFinished returns true
   @Override
-  protected void end() {
+  public void end(boolean interrupted) {
   }
 
   // Called when another command which requires one or more of the same

@@ -1,6 +1,5 @@
 package frc.robot.commands.intake;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 
@@ -8,17 +7,17 @@ import frc.robot.Robot;
 public class IntakeZero extends CommandBase {
 
     public IntakeZero() {
-        requires(Robot.intake);
+        addRequirements(Robot.intake);
     }
 
     
     @Override
-    protected void initialize() {
+   public void initialize() {
         Robot.intake.setAngle(Robot.intake.WristStraightDegrees);
     }
 
     @Override
-    protected void execute() {  }
+    public void execute() {  }
 
     // This is just a test, it doesn't finish. Enjoy moving the write with the
     // controller.

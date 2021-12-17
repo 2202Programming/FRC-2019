@@ -12,7 +12,7 @@ public class CallFunctionCommand extends InstantCommand {
 
   // Called repeatedly when this Command is scheduled to run
   @Override
-  protected void execute() {
+  public void execute() {
     workFunct.getAsInt();
   }
 

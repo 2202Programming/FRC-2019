@@ -11,7 +11,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj2.command.CommandGroupBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.CommandManager;
@@ -98,12 +98,18 @@ public class Robot extends TimedRobot {
     // 0=front cam, 1= rear cam, 2 = arm  (pi camera server defines this - could change)
     cameraSelect.setDouble(1);    
     m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function    
-    CommandGroup level3Climb = new ClimbGroup(100, -5.0);  // extend/retract in inches
+    
+    //TODO dpl 12/16/2021 - I don't think the whenpressed/whenreleased is needed if a a whileheld is used
+    Command level3Climb = new ClimbGroup(100, -5.0);  // extend/retract in inches
     m_oi.climbButton.whenPressed(level3Climb);
     m_oi.climbButton.whenReleased(new CancelCommand(level3Climb));
-    CommandGroup level2Climb = new Level2ClimbGroup(15.0, -5.0);
+    
+    //TODO ditto
+    Command level2Climb = new Level2ClimbGroup(15.0, -5.0);
     m_oi.shortClimbButton.whenPressed(level2Climb);
     m_oi.shortClimbButton.whenReleased(new CancelCommand(level2Climb));
+
+
     ahrs = new AHRS(SerialPort.Port.kMXP); /* Alternatives:  SPI.Port.kMXP, I2C.Port.kMXP or SerialPort.Port.kUSB */
   }
 
@@ -153,7 +159,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     resetAllDashBoardSensors();
-    CommandScheduler.getInstance().add(new CheckSolenoids());
+    CommandScheduler.getInstance().schedule(new CheckSolenoids());    //was dpl 12/16/2021 add(new CheckSolenoids()); TODO WHY?
 
     if(!doneOnce) {
       m_cmdMgr.setMode(Modes.HuntGameStart);   // schedules the mode's function

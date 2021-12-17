@@ -2,10 +2,10 @@ package frc.robot.commands.intake;
 
 import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 
-public class WristTrackAngle extends Command {
+public class WristTrackAngle extends CommandBase {
     private DoubleSupplier angleSupplier;
 
     /**
@@ -16,19 +16,19 @@ public class WristTrackAngle extends Command {
     }
 
     public WristTrackAngle(DoubleSupplier trackedAngle) {
-        requires(Robot.intake);
+        addRequirements(Robot.intake);
         angleSupplier = trackedAngle;
     }
 
     @Override
-    protected void execute() {
+    public void execute() {
         // intake angle is relative to arm
         double offset = Robot.arm.getRealAngle() - angleSupplier.getAsDouble();
         Robot.intake.setAngle(offset);
     }
 
     @Override
-    protected boolean isFinished() {
+    public boolean isFinished() {
         return false;
     }
 }

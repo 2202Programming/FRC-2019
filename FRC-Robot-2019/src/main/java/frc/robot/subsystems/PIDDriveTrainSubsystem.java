@@ -8,8 +8,8 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
-//import edu.wpi.first.wpilibj.command.PIDSubsystem;
-import edu.wpi.first.wpilibj.command.Subsystem;
+//import edu.wpi.first.wpilibj2.command.PIDSubsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.RobotMap;
 import frc.robot.commands.drive.ArcadeDriveCommand;
@@ -17,7 +17,7 @@ import frc.robot.commands.drive.ArcadeDriveCommand;
 /**
  * The basic drive train subsystem for four motors
  */
-public class PIDDriveTrainSubsystem extends Subsystem {
+public class PIDDriveTrainSubsystem extends SubsystemBase {
 
   // Individual Motors
   private SpeedController frontLeftMotor = new WPI_TalonSRX(RobotMap.FL_TALON_CAN_ID);
@@ -59,7 +59,7 @@ public class PIDDriveTrainSubsystem extends Subsystem {
     inversionConstant = 1;
   }
 
-  @Override
+  //TODO - DPL WIRE THIS UP IF NEEDED 12/16/2021
   public void initDefaultCommand() {
     leftEncoder.setSelectedSensorPosition(0);
     rightEncoder.setSelectedSensorPosition(0);
