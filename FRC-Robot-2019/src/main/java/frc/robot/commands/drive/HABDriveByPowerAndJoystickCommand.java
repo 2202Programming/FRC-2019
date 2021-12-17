@@ -42,7 +42,7 @@ public class HABDriveByPowerAndJoystickCommand extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return Robot.climber.climberAgainstWall();
+    return true; //dpl hack 12/17/21 no climber//Robot.climber.climberAgainstWall();
   }
 
   @Override

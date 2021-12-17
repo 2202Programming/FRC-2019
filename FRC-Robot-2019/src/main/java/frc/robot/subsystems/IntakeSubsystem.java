@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Spark;
 
@@ -54,17 +53,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
 
 public class IntakeSubsystem extends ExtendedSubSystem {
 
-  /**
-   * dpl 12/16/2021 - created class because inline doesnt work with new command
-   * structure.  Better question, why did we do this?  Is the vacuumSensor really the resource?
-   * TODO  - fix this slop
-   */
-  class IntakeVacuum extends SubsystemBase {
-    IntakeVacuum() {
-      this.setName("Intake:Vac");   
-    }
-  }
-
   // Local Constants that define facts about the intake system
   public final double WristMinDegrees = -100.0; // pointing down, relative to the arm //dpl hack
   public final double WristMaxDegrees = +100.0; // pointing up
@@ -82,8 +70,6 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   // servo.
   final double kServoMinPWM = 0.553;
   final double kServoMaxPWM = 2.455;
-
-  IntakeVacuum intakeVacuum;
 
   // Vacuum mode is the default for the solenoid, power it to drop the payload
   public final double kRelease = 1.0; // powered will open solenoid
@@ -109,7 +95,6 @@ public class IntakeSubsystem extends ExtendedSubSystem {
     vacuumPump = new Spark(RobotMap.INTAKE_VACUUM_SPARK_PWM);
     vacuumSol = new Spark(RobotMap.INTAKE_VAC_RELEASE_SPARK_PWM);
     vacuumSensor = new VacuumSensorSystem(RobotMap.INTAKE_VAC_SENSOR_AD);
-    intakeVacuum = new IntakeVacuum();    //DPL TODO What was this for?
 
     setDefaultCommand(new WristStatePositioner());
     logTimer = System.currentTimeMillis();
@@ -123,6 +108,14 @@ public class IntakeSubsystem extends ExtendedSubSystem {
       return vacuumSensor;
     return null;
   }
+ /**
+   * Commands can used the vacuum subsystem without interferring with wrist.
+   */
+  public Subsystem getVacuumSubsystem() {
+    return this.vacuumSensor;
+  }
+
+
 
   /**
    * Wrist Controls - With the Arm in front, positive -->angle up negitive
@@ -141,13 +134,7 @@ public class IntakeSubsystem extends ExtendedSubSystem {
     return -wristServo.getAngle();
   }
 
-  /**
-   * Commands can used the vacuum subsystem without interferring with wrist.
-   */
-  public Subsystem getVacuumSubsystem() {
-    return this.intakeVacuum;
-  }
-
+  
   // true - will release the payload
   // false - returns to vacuum postion for Solenoid
   //

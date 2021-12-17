@@ -2,19 +2,17 @@ package frc.robot.commands.intake;
 
 import java.util.function.BooleanSupplier;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.commands.CommandManager;
 import frc.robot.commands.arm.ArmStatePositioner;
 import frc.robot.subsystems.VacuumSensorSystem;
 
-public class RetractOnReleaseCommand extends CommandBase { 
+public class RetractOnReleaseCommand extends WaitCommand { 
   VacuumSensorSystem vs;
   BooleanSupplier releaseCheckFunc;
   double x_retract;
-  double timeout;
   double init_x;
   double init_h;
   double x_new; // x to jump to when the sensor says we are released
@@ -22,24 +20,18 @@ public class RetractOnReleaseCommand extends CommandBase {
   private ArmStatePositioner armPositioner;
 
   public RetractOnReleaseCommand(CommandManager cmdMgr, double x_retract, double timeout) {
-    // could require(vacSensor0)
-    try {
-      vs = Robot.intake.getVacuumSensor();
-      if (vs != null) 
-        releaseCheckFunc = vs::hasReleased;
-      this.x_retract = x_retract;
-      this.timeout = timeout;
-    }
-    finally {
-      if (vs != null) vs.close();
-    }
+    super(timeout);
+    vs = Robot.intake.getVacuumSensor();
+    releaseCheckFunc = (vs !=null) ? vs::hasReleased : this::nosensor;
+    this.x_retract = x_retract;
   }
 
   // Called just before this Command runs the first time
+  @Override
  public void initialize() {
     // Assume that the ArmStatePositioner is the only type of default command used
     armPositioner = Robot.arm.getArmPositioner();
-    ;
+
     // save were we are so we can tweek it on finish
     init_x = armPositioner.getProjectionCommanded();
     init_h = armPositioner.getHeightCommanded();
@@ -47,7 +39,7 @@ public class RetractOnReleaseCommand extends CommandBase {
     int invertMultiplier = Robot.arm.isInverted() ? -1 : 1;
     x_new -= invertMultiplier * x_retract; // move back a bit, account for side.
 
-    setTimeout(timeout);
+    super.initialize();
   }
 
   // Called repeatedly when this Command is scheduled to run
@@ -62,7 +54,6 @@ public class RetractOnReleaseCommand extends CommandBase {
       armPositioner.getDriverAdjustLimiter().setX(0.0);
       armPositioner.setPosition(init_h, x_new);
     }
-
   }
 
   boolean checkArmPos() {
@@ -73,17 +64,9 @@ public class RetractOnReleaseCommand extends CommandBase {
   // Make this return true when this Command no longer needs to run execute()
   @Override
   public boolean isFinished() {
-    return isTimedOut() || checkArmPos();
+    return super.isFinished() || checkArmPos();
   }
 
-  // Called once after isFinished returns true
-  @Override
-  public void end(boolean interrupted) {
-  }
+  boolean nosensor() { return false; }
 
-  // Called when another command which requires one or more of the same
-  // subsystems is scheduled to run
-  @Override
-  protected void interrupted() {
-  }
 }

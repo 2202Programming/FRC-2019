@@ -5,8 +5,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
@@ -129,6 +128,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
     zeroArm(); // will also get called on transition to teleOp, should arms be moved
 
     extensionOverrided = false;
+    // set default command here since initdefault() is no longer a thing - dpl 12/17/2021
+    setDefaultCommand(new ArmStatePositioner());
   }
   // Put methods for controlling this subsystem
   // here. Call these from Commands.
@@ -267,7 +268,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * @return extension (desired_l), in inches.
    */
   public double getExtension() {
-    int counts = armExtensionMotor.getSelectedSensorPosition();
+    double counts = armExtensionMotor.getSelectedSensorPosition();   // TODO: confirm we still get counts even if a double not int DPL 12/17/2021
     // L0 + phi correction
     return (L0 + (getRealAngle() - PHI0) * k_dl_dphi) + (counts * kIn_per_count);
   }
@@ -342,10 +343,7 @@ public class ArmSubsystem extends ExtendedSubSystem {
   public boolean isExtensionOverrided() {
     return extensionOverrided;
   }
-  @Override
-  public void initDefaultCommand() {
-    setDefaultCommand(new ArmStatePositioner());
-  }
+  
 
   /**
    * Gets the command used to zero the arm subsystem.

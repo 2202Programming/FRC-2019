@@ -1,5 +1,6 @@
 package frc.robot.commands.drive.shift;
 
+
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Robot;
 import frc.robot.subsystems.GearShifterSubsystem;
@@ -14,7 +15,7 @@ public class ToggleAutomaticGearShiftingCommand extends InstantCommand {
 
     @Override
     public void execute() {
-        if(gearShifter.getDefaultCommandName().equals("AutomaticGearShiftCommand")) {
+        if(gearShifter.getDefaultCommand() instanceof AutomaticGearShiftCommand) {
             Robot.gearShifter.setDefaultCommand(null);
             Robot.gearShifter.autoshiftEnabled(false);
         } else {

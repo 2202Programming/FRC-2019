@@ -11,24 +11,13 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.CommandManager;
 import frc.robot.commands.CommandManager.Modes;
-//import frc.robot.commands.arm.MoveArmAtHeight;
-import frc.robot.commands.climb.CheckSolenoids;
-import frc.robot.commands.climb.ClimbGroup;
-//import frc.robot.commands.climb.ClimbUpPartial;
-import frc.robot.commands.climb.Level2ClimbGroup;
-//import frc.robot.commands.climb.PullUpPartial;
-//import frc.robot.commands.intake.WristTrackAngle;
-//import frc.robot.commands.util.Angle;
-import frc.robot.commands.util.CancelCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.CameraSubsystem;
 import frc.robot.subsystems.CargoTrapSubsystem;
-import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.subsystems.GearShifterSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -58,7 +47,6 @@ public class Robot extends TimedRobot {
   public static IntakeSubsystem intake = new IntakeSubsystem();
   public static CargoTrapSubsystem cargoTrap = new CargoTrapSubsystem();
   public static ArmSubsystem arm = new ArmSubsystem();
-  public static ClimberSubsystem climber = new ClimberSubsystem();
   public static PowerDistributionPanel pdp = new PowerDistributionPanel(0);
   public static CameraSubsystem cameraSubsystem = new CameraSubsystem();
   public static SensorSubsystem sensorSubystem = new SensorSubsystem();
@@ -99,17 +87,6 @@ public class Robot extends TimedRobot {
     cameraSelect.setDouble(1);    
     m_cmdMgr.setMode(Modes.SettingZeros);   // schedules the mode's function    
     
-    //TODO dpl 12/16/2021 - I don't think the whenpressed/whenreleased is needed if a a whileheld is used
-    Command level3Climb = new ClimbGroup(100, -5.0);  // extend/retract in inches
-    m_oi.climbButton.whenPressed(level3Climb);
-    m_oi.climbButton.whenReleased(new CancelCommand(level3Climb));
-    
-    //TODO ditto
-    Command level2Climb = new Level2ClimbGroup(15.0, -5.0);
-    m_oi.shortClimbButton.whenPressed(level2Climb);
-    m_oi.shortClimbButton.whenReleased(new CancelCommand(level2Climb));
-
-
     ahrs = new AHRS(SerialPort.Port.kMXP); /* Alternatives:  SPI.Port.kMXP, I2C.Port.kMXP or SerialPort.Port.kUSB */
   }
 
@@ -159,8 +136,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     resetAllDashBoardSensors();
-    CommandScheduler.getInstance().schedule(new CheckSolenoids());    //was dpl 12/16/2021 add(new CheckSolenoids()); TODO WHY?
-
+   
     if(!doneOnce) {
       m_cmdMgr.setMode(Modes.HuntGameStart);   // schedules the mode's function
       doneOnce = true;
@@ -225,7 +201,7 @@ public class Robot extends TimedRobot {
     gearShifter.log(interval+17); //tell gearshifter to post to dashboard every Xms
     m_cmdMgr.log(interval+23);
     intake.log(interval+29);
-    climber.log(interval+31);
+
     SmartDashboard.putNumber("Vaccum Pressure", intake.getVacuumSensor().getRawVacuum() / (Math.pow(2, 12 + 4) / 4));
     
     SmartDashboard.putData(CommandScheduler.getInstance()); 

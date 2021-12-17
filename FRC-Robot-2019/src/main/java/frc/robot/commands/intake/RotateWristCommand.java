@@ -1,7 +1,6 @@
 package frc.robot.commands.intake; 
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Robot;
 
 
@@ -12,23 +11,17 @@ import frc.robot.Robot;
  * we aren't at the desired postion.  Time out gives it time to get there.
  * 
  */
-public class RotateWristCommand extends CommandBase{
+public class RotateWristCommand extends WaitCommand{
     private double angle;
-    private double timeout;
 
     public RotateWristCommand(double angle, double timeout){
+        super(timeout);
         addRequirements(Robot.intake);
         this.angle = angle;
-        this.timeout = timeout;
     }
 
     public RotateWristCommand(double angle) {
         this(angle, 0.0);
-    }
-
-    @Override
-   public void initialize(){
-        setTimeout(timeout);
     }
 
   @Override
@@ -42,17 +35,8 @@ public class RotateWristCommand extends CommandBase{
     double measAngle = Robot.intake.getAngle();
     boolean posHit = ( Math.abs(measAngle - angle) < 1.0 );
      //stay for the whole timeout
-     boolean to = isTimedOut();
+     boolean to = super.isFinished();
      return (to && posHit);
-  }
-
-  @Override
-  public void end(boolean interrupted) {
-  }
-
-  @Override
-  protected void interrupted() {
-      return;
-  }
+  }  
 }
 

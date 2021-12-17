@@ -1,6 +1,6 @@
 package frc.robot.commands.intake;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Robot;
 
 /**
@@ -12,12 +12,13 @@ import frc.robot.Robot;
  * 
  *      Instantiate with one or other for what you need.
  */
-public class VacuumCommand extends CommandBase {
+public class VacuumCommand extends WaitCommand {
     boolean enable;
     boolean done = false;
     double timeout;
 
     public VacuumCommand(boolean enable, double timeout) {
+        super(timeout);
         addRequirements(Robot.intake.getVacuumSubsystem());
         this.setName("vac="+enable);
         this.enable = enable;
@@ -27,9 +28,8 @@ public class VacuumCommand extends CommandBase {
     @Override
    public void initialize()
     {
+        super.initialize();
         done = false;          // turning off takes time.
-        setTimeout(timeout); 
-
         if (enable) {
             done = true;              // this is instant
             Robot.intake.setVacuum(true);
@@ -50,10 +50,10 @@ public class VacuumCommand extends CommandBase {
     @Override
     public boolean isFinished() {
         // put the solenoid back to vacuum on timeout.
-        if (isTimedOut()) {
+        if (super.isFinished()) {
             Robot.intake.releaseSolenoid(false);  //unpowerered for vacuum
         }
-        return done || isTimedOut();
+        return done || super.isFinished();
     }
 
 }
