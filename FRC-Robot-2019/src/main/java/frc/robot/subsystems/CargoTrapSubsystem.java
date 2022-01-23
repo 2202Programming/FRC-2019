@@ -2,10 +2,12 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+
+import static edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotMap;
+import static frc.robot.RobotMap.*;
 
 /**
  * This is still TBD, we may use a roller style.
@@ -17,12 +19,12 @@ public class CargoTrapSubsystem extends SubsystemBase {
     static final DoubleSolenoid.Value kRetract = Value.kReverse;  
 
     // Physical Devices and Controls
-    Spark intakeMotors = new Spark(RobotMap.TRAP_INTAKE_MOTOR_PIN);
+    Spark intakeMotors = new Spark(TRAP_INTAKE_MOTOR_PIN);
                                            
-    DoubleSolenoid deployPiston = new DoubleSolenoid(RobotMap.TRAP_PCM_ID,
-         RobotMap.TRAP_DEPLOY_PCM, RobotMap.TRAP_RETRACT_PCM);
+    DoubleSolenoid deployPiston = new DoubleSolenoid(TRAP_PCM_ID, 
+         PneumaticsModuleType.CTREPCM,  TRAP_DEPLOY_PCM, TRAP_RETRACT_PCM);
 
-    DigitalInput cargoSensor = new DigitalInput(RobotMap.TRAP_CARGO_SENSOR_DIO);
+    DigitalInput cargoSensor = new DigitalInput(TRAP_CARGO_SENSOR_DIO);
 
 
     public CargoTrapSubsystem() {

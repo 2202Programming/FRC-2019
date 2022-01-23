@@ -2,9 +2,12 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
+
+import static edu.wpi.first.wpilibj.DoubleSolenoid.Value.*;
 import edu.wpi.first.util.sendable.Sendable;
 import frc.robot.Robot;
-import frc.robot.RobotMap;
+import static frc.robot.RobotMap.*;
 import frc.robot.commands.drive.shift.AutomaticGearShiftCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -30,12 +33,13 @@ public class GearShifterSubsystem extends SubsystemBase {
       }
 
     //physical devices
-    private DoubleSolenoid gearShiftSolenoid = new DoubleSolenoid(RobotMap.GEARSHIFT_PCM_ID,
-            RobotMap.GEARSHIFTUP_SOLENOID_PCM, RobotMap.GEARSHIFTDOWN_SOLENOID_PCM);
+    private DoubleSolenoid gearShiftSolenoid = new 
+        DoubleSolenoid(GEARSHIFT_PCM_ID, PneumaticsModuleType.CTREPCM,
+        GEARSHIFTUP_SOLENOID_PCM, GEARSHIFTDOWN_SOLENOID_PCM);
 
     public enum Gear {        
-        HIGH_GEAR (DoubleSolenoid.Value.kForward),      //### need to check right order
-        LOW_GEAR (DoubleSolenoid.Value.kReverse) ;
+        HIGH_GEAR (kForward),  
+        LOW_GEAR (kReverse) ;
         private final DoubleSolenoid.Value gearCode;
         Gear(DoubleSolenoid.Value value) { gearCode = value; }
         public DoubleSolenoid.Value solenoidCmd() {return this.gearCode; }

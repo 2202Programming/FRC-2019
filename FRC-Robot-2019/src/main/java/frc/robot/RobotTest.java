@@ -1,7 +1,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -76,7 +75,7 @@ public class RobotTest {
         // SmartDashboard.putNumber("Right Encoder Rate", driveTrain.getRightEncoderTalon().getSelectedSensorVelocity());
         // SmartDashboard.putString("Gear Shifter State", String.valueOf(gearShifter.getCurGear()));
 
-        Robot.arm.log();
+        Robot.arm.log(200);  // dpl - 1/23/2022 should be every 200ms log
         Robot.arm.logTalons();
  
         SmartDashboard.putData(CommandScheduler.getInstance()); 

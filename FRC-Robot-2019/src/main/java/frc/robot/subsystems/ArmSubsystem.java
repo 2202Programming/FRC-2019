@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
 import frc.robot.RobotMap;
@@ -35,7 +36,7 @@ import frc.robot.commands.util.MathUtil;
  * 
  * 
  */
-public class ArmSubsystem extends ExtendedSubSystem {
+public class ArmSubsystem extends SubsystemBase {
   private WPI_TalonSRX armRotationMotor = new WPI_TalonSRX(RobotMap.ARM_ROTATION_TALON_CAN_ID);
   private WPI_TalonSRX armExtensionMotor = new WPI_TalonSRX(RobotMap.ARM_EXTENSTION_TALON_CAN_ID);
   private DigitalInput extensionAtMin = new DigitalInput(RobotMap.ARM_MIN_EXTENSION_SENSOR_PIN);
@@ -96,7 +97,6 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * Creates a new arm/lift subsystem.
    */
   public ArmSubsystem() {
-    super("Arm");
     addChild("Arm:Rot:Mtr", armRotationMotor);
     addChild("Arm:Ext:Mtr", armExtensionMotor);
 
@@ -350,7 +350,6 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * 
    * @return a new <code>ArmZero</code> command.
    */
-  @Override
   public Command zeroSubsystem() {
     return new ArmZero();
   }
@@ -390,8 +389,8 @@ public class ArmSubsystem extends ExtendedSubSystem {
    * @param talon the WPI_TalonSRX to log.
    */
   private void logTalon(WPI_TalonSRX talon) {
-    SmartDashboard.putNumber(talon.getName() + " Current", talon.getSupplyCurrent() );
-    SmartDashboard.putNumber(talon.getName() + " Percent Output", talon.getMotorOutputPercent());
+    SmartDashboard.putNumber(talon.getBaseID() + " Current", talon.getSupplyCurrent() );
+    SmartDashboard.putNumber(talon.getBaseID() + " Percent Output", talon.getMotorOutputPercent());
   }
 
 }

@@ -2,7 +2,6 @@ package frc.robot.commands.arm.tests;
 
 import java.util.function.DoubleConsumer;
 
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;

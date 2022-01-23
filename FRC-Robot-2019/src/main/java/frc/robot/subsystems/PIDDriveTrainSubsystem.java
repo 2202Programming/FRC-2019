@@ -6,8 +6,9 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.wpilibj.SpeedController;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
+
+import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 //import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -20,18 +21,18 @@ import frc.robot.commands.drive.ArcadeDriveCommand;
 public class PIDDriveTrainSubsystem extends SubsystemBase {
 
   // Individual Motors
-  private SpeedController frontLeftMotor = new WPI_TalonSRX(RobotMap.FL_TALON_CAN_ID);
-  private SpeedController middleLeftMotor = new WPI_TalonSRX(RobotMap.ML_TALON_CAN_ID);
-  private SpeedController backLeftMotor = new WPI_TalonSRX(RobotMap.BL_TALON_CAN_ID);
-  private SpeedController frontRightMotor = new WPI_TalonSRX(RobotMap.FR_TALON_CAN_ID);
-  private SpeedController middleRightMotor = new WPI_TalonSRX(RobotMap.MR_TALON_CAN_ID);
-  private SpeedController backRightMotor = new WPI_TalonSRX(RobotMap.BR_TALON_CAN_ID);
+  private MotorController frontLeftMotor = new WPI_TalonSRX(RobotMap.FL_TALON_CAN_ID);
+  private MotorController middleLeftMotor = new WPI_TalonSRX(RobotMap.ML_TALON_CAN_ID);
+  private MotorController backLeftMotor = new WPI_TalonSRX(RobotMap.BL_TALON_CAN_ID);
+  private MotorController frontRightMotor = new WPI_TalonSRX(RobotMap.FR_TALON_CAN_ID);
+  private MotorController middleRightMotor = new WPI_TalonSRX(RobotMap.MR_TALON_CAN_ID);
+  private MotorController backRightMotor = new WPI_TalonSRX(RobotMap.BR_TALON_CAN_ID);
   private WPI_TalonSRX leftEncoder;
   private WPI_TalonSRX rightEncoder;
 
 
   // Motor groups
-  private SpeedControllerGroup leftMotors, rightMotors;
+  private MotorControllerGroup leftMotors, rightMotors;
 
   private DifferentialDrive drive;
 
@@ -52,8 +53,8 @@ public class PIDDriveTrainSubsystem extends SubsystemBase {
     rightEncoder.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
     rightEncoder.setSensorPhase(true);
 
-    leftMotors = new SpeedControllerGroup(frontLeftMotor, middleLeftMotor, backLeftMotor);
-    rightMotors = new SpeedControllerGroup(frontRightMotor, middleRightMotor, backRightMotor);
+    leftMotors = new MotorControllerGroup(frontLeftMotor, middleLeftMotor, backLeftMotor);
+    rightMotors = new MotorControllerGroup(frontRightMotor, middleRightMotor, backRightMotor);
 
     drive = new DifferentialDrive(leftMotors, rightMotors);
     inversionConstant = 1;

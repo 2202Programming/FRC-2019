@@ -28,7 +28,7 @@ public class MotorOverPowerShutdown extends Trigger  {
         //install the command and hope it is never used
         this.whenActive(this.saveMotorCmd);
 
-        System.out.println("OverPower " +motor.getName() + " watts= " + powerLimit + " - for testing only");
+        System.out.println("OverPower " +motor.getBaseID()  + " watts= " + powerLimit + " - for testing only");
     }
 
     @Override
@@ -61,7 +61,7 @@ public class MotorOverPowerShutdown extends Trigger  {
             motor.disable();
 
             //Make noise
-            System.out.println("****MOTOR POWER TRIGGERED**** -->" + motor.getName() );
+            System.out.println("****MOTOR POWER TRIGGERED**** -->" + motor.getBaseID() );
         }
         
         // keep in the safe state, this command will have to get kicked out.

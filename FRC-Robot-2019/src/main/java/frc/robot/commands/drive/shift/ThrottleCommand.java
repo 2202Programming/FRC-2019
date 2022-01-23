@@ -1,6 +1,5 @@
 package frc.robot.commands.drive.shift;
 
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 

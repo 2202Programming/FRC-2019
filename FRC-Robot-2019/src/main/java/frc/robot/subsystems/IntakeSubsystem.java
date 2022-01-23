@@ -2,10 +2,12 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PWM;
-import edu.wpi.first.wpilibj.SpeedController;
+
+import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 
@@ -51,7 +53,7 @@ import edu.wpi.first.util.sendable.SendableRegistry;
  * 
  */
 
-public class IntakeSubsystem extends ExtendedSubSystem {
+public class IntakeSubsystem extends SubsystemBase{
 
   // Local Constants that define facts about the intake system
   public final double WristMinDegrees = -100.0; // pointing down, relative to the arm //dpl hack
@@ -78,15 +80,14 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   // Physical devices
   protected CustomServo wristServo; // positive angle, wrist up, when arm is forward
   protected DigitalInput cargoSwitch; // true when cargo switch is pressed by ball
-  protected SpeedController vacuumPump; // motor control for vacuum pump
-  protected SpeedController vacuumSol; // solenoid to hold and relase ball/hatch
+  protected MotorController vacuumPump; // motor control for vacuum pump
+  protected MotorController vacuumSol; // solenoid to hold and relase ball/hatch
   protected VacuumSensorSystem vacuumSensor; // sensor to tell if we suck.
 
   /**
    * Creates an intake subsystem.
    */
   public IntakeSubsystem() {
-    super("Intake");
     wristServo = new CustomServo(RobotMap.INTAKE_WRIST_SERVO_PWM, WristMinDegrees, WristMaxDegrees, kServoMinPWM,
         kServoMaxPWM);
     SendableRegistry.setName(wristServo, this.getSubsystem(), "wrist");
@@ -192,7 +193,6 @@ public class IntakeSubsystem extends ExtendedSubSystem {
   }
 
   // Create the zeroSubsystem Command
-  @Override
   public Command zeroSubsystem() {
     // local class for zero
     class IntakeZeroCmd extends CommandBase {

@@ -7,8 +7,10 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.wpilibj.SpeedController;
-//import edu.wpi.first.wpilibj.SpeedControllerGroup;
+
+import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+
+//import edu.wpi.first.wpilibj.MotorControllerGroup;
 //import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -39,8 +41,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
   private WPI_TalonSRX frontRightMotor = new WPI_TalonSRX(RobotMap.FR_TALON_CAN_ID);
   private WPI_TalonSRX middleRightMotor = new WPI_TalonSRX(RobotMap.MR_TALON_CAN_ID);
   private WPI_TalonSRX backRightMotor = new WPI_TalonSRX(RobotMap.BR_TALON_CAN_ID);
-  private SpeedController leftMotors;
-  private SpeedController rightMotors;
+  private MotorController leftMotors;
+  private MotorController rightMotors;
   private WPI_TalonSRX leftEncoder;
   private WPI_TalonSRX rightEncoder;
 
@@ -378,6 +380,6 @@ public class DriveTrainSubsystem extends SubsystemBase {
    * @param talon the talon to be logged.
    */
   public void logTalon(WPI_TalonSRX talon) {
-    SmartDashboard.putNumber(talon.getName() + " Current", talon.getSupplyCurrent());
+    SmartDashboard.putNumber(talon.getBaseID() + " Current", talon.getSupplyCurrent());
   }
 }

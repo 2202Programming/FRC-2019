@@ -11,6 +11,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.CommandManager;
@@ -47,7 +48,7 @@ public class Robot extends TimedRobot {
   public static IntakeSubsystem intake = new IntakeSubsystem();
   public static CargoTrapSubsystem cargoTrap = new CargoTrapSubsystem();
   public static ArmSubsystem arm = new ArmSubsystem();
-  public static PowerDistributionPanel pdp = new PowerDistributionPanel(0);
+  public static PowerDistribution pdp = new PowerDistribution(0, ModuleType.kCTRE);
   public static CameraSubsystem cameraSubsystem = new CameraSubsystem();
   public static SensorSubsystem sensorSubystem = new SensorSubsystem();
   public static AHRS ahrs;
