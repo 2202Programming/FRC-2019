@@ -69,9 +69,9 @@ public class TestArmRateCmd extends ParallelCommandGroup {
     // ### TODO: move the binding functions to a less hidden place - DPL
     // Bind the control to our functions
     public double getShoulderCmd() {
-        return Robot.m_oi.getAssistantController().getY(Hand.kRight);
+        return Robot.m_oi.getAssistantController().getRightY();
     }
     public double getExtenderCmd() {
-        return Robot.m_oi.getAssistantController().getX(Hand.kRight);
+        return Robot.m_oi.getAssistantController().getRightX();
     }
 }

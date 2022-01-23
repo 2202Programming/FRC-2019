@@ -36,9 +36,9 @@ public class DriveByPowerAndJoystickCommand extends WaitCommand {
   // Temporary until we get the XboxController wrapper for joystick
   @Override
   public void execute() {
-    double speedInput = speedShaper.expo(Robot.m_oi.getDriverController().getY(Hand.kLeft));
+    double speedInput = speedShaper.expo(Robot.m_oi.getDriverController().getLeftY());
     double speedAdjust = speedInput > 0? speedInput * (maxPower - power): speedInput * (power - minPower);
-    double rotation = 0.5 * rotationShaper.expo(Robot.m_oi.getDriverController().getX(Hand.kRight));
+    double rotation = 0.5 * rotationShaper.expo(Robot.m_oi.getDriverController().getRightX());
     Robot.driveTrain.ArcadeDrive(power + speedAdjust, rotation, true);
   }
 

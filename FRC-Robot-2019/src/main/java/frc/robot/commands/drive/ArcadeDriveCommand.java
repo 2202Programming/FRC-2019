@@ -35,9 +35,9 @@ public class ArcadeDriveCommand extends CommandBase {
   @Override
   public void execute() {
     //Robot.driveTrain.ArcadeDrive(0.90, 0, true);
-    double s = speedShaper.expo(Robot.m_oi.getDriverController().getY(Hand.kLeft));
+    double s = speedShaper.expo(Robot.m_oi.getDriverController().getLeftY());
     //soften the input by limiting the max input
-    double rot = rotationShaper.expo(0.8 * Robot.m_oi.getDriverController().getX(Hand.kRight));
+    double rot = rotationShaper.expo(0.8 * Robot.m_oi.getDriverController().getRightX());
     Robot.driveTrain.ArcadeDrive(s, rot, false);
   }
 

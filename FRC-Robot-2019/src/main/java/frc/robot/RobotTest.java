@@ -57,16 +57,16 @@ public class RobotTest {
     @SuppressWarnings("unused")
     private double Wrist_AssistLeftTrigger() {
         //rescale as expected by wrist test
-        double temp = -1.0 +2.0*Robot.m_oi.getAssistantController().getTriggerAxis(Hand.kLeft);
+        double temp = -1.0 +2.0*Robot.m_oi.getAssistantController().getLeftTriggerAxis();
         return temp;
     }
 
     private double leftJoyY() {
-        return Math.abs(assistant.getY(Hand.kLeft)) < 0.05? 0: -assistant.getY(Hand.kLeft);
+        return Math.abs(assistant.getLeftY()) < 0.05? 0: -assistant.getLeftY();
     }
 
     private double rightJoyY() {
-        return Math.abs(assistant.getY(Hand.kRight)) < 0.05? 0: -assistant.getY(Hand.kRight); 
+        return Math.abs(assistant.getRightY()) < 0.05? 0: -assistant.getRightY(); 
     }
        
     private void logSmartDashboardSensors() {

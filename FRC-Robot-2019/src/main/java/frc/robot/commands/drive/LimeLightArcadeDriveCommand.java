@@ -1,10 +1,10 @@
 package frc.robot.commands.drive;
 
-import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.LinearFilter;
+import edu.wpi.first.math.filter.LinearFilter;
 import frc.robot.Robot;
 import frc.robot.commands.util.ExpoShaper;
 import frc.robot.subsystems.DriveTrainSubsystem;
@@ -59,7 +59,7 @@ public class LimeLightArcadeDriveCommand extends CommandBase {
 
     // We invert the PID controller value so the feedback loop is negative and not
     // positive
-    double speed = maxSpeed * speedShaper.expo(Robot.m_oi.getDriverController().getY(Hand.kLeft));
+    double speed = maxSpeed * speedShaper.expo(Robot.m_oi.getDriverController().getLeftY());
     double measurement = lowPass.calculate(Robot.sensorSubystem.getX());
     double rotation = -controller.calculate(measurement, setpoint);
  

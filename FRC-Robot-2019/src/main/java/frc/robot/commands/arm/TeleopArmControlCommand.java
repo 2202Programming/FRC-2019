@@ -64,9 +64,9 @@ public class TeleopArmControlCommand extends CommandBase {
     //TODO: DEREK/BILLY compare states in the controlManager for heights
     private void updatePositionVector() {
         //TODO Implement states
-        if (in.getBumper(Hand.kLeft)) {
+        if (in.getLeftBumper()) {
             // Go to Lower State
-        } else if (in.getBumper(Hand.kRight)) {
+        } else if (in.getRightBumper()) {
             // Go To Higher State
         } else {
             // TODO: Bind to real controls and add rate limiting

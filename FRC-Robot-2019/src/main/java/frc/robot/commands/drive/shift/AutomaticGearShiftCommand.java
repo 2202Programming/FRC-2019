@@ -79,10 +79,10 @@ public class AutomaticGearShiftCommand extends CommandBase {
    * @return The minimum throttle
    */
   private double getThrottle(boolean squareInputs) {
-    double xSpeed = limit(Robot.m_oi.getDriverController().getY(Hand.kLeft));
+    double xSpeed = limit(Robot.m_oi.getDriverController().getLeftY());
     xSpeed = applyDeadband(xSpeed, DEADZONE);
 
-    double zRotation = limit(Robot.m_oi.getDriverController().getX(Hand.kLeft));
+    double zRotation = limit(Robot.m_oi.getDriverController().getLeftX());
     zRotation = applyDeadband(zRotation, DEADZONE);
 
     // Square the inputs (while preserving the sign) to increase fine control

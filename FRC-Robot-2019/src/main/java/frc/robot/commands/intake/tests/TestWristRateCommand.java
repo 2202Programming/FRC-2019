@@ -28,7 +28,7 @@ public class TestWristRateCommand extends CommandBase {
 
     // Must supply a function to get a user's command in normalized units
     public double getCmd() {
-        double   temp =  Robot.m_oi.getAssistantController().getY(Hand.kLeft);
+        double   temp =  Robot.m_oi.getAssistantController().getLeftY();
         return temp;
     }
     

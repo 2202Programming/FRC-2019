@@ -141,16 +141,16 @@ public class OI {
   // converted in
   // the CommandManager
   public double adjustHeight() {
-    return Robot.m_oi.assistant.getTriggerAxis(Hand.kLeft) - Robot.m_oi.assistant.getTriggerAxis(Hand.kRight);
+    return Robot.m_oi.assistant.getLeftTriggerAxis() - Robot.m_oi.assistant.getRightTriggerAxis();
   }
 
   public double extensionInput() {
-    return Robot.m_oi.assistant.getY(Hand.kLeft);
+    return Robot.m_oi.assistant.getLeftY();
   }
 
   // assistant rotation input
   public double rotationInput() {
-    double in = Robot.m_oi.assistant.getY(Hand.kRight);
+    double in = Robot.m_oi.assistant.getRightY();
     double out = rotateShaper.expo(in);
     return out;
   }

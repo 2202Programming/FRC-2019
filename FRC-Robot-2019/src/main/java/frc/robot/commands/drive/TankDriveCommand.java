@@ -31,7 +31,7 @@ public class TankDriveCommand extends CommandBase {
   // Temporary until we get the XboxController wrapper for joystick
   @Override
   public void execute() {
-    Robot.driveTrain.tankDrive(ctrl.getY(Hand.kLeft), ctrl.getY(Hand.kRight), true);
+    Robot.driveTrain.tankDrive(ctrl.getLeftY(), ctrl.getRightY(), true);
   }
 
   @Override

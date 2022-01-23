@@ -39,9 +39,9 @@ public class CopilotControlCommand extends CommandBase {
   @Override
   public void execute() {
     //Robot.driveTrain.ArcadeDrive(0.90, 0, true);
-    double s = maxSpeed * speedShaper.expo(Robot.m_oi.getAssistantController().getY(Hand.kRight));
+    double s = maxSpeed * speedShaper.expo(Robot.m_oi.getAssistantController().getRightY());
     //soften the input by limiting the max input
-    double rot = maxRotation * rotationShaper.expo(0.8 * Robot.m_oi.getAssistantController().getX(Hand.kRight));
+    double rot = maxRotation * rotationShaper.expo(0.8 * Robot.m_oi.getAssistantController().getRightX());
     Robot.driveTrain.ArcadeDrive(s, rot, false);
   }
 
